@@ -1,25 +1,24 @@
 export const SUPPORTED_TYPE = [
-  'manual',
-  'ai',
-  'machine_polishing',
-  'machine',
-  'save',
-  'crack',
-  'fix',
-  'mod',
+  'pc',
+  'chinese',
+  'mobile',
+  'emulator',
+  'row',
+  'app',
+  'tool',
+  'notice',
   'other'
 ]
 
 export const SUPPORTED_TYPE_MAP: Record<string, string> = {
-  all: '全部类型',
-  manual: '人工翻译补丁',
-  ai: 'AI 翻译补丁',
-  machine_polishing: '机翻润色',
-  machine: '机翻补丁',
-  save: '全 CG 存档',
-  crack: '破解补丁',
-  fix: '修正补丁',
-  mod: '魔改补丁',
+  pc: 'PC游戏',
+  chinese: '汉化资源',
+  mobile: '手机游戏',
+  emulator: '模拟器资源',
+  row: '生肉资源',
+  app: '直装资源',
+  tool: '游戏工具',
+  notice: '官方通知',
   other: '其它'
 }
 
@@ -27,57 +26,50 @@ export const ALL_SUPPORTED_TYPE = ['all', ...SUPPORTED_TYPE]
 
 export const resourceTypes = [
   {
-    value: 'manual',
-    label: '人工翻译补丁',
-    description:
-      '从制作开始到制作结束, 完全由人工进行, 无大范围 AI, 翻译器等参与的翻译补丁, 允许 5% 的 AI 翻译文本阈值'
+    value: 'pc',
+    label: 'PC游戏',
+    description: '在 Windows, macOS 等电脑设备上运行的游戏'
   },
   {
-    value: 'ai',
-    label: 'AI 翻译补丁',
-    description:
-      '由 Sakura, Claude 3.5 Sonnet, GPT 4.0, DeepSeek-V2 等, 现代 AI 大语言模型参与翻译的补丁'
+    value: 'chinese',
+    label: '汉化资源',
+    description: '汉化 Galgame 下载资源, 有简体中文或繁体中文支持'
   },
   {
-    value: 'machine_polishing',
-    label: '机翻润色',
-    description:
-      '我们允许 5% 的机器翻译文本阈值, 任何超过这个阈值的翻译补丁都算作机翻润色补丁'
+    value: 'mobile',
+    label: '手机游戏',
+    description: '可以在手机上运行的 Galgame 游戏'
   },
   {
-    value: 'machine',
-    label: '机翻补丁',
+    value: 'emulator',
+    label: '模拟器资源',
     description:
-      '某些旧时代非 AI 机翻的机器翻译补丁, 例如使用 VNR JBeijing7 等辞书进行离线机翻产生的机翻补丁'
+      '可以在手机模拟器, 例如 KiriKiri, ONS, Tyranor 等模拟器中运行的 Galgame 游戏'
   },
   {
-    value: 'save',
-    label: '全 CG 存档',
-    description:
-      '包括对 Galgame CG, 剧情解锁后生成的存档文件, savedata 数据等, 以供解锁 Galgame CG 和剧情'
+    value: 'row',
+    label: '生肉资源',
+    description: '没有中文翻译, 仅有日语或其它语言的 Galgame'
   },
   {
-    value: 'crack',
-    label: '破解补丁',
-    description: '免 CD 补丁, 免认证补丁, 脱壳补丁等'
+    value: 'app',
+    label: '直装资源',
+    description: '可以直接在手机安装并游玩的 Galgame'
   },
   {
-    value: 'fix',
-    label: '修正补丁',
-    description:
-      '游戏发售完成后, 官方可能会发放游戏修正补丁, 用来修复 BUG, 修正演出效果等'
+    value: 'tool',
+    label: '游戏工具',
+    description: '辅助游玩 Galgame 的工具, 例如 KRKR 模拟器, Magpie 等'
   },
   {
-    value: 'mod',
-    label: '魔改补丁',
-    description:
-      '由 Cheat Engine 或者其它工具, 或者自行修改游戏资源数据, 对官方游戏内容, 玩法等产生变更, 产生的补丁'
+    value: 'notice',
+    label: '官方通知',
+    description: '由 TouchGal 官方发布的站点通知'
   },
   {
     value: 'other',
     label: '其它',
-    description:
-      '除了 Galgame 游戏资源本体, Galgame 游戏 R18 内容补丁之外的, 没有提到的补丁种类'
+    description: '其它内容'
   }
 ]
 

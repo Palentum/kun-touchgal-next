@@ -35,7 +35,8 @@ const STATIC_SITE_KEYWORDS = [
   'Galgame 制作',
   'Galgame 讨论',
   '游戏交流',
-  '其他交流'
+  '其他交流',
+  ...Object.values(SUPPORTED_TYPE_MAP)
 ]
 
 export const kunMoyuMoe: KunSiteConfig = {
