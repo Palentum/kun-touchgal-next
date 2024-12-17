@@ -3,19 +3,8 @@ import SMPTransport from 'nodemailer-smtp-transport'
 import { getRemoteIp } from './getRemoteIp'
 import { getKv, setKv } from '~/lib/redis'
 import { generateRandomCode } from './generateRandomCode'
-
-const getMailContent = (
-  type: 'register' | 'forgot' | 'reset',
-  code: string
-) => {
-  if (type === 'register') {
-    return `您好, 您正在注册 鲲 Galgame 补丁站, 下面是您的注册验证码\n${code}\n验证码十分钟内有效`
-  } else if (type === 'forgot') {
-    return `您好, 您正在重置您 鲲 Galgame 补丁站 的密码, 下面是您的重置密码验证码\n${code}\n验证码十分钟内有效`
-  } else {
-    return `您好, 您正在更改您 鲲 Galgame 补丁站 的邮箱, 下面是您的新邮箱验证码\n${code}\nn验证码十分钟内有效`
-  }
-}
+import { kunMoyuMoe } from '~/config/moyu-moe'
+import { createKunVerificationEmailTemplate } from '~/constants/email-templates'
 
 export const sendVerificationCodeEmail = async (
   headers: Headers,
@@ -55,8 +44,8 @@ export const sendVerificationCodeEmail = async (
     from: `${process.env.KUN_VISUAL_NOVEL_EMAIL_FROM}<${process.env.KUN_VISUAL_NOVEL_EMAIL_ACCOUNT}>`,
     sender: process.env.KUN_VISUAL_NOVEL_EMAIL_ACCOUNT,
     to: email,
-    subject: '鲲 Galgame 补丁 - 验证码',
-    text: getMailContent(type, code)
+    subject: `${kunMoyuMoe.titleShort} - 验证码`,
+    html: createKunVerificationEmailTemplate(type, code)
   }
 
   transporter.sendMail(mailOptions)
