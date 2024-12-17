@@ -7,7 +7,7 @@ import {
   CardFooter,
   CardHeader
 } from '@nextui-org/react'
-import { AlertTriangle, RefreshCw, ArrowLeft, Home } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Home, RefreshCw } from 'lucide-react'
 import { useRouter } from 'next-nprogress-bar'
 
 interface ErrorComponentProps {

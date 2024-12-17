@@ -1,7 +1,7 @@
 {
-  "name": "kun-galgame-patch-next",
+  "name": "touchgal-next",
   "version": "1.0.7",
-  "description": "The most advanced visual novel patch resource website in the world at the moment! Free forever! 鲲 Galgame 补丁是一个开源, 免费, 零门槛, 纯手写, 最先进的 Galgame 补丁资源下载站",
+  "description": "TouchGAL是立足于分享快乐的一站式Galgame文化社区, 为Gal爱好者提供一片净土!",
   "private": true,
   "scripts": {
     "dev:webpack": "next dev --hostname=127.0.0.1 --port=2333",
@@ -14,7 +14,7 @@
     "prisma:push": "pnpx prisma db push",
     "prisma:generate": "pnpx prisma generate",
     "start": "pm2 start ecosystem.config.js",
-    "stop": "pm2 delete kun-visual-novel-patch",
+    "stop": "pm2 delete touchgal-next",
     "deploy:install": "pnpm install && pnpx prisma db push && mkdir uploads && chmod 777 uploads",
     "deploy:run": "git pull && pnpm build && pnpm stop && pnpm start"
   },
@@ -24,31 +24,6 @@
     "url": "https://github.com/KUN1007"
   },
   "license": "AGPL-3.0-only",
-  "homepage": "https://www.moyu.moe",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/KUN1007/kun-galgame-patch-next"
-  },
-  "bugs": {
-    "url": "https://github.com/KUN1007/kun-galgame-patch-next/issues"
-  },
-  "keywords": [
-    "Galgame",
-    "补丁",
-    "资源",
-    "下载",
-    "美少女游戏",
-    "Visual Novel",
-    "鲲 Galgame",
-    "人工翻译补丁",
-    "AI 翻译补丁",
-    "机翻润色",
-    "机翻补丁",
-    "全 CG 存档",
-    "破解补丁",
-    "修正补丁",
-    "魔改补丁"
-  ],
   "browserslist": [
     "> 1%",
     "not ie 11",

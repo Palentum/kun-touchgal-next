@@ -1,27 +1,30 @@
 import {
   Bold,
+  Code,
+  Code2,
   Italic,
-  Strikethrough,
   List,
   ListOrdered,
-  Quote,
   Minus,
-  Code2,
-  Code
+  Quote,
+  Strikethrough
 } from 'lucide-react'
 import {
-  toggleStrongCommand,
-  toggleEmphasisCommand,
-  wrapInBulletListCommand,
-  wrapInOrderedListCommand,
-  wrapInBlockquoteCommand,
-  insertHrCommand,
   createCodeBlockCommand,
-  toggleInlineCodeCommand
+  insertHrCommand,
+  toggleEmphasisCommand,
+  toggleInlineCodeCommand,
+  toggleStrongCommand,
+  wrapInBlockquoteCommand,
+  wrapInBulletListCommand,
+  wrapInOrderedListCommand
 } from '@milkdown/preset-commonmark'
+import type { CmdKey } from '@milkdown/core'
 import { toggleStrikethroughCommand } from '@milkdown/preset-gfm'
 
-export const createButtons = (call: Function) => [
+export const createButtons = (
+  call: <T>(command: CmdKey<T>, payload?: T | undefined) => boolean | undefined
+) => [
   {
     tooltip: '加粗文本',
     icon: Bold,
