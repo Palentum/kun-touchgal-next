@@ -1,58 +1,83 @@
 import { SUPPORTED_TYPE_MAP } from '~/constants/resource'
 import type { KunSiteConfig } from './config'
 
+const STATIC_SITE_NAME = 'TouchGal'
+const STATIC_SITE_MENTION = '@touchgal'
+const STATIC_SITE_TITLE = 'TouchGal - 一站式Galgame文化社区!'
+const STATIC_SITE_IMAGE =
+  'https://img.touchgalstatic.org/uploads/20241217174250074.avif'
+const STATIC_SITE_DESCRIPTION =
+  'TouchGal 是一个一站式 Galgame 文化社区。提供Galgame 论坛、Galgame 下载等服务。承诺永久免费, 高质量。为Galgame 爱好者提供一片净土！'
+const STATIC_SITE_URL = 'https://www.touchgal.io'
+const STATIC_SITE_NAV = 'https://gal.red'
+const STATIC_SITE_LIST = [
+  { name: STATIC_SITE_NAME, url: 'https://www.touchgal.net' },
+  { name: STATIC_SITE_NAME, url: 'https://www.touchgal.moe' },
+  { name: STATIC_SITE_NAME, url: 'https://www.touchgal.one' },
+  { name: STATIC_SITE_NAME, url: 'https://www.touchgal.com' },
+  { name: STATIC_SITE_NAME, url: 'https://www.touchgal.org' },
+  { name: STATIC_SITE_NAME, url: 'https://www.touchgal.me' },
+  { name: STATIC_SITE_NAME, url: 'https://www.touchgal.co' }
+]
+const STATIC_SITE_KEYWORDS = [
+  'TouchGAL',
+  'Gal',
+  'Galgame',
+  '论坛',
+  '网站',
+  'Galgame 下载',
+  'Galgame 资源',
+  'Galgame wiki',
+  'Galgame 评测',
+  'Galgame 数据分析',
+  'Galgame 新作动态',
+  'Galgame 汉化 / 国际化',
+  'Galgame 制作',
+  'Galgame 讨论',
+  '游戏交流',
+  '其他交流'
+]
+
 export const kunMoyuMoe: KunSiteConfig = {
-  title: '鲲 Galgame 补丁 - 开源 Galgame 补丁资源下载站',
-  titleShort: '鲲 Galgame 补丁',
-  template: '%s - 鲲 Galgame 补丁',
-  description:
-    '开源, 免费, 零门槛, 纯手写, 最先进的 Galgame 补丁资源下载站, 提供 Windows, 安卓, KRKR, Tyranor 等各类平台的 Galgame 补丁资源下载。永远免费！',
-  keywords: [
-    'Galgame',
-    '资源',
-    '下载',
-    '补丁',
-    '网站',
-    '免费',
-    '开源',
-    'Next.js',
-    ...Object.values(SUPPORTED_TYPE_MAP)
-  ],
-  canonical: 'https://www.kungal.com',
+  title: STATIC_SITE_TITLE,
+  titleShort: 'TouchGal',
+  template: '%s - TouchGal',
+  description: STATIC_SITE_DESCRIPTION,
+  keywords: STATIC_SITE_KEYWORDS,
+  canonical: STATIC_SITE_URL,
   author: [
-    { name: '鲲', url: 'https://soft.moe' },
-    { name: '鲲 Galgame', url: 'https://nav.kungal.org' },
-    { name: '鲲 Galgame 论坛', url: 'https://www.kungal.com' }
+    { name: STATIC_SITE_TITLE, url: STATIC_SITE_URL },
+    { name: STATIC_SITE_NAME, url: STATIC_SITE_NAV },
+    ...STATIC_SITE_LIST
   ],
   creator: {
-    name: '鲲 Galgame',
-    mention: '@kungalgame',
-    url: 'https://nav.kungal.org'
+    name: STATIC_SITE_NAME,
+    mention: STATIC_SITE_MENTION,
+    url: STATIC_SITE_URL
   },
   publisher: {
-    name: '鲲 Galgame',
-    mention: '@kungalgame',
-    url: 'https://nav.kungal.org'
+    name: STATIC_SITE_NAME,
+    mention: STATIC_SITE_MENTION,
+    url: STATIC_SITE_URL
   },
   domain: {
-    main: 'https://www.moyu.moe',
-    imageBed: 'https://image.moyu.moe',
-    storage: 'https://oss.moyu.moe',
-    kungal: 'https://www.kungal.com'
+    main: STATIC_SITE_URL,
+    imageBed: 'https://img.touchgalstatic.org',
+    storage: STATIC_SITE_URL,
+    kungal: STATIC_SITE_URL
   },
   og: {
-    title: '鲲 Galgame 补丁 - 开源 Galgame 补丁资源下载站',
-    description:
-      '开源, 免费, 零门槛的 Galgame 补丁资源下载站, 提供 Windows, 安卓, KRKR, Tyranor 等各类平台的 Galgame 补丁资源下载。最先进的 Galgame 补丁资源站！永远免费！',
-    image: 'https://moyu.moe/kungalgame.avif',
-    url: 'https://www.moyu.moe'
+    title: STATIC_SITE_TITLE,
+    description: STATIC_SITE_DESCRIPTION,
+    image: STATIC_SITE_IMAGE,
+    url: STATIC_SITE_URL
   },
   images: [
     {
-      url: 'https://moyu.moe/kungalgame.avif',
-      width: 1920,
-      height: 1080,
-      alt: '鲲 Galgame 补丁 - 开源 Galgame 补丁资源下载站'
+      url: STATIC_SITE_IMAGE,
+      width: 1000,
+      height: 800,
+      alt: STATIC_SITE_TITLE
     }
   ]
 }
