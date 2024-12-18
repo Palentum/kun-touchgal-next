@@ -1,6 +1,6 @@
 import { getAllPosts } from '~/lib/mdx/getPosts'
-import { KunAboutHeader } from '~/components/about/Header'
-import { KunAboutCard } from '~/components/about/Card'
+import { KunAboutHeader } from '~/components/doc/Header'
+import { KunAboutCard } from '~/components/doc/Card'
 import { KunMasonryGrid } from '~/components/kun/MasonryGrid'
 import { kunMetadata } from './metadata'
 import type { Metadata } from 'next'

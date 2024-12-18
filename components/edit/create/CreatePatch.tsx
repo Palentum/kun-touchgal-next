@@ -28,7 +28,7 @@ export const CreatePatch = () => {
             <Link
               className="flex"
               underline="hover"
-              href="/about/notice/galgame-tutorial"
+              href="/doc/notice/galgame-tutorial"
             >
               如何在鲲 Galgame 补丁发布 Galgame
             </Link>

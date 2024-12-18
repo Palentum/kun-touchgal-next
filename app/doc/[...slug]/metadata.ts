@@ -30,7 +30,7 @@ export const generateKunMetadataTemplate = (blog: KunBlog): Metadata => {
       images: [frontmatter.banner]
     },
     alternates: {
-      canonical: `${kunMoyuMoe.domain.main}/about/${slug}`
+      canonical: `${kunMoyuMoe.domain.main}/doc/${slug}`
     }
   }
 }

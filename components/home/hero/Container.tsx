@@ -17,7 +17,7 @@ export const HeroContainer = () => {
       <div className="flex gap-4">
         <Button
           as={Link}
-          href="/about"
+          href="/doc"
           color="primary"
           variant="shadow"
           size="lg"

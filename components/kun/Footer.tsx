@@ -1,5 +1,6 @@
 'use client'
 
+import { kunMoyuMoe } from '~/config/moyu-moe'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -11,15 +12,15 @@ export const KunFooter = () => {
           <Link href="/" className="flex items-center space-x-2">
             <Image
               src="/favicon.webp"
-              alt="鲲 Galgame 补丁"
+              alt={kunMoyuMoe.titleShort}
               width={30}
               height={30}
             />
-            <span>© 2024 鲲 Galgame 补丁</span>
+            <span>© 2024 {kunMoyuMoe.titleShort}</span>
           </Link>
 
           <div className="flex space-x-8">
-            <Link href="/about" className="flex items-center">
+            <Link href="/doc" className="flex items-center">
               使用指南
             </Link>
             <Link
@@ -30,10 +31,7 @@ export const KunFooter = () => {
               网站集群
             </Link>
 
-            <Link
-              href="/about/notice/open-source"
-              className="flex items-center"
-            >
+            <Link href="/doc/notice/open-source" className="flex items-center">
               开源声明
             </Link>
 
@@ -56,12 +54,6 @@ export const KunFooter = () => {
               rel="noopener noreferrer"
             >
               Telegram
-            </Link>
-            <Link
-              href="https://www.kungal.com/zh-cn"
-              className="flex items-center"
-            >
-              主站论坛
             </Link>
           </div>
         </div>

@@ -4,10 +4,10 @@ import {
   getPostBySlug
 } from '~/lib/mdx/getPosts'
 import { CustomMDX } from '~/lib/mdx/CustomMDX'
-import { TableOfContents } from '~/components/about/TableOfContents'
-import { KunBottomNavigation } from '~/components/about/Navigation'
+import { TableOfContents } from '~/components/doc/TableOfContents'
+import { KunBottomNavigation } from '~/components/doc/Navigation'
 import { generateKunMetadataTemplate } from './metadata'
-import { BlogHeader } from '~/components/about/BlogHeader'
+import { BlogHeader } from '~/components/doc/BlogHeader'
 import type { Metadata } from 'next'
 
 interface Props {

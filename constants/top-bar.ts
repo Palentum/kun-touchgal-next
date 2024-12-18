@@ -5,20 +5,16 @@ export interface KunNavItem {
 
 export const kunNavItem: KunNavItem[] = [
   {
-    name: '补丁下载',
+    name: 'Galgame 下载',
     href: '/galgame'
   },
   {
-    name: '发布补丁',
-    href: '/edit/create'
-  },
-  {
-    name: '补丁标签',
+    name: 'Galgame 标签',
     href: '/tag'
   },
   {
-    name: '关于我们',
-    href: '/about'
+    name: '帮助文档',
+    href: '/doc'
   }
 ]
 
@@ -33,11 +29,7 @@ export const kunMobileNavItem: KunNavItem[] = [
     href: '/resource'
   },
   {
-    name: '管理系统',
-    href: '/admin'
-  },
-  {
     name: '联系我们',
-    href: '/about/notice/feedback'
+    href: '/doc/notice/feedback'
   }
 ]

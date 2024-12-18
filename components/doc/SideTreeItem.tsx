@@ -20,7 +20,7 @@ export const TreeItem = ({ node, level }: TreeItemProps) => {
     if (node.type === 'directory') {
       setIsOpen(!isOpen)
     } else {
-      router.push(`/about/${node.path}`)
+      router.push(`/doc/${node.path}`)
     }
   }
 

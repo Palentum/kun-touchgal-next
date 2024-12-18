@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { KunSidebar } from '~/components/about/Sidebar'
+import { KunSidebar } from '~/components/doc/Sidebar'
 import { getDirectoryTree } from '~/lib/mdx/directoryTree'
 
 interface LayoutProps {

@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import { aboutDirectoryLabelMap } from '~/constants/about'
+import { docDirectoryLabelMap } from '~/constants/doc'
 import type { KunTreeNode } from './types'
 
 const POSTS_PATH = path.join(process.cwd(), 'posts')
@@ -36,7 +36,7 @@ export const getDirectoryTree = (): KunTreeNode => {
 
       return {
         name: baseName,
-        label: aboutDirectoryLabelMap[baseName],
+        label: docDirectoryLabelMap[baseName],
         path: path.relative(POSTS_PATH, currentPath).replace(/\\/g, '/'),
         children,
         type: 'directory'

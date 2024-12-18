@@ -1,4 +1,4 @@
-export const aboutDirectoryLabelMap: Record<string, string> = {
+export const docDirectoryLabelMap: Record<string, string> = {
   about: '关于我们',
   dev: '开发文档',
   kun: '关于鲲',

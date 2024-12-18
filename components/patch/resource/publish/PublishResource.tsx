@@ -103,14 +103,14 @@ export const PublishResource = ({
               <Link
                 className="flex"
                 underline="hover"
-                href="/about/notice/patch-tutorial"
+                href="/doc/notice/patch-tutorial"
               >
                 鲲 Galgame 补丁资源系统介绍
               </Link>
               <Link
                 className="flex"
                 underline="hover"
-                href="/about/notice/paradigm"
+                href="/doc/notice/paradigm"
               >
                 鲲 Galgame 补丁资源发布规范
               </Link>

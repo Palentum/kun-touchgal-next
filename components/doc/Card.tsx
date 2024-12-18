@@ -19,7 +19,7 @@ export const KunAboutCard = ({ post }: Props) => {
     <Card
       isPressable
       as={Link}
-      href={`/about/${post.slug}`}
+      href={`/doc/${post.slug}`}
       className="w-full transition-transform duration-200 hover:scale-[1.02]"
     >
       <CardBody className="p-4 space-y-3">
