@@ -1,21 +1,20 @@
 import { Card, CardBody } from '@nextui-org/card'
-import { Gamepad2, MessageCircle, Puzzle, Star } from 'lucide-react'
+import { MessageCircle, Puzzle, Star } from 'lucide-react'
 import type { UserInfo } from '~/types/api/user'
 
 export const UserStats = ({ user }: { user: UserInfo }) => {
   const stats = [
+    { label: '评论', value: user._count.patch_comment, icon: MessageCircle },
+    { label: '收藏', value: user._count.patch_favorite, icon: Star },
     {
-      label: '补丁资源',
+      label: '发布补丁',
       value: user._count.patch_resource,
       icon: Puzzle
-    },
-    { label: 'Galgame', value: user._count.patch, icon: Gamepad2 },
-    { label: '评论', value: user._count.patch_comment, icon: MessageCircle },
-    { label: '收藏', value: user._count.patch_favorite, icon: Star }
+    }
   ]
 
   return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
       {stats.map((stat) => (
         <Card key={stat.label} className="w-full">
           <CardBody className="flex flex-row items-center gap-4 p-4">
