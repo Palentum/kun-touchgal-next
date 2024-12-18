@@ -4,7 +4,7 @@ module.exports = {
   apps: [
     {
       name: 'touchgal-next',
-      port: 2333,
+      port: 3000,
       cwd: path.join(__dirname),
       instances: 1,
       autorestart: true,

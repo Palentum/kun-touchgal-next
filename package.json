@@ -4,8 +4,8 @@
   "description": "TouchGAL是立足于分享快乐的一站式Galgame文化社区, 为Gal爱好者提供一片净土!",
   "private": true,
   "scripts": {
-    "dev:webpack": "next dev --hostname=127.0.0.1 --port=2333",
-    "dev": "next dev --turbo --hostname=127.0.0.1 --port=2333",
+    "dev:webpack": "next dev",
+    "dev": "next dev --turbo",
     "build": "next build",
     "postbuild": "node scripts/postbuild.mjs",
     "format": "prettier . --write",
