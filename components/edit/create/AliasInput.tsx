@@ -35,7 +35,7 @@ export const AliasInput = ({ errors }: Props) => {
 
   return (
     <div className="space-y-2">
-      <h2 className="text-xl">五、游戏别名</h2>
+      <h2 className="text-xl">四、游戏别名</h2>
       <div className="flex gap-2">
         <Input
           labelPlacement="outside"
@@ -64,7 +64,7 @@ export const AliasInput = ({ errors }: Props) => {
         写为 <b>第一个</b> 别名。
       </p>
       <p className="text-sm text-default-500">
-        如果您觉得这太麻烦, 只留下游戏的日文原名也完全可以
+        游戏的第一个别名将会作为 SEO 信息加入 Galgame 详情页
       </p>
       <div className="flex flex-wrap gap-2 mt-2">
         {data.alias.map((alias, index) => (

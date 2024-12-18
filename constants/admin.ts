@@ -12,3 +12,7 @@ export const ADMIN_LOG_TYPE_MAP: Record<string, string> = {
   decline: '拒绝',
   update: '更改'
 }
+
+export const CHUNK_SIZE = 5 * 1024 * 1024
+export const UPLOAD_DIR = './upload/video'
+export const MAX_FILE_SIZE = 500 * 1024 * 1024

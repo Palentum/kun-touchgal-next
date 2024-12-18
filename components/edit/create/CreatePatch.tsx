@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Card, CardBody, CardHeader, Input, Link } from '@nextui-org/react'
 import { useCreatePatchStore } from '~/store/editStore'
-import { VNDBInput } from './VNDBInput'
+import { VideoUploader } from './video/VideoUploader'
 import { AliasInput } from './AliasInput'
 import { BannerImage } from './BannerImage'
 import { PublishButton } from './PublishButton'
@@ -22,25 +22,11 @@ export const CreatePatch = () => {
         <CardHeader className="flex gap-3">
           <div className="flex flex-col">
             <h1 className="text-2xl">创建新游戏</h1>
-            <p className="text-default-500">
-              您需要创建一个新游戏, 稍后在游戏页面添加补丁资源
-            </p>
-            <Link
-              className="flex"
-              underline="hover"
-              href="/doc/notice/galgame-tutorial"
-            >
-              如何在鲲 Galgame 补丁发布 Galgame
-            </Link>
           </div>
         </CardHeader>
         <CardBody className="mt-4 space-y-12">
-          <VNDBInput errors={errors.vndbId} />
-
-          <BannerImage errors={errors.banner} />
-
           <div>
-            <h2 className="text-xl">三、游戏名称</h2>
+            <h2 className="text-xl">一、游戏名称</h2>
             <Input
               isRequired
               variant="underlined"
@@ -53,9 +39,16 @@ export const CreatePatch = () => {
             />
           </div>
 
+          <div className="space-y-4">
+            <h2 className="text-xl">二、游戏视频</h2>
+            <VideoUploader />
+          </div>
+
           <PatchIntroduction errors={errors.banner} />
 
           <AliasInput errors={errors.alias} />
+
+          <BannerImage errors={errors.banner} />
 
           <PublishButton setErrors={setErrors} />
         </CardBody>

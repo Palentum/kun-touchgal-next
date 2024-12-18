@@ -8,6 +8,7 @@ import {
   BadgeCheck,
   ChevronLeft,
   ChevronRight,
+  Edit,
   FileClock,
   Gamepad2,
   MessageSquare,
@@ -18,6 +19,11 @@ import {
 import { cn } from '~/utils/cn'
 
 const menuItems = [
+  {
+    name: '发布 Galgame',
+    href: '/edit/create',
+    icon: Edit
+  },
   {
     name: '用户管理',
     href: '/admin/user',
