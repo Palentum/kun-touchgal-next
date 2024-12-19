@@ -3,7 +3,7 @@ import { kunParseFormData } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { updatePatchBannerSchema } from '~/validations/patch'
-import { uploadPatchBanner } from './_upload'
+import { uploadPatchBanner } from '~/app/api/edit/_upload'
 
 export const updatePatchBanner = async (
   image: ArrayBuffer,

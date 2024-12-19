@@ -5,3 +5,19 @@ export interface UploadFileResponse {
   fileHash: string
   fileSize: string
 }
+
+export interface ChunkMetadata {
+  chunkIndex: number
+  totalChunks: number
+  fileId: string
+  fileName: string
+  fileSize: number
+  mimeType: string
+}
+
+export interface UploadResponse {
+  success: boolean
+  fileId?: string
+  error?: string
+  url?: string
+}

@@ -30,9 +30,6 @@ export const createPatch = async (
       const newId = patch.id
 
       const res = await uploadPatchBanner(bannerArrayBuffer, newId)
-      if (!res) {
-        return '上传图片错误, 未知错误'
-      }
       if (typeof res === 'string') {
         return res
       }

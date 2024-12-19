@@ -3,96 +3,122 @@
 import { useState } from 'react'
 import { Button, Progress } from '@nextui-org/react'
 import { Video, CheckCircle2, AlertCircle } from 'lucide-react'
-import { CHUNK_SIZE, MAX_FILE_SIZE } from '~/constants/admin'
+import {
+  CHUNK_SIZE,
+  MAX_FILE_SIZE,
+  ALLOWED_VIDEO_MIME_TYPES,
+  ALLOWED_VIDEO_EXTENSIONS
+} from '~/constants/admin'
+import { kunFetchFormData } from '~/utils/kunFetch'
+import toast from 'react-hot-toast'
 
-export function VideoUploader() {
+const validateFileType = (file: File): boolean => {
+  const fileExtension = file.name
+    .slice(file.name.lastIndexOf('.'))
+    .toLowerCase()
+  return (
+    ALLOWED_VIDEO_MIME_TYPES.includes(file.type) ||
+    ALLOWED_VIDEO_EXTENSIONS.includes(fileExtension)
+  )
+}
+
+const handleFileInput = (file: File | undefined) => {
+  if (!file) {
+    toast.error('未选择视频文件')
+    return
+  }
+
+  if (!validateFileType(file)) {
+    toast.error('视频类型不被支持, 系统被设置为仅支持 MP4 和 WEBM 格式')
+    return
+  }
+
+  const fileSizeMB = file.size / (1024 * 1024 * 1024)
+  if (file.size > MAX_FILE_SIZE) {
+    toast.error(
+      `视频文件大小超出限制: ${fileSizeMB.toFixed(3)} GB, 系统设定最大允许大小为 ${MAX_FILE_SIZE} GB`
+    )
+    return
+  }
+
+  return file
+}
+
+const uploadChunk = async (
+  file: File,
+  chunk: Blob,
+  chunkIndex: number,
+  fileId: string,
+  totalChunks: number,
+  galgameId: number
+) => {
+  const formData = new FormData()
+  formData.append('chunk', chunk)
+  formData.append(
+    'metadata',
+    JSON.stringify({
+      chunkIndex,
+      totalChunks,
+      fileId,
+      fileName: file!.name,
+      fileSize: file!.size,
+      mimeType: file!.type
+    })
+  )
+
+  const response = await kunFetchFormData<KunResponse<{}>>(
+    '/upload/video',
+    formData
+  )
+  if (typeof response === 'string') {
+    toast.error(response)
+  }
+}
+
+interface Props {
+  galgameId: number
+}
+
+export const VideoUploader = ({ galgameId }: Props) => {
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
-  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-
-  const uploadChunk = async (
-    chunk: Blob,
-    chunkIndex: number,
-    fileId: string,
-    totalChunks: number
-  ) => {
-    const formData = new FormData()
-    formData.append('chunk', chunk)
-    formData.append(
-      'metadata',
-      JSON.stringify({
-        chunkIndex,
-        totalChunks,
-        fileId,
-        fileName: file!.name,
-        fileSize: file!.size,
-        mimeType: file!.type
-      })
-    )
-
-    const response = await fetch('/api/upload/chunk', {
-      method: 'POST',
-      body: formData
-    })
-
-    if (!response.ok) {
-      throw new Error('Chunk upload failed')
-    }
-
-    const result = await response.json()
-    return result
-  }
+  const [error, setError] = useState<string>('')
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
-    if (!selectedFile) return
-
-    if (!selectedFile.type.startsWith('video/')) {
-      setError('Please select a valid video file')
+    const res = handleFileInput(selectedFile)
+    if (!res) {
       return
     }
-
-    if (selectedFile.size > MAX_FILE_SIZE) {
-      setError(`File size must not exceed ${MAX_FILE_SIZE / (1024 * 1024)}MB`)
-      return
-    }
-
-    setFile(selectedFile)
-    setError(null)
+    setFile(res)
+    setError('')
   }
 
   const handleUpload = async () => {
-    if (!file) return
-
-    try {
-      setUploading(true)
-      setProgress(0)
-      setError(null)
-
-      const totalChunks = Math.ceil(file.size / CHUNK_SIZE)
-      const fileId = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
-
-      for (let i = 0; i < totalChunks; i++) {
-        const start = i * CHUNK_SIZE
-        const end = Math.min(start + CHUNK_SIZE, file.size)
-        const chunk = file.slice(start, end)
-
-        const result = await uploadChunk(chunk, i, fileId, totalChunks)
-
-        if (result.url) {
-          setUploadedUrl(result.url)
-        }
-
-        setProgress(Math.round(((i + 1) / totalChunks) * 100))
-      }
-    } catch (err) {
-      console.error('Upload error:', err)
-      setError('Failed to upload video. Please try again.')
-    } finally {
-      setUploading(false)
+    if (!file) {
+      toast.error('未选择视频文件')
+      return
     }
+
+    setUploading(true)
+    setProgress(0)
+    setError('')
+
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE)
+    const fileId = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
+
+    for (let i = 0; i < totalChunks; i++) {
+      const start = i * CHUNK_SIZE
+      const end = Math.min(start + CHUNK_SIZE, file.size)
+      const chunk = file.slice(start, end)
+
+      await uploadChunk(file, chunk, i, fileId, totalChunks, galgameId)
+
+      setProgress(Math.round(((i + 1) / totalChunks) * 100))
+    }
+
+    setUploading(false)
   }
 
   return (
@@ -146,7 +172,7 @@ export function VideoUploader() {
         />
       )}
 
-      {uploadedUrl && (
+      {progress === 100 && (
         <div className="flex items-center gap-2 text-success">
           <CheckCircle2 className="w-4 h-4" />
           <span className="text-small">Upload complete!</span>

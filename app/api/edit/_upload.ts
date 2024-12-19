@@ -1,6 +1,6 @@
 import sharp from 'sharp'
 
-import { uploadObject } from '~/app/api/utils/uploadImage'
+import { uploadImageToS3 } from '~/lib/s3'
 import { checkBufferSize } from '~/app/api/utils/checkBufferSize'
 
 export const uploadPatchBanner = async (image: ArrayBuffer, id: number) => {
@@ -23,9 +23,8 @@ export const uploadPatchBanner = async (image: ArrayBuffer, id: number) => {
     return '图片体积过大'
   }
 
-  const bucketName = `kun-galgame-patch/patch/${id}/banner`
-  const res1 = await uploadObject(banner, 'banner.avif', bucketName)
-  const res2 = await uploadObject(miniBanner, 'banner-mini.avif', bucketName)
+  const bucketName = `patch/${id}/banner`
 
-  return !!(res1 && res2)
+  await uploadImageToS3(`${bucketName}/banner.avif`, banner)
+  await uploadImageToS3(`${bucketName}/banner-mini.avif`, miniBanner)
 }

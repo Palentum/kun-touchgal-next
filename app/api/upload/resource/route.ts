@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { setKv } from '~/lib/redis'
-import { calculateFileStreamHash } from '../fs'
+import { calculateFileStreamHash } from '../resourceUtils'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { ALLOWED_EXTENSIONS } from '~/constants/resource'
 import { sanitizeFileName } from '~/utils/sanitizeFileName'
