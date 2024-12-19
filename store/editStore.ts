@@ -3,9 +3,9 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 
 export interface CreatePatchData {
   name: string
+  tempVideoUUID: string
   introduction: string
   vndbId: string
-  vndbFetchStatus: boolean
   alias: string[]
   released: string
 }
@@ -23,9 +23,9 @@ interface StoreState {
 
 const initialState: CreatePatchData = {
   name: '',
+  tempVideoUUID: '',
   introduction: '',
   vndbId: '',
-  vndbFetchStatus: false,
   alias: [],
   released: ''
 }

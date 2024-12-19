@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Card, CardBody, CardHeader, Input, Link } from '@nextui-org/react'
 import { useCreatePatchStore } from '~/store/editStore'
 import { VideoUploader } from './video/VideoUploader'
+import { VNDBInput } from './VNDBInput'
 import { AliasInput } from './AliasInput'
 import { BannerImage } from './BannerImage'
 import { PublishButton } from './PublishButton'
@@ -25,8 +26,10 @@ export const CreatePatch = () => {
           </div>
         </CardHeader>
         <CardBody className="mt-4 space-y-12">
+          <VNDBInput errors={errors.vndbId} />
+
           <div>
-            <h2 className="text-xl">一、游戏名称</h2>
+            <h2 className="text-xl">二、游戏名称</h2>
             <Input
               isRequired
               variant="underlined"
@@ -40,7 +43,7 @@ export const CreatePatch = () => {
           </div>
 
           <div className="space-y-4">
-            <h2 className="text-xl">二、游戏视频</h2>
+            <h2 className="text-xl">三、游戏视频</h2>
             <VideoUploader />
           </div>
 

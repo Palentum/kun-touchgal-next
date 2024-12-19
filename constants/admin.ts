@@ -17,6 +17,6 @@ export const CHUNK_SIZE = 5 * 1024 * 1024
 export const UPLOAD_DIR = 'upload/video'
 export const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024
 
-export const ALLOWED_VIDEO_MIME_TYPES = ['video/mp4', 'video/webm']
+export const ALLOWED_VIDEO_MIME_TYPES = ['video/mp4', 'video/wmv', 'video/webm']
 
-export const ALLOWED_VIDEO_EXTENSIONS = ['.mp4', '.webm']
+export const ALLOWED_VIDEO_EXTENSIONS = ['.mp4', '.wmv', '.webm']

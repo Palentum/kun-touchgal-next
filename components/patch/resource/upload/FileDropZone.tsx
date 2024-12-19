@@ -1,3 +1,5 @@
+'use client'
+
 import toast from 'react-hot-toast'
 import { Upload } from 'lucide-react'
 import { Button, Input } from '@nextui-org/react'
@@ -72,7 +74,7 @@ export const FileDropZone = ({ onFileUpload }: Props) => {
     <div
       className={cn(
         'border-2 border-dashed rounded-lg p-8 transition-colors',
-        isDragging ? 'border-primary bg-primary/10' : 'border-gray-300'
+        isDragging ? 'border-primary bg-primary/10' : 'border-default-300'
       )}
       onDrop={handleDrop}
       onDragOver={(e) => {
