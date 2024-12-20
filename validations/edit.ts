@@ -2,7 +2,6 @@ import { z } from 'zod'
 
 export const patchCreateSchema = z.object({
   banner: z.any(),
-  tempVideoId: z.string().optional(),
   name: z.string().trim().min(1, { message: '游戏名称是必填项' }),
   vndbId: z.string().max(10).optional(),
   introduction: z

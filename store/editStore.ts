@@ -3,8 +3,6 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 
 export interface CreatePatchData {
   name: string
-  tempVideoId: string
-  tempVideoName: string
   introduction: string
   vndbId: string
   alias: string[]
@@ -24,8 +22,6 @@ interface StoreState {
 
 const initialState: CreatePatchData = {
   name: '',
-  tempVideoId: '',
-  tempVideoName: '',
   introduction: '',
   vndbId: '',
   alias: [],

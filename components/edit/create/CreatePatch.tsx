@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Card, CardBody, CardHeader, Input, Link } from '@nextui-org/react'
 import { useCreatePatchStore } from '~/store/editStore'
-import { VideoUploader } from './video/VideoUploader'
 import { VNDBInput } from './VNDBInput'
 import { AliasInput } from './AliasInput'
 import { BannerImage } from './BannerImage'
@@ -43,11 +42,6 @@ export const CreatePatch = () => {
           </div>
 
           <BannerImage errors={errors.banner} />
-
-          <div className="space-y-4">
-            <h2 className="text-xl">游戏视频 (可选)</h2>
-            <VideoUploader />
-          </div>
 
           <PatchIntroduction errors={errors.banner} />
 

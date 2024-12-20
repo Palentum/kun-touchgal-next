@@ -53,7 +53,6 @@ export const PublishButton = ({ setErrors }: Props) => {
 
     const formDataToSend = new FormData()
     formDataToSend.append('banner', localeBannerBlob!)
-    formDataToSend.append('tempVideoId', data.tempVideoId)
     formDataToSend.append('name', data.name)
     formDataToSend.append('vndbId', data.vndbId)
     formDataToSend.append('introduction', data.introduction)
