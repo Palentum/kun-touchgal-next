@@ -151,11 +151,14 @@ model user_patch_resource_like_relation {
 
 model patch {
   id           Int      @id @default(autoincrement())
+  uniqueId     String   @unique @db.VarChar(8)
   name         String   @db.VarChar(1007)
   vndb_id      String?  @unique @db.VarChar(107)
   banner       String   @default("") @db.VarChar(1007)
+  video        String   @default("") @db.VarChar(1007)
   introduction String   @default("") @db.VarChar(100007)
   released     String   @default("") @db.VarChar(107)
+  age_limit    String   @default("") @db.VarChar(107)
   status       Int      @default(0)
   download     Int      @default(0)
   view         Int      @default(0)

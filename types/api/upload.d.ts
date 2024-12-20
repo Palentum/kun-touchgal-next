@@ -1,23 +1,17 @@
 import { SUPPORTED_RESOURCE_LINK } from '~/constants/resource'
 
-export interface UploadFileResponse {
+export interface KunUploadFileResponse {
   filetype: (typeof SUPPORTED_RESOURCE_LINK)[number]
   fileHash: string
   fileSize: string
 }
 
-export interface ChunkMetadata {
+export interface KunVideoChunkMetadata {
   chunkIndex: number
   totalChunks: number
   fileId: string
   fileName: string
   fileSize: number
   mimeType: string
-}
-
-export interface UploadResponse {
-  success: boolean
-  fileId?: string
-  error?: string
-  url?: string
+  filepath: string
 }

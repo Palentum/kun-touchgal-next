@@ -35,7 +35,7 @@ export const AliasInput = ({ errors }: Props) => {
 
   return (
     <div className="space-y-2">
-      <h2 className="text-xl">五、游戏别名</h2>
+      <h2 className="text-xl">游戏别名 (可选)</h2>
       <div className="flex gap-2">
         <Input
           labelPlacement="outside"

@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { Button, Progress } from '@nextui-org/react'
+import { Button, Chip, Progress } from '@nextui-org/react'
 import { CheckCircle2, AlertCircle } from 'lucide-react'
 import { CHUNK_SIZE } from '~/constants/admin'
 import { kunFetchFormData } from '~/utils/kunFetch'
 import toast from 'react-hot-toast'
 import { VideoDropZone } from './VideoDropZone'
+import { useCreatePatchStore } from '~/store/editStore'
 
 const uploadChunk = async (
   file: File,
@@ -43,6 +44,7 @@ export const VideoUploader = () => {
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string>('')
+  const { data, setData } = useCreatePatchStore()
 
   const handleUpload = async () => {
     if (!file) {
@@ -67,11 +69,29 @@ export const VideoUploader = () => {
       setProgress(Math.round(((i + 1) / totalChunks) * 100))
     }
 
+    setData({ ...data, tempVideoId: fileId, tempVideoName: file.name })
     setUploading(false)
   }
 
   return (
     <div className="space-y-2">
+      {data.tempVideoId && !file && (
+        <>
+          <Chip
+            color="secondary"
+            startContent={<AlertCircle />}
+            variant="flat"
+            className="h-full py-1 break-all whitespace-normal"
+          >
+            您本地服务器有一个已经上传的视频, 如果您不继续上传,
+            将使用此视频作为本游戏的视频
+          </Chip>
+          <p className="text-small text-default-500">
+            本地视频文件名: {data.tempVideoName}
+          </p>
+        </>
+      )}
+
       <VideoDropZone
         onFileSelected={(file) => setFile(file)}
         uploading={uploading}
@@ -103,7 +123,7 @@ export const VideoUploader = () => {
       {progress === 100 && (
         <div className="flex items-center gap-2 text-success">
           <CheckCircle2 className="size-5" />
-          <span>上传成功!</span>
+          <span>上传成功! 文件将会被暂存服务器 24h</span>
         </div>
       )}
     </div>

@@ -17,11 +17,11 @@ export const uploadVideoToS3 = async (
   filePath: string,
   fileName: string,
   mimeType: string,
-  galgameId: string
+  uniqueId: string
 ) => {
   const fileStream = createReadStream(filePath)
 
-  const bucketName = `touchgal/galgame/${galgameId}/video/${fileName}`
+  const bucketName = `touchgal/galgame/${uniqueId}/video/${fileName}`
 
   const uploadCommand = new PutObjectCommand({
     Bucket: process.env.KUN_VISUAL_NOVEL_S3_STORAGE_BUCKET_NAME!,

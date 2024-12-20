@@ -63,7 +63,7 @@ export const VNDBInput = ({ errors }: Props) => {
 
   return (
     <div className="flex flex-col w-full space-y-2">
-      <h2 className="text-xl">一、VNDB ID</h2>
+      <h2 className="text-xl">VNDB ID (可选)</h2>
       <Input
         variant="underlined"
         labelPlacement="outside"

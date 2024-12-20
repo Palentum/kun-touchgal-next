@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { useState } from 'react'
 import { FileDropZone } from './FileDropZone'
 import { FileUploadCard } from './FileUploadCard'
-import type { UploadFileResponse } from '~/types/api/upload'
+import type { KunUploadFileResponse } from '~/types/api/upload'
 import type { FileStatus } from '../share'
 
 interface Props {
@@ -39,7 +39,7 @@ export const FileUploadContainer = ({ onSuccess, handleRemoveFile }: Props) => {
     const formData = new FormData()
     formData.append('file', file)
 
-    const res = await axios.post<UploadFileResponse | string>(
+    const res = await axios.post<KunUploadFileResponse | string>(
       '/api/upload/resource',
       formData,
       {

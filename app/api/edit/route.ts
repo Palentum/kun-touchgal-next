@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { kunParseFormData, kunParsePutBody } from '~/app/api/utils/parseQuery'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { patchCreateSchema, patchUpdateSchema } from '~/validations/edit'
-import { createPatch } from './create'
-import { updatePatch } from './update'
+import { createGalgame } from './create'
+import { updateGalgame } from './update'
 import { VNDBRegex } from '~/utils/validate'
 
 const checkAliasValid = (aliasString: string) => {
@@ -44,7 +44,7 @@ export const POST = async (req: NextRequest) => {
   }
   const bannerArrayBuffer = await new Response(banner)?.arrayBuffer()
 
-  const response = await createPatch(
+  const response = await createGalgame(
     { alias: res, banner: bannerArrayBuffer, ...rest },
     payload.uid
   )
@@ -61,6 +61,6 @@ export const PUT = async (req: NextRequest) => {
     return NextResponse.json('用户未登录')
   }
 
-  const response = await updatePatch(input, payload.uid)
+  const response = await updateGalgame(input, payload.uid)
   return NextResponse.json(response)
 }

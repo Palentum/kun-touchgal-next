@@ -35,7 +35,7 @@ export const BannerImage = ({ errors }: Props) => {
 
   return (
     <div className="space-y-2">
-      <h2 className="text-xl">六、封面图片</h2>
+      <h2 className="text-xl">封面图片 (必须)</h2>
       {errors && <p className="text-xs text-danger-500">{errors}</p>}
 
       <KunImageCropper

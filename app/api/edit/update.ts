@@ -5,7 +5,7 @@ import { patchUpdateSchema } from '~/validations/edit'
 import { createDedupMessage } from '../utils/message'
 import type { PatchUpdate } from '~/types/api/patch'
 
-export const updatePatch = async (
+export const updateGalgame = async (
   input: z.infer<typeof patchUpdateSchema>,
   currentUserUid: number
 ) => {

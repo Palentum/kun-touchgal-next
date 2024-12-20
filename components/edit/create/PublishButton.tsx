@@ -4,13 +4,11 @@ import { useState } from 'react'
 import { Button } from '@nextui-org/react'
 import localforage from 'localforage'
 import { useCreatePatchStore } from '~/store/editStore'
-import { useUserStore } from '~/store/providers/user'
 import toast from 'react-hot-toast'
 import { kunFetchFormData } from '~/utils/kunFetch'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import { patchCreateSchema } from '~/validations/edit'
 import { useRouter } from 'next-nprogress-bar'
-import { VNDBRegex } from '~/utils/validate'
 import type { Dispatch, SetStateAction } from 'react'
 import type { CreatePatchRequestData } from '~/store/editStore'
 
@@ -23,7 +21,6 @@ interface Props {
 export const PublishButton = ({ setErrors }: Props) => {
   const router = useRouter()
   const { data, resetData } = useCreatePatchStore()
-  const user = useUserStore((state) => state.user)
 
   const [creating, setCreating] = useState(false)
   const handleSubmit = async () => {
@@ -31,10 +28,6 @@ export const PublishButton = ({ setErrors }: Props) => {
       await localforage.getItem('kun-patch-banner')
     if (!localeBannerBlob) {
       toast.error('未检测到预览图片')
-      return
-    }
-    if (user.role < 2 && !VNDBRegex.test(data.vndbId)) {
-      toast.error('为防止恶意发布, 仅限创作者可以不填写 VNDB ID 发布游戏')
       return
     }
 
@@ -60,6 +53,7 @@ export const PublishButton = ({ setErrors }: Props) => {
 
     const formDataToSend = new FormData()
     formDataToSend.append('banner', localeBannerBlob!)
+    formDataToSend.append('tempVideoId', data.tempVideoId)
     formDataToSend.append('name', data.name)
     formDataToSend.append('vndbId', data.vndbId)
     formDataToSend.append('introduction', data.introduction)
@@ -68,7 +62,7 @@ export const PublishButton = ({ setErrors }: Props) => {
 
     setCreating(true)
     toast(
-      '正在发布中...由于要上传图片, 可能需要 十秒 左右的时间, 这取决于您的网络环境'
+      '正在发布中...由于要上传视频, 这可能需要 20s 左右的时间, 这取决于您的网络环境'
     )
 
     const res = await kunFetchFormData<KunResponse<number>>(

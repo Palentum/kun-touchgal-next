@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 export const patchCreateSchema = z.object({
   banner: z.any(),
+  tempVideoId: z.string().optional(),
   name: z.string().trim().min(1, { message: '游戏名称是必填项' }),
   vndbId: z.string().max(10).optional(),
   introduction: z
@@ -12,9 +13,7 @@ export const patchCreateSchema = z.object({
   alias: z
     .string()
     .max(2333, { message: '别名字符串总长度不可超过 3000 个字符' }),
-  released: z
-    .string({ message: '发售日期为空, 请点击 检查重复 以从 VNDB 获取数据' })
-    .optional()
+  released: z.string().optional()
 })
 
 export const patchUpdateSchema = z.object({

@@ -29,7 +29,7 @@ export const CreatePatch = () => {
           <VNDBInput errors={errors.vndbId} />
 
           <div>
-            <h2 className="text-xl">二、游戏名称</h2>
+            <h2 className="text-xl">游戏名称 (必须)</h2>
             <Input
               isRequired
               variant="underlined"
@@ -42,16 +42,16 @@ export const CreatePatch = () => {
             />
           </div>
 
+          <BannerImage errors={errors.banner} />
+
           <div className="space-y-4">
-            <h2 className="text-xl">三、游戏视频</h2>
+            <h2 className="text-xl">游戏视频 (可选)</h2>
             <VideoUploader />
           </div>
 
           <PatchIntroduction errors={errors.banner} />
 
           <AliasInput errors={errors.alias} />
-
-          <BannerImage errors={errors.banner} />
 
           <PublishButton setErrors={setErrors} />
         </CardBody>
