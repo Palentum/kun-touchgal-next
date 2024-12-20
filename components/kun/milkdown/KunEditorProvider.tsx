@@ -9,7 +9,7 @@ interface Props {
   storeName: 'patchCreate' | 'patchRewrite'
 }
 
-export const Editor = ({ storeName }: Props) => {
+export const KunEditorProvider = ({ storeName }: Props) => {
   const getCreatePatchData = useCreatePatchStore((state) => state.getData)
   const setCreatePatchData = useCreatePatchStore((state) => state.setData)
   const getRewritePatchData = useRewritePatchStore((state) => state.getData)

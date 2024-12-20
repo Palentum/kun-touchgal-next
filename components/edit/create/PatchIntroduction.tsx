@@ -1,6 +1,6 @@
 'use client'
 
-import { Editor } from '~/components/kun/milkdown/PatchEditor'
+import { KunEditorProvider } from '~/components/kun/milkdown/KunEditorProvider'
 import { useCreatePatchStore } from '~/store/editStore'
 import { markdownToText } from '~/utils/markdownToText'
 
@@ -17,7 +17,7 @@ export const PatchIntroduction = ({ errors }: Props) => {
         游戏介绍涉及页面的 SEO, 建议填写 100 字以上
       </p>
       {errors && <p className="text-xs text-danger-500">{errors}</p>}
-      <Editor storeName="patchCreate" />
+      <KunEditorProvider storeName="patchCreate" />
       <p className="text-small text-default-500">
         字数: {markdownToText(data.introduction).length}
       </p>

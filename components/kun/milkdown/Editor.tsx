@@ -1,4 +1,9 @@
-import { defaultValueCtx, Editor, rootCtx } from '@milkdown/core'
+import {
+  defaultValueCtx,
+  Editor,
+  rootCtx,
+  editorViewOptionsCtx
+} from '@milkdown/core'
 import { Milkdown, useEditor } from '@milkdown/react'
 import { commonmark } from '@milkdown/preset-commonmark'
 import { gfm } from '@milkdown/preset-gfm'
@@ -9,10 +14,19 @@ import { clipboard } from '@milkdown/plugin-clipboard'
 import { indent } from '@milkdown/plugin-indent'
 import { trailing } from '@milkdown/plugin-trailing'
 import { upload, uploadConfig } from '@milkdown/plugin-upload'
-import { kunUploader, kunUploadWidgetFactory } from './plugins/uploader'
+import {
+  kunUploader,
+  kunUploadWidgetFactory
+} from './plugins/components/uploader'
 import { automd } from '@milkdown/plugin-automd'
 
 import { KunMilkdownPluginsMenu } from './plugins/Menu'
+import {
+  remarkDirective,
+  videoNode
+} from './plugins/components/video/videoNode'
+import { videoInputRule } from './plugins/components/video/videoInputRule'
+import { KunMilkdownVideo } from './plugins/components/video/KunVideo'
 import { KunLoading } from '../Loading'
 import '~/styles/editor.scss'
 
@@ -53,6 +67,27 @@ export const KunEditor = ({ valueMarkdown, saveMarkdown }: Props) => {
         listener.markdownUpdated((_, markdown) => {
           saveMarkdown(markdown)
         })
+
+        // listener.mounted((ctx) => {
+        //   const view = ctx.get(editorViewOptionsCtx)
+        //   const dom = view.dom as HTMLElement
+
+        //   // Add custom renderer for video nodes
+        //   const videos = dom.querySelectorAll('div[data-type="video"]')
+        //   videos.forEach((video) => {
+        //     const url = video.getAttribute('data-url')
+        //     const title = video.getAttribute('data-title')
+        //     if (url) {
+        //       const wrapper = document.createElement('div')
+        //       const videoComponent = (
+        //         <VideoComponent url={url} title={title || ''} />
+        //       )
+        //       // Use React to render the component
+        //       ReactDOM.render(videoComponent, wrapper)
+        //       video.replaceWith(wrapper)
+        //     }
+        //   })
+        // })
 
         ctx.update(uploadConfig.key, (prev) => ({
           ...prev,
@@ -95,6 +130,7 @@ export const KunEditor = ({ valueMarkdown, saveMarkdown }: Props) => {
       .use(trailing)
       .use(upload)
       .use(automd)
+      .use([...remarkDirective, videoNode, videoInputRule])
   )
 
   return (
