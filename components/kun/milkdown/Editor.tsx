@@ -23,9 +23,9 @@ import { automd } from '@milkdown/plugin-automd'
 import { KunMilkdownPluginsMenu } from './plugins/Menu'
 import {
   remarkDirective,
-  videoNode
-} from './plugins/components/video/videoNode'
-import { videoInputRule } from './plugins/components/video/videoInputRule'
+  videoNode,
+  videoInputRule
+} from './plugins/components/video/videoPlugin'
 import { KunMilkdownVideo } from './plugins/components/video/KunVideo'
 import { KunLoading } from '../Loading'
 import '~/styles/editor.scss'
