@@ -1,28 +1,67 @@
-import { Card, CardBody, CardHeader } from '@nextui-org/react'
+'use client'
 
-interface Props {
-  url: string
-  title?: string
+import React from 'react'
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input,
+  useDisclosure
+} from '@nextui-org/react'
+import { Video } from 'lucide-react'
+
+interface VideoInsertButtonProps {
+  onInsert: (url: string) => void
 }
 
-export const KunMilkdownVideo = ({ url, title }: Props) => {
+export function VideoInsertButton({ onInsert }: VideoInsertButtonProps) {
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [videoUrl, setVideoUrl] = React.useState('')
+
+  const handleInsert = () => {
+    if (videoUrl) {
+      onInsert(videoUrl)
+      setVideoUrl('')
+      onClose()
+    }
+  }
+
   return (
-    <Card className="w-full my-4">
-      {title && (
-        <CardHeader className="px-4 py-2 text-small">
-          <h3 className="text-default-600">{title}</h3>
-        </CardHeader>
-      )}
-      <CardBody className="p-0 overflow-hidden">
-        <div className="relative w-full pt-[56.25%]">
-          <iframe
-            src={url}
-            className="absolute top-0 left-0 w-full h-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
-      </CardBody>
-    </Card>
+    <>
+      <Button
+        variant="flat"
+        color="primary"
+        startContent={<Video size={20} />}
+        onPress={onOpen}
+      >
+        Insert Video
+      </Button>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalContent>
+          <ModalHeader>Insert Video</ModalHeader>
+          <ModalBody>
+            <Input
+              label="Video URL"
+              placeholder="Enter video URL"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              variant="bordered"
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="flat" onPress={onClose}>
+              Cancel
+            </Button>
+            <Button color="primary" onPress={handleInsert}>
+              Insert
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   )
 }

@@ -1,3 +1,5 @@
+'use client'
+
 import {
   defaultValueCtx,
   Editor,
@@ -26,7 +28,6 @@ import {
   videoNode,
   videoInputRule
 } from './plugins/components/video/videoPlugin'
-import { KunMilkdownVideo } from './plugins/components/video/KunVideo'
 import { KunLoading } from '../Loading'
 import '~/styles/editor.scss'
 
