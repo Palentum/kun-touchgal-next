@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
   Tooltip
 } from '@nextui-org/react'
-import { ImagePlus, Link, Video } from 'lucide-react'
+import { ImagePlus, Link } from 'lucide-react'
 import { callCommand } from '@milkdown/utils'
 import {
   insertImageCommand,
@@ -18,6 +18,7 @@ import { resizeImage } from '~/utils/resizeImage'
 import { kunFetchFormData } from '~/utils/kunFetch'
 import { MenuButton } from './MenuButton'
 import { createButtons } from './_buttonList'
+import { VideoInsertButton } from './components/video/VideoInsertButton'
 import type { CmdKey } from '@milkdown/core'
 import type { UseEditorReturn } from '@milkdown/react'
 
@@ -134,47 +135,7 @@ export const KunMilkdownPluginsMenu = ({
         onChange={handleFileChange}
       />
 
-      <Popover placement="bottom" offset={10}>
-        <PopoverTrigger>
-          <Button isIconOnly variant="light">
-            <Tooltip content="插入视频" offset={16}>
-              <Video className="size-6" />
-            </Tooltip>
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[240px]">
-          {(titleProps) => (
-            <div className="w-full px-1 py-2">
-              <p
-                className="font-bold text-small text-foreground"
-                {...titleProps}
-              >
-                输入视频 URL 以插入
-              </p>
-              <div className="flex flex-col w-full gap-2 mt-2">
-                <Input
-                  value={link}
-                  onChange={(e) => setLink(e.target.value)}
-                  label="链接 URL"
-                  size="sm"
-                  variant="bordered"
-                />
-              </div>
-              <Button
-                variant="flat"
-                color="primary"
-                onClick={() => {
-                  call(toggleLinkCommand.key, { href: link })
-                  setLink('')
-                }}
-                className="w-full mt-2"
-              >
-                确定插入
-              </Button>
-            </div>
-          )}
-        </PopoverContent>
-      </Popover>
+      <VideoInsertButton call={call} />
     </div>
   )
 }

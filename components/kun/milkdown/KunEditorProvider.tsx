@@ -1,3 +1,4 @@
+import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/react'
 import { MilkdownProvider } from '@milkdown/react'
 import { useCreatePatchStore } from '~/store/editStore'
 import { useRewritePatchStore } from '~/store/rewriteStore'
@@ -41,7 +42,9 @@ export const KunEditorProvider = ({ storeName }: Props) => {
 
   return (
     <MilkdownProvider>
-      <KunEditor valueMarkdown={getMarkdown()} saveMarkdown={saveMarkdown} />
+      <ProsemirrorAdapterProvider>
+        <KunEditor valueMarkdown={getMarkdown()} saveMarkdown={saveMarkdown} />
+      </ProsemirrorAdapterProvider>
     </MilkdownProvider>
   )
 }
