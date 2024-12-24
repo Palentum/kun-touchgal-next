@@ -2,12 +2,10 @@
 
 import { $inputRule, $node, $remark, $command } from '@milkdown/utils'
 import { Node } from '@milkdown/prose/model'
-import { wrapIn } from '@milkdown/kit/prose/commands'
 import { InputRule } from '@milkdown/prose/inputrules'
 import { createRoot } from 'react-dom/client'
 import directive from 'remark-directive'
 import dynamic from 'next/dynamic'
-import type { MilkdownPlugin } from '@milkdown/ctx'
 
 const KunPlyr = dynamic(() => import('./Plyr').then((mod) => mod.KunPlyr), {
   ssr: false
@@ -40,7 +38,7 @@ export const videoNode = $node('video', () => ({
     container.setAttribute('data-video-player', '')
     container.setAttribute('data-src', node.attrs.src)
     container.setAttribute('contenteditable', 'false')
-    container.className = 'w-full my-4 rounded-lg shadow-lg'
+    container.className = 'w-full my-4 overflow-hidden shadow-lg rounded-xl'
 
     const root = createRoot(container)
     root.render(<KunPlyr src={node.attrs.src} />)
@@ -72,7 +70,6 @@ export const insertKunVideoCommand = $command(
   'InsertKunVideo',
   (ctx) =>
     (payload: InsertKunVideoCommandPayload = { src: '' }) =>
-    // wrapIn(videoNode.type(ctx), payload)
     (state, dispatch) => {
       if (!dispatch) {
         return true

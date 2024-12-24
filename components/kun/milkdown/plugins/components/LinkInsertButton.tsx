@@ -9,20 +9,20 @@ import {
   Tooltip,
   PopoverContent
 } from '@nextui-org/react'
-import { Video } from 'lucide-react'
-import { insertKunVideoCommand } from './videoPlugin'
+import { Link } from 'lucide-react'
+import { toggleLinkCommand } from '@milkdown/preset-commonmark'
 import type { CmdKey } from '@milkdown/core'
 
 interface VideoInsertButtonProps {
   call: <T>(command: CmdKey<T>, payload?: T | undefined) => boolean | undefined
 }
 
-export const VideoInsertButton = ({ call }: VideoInsertButtonProps) => {
+export const LinkInsertButton = ({ call }: VideoInsertButtonProps) => {
   const [link, setLink] = useState('')
   const [isOpen, setIsOpen] = useState(false)
 
-  const handleVideoInsert = () => {
-    call(insertKunVideoCommand.key, { src: link })
+  const handleLinkInsert = () => {
+    call(toggleLinkCommand.key, { href: link })
     setLink('')
     setIsOpen(false)
   }
@@ -36,8 +36,8 @@ export const VideoInsertButton = ({ call }: VideoInsertButtonProps) => {
     >
       <PopoverTrigger>
         <Button isIconOnly variant="light">
-          <Tooltip content="插入视频" offset={16}>
-            <Video className="size-6" />
+          <Tooltip content="插入链接" offset={16}>
+            <Link className="size-6" />
           </Tooltip>
         </Button>
       </PopoverTrigger>
@@ -45,7 +45,7 @@ export const VideoInsertButton = ({ call }: VideoInsertButtonProps) => {
         {(titleProps) => (
           <div className="w-full px-1 py-2">
             <p className="font-bold text-small text-foreground" {...titleProps}>
-              输入视频 URL 以插入
+              选中文本以插入链接
             </p>
             <div className="flex flex-col w-full gap-2 mt-2">
               <Input
@@ -59,7 +59,7 @@ export const VideoInsertButton = ({ call }: VideoInsertButtonProps) => {
             <Button
               variant="flat"
               color="primary"
-              onClick={handleVideoInsert}
+              onClick={handleLinkInsert}
               className="w-full mt-2"
             >
               确定插入
