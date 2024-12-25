@@ -20,7 +20,7 @@ export const uploadIntroductionImage = async (
     return '图片体积过大'
   }
 
-  const s3Key = `user_${uid}/image/${name}.avif`
+  const s3Key = `user/image/user_${uid}/image/${name}.avif`
 
   await uploadImageToS3(s3Key, minImage)
 }
