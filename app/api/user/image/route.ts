@@ -28,7 +28,7 @@ export const uploadImage = async (uid: number, image: ArrayBuffer) => {
     data: { daily_image_count: { increment: 1 } }
   })
 
-  const imageLink = `${process.env.KUN_VISUAL_NOVEL_IMAGE_BED_URL}/user_${uid}/image/${newFileName}.avif`
+  const imageLink = `${process.env.KUN_VISUAL_NOVEL_IMAGE_BED_URL}/user/image/${uid}/${newFileName}.avif`
   return { imageLink }
 }
 
