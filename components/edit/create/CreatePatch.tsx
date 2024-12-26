@@ -8,6 +8,7 @@ import { AliasInput } from './AliasInput'
 import { BannerImage } from './BannerImage'
 import { PublishButton } from './PublishButton'
 import { PatchIntroduction } from './PatchIntroduction'
+import { AgeLimit } from './AgeLimit'
 import type { CreatePatchRequestData } from '~/store/editStore'
 
 export const CreatePatch = () => {
@@ -46,6 +47,8 @@ export const CreatePatch = () => {
           <PatchIntroduction errors={errors.banner} />
 
           <AliasInput errors={errors.alias} />
+
+          <AgeLimit errors={errors.ageLimit} />
 
           <PublishButton setErrors={setErrors} />
         </CardBody>
