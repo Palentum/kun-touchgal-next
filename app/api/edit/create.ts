@@ -10,7 +10,8 @@ export const createGalgame = async (
   },
   uid: number
 ) => {
-  const { name, vndbId, alias, banner, introduction, released } = input
+  const { name, vndbId, alias, banner, introduction, released, contentLimit } =
+    input
 
   const bannerArrayBuffer = banner as ArrayBuffer
   const galgameUniqueId = crypto.randomBytes(4).toString('hex')
@@ -26,7 +27,8 @@ export const createGalgame = async (
           introduction,
           user_id: uid,
           banner: '',
-          released
+          released,
+          content_limit: contentLimit
         }
       })
 

@@ -34,7 +34,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'image.moyu.moe',
+        hostname: 'touchgal-image.moyu.moe',
         port: '',
         pathname: '/**'
       }

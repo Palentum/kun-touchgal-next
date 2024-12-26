@@ -7,7 +7,7 @@ export interface CreatePatchData {
   vndbId: string
   alias: string[]
   released: string
-  ageLimit: string
+  contentLimit: string
 }
 
 export interface CreatePatchRequestData extends CreatePatchData {
@@ -27,7 +27,7 @@ const initialState: CreatePatchData = {
   vndbId: '',
   alias: [],
   released: '',
-  ageLimit: 'safe'
+  contentLimit: 'sfw'
 }
 
 export const useCreatePatchStore = create<StoreState>()(

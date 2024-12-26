@@ -8,26 +8,26 @@ interface Props {
   errors: string | undefined
 }
 
-export const AgeLimit = ({ errors }: Props) => {
+export const ContentLimit = ({ errors }: Props) => {
   const { data, setData } = useCreatePatchStore()
 
   return (
     <div className="space-y-2">
-      <h2 className="text-xl">游戏分级</h2>
+      <h2 className="text-xl">文章内容分级</h2>
       <Switch
         defaultSelected
         color="danger"
         size="lg"
-        isSelected={data.ageLimit === 'nsfw'}
+        isSelected={data.contentLimit === 'nsfw'}
         onValueChange={(value) => {
           if (value) {
-            setData({ ...data, ageLimit: 'nsfw' })
+            setData({ ...data, contentLimit: 'nsfw' })
           } else {
-            setData({ ...data, ageLimit: 'safe' })
+            setData({ ...data, contentLimit: 'sfw' })
           }
         }}
       >
-        {GALGAME_AGE_LIMIT_MAP[data.ageLimit]}
+        {GALGAME_AGE_LIMIT_MAP[data.contentLimit]}
       </Switch>
 
       {errors && <p className="text-xs text-danger-500">{errors}</p>}

@@ -55,6 +55,7 @@ export const getPatchById = async (
     platform: patch.platform,
     alias: patch.alias,
     isFavorite: patch.favorite_by.length > 0,
+    contentLimit: patch.content_limit,
     user: {
       id: patch.user.id,
       name: patch.user.name,

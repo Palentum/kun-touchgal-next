@@ -58,11 +58,10 @@ export const PublishButton = ({ setErrors }: Props) => {
     formDataToSend.append('introduction', data.introduction)
     formDataToSend.append('alias', JSON.stringify(data.alias))
     formDataToSend.append('released', data.released)
+    formDataToSend.append('contentLimit', data.contentLimit)
 
     setCreating(true)
-    toast(
-      '正在发布中...由于要上传视频, 这可能需要 20s 左右的时间, 这取决于您的网络环境'
-    )
+    toast('正在发布中 ... 这可能需要 10s 左右的时间, 这取决于您的网络环境')
 
     const res = await kunFetchFormData<KunResponse<number>>(
       '/edit',

@@ -14,6 +14,7 @@ export interface Patch {
   language: string[]
   platform: string[]
   isFavorite: boolean
+  contentLimit: string
   user: {
     id: number
     name: string

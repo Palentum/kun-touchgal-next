@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react'
 import { Card, CardBody } from '@nextui-org/card'
+import { Chip } from '@nextui-org/chip'
+import { Tooltip } from '@nextui-org/tooltip'
 import { Divider } from '@nextui-org/divider'
 import { FavoriteButton } from './button/FavoriteButton'
 import { ShareButton } from './button/ShareButton'
@@ -16,6 +18,10 @@ import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 import { Tags } from './Tags'
 import Image from 'next/image'
 import { KunUser } from '~/components/kun/floating-card/KunUser'
+import {
+  GALGAME_AGE_LIMIT_MAP,
+  GALGAME_AGE_LIMIT_DETAIL
+} from '~/constants/galgame'
 import type { Patch } from '~/types/api/patch'
 
 interface PatchHeaderProps {
@@ -54,7 +60,22 @@ export const PatchHeaderContainer = ({ patch }: PatchHeaderProps) => {
           <CardBody>
             <div className="flex flex-col items-start justify-between space-y-2 sm:space-y-0 sm:flex-row">
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold">{patch.name}</h1>
+                <h1 className="text-3xl font-bold">
+                  <span>{patch.name}</span>
+                  <Tooltip
+                    content={GALGAME_AGE_LIMIT_DETAIL[patch.contentLimit]}
+                  >
+                    <Chip
+                      color={
+                        patch.contentLimit === 'sfw' ? 'success' : 'danger'
+                      }
+                      variant="flat"
+                      className="ml-2"
+                    >
+                      {GALGAME_AGE_LIMIT_MAP[patch.contentLimit]}
+                    </Chip>
+                  </Tooltip>
+                </h1>
                 <div className="flex-wrap hidden gap-2 sm:flex">
                   <Tags patch={patch} />
                 </div>
