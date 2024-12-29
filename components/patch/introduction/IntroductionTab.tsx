@@ -10,7 +10,7 @@ interface Props {
 
 export const IntroductionTab = ({ intro, patchId }: Props) => {
   return (
-    <Card>
+    <Card className="p-1 sm:p-10">
       <CardHeader>
         <h2 className="text-2xl font-medium">游戏介绍</h2>
       </CardHeader>

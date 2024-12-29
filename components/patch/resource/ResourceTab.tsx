@@ -8,7 +8,7 @@ interface Props {
 
 export const ResourceTab = ({ id }: Props) => {
   return (
-    <Card>
+    <Card className="p-1 sm:p-10">
       <CardHeader>
         <h2 className="text-2xl font-medium">资源链接</h2>
       </CardHeader>

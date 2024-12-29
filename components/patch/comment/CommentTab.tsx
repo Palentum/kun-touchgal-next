@@ -7,7 +7,7 @@ interface Props {
 
 export const CommentTab = ({ id }: Props) => {
   return (
-    <Card>
+    <Card className="p-1 sm:p-10">
       <CardHeader>
         <h2 className="text-2xl font-medium">游戏评论</h2>
       </CardHeader>
