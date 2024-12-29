@@ -58,7 +58,7 @@ export const ImageUploadButton = ({
       <MenuButton
         tooltip="上传图片"
         icon={ImagePlus}
-        onClick={() => uploadImageInputRef.current?.click()}
+        onPress={() => uploadImageInputRef.current?.click()}
         ariaLabel="上传图片"
       />
       <input

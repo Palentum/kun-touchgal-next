@@ -19,8 +19,8 @@ import { Tags } from './Tags'
 import Image from 'next/image'
 import { KunUser } from '~/components/kun/floating-card/KunUser'
 import {
-  GALGAME_AGE_LIMIT_MAP,
-  GALGAME_AGE_LIMIT_DETAIL
+  GALGAME_AGE_LIMIT_DETAIL,
+  GALGAME_AGE_LIMIT_MAP
 } from '~/constants/galgame'
 import type { Patch, PatchIntroduction } from '~/types/api/patch'
 

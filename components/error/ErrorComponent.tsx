@@ -47,7 +47,7 @@ export const ErrorComponent = ({
             startContent={<ArrowLeft className="size-4" />}
             variant="flat"
             color="primary"
-            onClick={() => router.back()}
+            onPress={() => router.back()}
           >
             返回上一页
           </Button>
@@ -56,7 +56,7 @@ export const ErrorComponent = ({
               startContent={<RefreshCw className="size-4" />}
               variant="flat"
               color="primary"
-              onClick={() => reset?.()}
+              onPress={() => reset?.()}
             >
               重试
             </Button>
@@ -64,7 +64,7 @@ export const ErrorComponent = ({
           <Button
             startContent={<Home className="size-4" />}
             color="primary"
-            onClick={() => router.push('/')}
+            onPress={() => router.push('/')}
           >
             返回首页
           </Button>

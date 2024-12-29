@@ -19,10 +19,10 @@ import {
   kunUploadWidgetFactory
 } from './plugins/components/uploader'
 import {
+  insertKunVideoCommand,
   remarkDirective,
-  videoNode,
   videoInputRule,
-  insertKunVideoCommand
+  videoNode
 } from './plugins/components/video/videoPlugin'
 import { KunLoading } from '../Loading'
 import '~/styles/editor.scss'

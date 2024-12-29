@@ -5,9 +5,9 @@ import {
   Button,
   Input,
   Popover,
+  PopoverContent,
   PopoverTrigger,
-  Tooltip,
-  PopoverContent
+  Tooltip
 } from '@nextui-org/react'
 import { Video } from 'lucide-react'
 import { insertKunVideoCommand } from './videoPlugin'
@@ -59,7 +59,7 @@ export const VideoInsertButton = ({ call }: VideoInsertButtonProps) => {
             <Button
               variant="flat"
               color="primary"
-              onClick={handleVideoInsert}
+              onPress={handleVideoInsert}
               className="w-full mt-2"
             >
               确定插入

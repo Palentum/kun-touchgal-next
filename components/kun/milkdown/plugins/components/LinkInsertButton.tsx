@@ -5,9 +5,9 @@ import {
   Button,
   Input,
   Popover,
+  PopoverContent,
   PopoverTrigger,
-  Tooltip,
-  PopoverContent
+  Tooltip
 } from '@nextui-org/react'
 import { Link } from 'lucide-react'
 import { toggleLinkCommand } from '@milkdown/preset-commonmark'
@@ -59,7 +59,7 @@ export const LinkInsertButton = ({ call }: VideoInsertButtonProps) => {
             <Button
               variant="flat"
               color="primary"
-              onClick={handleLinkInsert}
+              onPress={handleLinkInsert}
               className="w-full mt-2"
             >
               确定插入

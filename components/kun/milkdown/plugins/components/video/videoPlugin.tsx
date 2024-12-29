@@ -1,6 +1,6 @@
 'use client'
 
-import { $inputRule, $node, $remark, $command } from '@milkdown/utils'
+import { $command, $inputRule, $node, $remark } from '@milkdown/utils'
 import { Node } from '@milkdown/prose/model'
 import { InputRule } from '@milkdown/prose/inputrules'
 import { createRoot } from 'react-dom/client'
@@ -87,7 +87,7 @@ export const insertKunVideoCommand = $command(
 export const videoInputRule = $inputRule(
   (ctx) =>
     new InputRule(
-      /{{kun-video\="(?<src>[^"]+)?"?\}}/,
+      /{{kun-video="(?<src>[^"]+)?"?\}}/,
       (state, match, start, end) => {
         const [matched, src = ''] = match
         const { tr } = state
