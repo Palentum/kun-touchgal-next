@@ -11,6 +11,7 @@ interface CropControlsProps {
   onScaleChange: (value: number) => void
   onRotateChange: (value: number) => void
   onAspectToggle: () => void
+  onOpenMosaic: () => void
 }
 
 export const KunCropControls = ({
@@ -19,7 +20,8 @@ export const KunCropControls = ({
   aspect,
   onScaleChange,
   onRotateChange,
-  onAspectToggle
+  onAspectToggle,
+  onOpenMosaic
 }: CropControlsProps) => {
   return (
     <div className="flex flex-col w-full max-w-md gap-4 p-4">
@@ -49,6 +51,13 @@ export const KunCropControls = ({
           className="max-w-md"
           label="图片旋转角度"
         />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <label className="text-sm text-default-700">马赛克</label>
+        <Button color="secondary" variant="flat" onClick={onOpenMosaic}>
+          点击使用马赛克工具
+        </Button>
       </div>
 
       <Button
