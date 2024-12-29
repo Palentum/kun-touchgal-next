@@ -61,6 +61,6 @@ export const PUT = async (req: NextRequest) => {
     return NextResponse.json('用户未登录')
   }
 
-  const response = await updateGalgame(input, payload.uid)
+  const response = await updateGalgame(input)
   return NextResponse.json(response)
 }

@@ -1,6 +1,5 @@
 import { ErrorComponent } from '~/components/error/ErrorComponent'
 import { InfoContainer } from '~/components/patch/introduction/Container'
-import { PatchContributor } from '~/components/patch/Contributor'
 import { kunServerFetchGet } from '~/utils/kunServerFetch'
 import { generateKunMetadataTemplate } from './metadata'
 import type { Metadata } from 'next'
@@ -40,15 +39,5 @@ export default async function Kun({ params }: Props) {
     return <ErrorComponent error={intro} />
   }
 
-  const contributors = await kunServerFetchGet<KunUser[]>(
-    '/patch/contributor',
-    { patchId: Number(id) }
-  )
-
-  return (
-    <>
-      <InfoContainer intro={intro} patchId={Number(id)} />
-      <PatchContributor users={contributors} />
-    </>
-  )
+  return <InfoContainer intro={intro} patchId={Number(id)} />
 }

@@ -34,15 +34,13 @@ model user {
   patch_comment_like  user_patch_comment_like_relation[]
   patch_resource_like user_patch_resource_like_relation[]
 
-  following          user_follow_relation[] @relation("user_following")
-  follower           user_follow_relation[] @relation("user_follower")
-  patch              patch[]                @relation("user_patch")
-  patch_comment      patch_comment[]        @relation("user_patch_comment")
-  patch_resource     patch_resource[]       @relation("user_patch_resource")
-  patch_history      patch_history[]        @relation("user_patch_history")
-  patch_pull_request patch_pull_request[]   @relation("user_patch_pull_request")
-  send_message       user_message[]         @relation("user_send_message")
-  receive_message    user_message[]         @relation("user_receive_message")
+  following       user_follow_relation[] @relation("user_following")
+  follower        user_follow_relation[] @relation("user_follower")
+  patch           patch[]                @relation("user_patch")
+  patch_comment   patch_comment[]        @relation("user_patch_comment")
+  patch_resource  patch_resource[]       @relation("user_patch_resource")
+  send_message    user_message[]         @relation("user_send_message")
+  receive_message user_message[]         @relation("user_receive_message")
 
   created DateTime @default(now())
   updated DateTime @updatedAt
@@ -167,19 +165,15 @@ model patch {
   engine        String[]
   platform      String[]
 
-  company patch_company_relation[]
-  tag     patch_tag_relation[]
-
   user_id Int
   user    user @relation("user_patch", fields: [user_id], references: [id])
 
+  tag           patch_tag_relation[]
   favorite_by   user_patch_favorite_relation[]
   contribute_by user_patch_contribute_relation[]
 
-  resource patch_resource[]     @relation("patch_resource")
-  comment  patch_comment[]      @relation("patch_comment")
-  history  patch_history[]      @relation("patch_history")
-  pr       patch_pull_request[] @relation("patch_pull_request")
+  resource patch_resource[] @relation("patch_resource")
+  comment  patch_comment[]  @relation("patch_comment")
 
   created DateTime @default(now())
   updated DateTime @updatedAt
@@ -213,34 +207,6 @@ model patch_tag_relation {
   @@unique([patch_id, tag_id])
 }
 
-model patch_company {
-  id Int @id @default(autoincrement())
-
-  name             String   @db.VarChar(107)
-  primary_language String[]
-  official_website String[]
-  parent_brand     String[]
-  alias            String[]
-
-  patch_relations patch_company_relation[]
-  created         DateTime                 @default(now())
-  updated         DateTime                 @updatedAt
-}
-
-model patch_company_relation {
-  id Int @id @default(autoincrement())
-
-  patch_id   Int
-  patch      patch         @relation(fields: [patch_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  company_id Int
-  company    patch_company @relation(fields: [company_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  created DateTime @default(now())
-  updated DateTime @updatedAt
-
-  @@unique([patch_id, company_id])
-}
-
 model patch_resource {
   id       Int      @id @default(autoincrement())
   storage  String
@@ -262,40 +228,6 @@ model patch_resource {
   user     user  @relation("user_patch_resource", fields: [user_id], references: [id])
   patch_id Int
   patch    patch @relation("patch_resource", fields: [patch_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  created DateTime @default(now())
-  updated DateTime @updatedAt
-}
-
-model patch_history {
-  id      Int    @id @default(autoincrement())
-  action  String @default("")
-  type    String @default("")
-  content String @default("") @db.VarChar(10007)
-
-  user_id  Int
-  user     user  @relation("user_patch_history", fields: [user_id], references: [id])
-  patch_id Int
-  patch    patch @relation("patch_history", fields: [patch_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  created DateTime @default(now())
-  updated DateTime @updatedAt
-}
-
-// status: 0 - pending, 1 - merged, 2 - declined
-model patch_pull_request {
-  id            Int    @id @default(autoincrement())
-  status        Int    @default(0)
-  index         Int    @default(0)
-  complete_time String @default("")
-  diff_content  String @default("") @db.VarChar(100007)
-  content       String @default("") @db.VarChar(100007)
-  note          String @default("") @db.VarChar(1007)
-
-  user_id  Int
-  user     user  @relation("user_patch_pull_request", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  patch_id Int
-  patch    patch @relation("patch_pull_request", fields: [patch_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   created DateTime @default(now())
   updated DateTime @updatedAt

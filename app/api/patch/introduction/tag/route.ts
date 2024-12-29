@@ -6,16 +6,9 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { patchTagChangeSchema } from '~/validations/patch'
 
 export const handleAddPatchTag = async (
-  input: z.infer<typeof patchTagChangeSchema>,
-  uid: number
+  input: z.infer<typeof patchTagChangeSchema>
 ) => {
   const { patchId, tagId } = input
-
-  const tags = await prisma.patch_tag.findMany({
-    where: { id: { in: tagId } },
-    select: { name: true }
-  })
-  const tagsNameArray = tags.map((t) => t.name)
 
   return await prisma.$transaction(async (prisma) => {
     const relationData = tagId.map((id) => ({
@@ -29,16 +22,6 @@ export const handleAddPatchTag = async (
     await prisma.patch_tag.updateMany({
       where: { id: { in: tagId } },
       data: { count: { increment: 1 } }
-    })
-
-    await prisma.patch_history.create({
-      data: {
-        action: 'create',
-        type: 'tag',
-        content: tagsNameArray.toString(),
-        user_id: uid,
-        patch_id: patchId
-      }
     })
     return {}
   })
@@ -54,21 +37,14 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json('用户未登录')
   }
 
-  const response = await handleAddPatchTag(input, payload.uid)
+  const response = await handleAddPatchTag(input)
   return NextResponse.json(response)
 }
 
 export const handleRemovePatchTag = async (
-  input: z.infer<typeof patchTagChangeSchema>,
-  uid: number
+  input: z.infer<typeof patchTagChangeSchema>
 ) => {
   const { patchId, tagId } = input
-
-  const tags = await prisma.patch_tag.findMany({
-    where: { id: { in: tagId } },
-    select: { name: true }
-  })
-  const tagsNameArray = tags.map((t) => t.name)
 
   return await prisma.$transaction(async (prisma) => {
     await prisma.patch_tag_relation.deleteMany({
@@ -81,16 +57,6 @@ export const handleRemovePatchTag = async (
     await prisma.patch_tag.updateMany({
       where: { id: { in: tagId } },
       data: { count: { increment: -1 } }
-    })
-
-    await prisma.patch_history.create({
-      data: {
-        action: 'delete',
-        type: 'tag',
-        content: tagsNameArray.toString(),
-        user_id: uid,
-        patch_id: patchId
-      }
     })
     return {}
   })
@@ -106,6 +72,6 @@ export const PUT = async (req: NextRequest) => {
     return NextResponse.json('用户未登录')
   }
 
-  const response = await handleRemovePatchTag(input, payload.uid)
+  const response = await handleRemovePatchTag(input)
   return NextResponse.json(response)
 }
