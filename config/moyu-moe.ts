@@ -10,6 +10,7 @@ const STATIC_SITE_DESCRIPTION =
   'TouchGal 是一个一站式 Galgame 文化社区。提供Galgame 论坛、Galgame 下载等服务。承诺永久免费, 高质量。为Galgame 爱好者提供一片净土！'
 const STATIC_SITE_URL = 'https://www.touchgal.io'
 const STATIC_SITE_NAV = 'https://gal.red'
+const STATIC_SITE_TELEGRAM_GROUP = 'https://t.me/+yPQQaPhgLbc5MGIx'
 const STATIC_SITE_LIST = [
   { name: STATIC_SITE_NAME, url: 'https://www.touchgal.net' },
   { name: STATIC_SITE_NAME, url: 'https://www.touchgal.moe' },
@@ -65,7 +66,8 @@ export const kunMoyuMoe: KunSiteConfig = {
     main: STATIC_SITE_URL,
     imageBed: 'https://img.touchgalstatic.org',
     storage: STATIC_SITE_URL,
-    kungal: STATIC_SITE_URL
+    kungal: STATIC_SITE_URL,
+    telegram_group: STATIC_SITE_TELEGRAM_GROUP
   },
   og: {
     title: STATIC_SITE_TITLE,

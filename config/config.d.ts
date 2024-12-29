@@ -3,6 +3,7 @@ export interface KunSiteDomain {
   imageBed: string
   storage: string
   kungal: string
+  telegram_group: string
 }
 
 export interface KunSiteAuthor {
