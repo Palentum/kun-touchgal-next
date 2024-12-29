@@ -22,13 +22,14 @@ import {
   GALGAME_AGE_LIMIT_MAP,
   GALGAME_AGE_LIMIT_DETAIL
 } from '~/constants/galgame'
-import type { Patch } from '~/types/api/patch'
+import type { Patch, PatchIntroduction } from '~/types/api/patch'
 
 interface PatchHeaderProps {
   patch: Patch
+  intro: PatchIntroduction
 }
 
-export const PatchHeaderContainer = ({ patch }: PatchHeaderProps) => {
+export const PatchHeaderContainer = ({ patch, intro }: PatchHeaderProps) => {
   const { setData } = useRewritePatchStore()
 
   useEffect(() => {
@@ -118,7 +119,7 @@ export const PatchHeaderContainer = ({ patch }: PatchHeaderProps) => {
         <Tags patch={patch} />
       </div>
 
-      <PatchHeaderTabs id={patch.id} />
+      <PatchHeaderTabs id={patch.id} intro={intro} />
     </>
   )
 }

@@ -1,29 +1,18 @@
 import { kunMoyuMoe } from '~/config/moyu-moe'
 import { convert } from 'html-to-text'
 import type { Metadata } from 'next'
-import type { KunSiteAuthor } from '~/config/config'
 import type { Patch, PatchIntroduction } from '~/types/api/patch'
 
 export const generateKunMetadataTemplate = (
   patch: Patch,
-  intro: PatchIntroduction,
-  contributor: KunUser[]
+  intro: PatchIntroduction
 ): Metadata => {
-  const authors: KunSiteAuthor[] = contributor.map((con) => ({
-    name: con.name,
-    url: `${kunMoyuMoe.domain.main}/user/${con.id}/resource`
-  }))
-  const uniqueAuthors = authors.filter(
-    (author, index, self) =>
-      index === self.findIndex((a) => a.name === author.name)
-  )
-
   return {
     title: patch.alias.length
       ? `${patch.name} | ${patch.alias[0]}`
       : `${patch.name}`,
     keywords: [patch.name, ...patch.alias],
-    authors: uniqueAuthors,
+    authors: kunMoyuMoe.author,
     creator: patch.user.name,
     publisher: patch.user.name,
     description: convert(intro.introduction, {

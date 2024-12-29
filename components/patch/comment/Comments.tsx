@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, CardBody } from '@nextui-org/card'
 import { Button } from '@nextui-org/button'
 import { KunUser } from '~/components/kun/floating-card/KunUser'
 import { MessageCircle } from 'lucide-react'
+import { kunFetchGet } from '~/utils/kunFetch'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 import { PublishComment } from './PublishComment'
 import { CommentLikeButton } from './CommentLike'
@@ -14,13 +15,22 @@ import { scrollIntoComment } from './_scrollIntoComment'
 import type { PatchComment } from '~/types/api/patch'
 
 interface Props {
-  initialComments: PatchComment[]
   id: number
 }
 
-export const Comments = ({ initialComments, id }: Props) => {
-  const [comments, setComments] = useState<PatchComment[]>(initialComments)
+export const Comments = ({ id }: Props) => {
+  const [comments, setComments] = useState<PatchComment[]>([])
   const [replyTo, setReplyTo] = useState<number | null>(null)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await kunFetchGet<PatchComment[]>('/patch/comment', {
+        patchId: Number(id)
+      })
+      setComments(res)
+    }
+    fetchData()
+  }, [])
 
   const setNewComment = async (newComment: PatchComment) => {
     setComments([...comments, newComment])

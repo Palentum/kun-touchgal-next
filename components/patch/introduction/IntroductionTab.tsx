@@ -8,7 +8,7 @@ interface Props {
   patchId: number
 }
 
-export const InfoContainer = ({ intro, patchId }: Props) => {
+export const IntroductionTab = ({ intro, patchId }: Props) => {
   return (
     <Card>
       <CardHeader>

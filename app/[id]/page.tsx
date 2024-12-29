@@ -3,10 +3,9 @@ import { ErrorComponent } from '~/components/error/ErrorComponent'
 import { kunServerFetchGet } from '~/utils/kunServerFetch'
 import { generateKunMetadataTemplate } from './metadata'
 import type { Metadata } from 'next'
-import type { Patch } from '~/types/api/patch'
+import type { Patch, PatchIntroduction } from '~/types/api/patch'
 
 interface Props {
-  children: React.ReactNode
   params: Promise<{ id: string }>
 }
 
@@ -17,10 +16,15 @@ export const generateMetadata = async ({
   const patch = await kunServerFetchGet<Patch>('/patch', {
     patchId: Number(id)
   })
-  return generateKunMetadataTemplate(patch)
+  const intro = await kunServerFetchGet<PatchIntroduction>(
+    '/patch/introduction',
+    { patchId: Number(id) }
+  )
+
+  return generateKunMetadataTemplate(patch, intro)
 }
 
-export default async function Kun({ params, children }: Props) {
+export default async function Kun({ params }: Props) {
   const { id } = await params
 
   if (isNaN(Number(id))) {
@@ -34,10 +38,14 @@ export default async function Kun({ params, children }: Props) {
     return <ErrorComponent error={res} />
   }
 
+  const intro = await kunServerFetchGet<PatchIntroduction>(
+    '/patch/introduction',
+    { patchId: Number(id) }
+  )
+
   return (
     <div className="container py-6 mx-auto space-y-6">
-      <PatchHeaderContainer patch={res} />
-      {children}
+      <PatchHeaderContainer patch={res} intro={intro} />
     </div>
   )
 }

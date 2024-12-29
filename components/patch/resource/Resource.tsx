@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@nextui-org/button'
 import { Card, CardBody } from '@nextui-org/card'
 import {
@@ -18,22 +18,30 @@ import {
   useDisclosure
 } from '@nextui-org/modal'
 import { Edit, MoreHorizontal, Plus, Trash2 } from 'lucide-react'
-import { kunFetchDelete } from '~/utils/kunFetch'
+import { kunFetchDelete, kunFetchGet } from '~/utils/kunFetch'
 import { PublishResource } from './publish/PublishResource'
 import { EditResourceDialog } from './edit/EditResourceDialog'
 import { useUserStore } from '~/store/providers/user'
 import { ResourceInfo } from './ResourceInfo'
 import { ResourceDownload } from './ResourceDownload'
-import type { PatchResource } from '~/types/api/patch'
 import toast from 'react-hot-toast'
+import type { PatchResource } from '~/types/api/patch'
 
 interface Props {
-  initialResources: PatchResource[]
   id: number
 }
 
-export const Resources = ({ initialResources, id }: Props) => {
-  const [resources, setResources] = useState<PatchResource[]>(initialResources)
+export const Resources = ({ id }: Props) => {
+  const [resources, setResources] = useState<PatchResource[]>([])
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await kunFetchGet<PatchResource[]>('/patch/resource', {
+        patchId: Number(id)
+      })
+      setResources(res)
+    }
+    fetchData()
+  }, [])
 
   const {
     isOpen: isOpenCreate,

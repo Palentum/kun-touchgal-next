@@ -10,8 +10,8 @@ export const KunTopBarBrand = () => {
         <Image
           src="/favicon.webp"
           alt={kunMoyuMoe.titleShort}
-          width={50}
-          height={50}
+          width={24}
+          height={24}
           priority
         />
         <p className="ml-4 mr-2 font-bold text-inherit">

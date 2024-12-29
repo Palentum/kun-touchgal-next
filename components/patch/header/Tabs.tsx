@@ -1,45 +1,32 @@
-'use client'
-
 import { Tab, Tabs } from '@nextui-org/tabs'
-import { usePathname } from 'next/navigation'
-import Link from 'next/link'
+import { IntroductionTab } from '~/components/patch/introduction/IntroductionTab'
+import { ResourceTab } from '~/components/patch/resource/ResourceTab'
+import { CommentTab } from '~/components/patch/comment/CommentTab'
+import type { PatchIntroduction } from '~/types/api/patch'
 
 interface PatchHeaderProps {
   id: number
+  intro: PatchIntroduction
 }
 
-export const PatchHeaderTabs = ({ id }: PatchHeaderProps) => {
-  const pathname = usePathname()
-  const lastSegment = pathname.split('/').filter(Boolean).pop()
-
-  const tabs = [
-    {
-      key: 'introduction',
-      title: '游戏介绍',
-      href: `/patch/${id}/introduction`
-    },
-    { key: 'resource', title: '资源链接', href: `/patch/${id}/resource` },
-    { key: 'comment', title: '游戏评论', href: `/patch/${id}/comment` },
-    { key: 'history', title: '贡献历史', href: `/patch/${id}/history` },
-    { key: 'pr', title: '更新请求', href: `/patch/${id}/pr` }
-  ]
-
+export const PatchHeaderTabs = ({ id, intro }: PatchHeaderProps) => {
   return (
     <Tabs
-      aria-label="Options"
-      className="w-full overflow-hidden rounded-large shadow-medium"
-      fullWidth
-      selectedKey={lastSegment}
+      className="w-full my-6 overflow-hidden shadow-medium rounded-large"
+      fullWidth={true}
+      defaultSelectedKey="introduction"
     >
-      {tabs.map(({ key, title, href }) => (
-        <Tab
-          key={key}
-          as={Link}
-          title={title}
-          href={href}
-          className="p-0 min-w-24 rounded-large"
-        />
-      ))}
+      <Tab key="introduction" title="游戏介绍" className="p-0">
+        <IntroductionTab intro={intro} patchId={Number(id)} />
+      </Tab>
+
+      <Tab key="resources" title="资源链接" className="p-0">
+        <ResourceTab id={id} />
+      </Tab>
+
+      <Tab key="comments" title="游戏评论" className="p-0">
+        <CommentTab id={id} />
+      </Tab>
     </Tabs>
   )
 }

@@ -62,7 +62,7 @@ export const VNDBInput = ({ errors }: Props) => {
   }
 
   return (
-    <div className="flex flex-col w-full space-y-2">
+    <div className="w-full space-y-2">
       <h2 className="text-xl">VNDB ID (可选)</h2>
       <Input
         variant="underlined"
@@ -88,7 +88,6 @@ export const VNDBInput = ({ errors }: Props) => {
       <Link
         isExternal
         target="_blank"
-        className="flex"
         underline="hover"
         href="https://www.kungal.com/zh-cn/topic/1040"
         size="sm"
