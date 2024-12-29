@@ -30,11 +30,11 @@ export const CountdownTimer = ({
   }, [timeLeft, onComplete])
 
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full max-w-2xl">
       <Progress
         aria-label="倒计时"
         value={progress}
-        className="max-w-md"
+        className="max-w-2xl"
         color="primary"
         showValueLabel
         label={`${timeLeft} 秒后跳转`}

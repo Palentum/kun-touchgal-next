@@ -87,6 +87,7 @@ export const insertKunVideoCommand = $command(
 export const videoInputRule = $inputRule(
   (ctx) =>
     new InputRule(
+      // eg: {{kun-video="https://img.touchgalstatic.org/2023/05/f15179024920231109233759.mp4"}}
       /{{kun-video="(?<src>[^"]+)?"?\}}/,
       (state, match, start, end) => {
         const [matched, src = ''] = match

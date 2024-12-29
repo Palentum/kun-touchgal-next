@@ -5,11 +5,11 @@ export interface KunNavItem {
 
 export const kunNavItem: KunNavItem[] = [
   {
-    name: 'Galgame 下载',
+    name: '游戏下载',
     href: '/galgame'
   },
   {
-    name: 'Galgame 标签',
+    name: '游戏标签',
     href: '/tag'
   },
   {

@@ -19,8 +19,8 @@ import {
   wrapInBulletListCommand,
   wrapInOrderedListCommand
 } from '@milkdown/preset-commonmark'
-import type { CmdKey } from '@milkdown/core'
 import { toggleStrikethroughCommand } from '@milkdown/preset-gfm'
+import type { CmdKey } from '@milkdown/core'
 
 export const createButtons = (
   call: <T>(command: CmdKey<T>, payload?: T | undefined) => boolean | undefined

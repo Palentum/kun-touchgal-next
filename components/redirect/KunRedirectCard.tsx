@@ -20,7 +20,7 @@ export const KunRedirectCard = () => {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-2xl">
       <CardBody className="gap-4">
         <div className="flex items-center gap-2 text-warning-500">
           <ShieldAlert className="w-5 h-5" />
@@ -29,22 +29,25 @@ export const KunRedirectCard = () => {
 
         <p className="text-default-500">您将会被跳转到:</p>
 
-        <Snippet
-          disableCopy
-          symbol=""
-          size="lg"
-          className="break-all whitespace-break-spaces"
-          color={isUrlSafe ? 'secondary' : 'danger'}
-          copyIcon={<ExternalLink />}
-        >
-          {url}
-        </Snippet>
+        <div className="overflow-auto">
+          <Snippet
+            disableCopy
+            symbol=""
+            size="lg"
+            className="w-full overflow-auto"
+            color={isUrlSafe ? 'primary' : 'danger'}
+            copyIcon={<ExternalLink />}
+          >
+            {url}
+          </Snippet>
+        </div>
 
         <CountdownTimer onComplete={() => setIsCountdownComplete(true)} />
       </CardBody>
 
-      <CardFooter className="justify-end">
+      <CardFooter className="justify-center">
         <Button
+          size="lg"
           color="primary"
           variant="shadow"
           onPress={handleRedirect}
