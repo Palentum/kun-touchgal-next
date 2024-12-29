@@ -24,7 +24,8 @@ export const kunMetadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: '友情链接',
-    description: `点击以进入 ${friendName}`
+    description: `点击以进入 ${friendName}`,
+    images: kunMoyuMoe.images
   },
   alternates: {
     canonical: `${kunMoyuMoe.domain.main}/friend-link`
