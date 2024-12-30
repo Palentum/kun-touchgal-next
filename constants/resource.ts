@@ -11,6 +11,7 @@ export const SUPPORTED_TYPE = [
 ]
 
 export const SUPPORTED_TYPE_MAP: Record<string, string> = {
+  all: '全部类型',
   pc: 'PC游戏',
   chinese: '汉化资源',
   mobile: '手机游戏',

@@ -24,7 +24,7 @@ const KunSooner = ({ message, t }: ToastProps) => {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="flex justify-center w-full "
+      className="flex justify-center w-full"
     >
       <div className="flex w-full max-w-md p-2 shadow-lg pointer-events-auto rounded-2xl bg-background ring-1 ring-foreground/5">
         <div className="flex-1 w-0 p-4">
