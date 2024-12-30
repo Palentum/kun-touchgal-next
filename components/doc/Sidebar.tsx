@@ -19,7 +19,7 @@ export const KunSidebar = ({ tree }: Props) => {
     <div className="kun-scroll-nav">
       <aside
         className={cn(
-          'fixed top-32 z-50 h-[calc(100dvh-256px)] w-64 transform bg-background transition-transform duration-300 ease-in-out',
+          'fixed top-32 z-20 h-[calc(100dvh-256px)] w-64 transform bg-background transition-transform duration-300 ease-in-out',
           isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         )}
       >
@@ -32,7 +32,7 @@ export const KunSidebar = ({ tree }: Props) => {
       <Button
         isIconOnly
         variant="flat"
-        className="fixed left-0 z-50 -translate-y-1/2 top-1/2 md:hidden"
+        className="fixed left-0 z-20 -translate-y-1/2 top-1/2 md:hidden"
         onPress={() => setIsOpen(!isOpen)}
       >
         {isOpen ? (

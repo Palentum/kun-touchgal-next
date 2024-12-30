@@ -4,7 +4,7 @@ import { getRemoteIp } from './getRemoteIp'
 import { getKv, setKv } from '~/lib/redis'
 import { generateRandomCode } from './generateRandomCode'
 import { kunMoyuMoe } from '~/config/moyu-moe'
-import { createKunVerificationEmailTemplate } from '~/constants/email-templates'
+import { createKunVerificationEmailTemplate } from '~/constants/email/verify-templates'
 
 export const sendVerificationCodeEmail = async (
   headers: Headers,

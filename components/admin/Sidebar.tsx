@@ -14,7 +14,8 @@ import {
   MessageSquare,
   Puzzle,
   Settings,
-  Users
+  Users,
+  Mail
 } from 'lucide-react'
 import { cn } from '~/utils/cn'
 
@@ -58,6 +59,11 @@ const menuItems = [
     name: '网站设置',
     href: '/admin/setting',
     icon: Settings
+  },
+  {
+    name: '邮件群发',
+    href: '/admin/email',
+    icon: Mail
   }
 ]
 
@@ -68,7 +74,7 @@ export const Sidebar = () => {
   return (
     <aside
       className={cn(
-        'fixed z-50 md:static w-64 h-full bg-background border-r border-divider transition-transform duration-300 ease-in-out',
+        'fixed z-20 md:static w-64 h-full bg-background border-r border-divider transition-transform duration-300 ease-in-out',
         isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
         'flex items-center'
       )}

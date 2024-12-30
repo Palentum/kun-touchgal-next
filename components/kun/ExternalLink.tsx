@@ -13,6 +13,7 @@ export const KunExternalLink = ({
   showAnchorIcon = true
 }: Props) => {
   const encodeLink = encodeURIComponent(link)
+
   return (
     <Link
       isExternal
