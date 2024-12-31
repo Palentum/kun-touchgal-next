@@ -24,7 +24,7 @@ export const RegisterForm = () => {
   const [isAgree, setIsAgree] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const { control, watch, handleSubmit, reset } = useForm<RegisterFormData>({
+  const { control, watch, reset } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: '',
@@ -34,7 +34,7 @@ export const RegisterForm = () => {
     }
   })
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const handleRegister = async () => {
     if (!isAgree) {
       toast.error('请您勾选同意我们的用户协议')
       return
@@ -43,7 +43,7 @@ export const RegisterForm = () => {
     setLoading(true)
     const res = await kunFetchPost<KunResponse<UserState>>(
       '/auth/register',
-      data
+      watch()
     )
 
     setLoading(false)
@@ -57,7 +57,7 @@ export const RegisterForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-72">
+    <form className="flex flex-col w-72">
       <Controller
         name="name"
         control={control}
@@ -140,16 +140,16 @@ export const RegisterForm = () => {
         onValueChange={setIsAgree}
       >
         <span>我同意</span>
-        <Link className="ml-1" href="/doc/notice/privacy">
+        <Link className="ml-1" href="/about/notice/privacy">
           鲲 Galgame 补丁用户协议
         </Link>
       </Checkbox>
 
       <Button
-        type="submit"
         color="primary"
         className="w-full"
         isLoading={loading}
+        onPress={handleRegister}
       >
         注册
       </Button>

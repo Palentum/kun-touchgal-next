@@ -43,7 +43,6 @@ export const PublishResource = ({
 
   const {
     control,
-    handleSubmit,
     reset,
     setValue,
     formState: { errors },
@@ -65,11 +64,11 @@ export const PublishResource = ({
     }
   })
 
-  const onSubmit = async (data: ResourceFormData) => {
+  const handleRewriteResource = async () => {
     setCreating(true)
     const res = await kunFetchPost<KunResponse<PatchResource>>(
       '/patch/resource',
-      data
+      watch()
     )
     setCreating(false)
     kunErrorHandler(res, (value) => {
@@ -103,14 +102,14 @@ export const PublishResource = ({
               <Link
                 className="flex"
                 underline="hover"
-                href="/doc/notice/patch-tutorial"
+                href="/about/notice/patch-tutorial"
               >
                 鲲 Galgame 补丁资源系统介绍
               </Link>
               <Link
                 className="flex"
                 underline="hover"
-                href="/doc/notice/paradigm"
+                href="/about/notice/paradigm"
               >
                 鲲 Galgame 补丁资源发布规范
               </Link>
@@ -161,11 +160,10 @@ export const PublishResource = ({
           </Button>
           <Button
             color="primary"
-            type="submit"
             disabled={creating}
             isLoading={creating}
             endContent={<Upload className="size-4" />}
-            onPress={() => handleSubmit(onSubmit)}
+            onPress={handleRewriteResource}
           >
             发布资源
           </Button>
