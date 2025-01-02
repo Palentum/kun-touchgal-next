@@ -5,9 +5,20 @@ import { Mail, Code, Eye } from 'lucide-react'
 
 interface Props {
   content: string
+  previewOnly?: boolean
 }
 
-export const EmailPreview = ({ content }: Props) => {
+export const EmailPreview = ({ content, previewOnly = false }: Props) => {
+  if (previewOnly) {
+    return (
+      <iframe
+        srcDoc={content}
+        style={{ width: '100%', height: '500px', border: 'none' }}
+        title="Email preview"
+      />
+    )
+  }
+
   return (
     <Card>
       <CardBody className="space-y-4">

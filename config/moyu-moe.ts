@@ -42,8 +42,8 @@ const STATIC_SITE_KEYWORDS = [
 
 export const kunMoyuMoe: KunSiteConfig = {
   title: STATIC_SITE_TITLE,
-  titleShort: 'TouchGal',
-  template: '%s - TouchGal',
+  titleShort: STATIC_SITE_NAME,
+  template: `%s - ${STATIC_SITE_NAME}`,
   description: STATIC_SITE_DESCRIPTION,
   keywords: STATIC_SITE_KEYWORDS,
   canonical: STATIC_SITE_URL,

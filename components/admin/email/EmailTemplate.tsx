@@ -7,18 +7,29 @@ import {
   RadioGroup,
   Radio,
   Input,
-  Textarea
+  Textarea,
+  useDisclosure,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Alert,
+  Spinner
 } from '@nextui-org/react'
 import { useState } from 'react'
 import { Mail } from 'lucide-react'
 import { emailTemplates } from '~/constants/email/group-templates'
 import { EmailPreview } from './EmailPreview'
 import { KunExternalLink } from '~/components/kun/ExternalLink'
+import { kunFetchPost } from '~/utils/kunFetch'
+import toast from 'react-hot-toast'
 
 export const EmailTemplate = () => {
   const [selectedTemplate, setSelectedTemplate] = useState('')
   const [templateVars, setTemplateVars] = useState<Record<string, string>>({})
   const [isSending, setIsSending] = useState(false)
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   const currentTemplate = emailTemplates.find((t) => t.id === selectedTemplate)
 
@@ -45,20 +56,20 @@ export const EmailTemplate = () => {
     }
 
     setIsSending(true)
-    const response = await fetch('/api/admin/send-bulk-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        templateId: selectedTemplate,
-        variables: templateVars
-      })
-    })
+    const response = await kunFetchPost<KunResponse<{ count: number }>>(
+      '/admin/mail',
+      { templateId: selectedTemplate, variables: templateVars }
+    )
+    if (typeof response === 'string') {
+      toast.error(response)
+    } else {
+      toast.success(`已经向网站的 ${response.count} 位用户发送了邮件`)
+    }
+    setIsSending(false)
 
     setSelectedTemplate('')
     setTemplateVars({})
-    setIsSending(false)
+    onClose()
   }
 
   return (
@@ -102,7 +113,10 @@ export const EmailTemplate = () => {
             />
             <p className="text-sm">
               内容支持 HTML, 可以使用{' '}
-              <KunExternalLink link="https://www.wangeditor.com/demo/get-html.html">
+              <KunExternalLink
+                isRequireRedirect={false}
+                link="https://www.wangeditor.com/demo/get-html.html"
+              >
                 wangEditor
               </KunExternalLink>
               进行编辑, 编辑完成后复制下方输出的 HTML 即可
@@ -113,8 +127,7 @@ export const EmailTemplate = () => {
             <Button
               color="secondary"
               endContent={<Mail className="w-4 h-4" />}
-              isLoading={isSending}
-              onPress={handleSendEmails}
+              onPress={onOpen}
               isDisabled={!currentTemplate}
             >
               向全体用户发送
@@ -122,6 +135,43 @@ export const EmailTemplate = () => {
           </div>
         </CardBody>
       </Card>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">
+            您确定要向全体用户发送下面的邮件吗?
+          </ModalHeader>
+          <ModalBody>
+            <EmailPreview
+              content={currentTemplate ? getPreviewContent() : ''}
+              previewOnly={true}
+            />
+            {isSending && (
+              <Alert
+                title="正在发送中"
+                description="正在为网站全体用户发送邮件, 发送时间取决于网站的用户数量,
+            以及邮件服务的网络状况, 请等待"
+                icon={<Spinner />}
+                color="primary"
+                variant="faded"
+              />
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onPress={onClose}>
+              取消
+            </Button>
+            <Button
+              color="primary"
+              onPress={handleSendEmails}
+              isDisabled={isSending}
+              isLoading={isSending}
+            >
+              发送
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       <EmailPreview content={currentTemplate ? getPreviewContent() : ''} />
     </div>

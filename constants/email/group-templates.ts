@@ -10,12 +10,12 @@ export interface EmailTemplate {
 export const emailTemplates: EmailTemplate[] = [
   {
     id: 'touchgal',
-    name: 'TouchGal',
+    name: 'TouchGal 全体消息',
     template: touchgalTemplate('{{title}}', '{{content}}')
   },
   {
     id: 'announcement',
-    name: '重要公告',
+    name: 'TouchGal 重要公告',
     template: announcementTemplate('{{title}}', '{{content}}')
   }
 ]
