@@ -1,8 +1,8 @@
 'use client'
 
-import { Card, CardHeader, CardBody, CardFooter, Link } from '@nextui-org/react'
-import { ExternalLink, Globe } from 'lucide-react'
+import { Card, CardBody, Chip } from '@nextui-org/react'
 import { isValidURL } from '~/utils/validate'
+import { KunExternalLink } from '~/components/kun/ExternalLink'
 
 interface KunLinkProps {
   href: string
@@ -13,31 +13,17 @@ export const KunLink = ({ href, text }: KunLinkProps) => {
   const domain = isValidURL(href) ? new URL(href).hostname : href
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center gap-2 mb-2">
-          <Globe className="size-4" />
-          <span className="text-sm text-default-500">{domain}</span>
-        </div>
-      </CardHeader>
-
+    <Card className="w-full">
       <CardBody>
-        <p className="mb-2 text-sm">{text}</p>
+        <div className="flex items-center gap-2">
+          <Chip size="sm" color="primary" variant="flat">
+            外部链接
+          </Chip>
+          <span className="text-default-500">{domain}</span>
+        </div>
+        <p style={{ margin: '0' }}>{text}</p>
+        <KunExternalLink link={href}>{href}</KunExternalLink>
       </CardBody>
-
-      <CardFooter>
-        <Link
-          href={href}
-          size="sm"
-          className="text-xs"
-          target="_blank"
-          rel="noopener noreferrer"
-          showAnchorIcon
-          anchorIcon={<ExternalLink className="size-3" />}
-        >
-          {href}
-        </Link>
-      </CardFooter>
     </Card>
   )
 }

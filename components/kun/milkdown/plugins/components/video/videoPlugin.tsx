@@ -29,7 +29,7 @@ export const videoNode = $node('kun-video', () => ({
     {
       tag: 'div[data-video-player]',
       getAttrs: (dom) => ({
-        src: (dom as HTMLElement).getAttribute('data-src')
+        src: dom.getAttribute('data-src')
       })
     }
   ],
@@ -46,7 +46,7 @@ export const videoNode = $node('kun-video', () => ({
     return container
   },
   parseMarkdown: {
-    match: (node) => node.type === 'leafDirective' && node.name === 'kun-video',
+    match: (node) => node.name === 'kun-video',
     runner: (state, node, type) => {
       state.addNode(type, { src: (node.attributes as { src: string }).src })
     }
@@ -56,7 +56,7 @@ export const videoNode = $node('kun-video', () => ({
     runner: (state, node) => {
       state.addNode('leafDirective', undefined, undefined, {
         name: 'kun-video',
-        attributes: { src: node.attrs.src }
+        attributes: node.attrs
       })
     }
   }

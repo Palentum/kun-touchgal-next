@@ -7,15 +7,16 @@ import directive from 'remark-directive'
 import { createRoot } from 'react-dom/client'
 import { KunLink } from './KunLink'
 
-export const kunImageRemarkDirective = $remark(
-  'remarkDirective',
-  () => directive
-)
+interface InsertKunLinkCommandPayload {
+  href: string
+  text: string
+}
+
+export const kunImageRemarkDirective = $remark('kun-link', () => directive)
 
 export const kunLinkNode = $node('kun-link', () => ({
-  content: 'inline*',
-  group: 'inline',
-  inline: true,
+  content: 'block*',
+  group: 'block',
   selectable: true,
   draggable: true,
   marks: '',
@@ -25,15 +26,15 @@ export const kunLinkNode = $node('kun-link', () => ({
   },
   parseDOM: [
     {
-      tag: 'span[data-kun-link]',
+      tag: 'div[data-kun-link]',
       getAttrs: (dom) => ({
-        href: (dom as HTMLElement).getAttribute('data-href'),
-        text: (dom as HTMLElement).getAttribute('data-text')
+        href: dom.getAttribute('data-href'),
+        text: dom.getAttribute('data-text')
       })
     }
   ],
   toDOM: (node: Node) => {
-    const container = document.createElement('span')
+    const container = document.createElement('div')
     container.setAttribute('data-kun-link', '')
     container.setAttribute('data-href', node.attrs.href)
     container.setAttribute('data-text', node.attrs.text)
@@ -45,11 +46,12 @@ export const kunLinkNode = $node('kun-link', () => ({
     return container
   },
   parseMarkdown: {
-    match: (node) => node.type === 'leafDirective' && node.name === 'kun-link',
+    match: (node) => node.name === 'kun-link',
     runner: (state, node, type) => {
+      const { href, text } = node.attributes as InsertKunLinkCommandPayload
       state.addNode(type, {
-        href: (node.attributes as { href: string }).href,
-        text: node.children ? node.children[0].value : ''
+        href,
+        text
       })
     }
   },
@@ -58,16 +60,11 @@ export const kunLinkNode = $node('kun-link', () => ({
     runner: (state, node) => {
       state.addNode('leafDirective', undefined, node.attrs.text, {
         name: 'kun-link',
-        attributes: { href: node.attrs.href }
+        attributes: node.attrs
       })
     }
   }
 }))
-
-interface InsertKunLinkCommandPayload {
-  href: string
-  text: string
-}
 
 export const insertKunLinkCommand = $command(
   'InsertKunLink',
