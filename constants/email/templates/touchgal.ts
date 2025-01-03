@@ -113,7 +113,7 @@ export const touchgalTemplate = (title: string, content: string) => `
       <div class="content">
         ${content}
         <div class="footer">
-          <p style="margin: 0;">此消息为系统自动发布, 请勿回复此消息, 如果有任何问题, 请联系 <a href="${kunMoyuMoe.domain.main}" target="_blank">TouchGal</a> </p>
+          <p style="margin: 0;">此消息为系统自动发布, 请勿回复此消息, 如果有任何问题, 请联系 <a href="${kunMoyuMoe.domain.main}" target="_blank">${kunMoyuMoe.titleShort}</a> </p>
         </div>
       </div>
     </div>
