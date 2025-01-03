@@ -22,6 +22,7 @@ import {
   GALGAME_AGE_LIMIT_DETAIL,
   GALGAME_AGE_LIMIT_MAP
 } from '~/constants/galgame'
+import { KunImageViewer } from '~/components/kun/image-viewer/ImageViewer'
 import type { Patch, PatchIntroduction } from '~/types/api/patch'
 
 interface PatchHeaderProps {
@@ -47,14 +48,20 @@ export const PatchHeaderContainer = ({ patch, intro }: PatchHeaderProps) => {
   return (
     <>
       <div className="relative h-[512px] w-full">
-        <Image
-          src={patch.banner}
-          alt={patch.name}
-          className="absolute top-0 left-0 object-cover size-full rounded-2xl"
-          fill
-          sizes="100vw"
-          priority
-        />
+        <KunImageViewer images={[{ src: patch.banner, alt: patch.name }]}>
+          {(openLightbox) => (
+            <Image
+              src={patch.banner}
+              alt={patch.name}
+              className="absolute top-0 left-0 object-cover size-full rounded-2xl"
+              fill
+              sizes="100vw"
+              priority
+              onClick={openLightbox}
+            />
+          )}
+        </KunImageViewer>
+
         <PatchHeader patch={patch} />
 
         <Card className="absolute bottom-0 w-full rounded-none shadow-lg rounded-b-2xl bg-background/70 backdrop-blur-xl">
