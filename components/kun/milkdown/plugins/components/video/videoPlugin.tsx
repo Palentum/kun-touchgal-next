@@ -4,16 +4,16 @@ import { $command, $inputRule, $node, $remark } from '@milkdown/utils'
 import { Node } from '@milkdown/prose/model'
 import { InputRule } from '@milkdown/prose/inputrules'
 import { createRoot } from 'react-dom/client'
-import directive from 'remark-directive'
 import dynamic from 'next/dynamic'
+import directive from 'remark-directive'
+
+export const kunVideoRemarkDirective = $remark('kun-video', () => directive)
 
 const KunPlyr = dynamic(() => import('./Plyr').then((mod) => mod.KunPlyr), {
   ssr: false
 })
 
-export const remarkDirective = $remark('remarkDirective', () => directive)
-
-export const videoNode = $node('video', () => ({
+export const videoNode = $node('kun-video', () => ({
   content: 'block+',
   group: 'block',
   selectable: true,
@@ -87,6 +87,7 @@ export const insertKunVideoCommand = $command(
 export const videoInputRule = $inputRule(
   (ctx) =>
     new InputRule(
+      // Matches format: {{kun-video="video url"}}
       // eg: {{kun-video="https://img.touchgalstatic.org/2023/05/f15179024920231109233759.mp4"}}
       /{{kun-video="(?<src>[^"]+)?"?\}}/,
       (state, match, start, end) => {

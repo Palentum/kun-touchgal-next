@@ -65,7 +65,7 @@ export const resourceTypes = [
   {
     value: 'notice',
     label: '官方通知',
-    description: '由 TouchGal 官方发布的站点通知'
+    description: '由官方发布的站点通知'
   },
   {
     value: 'other',

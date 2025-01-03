@@ -13,17 +13,24 @@ import { trailing } from '@milkdown/plugin-trailing'
 import { upload, uploadConfig } from '@milkdown/plugin-upload'
 import { automd } from '@milkdown/plugin-automd'
 
+import { remarkDirective } from './plugins/components/remarkDirective'
 import { KunMilkdownPluginsMenu } from './plugins/Menu'
 import {
   kunUploader,
   kunUploadWidgetFactory
 } from './plugins/components/uploader'
 import {
+  kunVideoRemarkDirective,
   insertKunVideoCommand,
-  remarkDirective,
   videoInputRule,
   videoNode
 } from './plugins/components/video/videoPlugin'
+import {
+  kunImageRemarkDirective,
+  insertKunLinkCommand,
+  kunLinkInputRule,
+  kunLinkNode
+} from './plugins/components/link/linkPlugin'
 import { KunLoading } from '../Loading'
 import '~/styles/editor.scss'
 
@@ -106,12 +113,21 @@ export const KunEditor = ({ valueMarkdown, saveMarkdown }: Props) => {
       .use(trailing)
       .use(upload)
       .use(automd)
+      .use([remarkDirective].flat())
       .use(
         [
-          remarkDirective,
+          kunVideoRemarkDirective,
           videoNode,
           insertKunVideoCommand,
           videoInputRule
+        ].flat()
+      )
+      .use(
+        [
+          kunImageRemarkDirective,
+          insertKunLinkCommand,
+          kunLinkInputRule,
+          kunLinkNode
         ].flat()
       )
   )
