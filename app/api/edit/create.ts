@@ -21,7 +21,7 @@ export const createGalgame = async (
       const patch = await prisma.patch.create({
         data: {
           name,
-          uniqueId: galgameUniqueId,
+          unique_id: galgameUniqueId,
           vndb_id: vndbId ?? '',
           alias: alias ? alias : [],
           introduction,
@@ -60,7 +60,7 @@ export const createGalgame = async (
         }
       })
 
-      return newId
+      return { uniqueId: galgameUniqueId }
     },
     { timeout: 60000 }
   )

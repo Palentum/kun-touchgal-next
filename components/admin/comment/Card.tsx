@@ -27,7 +27,7 @@ export const CommentCard = ({ comment }: Props) => {
                   评论在{' '}
                   <Link
                     className="text-primary-500"
-                    href={`/patch/${comment.patchId}/comment`}
+                    href={`/${comment.uniqueId}`}
                   >
                     {comment.patchName}
                   </Link>

@@ -2,6 +2,7 @@ import { Tag } from './tag'
 
 export interface Patch {
   id: number
+  uniqueId: string
   vndbId: string | null
   name: string
   banner: string
@@ -46,19 +47,9 @@ export interface PatchUpdate {
   introduction: string
 }
 
-export interface PatchPullRequest {
-  id: number
-  status: number
-  index: number
-  completeTime: string
-  content: string
-  note: string
-  user: KunUser
-  created: string
-}
-
 export interface PatchResource {
   id: number
+  uniqueId: string
   storage: string
   size: string
   type: string[]
@@ -82,6 +73,7 @@ export interface PatchResource {
 
 export interface PatchComment {
   id: number
+  uniqueId: string
   content: string
   isLike: boolean
   likeCount: number
@@ -93,16 +85,4 @@ export interface PatchComment {
   user: KunUser
   quotedContent?: string | null
   quotedUsername?: string | null
-}
-
-export interface PatchHistory {
-  id: number
-  action: string
-  type: string
-  content: string
-  userId: number
-  patchId: number
-  created: string
-  updated: string
-  user: KunUser
 }

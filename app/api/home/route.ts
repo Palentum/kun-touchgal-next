@@ -2,30 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '~/prisma/index'
 import { markdownToText } from '~/utils/markdownToText'
 import { HomeComment, HomeResource } from '~/types/api/home'
+import { GalgameCardSelectField } from '~/constants/api/select'
 
 export const getHomeData = async () => {
   const [galgames, resourcesData, commentsData] = await Promise.all([
     await prisma.patch.findMany({
       orderBy: { created: 'desc' },
-      select: {
-        id: true,
-        name: true,
-        banner: true,
-        view: true,
-        download: true,
-        type: true,
-        language: true,
-        platform: true,
-        created: true,
-        _count: {
-          select: {
-            favorite_by: true,
-            contribute_by: true,
-            resource: true,
-            comment: true
-          }
-        }
-      },
+      select: GalgameCardSelectField,
       take: 6
     }),
     await prisma.patch_resource.findMany({

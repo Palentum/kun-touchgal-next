@@ -5,20 +5,17 @@ import { prisma } from '~/prisma/index'
 import { markdownToHtml } from '~/app/api/utils/markdownToHtml'
 import type { PatchIntroduction } from '~/types/api/patch'
 
-const patchIdSchema = z.object({
-  patchId: z.coerce
-    .number({ message: '补丁 ID 必须为数字' })
-    .min(1)
-    .max(9999999)
+const uniqueIdSchema = z.object({
+  uniqueId: z.string().min(8).max(8)
 })
 
 export const getPatchIntroduction = async (
-  input: z.infer<typeof patchIdSchema>
+  input: z.infer<typeof uniqueIdSchema>
 ) => {
-  const { patchId } = input
+  const { uniqueId } = input
 
   const patch = await prisma.patch.findUnique({
-    where: { id: patchId },
+    where: { unique_id: uniqueId },
     include: {
       tag: {
         include: {
@@ -52,7 +49,7 @@ export const getPatchIntroduction = async (
 }
 
 export const GET = async (req: NextRequest) => {
-  const input = kunParseGetQuery(req, patchIdSchema)
+  const input = kunParseGetQuery(req, uniqueIdSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }

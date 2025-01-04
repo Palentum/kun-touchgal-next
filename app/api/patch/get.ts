@@ -2,18 +2,18 @@ import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import type { Patch } from '~/types/api/patch'
 
-const patchIdSchema = z.object({
-  patchId: z.coerce.number().min(1).max(9999999)
+const uniqueIdSchema = z.object({
+  uniqueId: z.string().min(8).max(8)
 })
 
 export const getPatchById = async (
-  input: z.infer<typeof patchIdSchema>,
+  input: z.infer<typeof uniqueIdSchema>,
   uid: number
 ) => {
-  const { patchId } = input
+  const { uniqueId } = input
 
   const patch = await prisma.patch.findUnique({
-    where: { id: patchId },
+    where: { unique_id: uniqueId },
     include: {
       user: true,
       _count: {
@@ -43,6 +43,7 @@ export const getPatchById = async (
 
   const response: Patch = {
     id: patch.id,
+    uniqueId: patch.unique_id,
     vndbId: patch.vndb_id,
     name: patch.name,
     introduction: patch.introduction,

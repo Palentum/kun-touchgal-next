@@ -33,6 +33,7 @@ export interface AdminCreator {
 
 export interface AdminGalgame {
   id: number
+  uniqueId: string
   name: string
   banner: string
   user: KunUser

@@ -14,11 +14,11 @@ export const generateMetadata = async ({
 }: Props): Promise<Metadata> => {
   const { id } = await params
   const patch = await kunServerFetchGet<Patch>('/patch', {
-    patchId: Number(id)
+    uniqueId: Number(id)
   })
   const intro = await kunServerFetchGet<PatchIntroduction>(
     '/patch/introduction',
-    { patchId: Number(id) }
+    { uniqueId: Number(id) }
   )
 
   return generateKunMetadataTemplate(patch, intro)
@@ -32,7 +32,7 @@ export default async function Kun({ params }: Props) {
   }
 
   const res = await kunServerFetchGet<KunResponse<Patch>>('/patch', {
-    patchId: Number(id)
+    uniqueId: Number(id)
   })
   if (!res || typeof res === 'string') {
     return <ErrorComponent error={res} />
@@ -40,7 +40,7 @@ export default async function Kun({ params }: Props) {
 
   const intro = await kunServerFetchGet<PatchIntroduction>(
     '/patch/introduction',
-    { patchId: Number(id) }
+    { uniqueId: Number(id) }
   )
 
   return (

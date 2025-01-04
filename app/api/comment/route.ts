@@ -24,7 +24,8 @@ export const getComment = async (input: z.infer<typeof commentSchema>) => {
       include: {
         patch: {
           select: {
-            name: true
+            name: true,
+            unique_id: true
           }
         },
         user: {
@@ -46,6 +47,7 @@ export const getComment = async (input: z.infer<typeof commentSchema>) => {
 
   const comments: PatchComment[] = commentsData.map((comment) => ({
     id: comment.id,
+    uniqueId: comment.patch.unique_id,
     user: comment.user,
     content: markdownToText(comment.content).slice(0, 233),
     patchName: comment.patch.name,

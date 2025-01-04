@@ -4,6 +4,7 @@ import { kunParseGetQuery } from '../utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { galgameSchema } from '~/validations/galgame'
 import { ALL_SUPPORTED_TYPE } from '~/constants/resource'
+import { GalgameCardSelectField } from '~/constants/api/select'
 
 export const getGalgame = async (input: z.infer<typeof galgameSchema>) => {
   const { selectedType, sortField, sortOrder, page, limit } = input
@@ -19,25 +20,7 @@ export const getGalgame = async (input: z.infer<typeof galgameSchema>) => {
       skip: offset,
       orderBy: { [sortField]: sortOrder },
       where: typeQuery,
-      select: {
-        id: true,
-        name: true,
-        banner: true,
-        view: true,
-        download: true,
-        type: true,
-        language: true,
-        platform: true,
-        created: true,
-        _count: {
-          select: {
-            favorite_by: true,
-            contribute_by: true,
-            resource: true,
-            comment: true
-          }
-        }
-      }
+      select: GalgameCardSelectField
     }),
     await prisma.patch.count({
       where: typeQuery

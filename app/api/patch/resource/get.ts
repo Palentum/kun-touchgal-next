@@ -15,6 +15,7 @@ export const getPatchResource = async (
   const data = await prisma.patch_resource.findMany({
     where: { patch_id: patchId },
     include: {
+      patch: { select: { unique_id: true } },
       user: {
         include: {
           _count: {
@@ -35,6 +36,7 @@ export const getPatchResource = async (
 
   const resources: PatchResource[] = data.map((resource) => ({
     id: resource.id,
+    uniqueId: resource.patch.unique_id,
     storage: resource.storage,
     size: resource.size,
     type: resource.type,

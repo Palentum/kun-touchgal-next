@@ -31,6 +31,7 @@ export const getGalgame = async (
 
   const galgames: AdminGalgame[] = data.map((galgame) => ({
     id: galgame.id,
+    uniqueId: galgame.unique_id,
     name: galgame.name,
     banner: galgame.banner,
     user: galgame.user,

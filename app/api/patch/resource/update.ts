@@ -31,6 +31,11 @@ export const updatePatchResource = async (
               select: { patch_resource: true }
             }
           }
+        },
+        patch: {
+          select: {
+            unique_id: true
+          }
         }
       }
     })
@@ -66,6 +71,7 @@ export const updatePatchResource = async (
 
     const resource: PatchResource = {
       id: newResource.id,
+      uniqueId: newResource.patch.unique_id,
       storage: newResource.storage,
       size: newResource.size,
       type: newResource.type,

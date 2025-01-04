@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 export interface RewritePatchData {
   id: number
+  uniqueId: string
   name: string
   introduction: string
   alias: string[]
@@ -15,6 +16,7 @@ interface StoreState {
 
 const initialState: RewritePatchData = {
   id: 0,
+  uniqueId: '',
   name: '',
   introduction: '',
   alias: []

@@ -36,6 +36,7 @@ export const PatchHeaderContainer = ({ patch, intro }: PatchHeaderProps) => {
   useEffect(() => {
     setData({
       id: patch.id,
+      uniqueId: patch.uniqueId,
       name: patch.name,
       introduction: patch.introduction,
       alias: patch.alias

@@ -12,7 +12,7 @@ export const RenderCell = (resource: AdminResource, columnKey: string) => {
     case 'name':
       return (
         <Link
-          href={`/patch/${resource.patchId}/resource`}
+          href={`/${resource.uniqueId}`}
           className="font-medium hover:text-primary-500"
         >
           {resource.patchName}

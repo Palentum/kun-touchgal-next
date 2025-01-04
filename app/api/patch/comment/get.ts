@@ -18,6 +18,11 @@ export const getPatchComment = async (
     where: { patch_id: patchId },
     include: {
       user: true,
+      patch: {
+        select: {
+          unique_id: true
+        }
+      },
       like_by: {
         where: {
           user_id: uid
@@ -32,6 +37,7 @@ export const getPatchComment = async (
   const flatComments: PatchComment[] = await Promise.all(
     data.map(async (comment) => ({
       id: comment.id,
+      uniqueId: comment.patch.unique_id,
       content: await markdownToHtml(comment.content),
       isLike: comment.like_by.length > 0,
       likeCount: comment._count.like_by,

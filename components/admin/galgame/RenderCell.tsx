@@ -21,7 +21,7 @@ export const RenderCell = (galgame: AdminGalgame, columnKey: string) => {
     case 'name':
       return (
         <Link
-          href={`/patch/${galgame.id}/introduction`}
+          href={`/${galgame.uniqueId}`}
           className="font-medium hover:text-primary-500"
         >
           {galgame.name}

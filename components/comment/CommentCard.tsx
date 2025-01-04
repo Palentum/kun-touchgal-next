@@ -14,7 +14,7 @@ export const CommentCard = ({ comment }: Props) => {
     <Card
       isPressable
       as={Link}
-      href={`/patch/${comment.patchId}/comment`}
+      href={`/${comment.uniqueId}`}
       className="w-full"
     >
       <CardBody>

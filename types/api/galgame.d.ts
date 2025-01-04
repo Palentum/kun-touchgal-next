@@ -1,5 +1,6 @@
 interface GalgameCard {
   id: number
+  uniqueId: string
   name: string
   banner: string
   view: number

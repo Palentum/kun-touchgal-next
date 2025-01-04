@@ -52,7 +52,7 @@ export const RewritePatch = () => {
 
     const res = kunFetchPut<KunResponse<{}>>('/edit', { ...data })
     kunErrorHandler(res, async () => {
-      router.push(`/patch/${data.id}/introduction`)
+      router.push(`/${data.uniqueId}`)
     })
     toast.success('发布编辑成功')
     setRewriting(false)
