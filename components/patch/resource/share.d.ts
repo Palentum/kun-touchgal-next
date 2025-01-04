@@ -3,6 +3,8 @@ import type { PatchResourceLink } from '~/types/api/patch'
 
 interface Fields {
   type: string[]
+  name: string
+  section: string
   patchId: number
   code: string
   storage: string

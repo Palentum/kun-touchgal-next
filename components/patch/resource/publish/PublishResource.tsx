@@ -18,9 +18,10 @@ import { kunFetchPost } from '~/utils/kunFetch'
 import { patchResourceCreateSchema } from '~/validations/patch'
 import { ResourceLinksInput } from './ResourceLinksInput'
 import { ResourceDetailsForm } from './ResourceDetailsForm'
+import { ResourceTypeSelect } from './ResourceTypeSelect'
+import { ResourceSectionSelect } from './ResourceSectionSelect'
 import { Upload } from 'lucide-react'
 import { FileUploadContainer } from '../upload/FileUploadContainer'
-import { ResourceTypeSelect } from './ResourceTypeSelect'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import { useUserStore } from '~/store/providers/user'
 import type { PatchResource } from '~/types/api/patch'
@@ -51,7 +52,9 @@ export const PublishResource = ({
     resolver: zodResolver(patchResourceCreateSchema),
     defaultValues: {
       patchId,
-      storage: user.role > 1 ? 's3' : 'user',
+      storage: user.role === 1 ? 's3' : 'user',
+      name: '',
+      section: user.role > 2 ? 'galgame' : 'patch',
       hash: '',
       content: '',
       code: '',
@@ -131,7 +134,19 @@ export const PublishResource = ({
 
       <ModalBody>
         <form className="space-y-6">
-          <ResourceTypeSelect control={control} errors={errors} />
+          {user.role > 2 && (
+            <ResourceSectionSelect
+              errors={errors}
+              section={watch().section}
+              setSection={(content) => setValue('section', content)}
+            />
+          )}
+
+          <ResourceTypeSelect
+            section={watch().section}
+            control={control}
+            errors={errors}
+          />
 
           {watch().storage !== 'user' && (
             <FileUploadContainer

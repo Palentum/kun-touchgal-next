@@ -38,7 +38,8 @@ export const createPatchResource = async (
     select: {
       type: true,
       language: true,
-      platform: true
+      platform: true,
+      unique_id: true
     }
   })
 
@@ -102,6 +103,7 @@ export const createPatchResource = async (
 
     const resource: PatchResource = {
       id: newResource.id,
+      uniqueId: currentPatch?.unique_id ?? '',
       storage: newResource.storage,
       size: newResource.size,
       type: newResource.type,

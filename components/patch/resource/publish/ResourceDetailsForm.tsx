@@ -119,6 +119,20 @@ export const ResourceDetailsForm = ({
     </div>
 
     <Controller
+      name="name"
+      control={control}
+      render={({ field }) => (
+        <Input
+          {...field}
+          label="资源名称"
+          placeholder="请填写您的资源名称, 例如 DeepSeek V3 翻译补丁"
+          isInvalid={!!errors.note}
+          errorMessage={errors.note?.message}
+        />
+      )}
+    />
+
+    <Controller
       name="code"
       control={control}
       render={({ field }) => (

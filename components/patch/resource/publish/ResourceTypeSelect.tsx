@@ -11,11 +11,12 @@ import type { ControlType, ErrorType } from '../share'
 export type ResourceFormData = z.infer<typeof patchResourceCreateSchema>
 
 interface Props {
+  section: string
   control: ControlType
   errors: ErrorType
 }
 
-export const ResourceTypeSelect = ({ control, errors }: Props) => {
+export const ResourceTypeSelect = ({ section, control, errors }: Props) => {
   const user = useUserStore((state) => state.user)
 
   return (
@@ -33,9 +34,16 @@ export const ResourceTypeSelect = ({ control, errors }: Props) => {
             label="请选择您的资源存储类型"
             selectedKeys={[field.value]}
             onSelectionChange={(key) => {
+              if (key.anchorKey === key.currentKey) {
+                return
+              }
               field.onChange(Array.from(key).join(''))
             }}
-            disabledKeys={user.role > 1 ? ['onedrive'] : ['onedrive', 's3']}
+            disabledKeys={
+              user.role === 1 || section === 'galgame'
+                ? ['onedrive', 's3']
+                : ['onedrive']
+            }
             isInvalid={!!errors.storage}
             errorMessage={errors.storage?.message}
           >

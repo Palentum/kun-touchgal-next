@@ -209,7 +209,9 @@ model patch_tag_relation {
 
 model patch_resource {
   id       Int      @id @default(autoincrement())
-  storage  String
+  storage  String   @db.VarChar(107)
+  section  String   @db.VarChar(107)
+  name     String   @default("") @db.VarChar(300)
   size     String   @default("") @db.VarChar(107)
   code     String   @default("") @db.VarChar(1007)
   password String   @default("") @db.VarChar(1007)

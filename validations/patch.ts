@@ -4,7 +4,8 @@ import {
   SUPPORTED_TYPE,
   SUPPORTED_LANGUAGE,
   SUPPORTED_PLATFORM,
-  SUPPORTED_RESOURCE_LINK
+  SUPPORTED_RESOURCE_LINK,
+  SUPPORTED_RESOURCE_SECTION
 } from '~/constants/resource'
 
 export const patchTagChangeSchema = z.object({
@@ -41,6 +42,12 @@ export const patchCommentUpdateSchema = z.object({
 
 export const patchResourceCreateSchema = z.object({
   patchId: z.coerce.number().min(1).max(9999999),
+  section: z
+    .string()
+    .refine((type) => SUPPORTED_RESOURCE_SECTION.includes(type), {
+      message: '资源链接类型仅能为 Galgame 或补丁'
+    }),
+  name: z.string().max(300, { message: '资源名称最多 300 个字符' }),
   storage: z.string().refine((type) => SUPPORTED_RESOURCE_LINK.includes(type), {
     message: '非法的资源链接类型'
   }),
@@ -68,9 +75,7 @@ export const patchResourceCreateSchema = z.object({
     .max(10, { message: '您的单个补丁资源最多有 10 个语言' })
     .refine(
       (types) => types.every((type) => SUPPORTED_LANGUAGE.includes(type)),
-      {
-        message: '非法的补丁语言'
-      }
+      { message: '非法的补丁语言' }
     ),
   platform: z
     .array(z.string())
@@ -78,9 +83,7 @@ export const patchResourceCreateSchema = z.object({
     .max(10, { message: '您的单个补丁资源最多有 10 个平台' })
     .refine(
       (types) => types.every((type) => SUPPORTED_PLATFORM.includes(type)),
-      {
-        message: '非法的补丁平台'
-      }
+      { message: '非法的补丁平台' }
     )
 })
 
