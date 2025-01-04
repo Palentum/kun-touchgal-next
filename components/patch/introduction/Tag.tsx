@@ -5,6 +5,7 @@ import { Chip } from '@nextui-org/chip'
 import { Tooltip } from '@nextui-org/tooltip'
 import { Link } from '@nextui-org/link'
 import { PatchTagSelector } from './PatchTagSelector'
+import { useUserStore } from '~/store/providers/user'
 import type { Tag } from '~/types/api/tag'
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 
 export const PatchTag = ({ patchId, initialTags }: Props) => {
   const [selectedTags, setSelectedTags] = useState<Tag[]>(initialTags ?? [])
+  const user = useUserStore((state) => state.user)
 
   return (
     <div className="mt-4 space-y-4">
@@ -31,14 +33,16 @@ export const PatchTag = ({ patchId, initialTags }: Props) => {
           </Tooltip>
         ))}
 
-        {!initialTags.length && <Chip>{'这个补丁暂时没有标签, 欢迎添加'}</Chip>}
+        {!initialTags.length && <Chip>{'这个补丁暂时没有标签'}</Chip>}
       </div>
 
-      <PatchTagSelector
-        patchId={patchId}
-        initialTags={selectedTags}
-        onTagChange={setSelectedTags}
-      />
+      {user.role > 2 && (
+        <PatchTagSelector
+          patchId={patchId}
+          initialTags={selectedTags}
+          onTagChange={setSelectedTags}
+        />
+      )}
     </div>
   )
 }

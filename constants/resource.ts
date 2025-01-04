@@ -5,6 +5,7 @@ export const SUPPORTED_TYPE = [
   'emulator',
   'row',
   'app',
+  'patch',
   'tool',
   'notice',
   'other'
@@ -18,6 +19,7 @@ export const SUPPORTED_TYPE_MAP: Record<string, string> = {
   emulator: '模拟器资源',
   row: '生肉资源',
   app: '直装资源',
+  patch: '补丁资源',
   tool: '游戏工具',
   notice: '官方通知',
   other: '其它'
@@ -56,6 +58,11 @@ export const resourceTypes = [
     value: 'app',
     label: '直装资源',
     description: '可以直接在手机安装并游玩的 Galgame'
+  },
+  {
+    value: 'patch',
+    label: '补丁资源',
+    description: '与这个 Galgame 相关的补丁资源'
   },
   {
     value: 'tool',

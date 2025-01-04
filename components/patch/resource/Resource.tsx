@@ -24,6 +24,7 @@ import { useUserStore } from '~/store/providers/user'
 import { ResourceInfo } from './ResourceInfo'
 import { ResourceDownload } from './ResourceDownload'
 import toast from 'react-hot-toast'
+import { KunLoading } from '~/components/kun/Loading'
 import type { PatchResource } from '~/types/api/patch'
 
 interface Props {
@@ -32,11 +33,14 @@ interface Props {
 
 export const Resources = ({ id }: Props) => {
   const [resources, setResources] = useState<PatchResource[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true)
       const res = await kunFetchGet<PatchResource[]>('/patch/resource', {
         patchId: Number(id)
       })
+      setIsLoading(false)
       setResources(res)
     }
     fetchData()
@@ -77,6 +81,10 @@ export const Resources = ({ id }: Props) => {
     setDeleting(false)
     onCloseDelete()
     toast.success('删除资源链接成功')
+  }
+
+  if (isLoading) {
+    return <KunLoading hint="正在加载 Galgame 资源..." className="min-h-48" />
   }
 
   return (
