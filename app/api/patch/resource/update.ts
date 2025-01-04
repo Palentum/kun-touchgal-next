@@ -71,6 +71,8 @@ export const updatePatchResource = async (
 
     const resource: PatchResource = {
       id: newResource.id,
+      name: newResource.name,
+      section: newResource.section,
       uniqueId: newResource.patch.unique_id,
       storage: newResource.storage,
       size: newResource.size,

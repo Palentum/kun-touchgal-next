@@ -1,4 +1,6 @@
-import { Snippet } from '@nextui-org/snippet'
+'use client'
+
+import { Snippet } from '@nextui-org/react'
 import { KunPatchAttribute } from '~/components/kun/PatchAttribute'
 import type { PatchResource } from '~/types/api/patch'
 
@@ -44,10 +46,6 @@ export const ResourceInfo = ({ resource }: Props) => {
           </Snippet>
         )}
       </div>
-
-      {resource.note && (
-        <p className="mt-2 whitespace-pre-wrap">{resource.note}</p>
-      )}
     </div>
   )
 }

@@ -8,11 +8,11 @@ interface Props {
 
 export const ResourceTab = ({ id }: Props) => {
   return (
-    <Card className="p-1 sm:p-10">
-      <CardHeader>
+    <Card className="p-1 sm:p-8">
+      <CardHeader className="p-4">
         <h2 className="text-2xl font-medium">资源链接</h2>
       </CardHeader>
-      <CardBody>
+      <CardBody className="p-4">
         <div className="text-default-600">
           <p>
             请注意, 本站是 Galgame 补丁站, 资源链接指的是 Galgame 补丁资源,

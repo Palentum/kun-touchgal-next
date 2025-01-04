@@ -1,22 +1,21 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Button } from '@nextui-org/button'
-import { Card, CardBody } from '@nextui-org/card'
 import {
+  Button,
+  Card,
+  CardBody,
   Dropdown,
   DropdownItem,
   DropdownMenu,
-  DropdownTrigger
-} from '@nextui-org/dropdown'
-import {
+  DropdownTrigger,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
   useDisclosure
-} from '@nextui-org/modal'
+} from '@nextui-org/react'
 import { Edit, MoreHorizontal, Plus, Trash2 } from 'lucide-react'
 import { kunFetchDelete, kunFetchGet } from '~/utils/kunFetch'
 import { PublishResource } from './publish/PublishResource'
@@ -119,9 +118,6 @@ export const Resources = ({ id }: Props) => {
                     startContent={<Edit className="size-4" />}
                     onPress={() => {
                       setEditResource(resource)
-                      if (!editResource) {
-                        return
-                      }
                       onOpenEdit()
                     }}
                   >

@@ -68,6 +68,8 @@ export const getHomeData = async () => {
 
   const resources: HomeResource[] = resourcesData.map((resource) => ({
     id: resource.id,
+    name: resource.name,
+    section: resource.section,
     uniqueId: resource.patch.unique_id,
     storage: resource.storage,
     size: resource.size,
