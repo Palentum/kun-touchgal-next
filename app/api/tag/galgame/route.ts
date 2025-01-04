@@ -28,7 +28,11 @@ export const getPatchByTag = async (
     })
   ])
 
-  const galgames = data.map((p) => p.patch)
+  const patches = data.map((p) => p.patch)
+  const galgames = patches.map((gal) => ({
+    ...gal,
+    uniqueId: gal.unique_id
+  }))
 
   return { galgames, total }
 }

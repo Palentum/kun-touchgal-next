@@ -83,9 +83,9 @@ model user_message {
   recipient_id Int?
   recipient    user? @relation("user_receive_message", fields: [recipient_id], references: [id])
 
-  patch_id          Int @default(0)
-  patch_resource_id Int @default(0)
-  comment_id        Int @default(0)
+  patch_unique_id   String @default("")
+  patch_resource_id Int    @default(0)
+  patch_comment_id  Int    @default(0)
 
   created DateTime @default(now())
   updated DateTime @updatedAt

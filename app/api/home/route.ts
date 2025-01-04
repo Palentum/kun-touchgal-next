@@ -5,7 +5,7 @@ import { HomeComment, HomeResource } from '~/types/api/home'
 import { GalgameCardSelectField } from '~/constants/api/select'
 
 export const getHomeData = async () => {
-  const [galgames, resourcesData, commentsData] = await Promise.all([
+  const [data, resourcesData, commentsData] = await Promise.all([
     await prisma.patch.findMany({
       orderBy: { created: 'desc' },
       select: GalgameCardSelectField,
@@ -16,7 +16,8 @@ export const getHomeData = async () => {
       include: {
         patch: {
           select: {
-            name: true
+            name: true,
+            unique_id: true
           }
         },
         user: {
@@ -39,7 +40,8 @@ export const getHomeData = async () => {
       include: {
         patch: {
           select: {
-            name: true
+            name: true,
+            unique_id: true
           }
         },
         user: {
@@ -59,8 +61,14 @@ export const getHomeData = async () => {
     })
   ])
 
+  const galgames: GalgameCard[] = data.map((gal) => ({
+    ...gal,
+    uniqueId: gal.unique_id
+  }))
+
   const resources: HomeResource[] = resourcesData.map((resource) => ({
     id: resource.id,
+    uniqueId: resource.patch.unique_id,
     storage: resource.storage,
     size: resource.size,
     type: resource.type,
@@ -82,6 +90,7 @@ export const getHomeData = async () => {
 
   const comments: HomeComment[] = commentsData.map((comment) => ({
     id: comment.id,
+    uniqueId: comment.patch.unique_id,
     user: comment.user,
     content: markdownToText(comment.content).slice(0, 233),
     patchName: comment.patch.name,

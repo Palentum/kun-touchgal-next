@@ -11,7 +11,7 @@ export const getUserGalgame = async (
   const { uid, page, limit } = input
   const offset = (page - 1) * limit
 
-  const [galgames, total] = await Promise.all([
+  const [data, total] = await Promise.all([
     await prisma.patch.findMany({
       where: { user_id: uid },
       select: GalgameCardSelectField,
@@ -23,6 +23,11 @@ export const getUserGalgame = async (
       where: { user_id: uid }
     })
   ])
+
+  const galgames = data.map((gal) => ({
+    ...gal,
+    uniqueId: gal.unique_id
+  }))
 
   return { galgames, total }
 }

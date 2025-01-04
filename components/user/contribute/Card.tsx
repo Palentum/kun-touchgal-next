@@ -12,7 +12,7 @@ export const UserContributeCard = ({ contribute }: Props) => {
     <Card
       isPressable
       as={Link}
-      href={`/patch/${contribute.patchId}/history`}
+      href={`/${contribute.patchUniqueId}`}
       className="w-full"
     >
       <CardBody className="p-4 space-y-3">

@@ -14,7 +14,7 @@ export const getGalgame = async (input: z.infer<typeof galgameSchema>) => {
   const typeQuery =
     selectedType === 'all' ? {} : { type: { has: selectedType } }
 
-  const [galgames, total] = await Promise.all([
+  const [data, total] = await Promise.all([
     await prisma.patch.findMany({
       take: limit,
       skip: offset,
@@ -26,6 +26,11 @@ export const getGalgame = async (input: z.infer<typeof galgameSchema>) => {
       where: typeQuery
     })
   ])
+
+  const galgames: GalgameCard[] = data.map((gal) => ({
+    ...gal,
+    uniqueId: gal.unique_id
+  }))
 
   return { galgames, total }
 }

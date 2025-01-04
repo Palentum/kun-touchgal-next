@@ -28,8 +28,9 @@ export const getUserFavorite = async (
     })
   ])
 
-  const favorites = data.map((gal) => ({
-    ...gal.patch
+  const favorites: GalgameCard[] = data.map((gal) => ({
+    ...gal.patch,
+    uniqueId: gal.patch.unique_id
   }))
 
   return { favorites, total }

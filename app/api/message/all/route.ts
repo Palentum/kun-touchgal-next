@@ -4,6 +4,7 @@ import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { getMessageSchema } from '~/validations/message'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
+import type { Message } from '~/types/api/message'
 
 export const getMessage = async (
   input: z.infer<typeof getMessageSchema>,
@@ -19,7 +20,7 @@ export const getMessage = async (
         // type: { in: ['like', 'favorite', 'comment', 'pr'] }
       }
 
-  const [messages, total] = await Promise.all([
+  const [data, total] = await Promise.all([
     prisma.user_message.findMany({
       where,
       include: {
@@ -37,6 +38,16 @@ export const getMessage = async (
     }),
     prisma.user_message.count({ where })
   ])
+
+  const messages: Message[] = data.map((msg) => ({
+    id: msg.id,
+    patchUniqueId: msg.patch_unique_id,
+    type: msg.type,
+    content: msg.content,
+    status: msg.status,
+    created: msg.created,
+    sender: msg.sender
+  }))
 
   return { messages, total }
 }

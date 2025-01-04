@@ -17,7 +17,8 @@ export const getUserContribute = async (
       include: {
         patch: {
           select: {
-            name: true
+            name: true,
+            unique_id: true
           }
         }
       },
@@ -32,6 +33,7 @@ export const getUserContribute = async (
 
   const contributes: UserContribute[] = data.map((gal) => ({
     id: gal.id,
+    patchUniqueId: gal.patch.unique_id,
     patchId: gal.patch_id,
     patchName: gal.patch.name,
     created: String(gal.created)

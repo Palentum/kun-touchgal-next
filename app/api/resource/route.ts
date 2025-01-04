@@ -25,7 +25,8 @@ export const getPatchResource = async (
       include: {
         patch: {
           select: {
-            name: true
+            name: true,
+            unique_id: true
           }
         },
         user: {
@@ -47,6 +48,7 @@ export const getPatchResource = async (
 
   const resources: PatchResource[] = resourcesData.map((resource) => ({
     id: resource.id,
+    uniqueId: resource.patch.unique_id,
     storage: resource.storage,
     size: resource.size,
     type: resource.type,

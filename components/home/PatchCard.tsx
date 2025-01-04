@@ -9,12 +9,7 @@ interface Props {
 
 export const PatchCard = ({ patch }: Props) => {
   return (
-    <Card
-      isPressable
-      as={Link}
-      href={`/patch/${patch.id}/introduction`}
-      className="w-full"
-    >
+    <Card isPressable as={Link} href={`/${patch.uniqueId}`} className="w-full">
       <CardBody className="p-4">
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="relative w-full sm:w-40">

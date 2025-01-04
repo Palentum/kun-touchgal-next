@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { prisma } from '~/prisma/index'
 import { NextRequest, NextResponse } from 'next/server'
 import { kunParsePostBody } from '~/app/api/utils/parseQuery'
 import { createMessage } from '~/app/api/utils/message'
@@ -9,16 +10,21 @@ export const create = async (
   input: z.infer<typeof createMessageSchema>,
   uid: number
 ) => {
-  const { type, content, recipientId, patchId, resourceId, commentId } = input
+  const { type, content, recipientId, patchId } = input
+
+  const patch = await prisma.patch.findUnique({
+    where: { id: patchId },
+    select: {
+      unique_id: true
+    }
+  })
 
   const message = await createMessage({
     type,
     content,
+    patch_unique_id: patch?.unique_id,
     sender_id: uid,
-    recipient_id: recipientId,
-    patch_id: patchId,
-    patch_resource_id: resourceId,
-    comment_id: commentId
+    recipient_id: recipientId
   })
 
   return message

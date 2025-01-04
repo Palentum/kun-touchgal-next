@@ -16,6 +16,12 @@ export const createPatchComment = async (
       parent_id: input.parentId
     }
   })
+  const patch = await prisma.patch.findUnique({
+    where: { id: input.patchId },
+    select: {
+      unique_id: true
+    }
+  })
 
   if (input.parentId) {
     const parentComment = await prisma.patch_comment.findUnique({
@@ -34,6 +40,7 @@ export const createPatchComment = async (
 
   const newComment: Omit<PatchComment, 'user'> = {
     id: data.id,
+    uniqueId: patch?.unique_id ?? '',
     content: data.content,
     isLike: false,
     likeCount: 0,

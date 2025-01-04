@@ -10,36 +10,17 @@ import {
 } from '@nextui-org/react'
 import { BreadcrumbItem, Breadcrumbs } from '@nextui-org/breadcrumbs'
 import { ChevronRight } from 'lucide-react'
-import { useParams, usePathname } from 'next/navigation'
-import {
-  getKunPathLabel,
-  isPatchPath,
-  isTagPath,
-  isUserPath
-} from '~/constants/routes'
+import { usePathname } from 'next/navigation'
+import { getKunPathLabel } from '~/constants/routes'
 import { useBreadcrumbStore } from '~/store/breadcrumb'
-import { kunFetchGet } from '~/utils/kunFetch'
 import type { KunBreadcrumbItem } from '~/constants/routes'
-import type { Patch } from '~/types/api/patch'
-import type { TagDetail } from '~/types/api/tag'
-import type { UserInfo } from '~/types/api/user'
 
 const dynamicRoutes = ['patch', 'tag', 'user']
 
 export const KunNavigationBreadcrumb = () => {
   const { items, setItems } = useBreadcrumbStore()
   const pathname = usePathname()
-  const params = useParams()
   const label = getKunPathLabel(pathname)
-
-  const fetchPatch = async (id: number) =>
-    await kunFetchGet<Patch>('/patch', { patchId: id })
-
-  const fetchTag = async (id: number) =>
-    await kunFetchGet<TagDetail>('/tag', { tagId: id })
-
-  const fetchUser = async (id: number) =>
-    await kunFetchGet<UserInfo>('/user/status/info', { id })
 
   const handleRoutes = async () => {
     if (!label) {
@@ -50,27 +31,6 @@ export const KunNavigationBreadcrumb = () => {
       key: pathname,
       label,
       href: pathname
-    }
-
-    if (isPatchPath(pathname)) {
-      const patch = await fetchPatch(Number(params.id))
-      newItem.key = dynamicRoutes[0]
-      newItem.label = `补丁：${patch.name}`
-      newItem.href = `/patch/${patch.id}/introduction`
-    }
-
-    if (isTagPath(pathname)) {
-      const tag = await fetchTag(Number(params.id))
-      newItem.key = dynamicRoutes[1]
-      newItem.label = `标签：${tag.name}`
-      newItem.href = `/tag/${tag.id}`
-    }
-
-    if (isUserPath(pathname)) {
-      const user = await fetchUser(Number(params.id))
-      newItem.key = dynamicRoutes[2]
-      newItem.label = `用户：${user.name}`
-      newItem.href = `/user/${user.id}/resource`
     }
 
     const mergedItems = [...items, newItem]

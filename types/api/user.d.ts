@@ -32,6 +32,7 @@ export interface UserFollow {
 
 export interface UserResource {
   id: number
+  patchUniqueId: string
   patchId: number
   patchName: string
   patchBanner: string
@@ -44,6 +45,7 @@ export interface UserResource {
 
 export interface UserContribute {
   id: number
+  patchUniqueId: string
   patchId: number
   patchName: string
   created: string
@@ -51,6 +53,7 @@ export interface UserContribute {
 
 export interface UserComment {
   id: number
+  patchUniqueId: string
   content: string
   like: number
   userId: number

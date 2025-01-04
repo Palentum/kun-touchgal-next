@@ -16,7 +16,7 @@ export const UserResourceCard = ({ resource }: Props) => {
     <Card
       isPressable
       as={Link}
-      href={`/patch/${resource.patchId}/resource`}
+      href={`/${resource.patchUniqueId}`}
       className="w-full"
     >
       <CardBody className="p-4">

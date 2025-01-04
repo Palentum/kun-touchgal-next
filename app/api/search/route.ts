@@ -10,7 +10,7 @@ export const searchGalgame = async (input: z.infer<typeof searchSchema>) => {
 
   const offset = (page - 1) * limit
 
-  const patches = await Promise.all(
+  const data = await Promise.all(
     query.map(async (q) =>
       prisma.patch.findMany({
         where: {
@@ -42,9 +42,18 @@ export const searchGalgame = async (input: z.infer<typeof searchSchema>) => {
     }
   })
 
-  const uniqueGalgames = Array.from(
-    new Set(patches.flat().map((patch) => patch.id))
-  ).map((id) => patches.flat().find((patch) => patch.id === id))
+  const galgames: GalgameCard[] = data.flat().map((gal) => ({
+    ...gal,
+    uniqueId: gal.unique_id
+  }))
+  const uniqueGalgames: GalgameCard[] = Array.from(
+    galgames
+      .reduce(
+        (map, gal) => map.set(gal.id, gal),
+        new Map<number, GalgameCard>()
+      )
+      .values()
+  )
 
   return { galgames: uniqueGalgames, total }
 }

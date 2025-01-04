@@ -40,6 +40,7 @@ export const getUserComment = async (
 
   const comments: UserComment[] = data.map((comment) => ({
     id: comment.id,
+    patchUniqueId: comment.patch.unique_id,
     content: markdownToText(comment.content).slice(0, 233),
     like: comment.like_by.length,
     userId: comment.user_id,

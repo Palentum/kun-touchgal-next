@@ -46,11 +46,7 @@ export const UserCommentCard = ({ comment }: Props) => {
 
         <div className="text-sm text-default-500">
           位置{' '}
-          <Link
-            size="sm"
-            underline="always"
-            href={`/patch/${comment.patchId}/comment`}
-          >
+          <Link size="sm" underline="always" href={`/${comment.patchUniqueId}`}>
             {comment.patchName}
           </Link>
         </div>

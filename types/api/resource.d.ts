@@ -1,5 +1,6 @@
 export interface PatchResource {
   id: number
+  uniqueId: string
   storage: string
   size: string
   type: string[]

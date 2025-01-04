@@ -47,12 +47,8 @@ const getCardRoute = (msg: Message) => {
     return '/'
   }
 
-  if (msg.patch_id) {
-    return `/patch/${msg.patch_id}/introduction`
-  } else if (msg.comment_id) {
-    return `/patch/${msg.patch_id}/comment`
-  } else if (msg.patch_resource_id) {
-    return `/patch/${msg.patch_id}/resource`
+  if (msg.patchUniqueId) {
+    return `/${msg.patchUniqueId}`
   } else {
     return `/user/${msg.sender?.id}/resource`
   }
@@ -86,8 +82,8 @@ export const MessageCard = ({ msg }: Props) => {
 
             <span>{MESSAGE_TYPE_MAP[msg.type]}</span>
           </div>
-          <p className="text-gray-600">{msg.content}</p>
-          <span className="text-sm text-gray-400">
+          <p className="text-default-600">{msg.content}</p>
+          <span className="text-sm text-default-400">
             {formatDistanceToNow(msg.created)}
           </span>
         </div>
