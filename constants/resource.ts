@@ -143,7 +143,7 @@ export const ALLOWED_MIME_TYPES = [
 
 export const ALLOWED_EXTENSIONS = ['.zip', '.rar', '.7z']
 
-export const SUPPORTED_RESOURCE_SECTION = ['galgame', 'patch']
+export const SUPPORTED_RESOURCE_SECTION = ['galgame', 'patch'] as const
 
 export const RESOURCE_SECTION_MAP: Record<string, string> = {
   galgame: 'Galgame 资源',

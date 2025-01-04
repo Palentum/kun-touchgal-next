@@ -15,6 +15,11 @@ export const PatchHeaderTabs = ({ id, intro }: PatchHeaderProps) => {
       className="w-full my-6 overflow-hidden shadow-medium rounded-large"
       fullWidth={true}
       defaultSelectedKey="introduction"
+      onSelectionChange={(value) => {
+        if (value === 'resources') {
+          window.scroll(0, 0)
+        }
+      }}
     >
       <Tab key="introduction" title="游戏介绍" className="p-0">
         <IntroductionTab intro={intro} patchId={Number(id)} />
