@@ -15,10 +15,6 @@ export const kunNavItem: KunNavItem[] = [
   {
     name: '帮助文档',
     href: '/doc'
-  },
-  {
-    name: '友情链接',
-    href: '/friend-link'
   }
 ]
 

@@ -2,7 +2,6 @@
 
 import { Card, CardBody, CardFooter, Image, Link } from '@nextui-org/react'
 import { motion } from 'framer-motion'
-import { KunExternalLink } from '~/components/kun/ExternalLink'
 import { kunMoyuMoe } from '~/config/moyu-moe'
 import { kunFriends } from '~/config/friend'
 
@@ -64,9 +63,14 @@ export const KunFriendLink = () => {
           </h2>
           <p className="mb-12 text-center text-default-500">
             要加入我们, 请加入我们的{' '}
-            <KunExternalLink link={kunMoyuMoe.domain.telegram_group}>
+            <Link
+              isExternal
+              showAnchorIcon
+              href={kunMoyuMoe.domain.telegram_group}
+              rel="noopener noreferrer"
+            >
               Telegram 群组
-            </KunExternalLink>
+            </Link>
             联系我们
           </p>
         </div>
