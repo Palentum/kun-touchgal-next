@@ -1,5 +1,5 @@
 export const docDirectoryLabelMap: Record<string, string> = {
-  about: '关于我们',
+  about: '帮助文档',
   dev: '开发文档',
   kun: '关于鲲',
   notice: '公告'

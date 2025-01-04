@@ -7,7 +7,7 @@ export interface KunBreadcrumbItem {
 
 const keyLabelMap: Record<string, string> = {
   '/': '主页',
-  '/doc': '关于我们',
+  '/doc': '帮助文档',
   '/admin/comment': '评论管理',
   '/admin/creator': '创作者管理',
   '/admin/galgame': 'Galgame 管理',

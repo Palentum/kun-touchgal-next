@@ -14,7 +14,7 @@ interface TreeItemProps {
 
 export const TreeItem = ({ node, level }: TreeItemProps) => {
   const router = useRouter()
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(false)
 
   const handleClick = () => {
     if (node.type === 'directory') {
@@ -28,8 +28,9 @@ export const TreeItem = ({ node, level }: TreeItemProps) => {
     <nav className="select-none">
       <Link
         className={cn(
-          'w-full justify-start gap-2 px-3 py-2 hover:text-primary-500 cursor-pointer',
-          level === 0 ? 'mt-0' : 'mt-1'
+          'w-full justify-start gap-2 px-3 py-2 cursor-pointer rounded-xl',
+          level === 0 ? 'mt-0' : 'mt-1',
+          'hover:bg-default/40'
         )}
         style={{ paddingLeft: `${level * 12 + 12}px` }}
         onPress={handleClick}
