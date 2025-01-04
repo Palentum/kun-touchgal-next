@@ -3,36 +3,20 @@
 import { useEffect, useState } from 'react'
 import {
   Button,
-  Card,
-  CardBody,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Tabs,
-  Tab,
   useDisclosure
 } from '@nextui-org/react'
-import { Edit, MoreHorizontal, Plus, Trash2 } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { kunFetchDelete, kunFetchGet } from '~/utils/kunFetch'
 import { PublishResource } from './publish/PublishResource'
 import { EditResourceDialog } from './edit/EditResourceDialog'
-import { useUserStore } from '~/store/providers/user'
-import { ResourceInfo } from './ResourceInfo'
-import { ResourceDownload } from './ResourceDownload'
+import { ResourceTabs } from './Tabs'
 import toast from 'react-hot-toast'
-import {
-  SUPPORTED_RESOURCE_SECTION,
-  RESOURCE_SECTION_MAP
-} from '~/constants/resource'
 import type { PatchResource } from '~/types/api/patch'
-
-type ResourceSection = (typeof SUPPORTED_RESOURCE_SECTION)[number]
 
 interface Props {
   id: number
@@ -61,7 +45,6 @@ export const Resources = ({ id }: Props) => {
     onOpen: onOpenEdit,
     onClose: onCloseEdit
   } = useDisclosure()
-  const { user } = useUserStore((state) => state)
   const [editResource, setEditResource] = useState<PatchResource | null>(null)
 
   const {
@@ -87,18 +70,6 @@ export const Resources = ({ id }: Props) => {
     toast.success('删除资源链接成功')
   }
 
-  const [selectedSection, setSelectedSection] =
-    useState<ResourceSection>('galgame')
-  const categorizedResources = SUPPORTED_RESOURCE_SECTION.reduce(
-    (acc, section) => {
-      acc[section] = resources.filter(
-        (resource) => resource.section === section
-      )
-      return acc
-    },
-    {} as Record<ResourceSection, PatchResource[]>
-  )
-
   return (
     <div className="mt-4 space-y-4">
       <div className="flex justify-end">
@@ -112,81 +83,13 @@ export const Resources = ({ id }: Props) => {
         </Button>
       </div>
 
-      <Tabs
-        selectedKey={selectedSection}
-        onSelectionChange={(key) => setSelectedSection(key as ResourceSection)}
-        className="mb-4"
-      >
-        {SUPPORTED_RESOURCE_SECTION.map((section) => (
-          <Tab
-            key={section}
-            title={RESOURCE_SECTION_MAP[section]}
-            className="w-full"
-          >
-            <div className="space-y-4">
-              {categorizedResources[section].length > 0 ? (
-                categorizedResources[section].map((resource) => (
-                  <Card key={resource.id}>
-                    <CardBody className="space-y-2">
-                      <div className="flex items-start justify-between">
-                        <ResourceInfo resource={resource} />
-
-                        <Dropdown>
-                          <DropdownTrigger>
-                            <Button variant="light" isIconOnly>
-                              <MoreHorizontal
-                                aria-label="补丁资源操作"
-                                className="size-4"
-                              />
-                            </Button>
-                          </DropdownTrigger>
-                          <DropdownMenu
-                            aria-label="Resource actions"
-                            disabledKeys={
-                              user.uid === resource.userId
-                                ? []
-                                : ['edit', 'delete']
-                            }
-                          >
-                            <DropdownItem
-                              key="edit"
-                              startContent={<Edit className="size-4" />}
-                              onPress={() => {
-                                setEditResource(resource)
-                                onOpenEdit()
-                              }}
-                            >
-                              编辑
-                            </DropdownItem>
-                            <DropdownItem
-                              key="delete"
-                              className="text-danger"
-                              color="danger"
-                              startContent={<Trash2 className="size-4" />}
-                              onPress={() => {
-                                onOpenDelete()
-                                setDeleteResourceId(resource.id)
-                              }}
-                            >
-                              删除
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </Dropdown>
-                      </div>
-
-                      <ResourceDownload resource={resource} />
-                    </CardBody>
-                  </Card>
-                ))
-              ) : (
-                <div className="py-8 text-center text-gray-500">
-                  暂无{RESOURCE_SECTION_MAP[section]}
-                </div>
-              )}
-            </div>
-          </Tab>
-        ))}
-      </Tabs>
+      <ResourceTabs
+        resources={resources}
+        setEditResource={setEditResource}
+        onOpenEdit={onOpenEdit}
+        onOpenDelete={onOpenDelete}
+        setDeleteResourceId={setDeleteResourceId}
+      />
 
       <Modal
         size="3xl"
