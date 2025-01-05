@@ -1,4 +1,3 @@
-import DOMPurify from 'isomorphic-dompurify'
 import { Calendar, Clock, Link, RefreshCw } from 'lucide-react'
 import { formatDate } from '~/utils/time'
 import type { PatchIntroduction } from '~/types/api/patch'
@@ -10,13 +9,6 @@ interface Props {
 export const Info = ({ intro }: Props) => {
   return (
     <>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: DOMPurify.sanitize(intro.introduction)
-        }}
-        className="kun-prose max-w-none"
-      />
-
       <div className="grid gap-4 mt-6 sm:grid-cols-2">
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <Clock className="size-4" />

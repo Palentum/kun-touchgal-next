@@ -21,7 +21,7 @@ export const PatchHeaderTabs = ({ id, intro }: PatchHeaderProps) => {
         }
       }}
     >
-      <Tab key="introduction" title="游戏介绍" className="p-0">
+      <Tab key="introduction" title="游戏信息" className="p-0">
         <IntroductionTab intro={intro} patchId={Number(id)} />
       </Tab>
 

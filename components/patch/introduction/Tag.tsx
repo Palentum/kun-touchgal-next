@@ -19,9 +19,9 @@ export const PatchTag = ({ patchId, initialTags }: Props) => {
 
   return (
     <div className="mt-4 space-y-4">
-      <h2 className="text-xl font-medium">游戏标签</h2>
+      <h2 className="text-2xl font-bold">游戏标签</h2>
 
-      <div className="space-x-2">
+      <div className="space-x-2 space-y-2">
         {selectedTags.map((tag) => (
           <Tooltip key={tag.id} content={`${tag.count} 个补丁使用此标签`}>
             <Link href={`/tag/${tag.id}`}>

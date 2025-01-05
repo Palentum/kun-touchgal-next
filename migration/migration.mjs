@@ -3,6 +3,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import matter from 'gray-matter'
 import { PrismaClient } from '@prisma/client'
+import size from './size.json' with { type: 'json' }
 
 const prisma = new PrismaClient()
 
@@ -19,12 +20,33 @@ const FOLDERS = {
 }
 
 // 支持的分类
-const SUPPORTED_RESOURCE_SECTION = ['galgame', 'patch']
-const SUPPORTED_RESOURCE_LINK = ['touchgal', 's3']
-const SUPPORTED_TYPE = ['game', 'patch']
-const SUPPORTED_LANGUAGE = ['zh-Hans', 'ja', 'other']
-const SUPPORTED_PLATFORM = ['windows', 'android', 'other']
-const ResourceSizeRegex = /^\d+(MB|GB)$/
+export const TYPE_MAP = {
+  全部类型: 'all',
+  PC游戏: 'pc',
+  汉化资源: 'chinese',
+  PE游戏: 'mobile',
+  模拟器资源: 'emulator',
+  生肉资源: 'row',
+  直装资源: 'app',
+  补丁资源: 'patch',
+  游戏工具: 'tool',
+  官方通知: 'notice',
+  其它: 'other'
+}
+
+export const markdownToText = (markdown) => {
+  return markdown
+    .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+    .replace(/!\[([^\]]*)\]\([^\)]+\)/g, '$1')
+    .replace(/(\*\*|__)(.*?)\1/g, '$2')
+    .replace(/(\*|_)(.*?)\1/g, '$2')
+    .replace(/^\s*(#{1,6})\s+(.*)/gm, '$2')
+    .replace(/```[\s\S]*?```|`([^`]*)`/g, '$1')
+    .replace(/^(-{3,}|\*{3,})$/gm, '')
+    .replace(/^\s*([-*+]|\d+\.)\s+/gm, '')
+    .replace(/\n{2,}/g, '\n')
+    .trim()
+}
 
 // 创建标签
 const createTag = async (input, uid) => {
@@ -78,7 +100,7 @@ const processMarkdownFile = async (filePath, contentLimit) => {
   if (type.includes('PC游戏')) {
     platform.push('windows')
   }
-  if (type.some((t) => ['手机游戏', '模拟器资源', '直装资源'].includes(t))) {
+  if (type.some((t) => ['PE游戏', '模拟器资源', '直装资源'].includes(t))) {
     platform.push('android')
   }
   if (platform.length === 0) {
@@ -86,18 +108,31 @@ const processMarkdownFile = async (filePath, contentLimit) => {
   }
 
   // 替换 introduction 中的语法
-  let introduction = content
+  const introductionSections = [
+    '## ▼ 游戏介绍',
+    '## ▼ 游戏截图',
+    '## ▼ PV鉴赏',
+    '## ▼ 支持正版'
+  ]
+  let introduction = ''
+  introductionSections.forEach((section) => {
+    const regex = new RegExp(`${section}\\s*([\\s\\S]*?)(?=\\n## \\▼|$)`, 'g')
+    const match = content.match(regex)
+    if (match) {
+      introduction += match.join('\n\n').trim() + '\n\n'
+    }
+  })
+
+  // 替换语法
+  introduction = introduction
     .replace(/\{\% image (.+?) \%\}/g, '![]($1)')
-    .replace(/▼ /g, '')
     .replace(/, alt=/g, '')
-  introduction = introduction.replace(
-    /\{\% video (.+?) \%\}/g,
-    '::kun-video{src="$1"}'
-  )
-  introduction = introduction.replace(
-    /\{\% link ([^,]+),([^,]+),(.+?) \%\}/g,
-    '::kun-link{href="$3" text="$1, $2"}'
-  )
+    .replace(/\{\% video (.+?) \%\}/g, '::kun-video{src="$1"}')
+    .replace(
+      /\{\% link ([^,]+),([^,]+),(.+?) \%\}/g,
+      '::kun-link{href="$3" text="$1, $2"}'
+    )
+    .replace(/▼ /g, '')
 
   // 检查重复
   const existPatch = await prisma.patch.findUnique({
@@ -113,7 +148,7 @@ const processMarkdownFile = async (filePath, contentLimit) => {
       data: {
         unique_id: uniqueId,
         name,
-        type,
+        type: type.map((t) => TYPE_MAP[t]),
         banner,
         content_limit: contentLimit,
         created,
@@ -125,30 +160,80 @@ const processMarkdownFile = async (filePath, contentLimit) => {
     })
 
     // 创建标签
-    for (const tag of tags) {
-      await createTag({ name: tag }, 1)
-    }
-
-    // 创建资源
-    // console.log(content)
-
-    console.log(resource)
-    const [, link] = resource.match(/\{\% btn '(.+?)',(.+?),(.*?) \%\}/)
-    console.log(link, name)
-
-    await createPatchResource({
-      patchId: patch.id,
-      section: 'galgame',
-      name: '电脑版游戏本体下载资源',
-      storage: 'touchgal',
-      size: '未知大小',
-      content: link,
-      type,
-      language,
-      platform,
-      note: ''
+    await Promise.all(
+      tags.map(async (tagName) => {
+        const tag = await createTag({ name: tagName }, USER_ID)
+        if (tag) {
+          return tag.id
+        }
+      })
+    ).then(async (tagIds) => {
+      // 添加标签到 patch
+      const relationData = tagIds.map((tagId) => ({
+        patch_id: patch.id,
+        tag_id: tagId
+      }))
+      await prisma.$transaction(async (prisma) => {
+        await prisma.patch_tag_relation.createMany({ data: relationData })
+        await prisma.patch_tag.updateMany({
+          where: { id: { in: tagIds } },
+          data: { count: { increment: 1 } }
+        })
+      })
     })
 
+    const sections = [
+      {
+        marker: '## ▼ 下载地址',
+        name: '电脑版游戏本体下载资源',
+        excludeType: new Set(['PE游戏', '模拟器资源', '直装资源']),
+        excludePlatform: new Set(['android'])
+      },
+      {
+        marker: '## ▼ PE版下载链接',
+        name: '手机版游戏本体下载资源',
+        excludeType: new Set(['PC游戏']),
+        excludePlatform: new Set(['windows'])
+      }
+    ]
+
+    let note = ''
+    const noteMatch = content.match(/## ▼ 游戏备注\s*([\s\S]+?)$/)
+    if (noteMatch) {
+      note = noteMatch[1].trim()
+    }
+
+    sections.forEach(async (section) => {
+      const regex = new RegExp(`${section.marker}\\s*\\{\\% btn '(.+?)',`, 's')
+      const match = content.match(regex)
+
+      if (match) {
+        const link = match[1]
+        const name = section.name
+        const excludedType = type.filter(
+          (item) => !section.excludeType.has(item)
+        )
+        const excludedPlatform = platform.filter(
+          (item) => !section.excludePlatform.has(item)
+        )
+
+        await createPatchResource(
+          {
+            patchId: patch.id,
+            section: 'galgame',
+            name,
+            storage: 'touchgal',
+            size: size[link] ?? '未知大小',
+            content: link,
+            type: excludedType.map((type) => TYPE_MAP[type]),
+            language,
+            platform: excludedPlatform,
+            note: markdownToText(note)
+          },
+          USER_ID
+        )
+      }
+    })
     console.log(`成功迁移文件: ${filePath}`)
   } catch (error) {
     console.error(`迁移文件失败: ${filePath}`, error)
@@ -167,52 +252,17 @@ const createPatchResource = async (input, uid) => {
     ...resourceData
   } = input
 
-  const currentPatch = await prisma.patch.findUnique({
-    where: { id: patchId },
-    select: {
-      type: true,
-      language: true,
-      platform: true
+  await prisma.patch_resource.create({
+    data: {
+      patch_id: patchId,
+      user_id: uid,
+      type,
+      language,
+      platform,
+      content,
+      storage,
+      ...resourceData
     }
-  })
-  if (!currentPatch) {
-    return
-  }
-
-  let res = content
-
-  return await prisma.$transaction(async (prisma) => {
-    const newResource = await prisma.patch_resource.create({
-      data: {
-        patch_id: patchId,
-        user_id: uid,
-        type,
-        language,
-        platform,
-        content: res,
-        storage,
-        ...resourceData
-      }
-    })
-
-    const updatedTypes = [...new Set(currentPatch.type.concat(type))]
-    const updatedLanguages = [
-      ...new Set(currentPatch.language.concat(language))
-    ]
-    const updatedPlatforms = [
-      ...new Set(currentPatch.platform.concat(platform))
-    ]
-
-    await prisma.patch.update({
-      where: { id: patchId },
-      data: {
-        type: { set: updatedTypes },
-        language: { set: updatedLanguages },
-        platform: { set: updatedPlatforms }
-      }
-    })
-
-    return newResource
   })
 }
 
@@ -229,9 +279,37 @@ const processFolder = async (folderPath, contentLimit) => {
   }
 }
 
+// 重置数据库表
+const resetTables = async () => {
+  try {
+    const tables = [
+      { name: 'patch', sequence: 'patch_id_seq' },
+      { name: 'patch_resource', sequence: 'patch_resource_id_seq' },
+      { name: 'patch_tag', sequence: 'patch_tag_id_seq' },
+      { name: 'patch_tag_relation', sequence: 'patch_tag_relation_id_seq' }
+    ]
+
+    for (const table of tables) {
+      console.log(`Resetting table: ${table.name}`)
+      await prisma.$executeRawUnsafe(
+        `TRUNCATE TABLE "${table.name}" RESTART IDENTITY CASCADE`
+      )
+    }
+
+    console.log('All tables have been reset successfully.')
+  } catch (error) {
+    console.error('Error resetting tables:', error)
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
 // 主函数
 const kun = async () => {
   try {
+    // 重置数据库表
+    resetTables()
+
     // 处理 SFW 文件夹
     const sfwPath = path.join(MARKDOWN_DIR, FOLDERS.SFW)
     if (fs.existsSync(sfwPath)) {
