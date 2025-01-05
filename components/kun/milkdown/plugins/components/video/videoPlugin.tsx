@@ -52,7 +52,7 @@ export const videoNode = $node('kun-video', () => ({
     }
   },
   toMarkdown: {
-    match: (node) => node.type.name === 'video',
+    match: (node) => node.type.name === 'kun-video',
     runner: (state, node) => {
       state.addNode('leafDirective', undefined, undefined, {
         name: 'kun-video',

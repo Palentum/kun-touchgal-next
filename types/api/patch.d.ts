@@ -25,7 +25,6 @@ export interface Patch {
   updated: string
   _count: {
     favorite_by: number
-    contribute_by: number
     resource: number
     comment: number
   }

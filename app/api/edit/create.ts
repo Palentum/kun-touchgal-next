@@ -53,13 +53,6 @@ export const createGalgame = async (
         }
       })
 
-      await prisma.user_patch_contribute_relation.create({
-        data: {
-          user_id: uid,
-          patch_id: newId
-        }
-      })
-
       return { uniqueId: galgameUniqueId }
     },
     { timeout: 60000 }

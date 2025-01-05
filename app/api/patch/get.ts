@@ -19,7 +19,6 @@ export const getPatchById = async (
       _count: {
         select: {
           favorite_by: true,
-          contribute_by: true,
           resource: true,
           comment: true
         }

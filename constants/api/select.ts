@@ -2,7 +2,6 @@
 type SelectFieldKey = Exclude<keyof GalgameCard, '_count'> & {
   select: {
     favorite_by: boolean
-    contribute_by: boolean
     resource: boolean
     comment: boolean
   }
@@ -22,7 +21,6 @@ export const GalgameCardSelectField = {
   _count: {
     select: {
       favorite_by: true,
-      contribute_by: true,
       resource: true,
       comment: true
     }
