@@ -1,7 +1,10 @@
 import { createWriteStream, existsSync } from 'fs'
 import { mkdir, readFile, unlink, writeFile } from 'fs/promises'
 import path from 'path'
-import { UPLOAD_DIR } from '~/constants/admin'
+// import { UPLOAD_DIR } from '~/constants/admin'
+
+// TODO: Dangerous!!!
+const UPLOAD_DIR = ''
 
 export const ensureUploadDir = async () => {
   if (!existsSync(UPLOAD_DIR)) {

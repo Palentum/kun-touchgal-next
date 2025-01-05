@@ -37,6 +37,12 @@ const nextConfig: NextConfig = {
         hostname: 'touchgal-image.moyu.moe',
         port: '',
         pathname: '/**'
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.touchgalstatic.org',
+        port: '',
+        pathname: '/**'
       }
     ]
   },

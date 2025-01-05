@@ -48,4 +48,6 @@ next-env.d.ts
 /public/**/*.xml
 
 # static markdown
-/migration
+/migration/markdown
+/migration/*.txt
+/migration/*.json
