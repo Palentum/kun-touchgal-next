@@ -4,11 +4,14 @@ import { fileURLToPath } from 'url'
 import matter from 'gray-matter'
 import { PrismaClient } from '@prisma/client'
 import size from './size.json' with { type: 'json' }
+import { uploadImageFromURL } from './_uploadBanner.mjs'
 
 const prisma = new PrismaClient()
 
 // 用户 ID, 根据生产环境的实际 uid 确定
 const USER_ID = 1
+// 处理文件最大并发数
+const MAX_CONCURRENT = 10
 
 // 文件夹路径
 const __filename = fileURLToPath(import.meta.url)
@@ -79,76 +82,38 @@ const createTag = async (input, uid) => {
 
 // 处理 Markdown 文件
 const processMarkdownFile = async (filePath, contentLimit) => {
-  const fileContent = fs.readFileSync(filePath, 'utf-8')
-  const { data, content } = matter(fileContent)
-
-  // 提取字段
-  const uniqueId = data.abbrlink
-  const banner = data.cover || ''
-  const created = new Date(data.date).toISOString()
-  const title = data.title ?? ''
-  const name = title.replace(/【.*?】/g, '').trim()
-  const tags = data.tags || []
-
-  const type = data.categories?.flat() || []
-  const language = type.includes('汉化资源')
-    ? ['zh-Hans']
-    : type.includes('生肉资源')
-      ? ['ja']
-      : ['other']
-  const platform = []
-  if (type.includes('PC游戏')) {
-    platform.push('windows')
-  }
-  if (type.some((t) => ['PE游戏', '模拟器资源', '直装资源'].includes(t))) {
-    platform.push('android')
-  }
-  if (platform.length === 0) {
-    platform.push('other')
-  }
-
-  // 替换 introduction 中的语法
-  const introductionSections = [
-    '## ▼ 游戏介绍',
-    '## ▼ 游戏截图',
-    '## ▼ PV鉴赏',
-    '## ▼ 支持正版'
-  ]
-  let introduction = ''
-  introductionSections.forEach((section) => {
-    const regex = new RegExp(`${section}\\s*([\\s\\S]*?)(?=\\n## \\▼|$)`, 'g')
-    const match = content.match(regex)
-    if (match) {
-      introduction += match.join('\n\n').trim() + '\n\n'
-    }
-  })
-
-  // 替换语法
-  introduction = introduction
-    .replace(/\{\% image (.+?) \%\}/g, '![]($1)')
-    .replace(/, alt=/g, '')
-    .replace(/\{\% video (.+?) \%\}/g, '::kun-video{src="$1"}')
-    .replace(
-      /\{\% link ([^,]+),([^,]+),(.+?) \%\}/g,
-      '::kun-link{href="$3" text="$1, $2"}'
-    )
-    .replace(/▼ /g, '')
-
-  // 检查重复
-  const existPatch = await prisma.patch.findUnique({
-    where: { unique_id: uniqueId }
-  })
-  if (existPatch) {
-    return
-  }
-
-  // 创建 patch
   try {
+    // 读取文件内容
+    const fileContent = fs.readFileSync(filePath, 'utf-8')
+    const { data, content } = matter(fileContent)
+
+    // 提取字段
+    const uniqueId = data.abbrlink
+    const banner = data.cover || ''
+    const created = new Date(data.date).toISOString()
+    const title = data.title ?? ''
+    const name = title.replace(/【.*?】/g, '').trim()
+    const tags = data.tags || []
+
+    const type = data.categories?.flat() || []
+    const language = determineLanguage(type)
+    const platform = determinePlatform(type)
+
+    // 处理 introduction
+    const introduction = extractIntroduction(content)
+
+    // 检查是否已存在
+    const existPatch = await prisma.patch.findUnique({
+      where: { unique_id: uniqueId }
+    })
+    if (existPatch) return
+
+    // 创建 Patch 记录
     const patch = await prisma.patch.create({
       data: {
         unique_id: uniqueId,
         name,
-        type: type.map((t) => TYPE_MAP[t]),
+        type: mapTypes(type),
         banner,
         content_limit: contentLimit,
         created,
@@ -159,73 +124,178 @@ const processMarkdownFile = async (filePath, contentLimit) => {
       }
     })
 
-    // 创建标签
-    await Promise.all(
-      tags.map(async (tagName) => {
-        const tag = await createTag({ name: tagName }, USER_ID)
-        if (tag) {
-          return tag.id
-        }
-      })
-    ).then(async (tagIds) => {
-      // 添加标签到 patch
-      const relationData = tagIds.map((tagId) => ({
-        patch_id: patch.id,
-        tag_id: tagId
-      }))
-      await prisma.$transaction(async (prisma) => {
-        await prisma.patch_tag_relation.createMany({ data: relationData })
-        await prisma.patch_tag.updateMany({
-          where: { id: { in: tagIds } },
-          data: { count: { increment: 1 } }
-        })
-      })
+    // 上传 Banner 并更新记录
+    const bannerLink = await uploadImageFromURL(banner, patch.id)
+    console.log(bannerLink)
+
+    await prisma.patch.update({
+      where: { id: patch.id },
+      data: { banner: bannerLink }
     })
 
-    const sections = [
-      {
-        marker: '## ▼ 下载地址',
-        name: '电脑版游戏本体下载资源',
-        excludeType: new Set(['PE游戏', '模拟器资源', '直装资源']),
-        excludePlatform: new Set(['android'])
-      },
-      {
-        marker: '## ▼ PE版下载链接',
-        name: '手机版游戏本体下载资源',
-        excludeType: new Set(['PC游戏']),
-        excludePlatform: new Set(['windows'])
-      }
-    ]
+    // 创建标签并建立关联
+    await createAndLinkTags(tags, patch.id)
 
-    let note = ''
-    const noteMatch = content.match(/## ▼ 游戏备注\s*([\s\S]+?)$/)
-    if (noteMatch) {
-      note = noteMatch[1].trim()
+    // 创建资源
+    const note = extractNoteSection(content)
+    await createPatchResources(content, patch, type, platform, language, note)
+
+    console.log(`成功迁移文件: ${filePath}`)
+  } catch (error) {
+    console.error(`迁移文件失败: ${filePath}`, error)
+  }
+}
+
+const processMarkdownFiles = async (filePaths, contentLimit) => {
+  console.time('Total Processing Time')
+  const results = []
+
+  // 分批处理文件
+  for (let i = 0; i < filePaths.length; i += MAX_CONCURRENT) {
+    const batch = filePaths.slice(i, i + MAX_CONCURRENT)
+    const batchResults = await Promise.allSettled(
+      batch.map((filePath) => processMarkdownFile(filePath, contentLimit))
+    )
+    results.push(...batchResults)
+  }
+
+  console.log(results)
+
+  // 统计结果
+  const succeeded = results.filter((res) => res.status === 'fulfilled').length
+  const failed = results.filter((res) => res.status === 'rejected').length
+
+  console.log(`处理完成: 成功 ${succeeded} 个文件，失败 ${failed} 个文件`)
+  console.timeEnd('Total Processing Time')
+}
+
+const processMarkdownDirectory = async (directoryPath, contentLimit) => {
+  try {
+    const allFiles = fs.readdirSync(directoryPath)
+    const markdownFiles = allFiles.filter((file) => file.endsWith('.md'))
+    const filePaths = markdownFiles.map((file) =>
+      path.join(directoryPath, file)
+    )
+
+    console.log(`开始处理 ${filePaths.length} 个 Markdown 文件...`)
+    await processMarkdownFiles(filePaths, contentLimit)
+  } catch (error) {
+    console.error('目录扫描或处理过程中出现错误:', error)
+  }
+}
+
+// 工具函数
+const determineLanguage = (type) => {
+  if (type.includes('汉化资源')) return ['zh-Hans']
+  if (type.includes('生肉资源')) return ['ja']
+  return ['other']
+}
+
+const determinePlatform = (type) => {
+  const platforms = []
+  if (type.includes('PC游戏')) platforms.push('windows')
+  if (type.some((t) => ['PE游戏', '模拟器资源', '直装资源'].includes(t))) {
+    platforms.push('android')
+  }
+  return platforms.length ? platforms : ['other']
+}
+
+const extractIntroduction = (content) => {
+  const sections = [
+    '## ▼ 游戏介绍',
+    '## ▼ 游戏截图',
+    '## ▼ PV鉴赏',
+    '## ▼ 支持正版'
+  ]
+  return sections
+    .map((section) => {
+      const regex = new RegExp(`${section}\\s*([\\s\\S]*?)(?=\\n## \\▼|$)`, 'g')
+      const match = content.match(regex)
+      return match ? match.join('\n\n').trim() : ''
+    })
+    .join('\n\n')
+    .replace(/\{\% image (.+?) \%\}/g, '![]($1)')
+    .replace(/, alt=/g, '')
+    .replace(/\{\% video (.+?) \%\}/g, '::kun-video{src="$1"}')
+    .replace(
+      /\{\% link ([^,]+),([^,]+),(.+?) \%\}/g,
+      '::kun-link{href="$3" text="$1, $2"}'
+    )
+    .replace(/▼ /g, '')
+}
+
+const mapTypes = (type) => type.map((t) => TYPE_MAP[t])
+
+const createAndLinkTags = async (tags, patchId) => {
+  const tagIds = await Promise.all(
+    tags.map(async (tagName) => {
+      const tag = await createTag({ name: tagName }, USER_ID)
+      return tag?.id
+    })
+  )
+  const filteredTagIds = tagIds.filter((item) => item !== undefined)
+
+  if (filteredTagIds.length) {
+    const relationData = filteredTagIds.map((tagId) => ({
+      patch_id: patchId,
+      tag_id: tagId
+    }))
+
+    await prisma.patch_tag_relation.createMany({ data: relationData })
+    await prisma.patch_tag.updateMany({
+      where: { id: { in: filteredTagIds } },
+      data: { count: { increment: 1 } }
+    })
+  }
+}
+
+const extractNoteSection = (content) => {
+  const match = content.match(/## ▼ 游戏备注\s*([\s\S]+?)$/)
+  return match ? match[1].trim() : ''
+}
+
+const createPatchResources = async (
+  content,
+  patch,
+  type,
+  platform,
+  language,
+  note
+) => {
+  const sections = [
+    {
+      marker: '## ▼ 下载地址',
+      name: '电脑版游戏本体下载资源',
+      excludeType: new Set(['PE游戏', '模拟器资源', '直装资源']),
+      excludePlatform: new Set(['android'])
+    },
+    {
+      marker: '## ▼ PE版下载链接',
+      name: '手机版游戏本体下载资源',
+      excludeType: new Set(['PC游戏']),
+      excludePlatform: new Set(['windows'])
     }
+  ]
 
-    sections.forEach(async (section) => {
+  await Promise.all(
+    sections.map(async (section) => {
       const regex = new RegExp(`${section.marker}\\s*\\{\\% btn '(.+?)',`, 's')
       const match = content.match(regex)
-
       if (match) {
         const link = match[1]
-        const name = section.name
-        const excludedType = type.filter(
-          (item) => !section.excludeType.has(item)
-        )
+        const excludedType = type.filter((t) => !section.excludeType.has(t))
         const excludedPlatform = platform.filter(
-          (item) => !section.excludePlatform.has(item)
+          (p) => !section.excludePlatform.has(p)
         )
-
         await createPatchResource(
           {
             patchId: patch.id,
             section: 'galgame',
-            name,
+            name: section.name,
             storage: 'touchgal',
             size: size[link] ?? '未知大小',
             content: link,
-            type: excludedType.map((type) => TYPE_MAP[type]),
+            type: mapTypes(excludedType),
             language,
             platform: excludedPlatform,
             note: markdownToText(note)
@@ -234,10 +304,7 @@ const processMarkdownFile = async (filePath, contentLimit) => {
         )
       }
     })
-    console.log(`成功迁移文件: ${filePath}`)
-  } catch (error) {
-    console.error(`迁移文件失败: ${filePath}`, error)
-  }
+  )
 }
 
 // 创建资源
@@ -290,7 +357,6 @@ const resetTables = async () => {
     ]
 
     for (const table of tables) {
-      console.log(`Resetting table: ${table.name}`)
       await prisma.$executeRawUnsafe(
         `TRUNCATE TABLE "${table.name}" RESTART IDENTITY CASCADE`
       )
@@ -314,14 +380,14 @@ const kun = async () => {
     const sfwPath = path.join(MARKDOWN_DIR, FOLDERS.SFW)
     if (fs.existsSync(sfwPath)) {
       console.log('开始处理 SFW 文件夹...')
-      await processFolder(sfwPath, 'sfw')
+      await processMarkdownDirectory(sfwPath, 'sfw')
     }
 
     // 处理 NSFW 文件夹
     const nsfwPath = path.join(MARKDOWN_DIR, FOLDERS.NSFW)
     if (fs.existsSync(nsfwPath)) {
       console.log('开始处理 NSFW 文件夹...')
-      await processFolder(nsfwPath, 'nsfw')
+      await processMarkdownDirectory(nsfwPath, 'nsfw')
     }
 
     console.log('迁移完成！')
