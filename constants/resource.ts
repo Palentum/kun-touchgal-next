@@ -109,18 +109,18 @@ export const SUPPORTED_PLATFORM_MAP: Record<string, string> = {
   other: '其它'
 }
 
-export const SUPPORTED_RESOURCE_LINK = ['s3', 'onedrive', 'user']
+export const SUPPORTED_RESOURCE_LINK = ['touchgal', 's3', 'user']
 
 export const storageTypes = [
+  {
+    value: 'touchgal',
+    label: 'TouchGal 资源盘 (官方可用)',
+    description: '此选项用于官方发布 Galgame 下载资源'
+  },
   {
     value: 's3',
     label: '对象存储 (<100MB, 创作者可用)',
     description: '此选项适合 <100MB 的补丁, 稳定, 永远不会失效过期'
-  },
-  {
-    value: 'onedrive',
-    label: 'OneDrive (>100MB, <1GB, 创作者可用)',
-    description: '此选项适合 >100MB 且 <1GB 的补丁, 较稳定, 我们还在开发中...'
   },
   {
     value: 'user',
@@ -130,8 +130,8 @@ export const storageTypes = [
 ]
 
 export const SUPPORTED_RESOURCE_LINK_MAP: Record<string, string> = {
+  touchgal: 'TouchGal 资源盘',
   s3: '对象存储下载',
-  onedrive: 'OneDrive 下载',
   user: '自定义链接下载'
 }
 

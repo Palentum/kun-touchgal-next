@@ -148,14 +148,14 @@ export const PublishResource = ({
             errors={errors}
           />
 
-          {watch().storage !== 'user' && (
+          {watch().storage === 's3' && (
             <FileUploadContainer
               onSuccess={handleUploadSuccess}
               handleRemoveFile={() => reset()}
             />
           )}
 
-          {(watch().storage === 'user' || watch().content) && (
+          {(watch().storage !== 's3' || watch().content) && (
             <ResourceLinksInput
               errors={errors}
               storage={watch().storage}

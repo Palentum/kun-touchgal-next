@@ -44,14 +44,14 @@ export const createPatchResource = async (
   })
 
   let res: string
-  if (storage === 'user') {
-    res = content
-  } else {
+  if (storage === 's3') {
     const result = await uploadPatchResource(patchId, resourceData.hash)
     if (typeof result === 'string') {
       return result
     }
     res = result.downloadLink
+  } else {
+    res = content
   }
 
   return await prisma.$transaction(async (prisma) => {

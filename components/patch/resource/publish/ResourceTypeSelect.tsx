@@ -19,6 +19,19 @@ interface Props {
 export const ResourceTypeSelect = ({ section, control, errors }: Props) => {
   const user = useUserStore((state) => state.user)
 
+  const calcDisabledKeys = () => {
+    if (user.role > 3 && section === 'patch') {
+      return []
+    }
+    if (user.role > 3 && section === 'galgame') {
+      return ['s3', 'user']
+    }
+    if (user.role > 1 && section === 'patch') {
+      return ['touchgal']
+    }
+    return ['s3', 'touchgal']
+  }
+
   return (
     <div className="space-y-2">
       <h3 className="text-lg font-medium">选择存储类型</h3>
@@ -34,16 +47,9 @@ export const ResourceTypeSelect = ({ section, control, errors }: Props) => {
             label="请选择您的资源存储类型"
             selectedKeys={[field.value]}
             onSelectionChange={(key) => {
-              if (key.anchorKey === key.currentKey) {
-                return
-              }
               field.onChange(Array.from(key).join(''))
             }}
-            disabledKeys={
-              user.role === 1 || section === 'galgame'
-                ? ['onedrive', 's3']
-                : ['onedrive']
-            }
+            disabledKeys={calcDisabledKeys()}
             isInvalid={!!errors.storage}
             errorMessage={errors.storage?.message}
           >

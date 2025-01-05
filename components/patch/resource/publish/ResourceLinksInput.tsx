@@ -24,9 +24,9 @@ export const ResourceLinksInput = ({
     <div className="space-y-2">
       <h3 className="text-lg font-medium">资源链接</h3>
       <p className="text-sm text-default-500">
-        {storage === 'user'
-          ? '上传资源会自动添加资源链接, 您也可以自行添加资源链接。为保证单一性, 建议您一次添加一条资源链接'
-          : '已为您自动创建资源链接 √'}
+        {storage === 's3'
+          ? '已为您自动创建资源链接 √'
+          : '上传资源会自动添加资源链接, 您也可以自行添加资源链接。为保证单一性, 建议您一次添加一条资源链接'}
       </p>
 
       {links.map((link, index) => {
@@ -44,11 +44,11 @@ export const ResourceLinksInput = ({
               <Input
                 isRequired
                 placeholder={
-                  storage === 'user' ? '请输入资源链接' : '资源链接不可编辑'
+                  storage === 's3' ? '资源链接不可编辑' : '请输入资源链接'
                 }
                 value={link}
-                isReadOnly={storage !== 'user'}
-                isDisabled={storage !== 'user'}
+                isReadOnly={storage === 's3'}
+                isDisabled={storage === 's3'}
                 isInvalid={!!errors.content}
                 errorMessage={errors.content?.message}
                 onChange={(e) => {
@@ -60,7 +60,7 @@ export const ResourceLinksInput = ({
               />
             </div>
 
-            {storage === 'user' && (
+            {storage !== 's3' && (
               <div className="flex justify-end">
                 {index === links.length - 1 ? (
                   <Button

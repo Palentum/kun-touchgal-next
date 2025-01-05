@@ -61,7 +61,7 @@ export const ResourceDownloadCard = ({ resource }: Props) => {
             {link}
           </Link>
 
-          {resource.storage !== 'user' && (
+          {resource.storage === 's3' && (
             <>
               <p className="text-sm">
                 BLACK3 校验码 (您可以根据此校验码校验下载文件完整性)

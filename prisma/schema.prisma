@@ -30,7 +30,6 @@ model user {
   patch_tag patch_tag[]
 
   patch_favorite      user_patch_favorite_relation[]
-  patch_contribute    user_patch_contribute_relation[]
   patch_comment_like  user_patch_comment_like_relation[]
   patch_resource_like user_patch_resource_like_relation[]
 
@@ -105,20 +104,6 @@ model user_patch_favorite_relation {
   @@unique([user_id, patch_id])
 }
 
-model user_patch_contribute_relation {
-  id Int @id @default(autoincrement())
-
-  user_id  Int
-  user     user  @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  patch_id Int
-  patch    patch @relation(fields: [patch_id], references: [id], onDelete: Cascade)
-
-  created DateTime @default(now())
-  updated DateTime @updatedAt
-
-  @@unique([user_id, patch_id])
-}
-
 model user_patch_comment_like_relation {
   id Int @id @default(autoincrement())
 
@@ -168,9 +153,8 @@ model patch {
   user_id Int
   user    user @relation("user_patch", fields: [user_id], references: [id])
 
-  tag           patch_tag_relation[]
-  favorite_by   user_patch_favorite_relation[]
-  contribute_by user_patch_contribute_relation[]
+  tag         patch_tag_relation[]
+  favorite_by user_patch_favorite_relation[]
 
   resource patch_resource[] @relation("patch_resource")
   comment  patch_comment[]  @relation("patch_comment")
