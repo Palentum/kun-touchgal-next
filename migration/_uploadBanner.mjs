@@ -7,8 +7,8 @@ const s3 = new S3Client({
   endpoint: process.env.KUN_VISUAL_NOVEL_S3_STORAGE_ENDPOINT,
   region: process.env.KUN_VISUAL_NOVEL_S3_STORAGE_REGION,
   requestHandler: {
-    connectionTimeout: 10000,
-    socketTimeout: 30000
+    connectionTimeout: 30000,
+    socketTimeout: 90000
   },
   credentials: {
     accessKeyId: process.env.KUN_VISUAL_NOVEL_S3_STORAGE_ACCESS_KEY_ID,
@@ -63,27 +63,69 @@ const uploadPatchBanner = async (imageBuffer, id) => {
   }
 }
 
-export const uploadImageFromURL = async (imageUrl, id) => {
-  try {
-    // 使用 fetch 获取图片
-    const response = await fetch(imageUrl)
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image: ${response.statusText}`)
-    }
+export const uploadImageFromURL = async (
+  imageUrl,
+  id,
+  maxRetries = 10,
+  timeout = 2000,
+  minDelay = 100,
+  maxDelay = 1000
+) => {
+  if (!imageUrl) {
+    return ''
+  }
 
-    // 将图片转换为 Buffer
-    const blob = await response.blob()
-    const arrayBuffer = await blob.arrayBuffer()
-    const imageBuffer = Buffer.from(arrayBuffer)
+  const fetchWithTimeout = (url, options = {}, timeout) => {
+    return Promise.race([
+      fetch(url, options),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Request timed out')), timeout)
+      )
+    ])
+  }
 
-    // 调用上传函数
-    const result = await uploadPatchBanner(imageBuffer, id)
-    if (typeof result === 'string') {
-      return
-    } else {
-      return result.imageLink
+  const randomDelay = (min, max) => {
+    const delay = Math.floor(Math.random() * (max - min + 1)) + min
+    return new Promise((resolve) => setTimeout(resolve, delay))
+  }
+
+  let attempt = 0
+  while (attempt < maxRetries) {
+    attempt++
+    try {
+      if (attempt > 1) {
+        console.log(`Attempt ${attempt} to fetch image from URL`)
+      }
+
+      // 添加随机延迟
+      await randomDelay(minDelay, maxDelay)
+
+      // 使用 fetch 获取图片，带超时
+      const response = await fetchWithTimeout(imageUrl, {}, timeout)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch image: ${response.statusText}`)
+      }
+
+      // 将图片转换为 Buffer
+      const blob = await response.blob()
+      const arrayBuffer = await blob.arrayBuffer()
+      const imageBuffer = Buffer.from(arrayBuffer)
+
+      // 调用上传函数
+      const result = await uploadPatchBanner(imageBuffer, id)
+      if (typeof result === 'string') {
+        return
+      } else {
+        return result.imageLink
+      }
+    } catch (error) {
+      console.log(`ERROR URL ADDRESS: ${imageUrl}`)
+      console.error(`Error on attempt ${attempt}:`, error)
+
+      if (attempt >= maxRetries) {
+        console.error('Max retries reached. Upload failed.')
+        return ''
+      }
     }
-  } catch (error) {
-    console.error('Error uploading image from URL:', error)
   }
 }

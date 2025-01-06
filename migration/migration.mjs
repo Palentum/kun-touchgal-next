@@ -11,7 +11,7 @@ const prisma = new PrismaClient()
 // 用户 ID, 根据生产环境的实际 uid 确定
 const USER_ID = 1
 // 处理文件最大并发数
-const MAX_CONCURRENT = 10
+const MAX_CONCURRENT = 70
 
 // 文件夹路径
 const __filename = fileURLToPath(import.meta.url)
@@ -106,7 +106,11 @@ const processMarkdownFile = async (filePath, contentLimit) => {
     const existPatch = await prisma.patch.findUnique({
       where: { unique_id: uniqueId }
     })
-    if (existPatch) return
+    if (existPatch) {
+      console.log('发现重复的游戏: ', existPatch.name)
+      console.log('跳过该游戏')
+      return { status: 'fulfilled' }
+    }
 
     // 创建 Patch 记录
     const patch = await prisma.patch.create({
@@ -158,8 +162,6 @@ const processMarkdownFiles = async (filePaths, contentLimit) => {
     )
     results.push(...batchResults)
   }
-
-  console.log(results)
 
   // 统计结果
   const succeeded = results.filter((res) => res.status === 'fulfilled').length
@@ -226,27 +228,63 @@ const extractIntroduction = (content) => {
 
 const mapTypes = (type) => type.map((t) => TYPE_MAP[t])
 
-const createAndLinkTags = async (tags, patchId) => {
-  const tagIds = await Promise.all(
-    tags.map(async (tagName) => {
-      const tag = await createTag({ name: tagName }, USER_ID)
-      return tag?.id
-    })
-  )
-  const filteredTagIds = tagIds.filter((item) => item !== undefined)
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-  if (filteredTagIds.length) {
-    const relationData = filteredTagIds.map((tagId) => ({
-      patch_id: patchId,
-      tag_id: tagId
-    }))
-
-    await prisma.patch_tag_relation.createMany({ data: relationData })
-    await prisma.patch_tag.updateMany({
-      where: { id: { in: filteredTagIds } },
-      data: { count: { increment: 1 } }
-    })
+const withExponentialBackoff = async (fn, retries = 10, delay = 100) => {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      return await fn()
+    } catch (error) {
+      if (attempt < retries - 1) {
+        // 指数退避 + 随机抖动
+        const backoff = delay * Math.pow(2, attempt) + Math.random() * delay
+        console.warn(
+          `Attempt ${attempt + 1} failed. Psql execute race error. Retrying in ${Math.round(backoff)}ms...`
+        )
+        await sleep(backoff)
+      } else {
+        console.error(`All ${retries} retries failed.`)
+        throw error
+      }
+    }
   }
+}
+
+const createAndLinkTags = async (tags, patchId) => {
+  await withExponentialBackoff(async () => {
+    return await prisma.$transaction(
+      async (prisma) => {
+        const tagIds = await Promise.all(
+          tags.map(async (tagName) => {
+            const tag = await createTag({ name: tagName.toString() }, USER_ID)
+            if (tag) {
+              return tag.id
+            } else {
+              const existTag = await prisma.patch_tag.findFirst({
+                where: { name: tagName.toString() }
+              })
+              return existTag?.id
+            }
+          })
+        )
+        const filteredTagIds = tagIds.filter((item) => item !== undefined)
+
+        if (filteredTagIds.length) {
+          const relationData = filteredTagIds.map((tagId) => ({
+            patch_id: patchId,
+            tag_id: tagId
+          }))
+
+          await prisma.patch_tag_relation.createMany({ data: relationData })
+          await prisma.patch_tag.updateMany({
+            where: { id: { in: filteredTagIds } },
+            data: { count: { increment: 1 } }
+          })
+        }
+      },
+      { timeout: 60000 }
+    )
+  })
 }
 
 const extractNoteSection = (content) => {
@@ -331,19 +369,6 @@ const createPatchResource = async (input, uid) => {
       ...resourceData
     }
   })
-}
-
-// 遍历文件夹
-const processFolder = async (folderPath, contentLimit) => {
-  const files = fs.readdirSync(folderPath)
-
-  for (const file of files) {
-    const filePath = path.join(folderPath, file)
-
-    if (path.extname(file) === '.md') {
-      await processMarkdownFile(filePath, contentLimit)
-    }
-  }
 }
 
 // 重置数据库表
