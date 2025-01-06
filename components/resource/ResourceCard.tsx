@@ -39,9 +39,9 @@ export const ResourceCard = ({ resource }: Props) => {
           {resource.patchName}
         </h2>
 
-        {resource.note && (
+        {resource.name && (
           <p className="break-all whitespace-pre-wrap text-small text-default-500">
-            {resource.note}
+            {resource.name}
           </p>
         )}
 
