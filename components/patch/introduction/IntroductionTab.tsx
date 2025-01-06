@@ -8,6 +8,7 @@ import { Info } from './Info'
 import { PatchTag } from './Tag'
 import dynamic from 'next/dynamic'
 import { useMounted } from '~/hooks/useMounted'
+import { KunLink } from '~/components/kun/milkdown/plugins/components/link/KunLink'
 import type { PatchIntroduction } from '~/types/api/patch'
 
 const KunPlyr = dynamic(
@@ -40,12 +41,26 @@ export const IntroductionTab = ({ intro, patchId }: Props) => {
       if (!src) {
         return
       }
-
       const root = document.createElement('div')
       root.className = element.className
       element.replaceWith(root)
       const videoRoot = createRoot(root)
       videoRoot.render(<KunPlyr src={src} />)
+    })
+
+    const linkElements = contentRef.current.querySelectorAll('[data-kun-link]')
+    linkElements.forEach((element) => {
+      const href = element.getAttribute('data-href')
+      const text = element.getAttribute('data-text')
+      if (!href || !text) return
+
+      const root = document.createElement('div')
+      root.className = element.className
+      element.replaceWith(root)
+
+      const ReactDOM = require('react-dom/client')
+      const linkRoot = ReactDOM.createRoot(root)
+      linkRoot.render(<KunLink href={href} text={text} />)
     })
   }, [isMounted])
 
