@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
 import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
-import { markdownToHtml } from '~/app/api/utils/markdownToHtml'
+import { markdownToHtmlExtend } from '~/app/api/utils/markdownToHtml'
 import type { PatchIntroduction } from '~/types/api/patch'
 
 const uniqueIdSchema = z.object({
@@ -37,7 +37,7 @@ export const getPatchIntroduction = async (
 
   const response: PatchIntroduction = {
     vndbId: patch.vndb_id,
-    introduction: await markdownToHtml(patch.introduction),
+    introduction: await markdownToHtmlExtend(patch.introduction),
     released: patch.released,
     alias: patch.alias,
     tag: patch.tag.map((tag) => tag.tag),
