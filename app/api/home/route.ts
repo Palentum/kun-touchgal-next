@@ -8,7 +8,7 @@ export const getHomeData = async () => {
     await prisma.patch.findMany({
       orderBy: { created: 'desc' },
       select: GalgameCardSelectField,
-      take: 15
+      take: 20
     }),
     await prisma.patch_resource.findMany({
       orderBy: { created: 'desc' },

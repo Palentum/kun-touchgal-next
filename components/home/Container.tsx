@@ -19,7 +19,7 @@ export const HomeContainer = ({ galgames, resources, comments }: Props) => {
 
       <section className="space-y-6">
         <div className="flex items-center space-x-4">
-          <h2 className="text-2xl font-bold">最新 Galgame</h2>
+          <h2 className="text-lg font-bold sm:text-2xl">最新 Galgame</h2>
           <Button
             variant="light"
             as={Link}
@@ -30,7 +30,7 @@ export const HomeContainer = ({ galgames, resources, comments }: Props) => {
             查看更多
           </Button>
         </div>
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
           {galgames.map((galgame) => (
             <GalgameCard key={galgame.id} patch={galgame} />
           ))}
@@ -39,7 +39,9 @@ export const HomeContainer = ({ galgames, resources, comments }: Props) => {
 
       <section className="space-y-6">
         <div className="flex items-center space-x-4">
-          <h2 className="text-2xl font-bold">最新 Galgame 资源下载</h2>
+          <h2 className="text-lg font-bold sm:text-2xl">
+            最新 Galgame 资源下载
+          </h2>
           <Button
             variant="light"
             as={Link}
@@ -51,7 +53,7 @@ export const HomeContainer = ({ galgames, resources, comments }: Props) => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 sm:gap-6 md:grid-cols-2">
           {resources.map((resource) => (
             <ResourceCard key={resource.id} resource={resource} />
           ))}

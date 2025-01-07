@@ -85,7 +85,7 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
       {loading ? (
         <KunLoading hint="正在获取 Galgame 数据..." />
       ) : (
-        <div className="grid grid-cols-1 gap-6 mx-auto mb-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 mx-auto mb-8 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {galgames.map((pa) => (
             <GalgameCard key={pa.id} patch={pa} />
           ))}

@@ -17,7 +17,7 @@ export const KunTopBar = () => {
   const pathname = usePathname()
 
   return (
-    <Navbar maxWidth="xl">
+    <Navbar maxWidth="xl" classNames={{ wrapper: 'px-3 sm:px-6' }}>
       <NavbarContent className="sm:hidden" justify="start">
         <li className="h-full">
           <NavbarMenuToggle />

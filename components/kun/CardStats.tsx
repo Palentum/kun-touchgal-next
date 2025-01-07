@@ -1,19 +1,25 @@
 import { ScrollShadow } from '@nextui-org/scroll-shadow'
 import { Tooltip } from '@nextui-org/tooltip'
 import { Download, Eye, Heart, MessageSquare, Puzzle } from 'lucide-react'
+import { cn } from '~/utils/cn'
 
 interface Props {
   patch: GalgameCard
   disableTooltip?: boolean
+  className?: string
 }
 
-export const KunCardStats = ({ patch, disableTooltip = true }: Props) => {
+export const KunCardStats = ({
+  patch,
+  disableTooltip = true,
+  className = ''
+}: Props) => {
   return (
     <ScrollShadow
       orientation="horizontal"
-      className="max-w-full scrollbar-hide"
+      className={cn('max-w-full scrollbar-hide', className)}
     >
-      <div className="flex space-x-4 text-sm text-default-500">
+      <div className="flex space-x-2 text-sm sm:space-x-4 text-default-500">
         <Tooltip
           isDisabled={disableTooltip}
           content="浏览数"
