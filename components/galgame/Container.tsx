@@ -1,14 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Pagination } from '@nextui-org/pagination'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { GalgameCard } from './Card'
 import { FilterBar } from './FilterBar'
 import { useMounted } from '~/hooks/useMounted'
-import { KunLoading } from '~/components/kun/Loading'
 import { KunHeader } from '../kun/Header'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { KunPagination } from '../kun/Pagination'
+import { useSearchParams } from 'next/navigation'
 import type { SortDirection, SortOption } from './_sort'
 
 interface Props {
@@ -24,7 +23,6 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
   const [sortField, setSortField] = useState<SortOption>('created')
   const [sortOrder, setSortOrder] = useState<SortDirection>('desc')
   const isMounted = useMounted()
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
 
@@ -56,10 +54,6 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage)
-    window.scrollTo(0, 0)
-    const params = new URLSearchParams(window.location.search)
-    params.set('page', newPage.toString())
-    router.push(`?${params.toString()}`)
   }
 
   return (
@@ -82,25 +76,19 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
         setSortOrder={setSortOrder}
       />
 
-      {loading ? (
-        <KunLoading hint="正在获取 Galgame 数据..." />
-      ) : (
-        <div className="grid grid-cols-2 gap-2 mx-auto mb-8 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {galgames.map((pa) => (
-            <GalgameCard key={pa.id} patch={pa} />
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-2 gap-2 mx-auto mb-8 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {galgames.map((pa) => (
+          <GalgameCard key={pa.id} patch={pa} />
+        ))}
+      </div>
 
       {total > 24 && (
         <div className="flex justify-center">
-          <Pagination
+          <KunPagination
             total={Math.ceil(total / 24)}
             page={page}
-            onChange={handlePageChange}
-            showControls
-            color="primary"
-            size="lg"
+            onPageChange={handlePageChange}
+            isLoading={loading}
           />
         </div>
       )}
