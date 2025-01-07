@@ -16,6 +16,13 @@ export const getPatchById = async (
     where: { unique_id: uniqueId },
     include: {
       user: true,
+      tag: {
+        select: {
+          tag: {
+            select: { name: true }
+          }
+        }
+      },
       _count: {
         select: {
           favorite_by: true,
@@ -53,6 +60,7 @@ export const getPatchById = async (
     type: patch.type,
     language: patch.language,
     platform: patch.platform,
+    tags: patch.tag.map((t) => t.tag.name).slice(0, 3),
     alias: patch.alias,
     isFavorite: patch.favorite_by.length > 0,
     contentLimit: patch.content_limit,

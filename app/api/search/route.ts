@@ -44,6 +44,7 @@ export const searchGalgame = async (input: z.infer<typeof searchSchema>) => {
 
   const galgames: GalgameCard[] = data.flat().map((gal) => ({
     ...gal,
+    tags: gal.tag.map((t) => t.tag.name).slice(0, 3),
     uniqueId: gal.unique_id
   }))
   const uniqueGalgames: GalgameCard[] = Array.from(

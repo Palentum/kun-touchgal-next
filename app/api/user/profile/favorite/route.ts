@@ -30,6 +30,7 @@ export const getUserFavorite = async (
 
   const favorites: GalgameCard[] = data.map((gal) => ({
     ...gal.patch,
+    tags: gal.patch.tag.map((t) => t.tag.name).slice(0, 3),
     uniqueId: gal.patch.unique_id
   }))
 

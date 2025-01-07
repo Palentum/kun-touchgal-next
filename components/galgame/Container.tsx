@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { Pagination } from '@nextui-org/pagination'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { GalgameCard } from './Card'
-import { KunMasonryGrid } from '~/components/kun/MasonryGrid'
 import { FilterBar } from './FilterBar'
 import { useMounted } from '~/hooks/useMounted'
 import { KunLoading } from '~/components/kun/Loading'
@@ -86,11 +85,11 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
       {loading ? (
         <KunLoading hint="正在获取 Galgame 数据..." />
       ) : (
-        <KunMasonryGrid columnWidth={256} gap={24}>
+        <div className="grid grid-cols-1 gap-6 mx-auto mb-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {galgames.map((pa) => (
             <GalgameCard key={pa.id} patch={pa} />
           ))}
-        </KunMasonryGrid>
+        </div>
       )}
 
       {total > 24 && (

@@ -8,6 +8,7 @@ interface GalgameCard {
   type: string[]
   language: string[]
   platform: string[]
+  tags: string[]
   created: Date | string
   _count: {
     favorite_by: number

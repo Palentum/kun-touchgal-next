@@ -37,7 +37,7 @@ export const GalgameCard = ({ patch }: Props) => {
         </div>
       </CardHeader>
       <CardBody className="px-4 py-2 space-y-3">
-        <h2 className="text-lg font-semibold transition-colors line-clamp-2 hover:text-primary-500">
+        <h2 className="text-lg font-semibold transition-colors h-14 line-clamp-2 hover:text-primary-500">
           {patch.name}
         </h2>
         <KunCardStats patch={patch} />
@@ -45,8 +45,8 @@ export const GalgameCard = ({ patch }: Props) => {
       <CardFooter className="flex-col items-start gap-2 px-4 py-3">
         <KunPatchAttribute
           types={patch.type}
-          languages={patch.language}
-          platforms={patch.platform}
+          tags={patch.tags}
+          enableTags={true}
           size="sm"
         />
       </CardFooter>

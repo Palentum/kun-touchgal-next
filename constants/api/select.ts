@@ -18,6 +18,13 @@ export const GalgameCardSelectField = {
   language: true,
   platform: true,
   created: true,
+  tag: {
+    select: {
+      tag: {
+        select: { name: true }
+      }
+    }
+  },
   _count: {
     select: {
       favorite_by: true,

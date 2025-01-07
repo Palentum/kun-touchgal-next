@@ -14,6 +14,7 @@ export interface Patch {
   type: string[]
   language: string[]
   platform: string[]
+  tags: string[]
   isFavorite: boolean
   contentLimit: string
   user: {

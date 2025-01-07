@@ -1,6 +1,6 @@
 import { Button } from '@nextui-org/button'
 import { ChevronRight } from 'lucide-react'
-import { PatchCard } from '~/components/home/PatchCard'
+import { GalgameCard } from '~/components/galgame/Card'
 import { ResourceCard } from '~/components/resource/ResourceCard'
 import Link from 'next/link'
 import { HeroContainer } from './hero/Container'
@@ -30,9 +30,9 @@ export const HomeContainer = ({ galgames, resources, comments }: Props) => {
             查看更多
           </Button>
         </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
           {galgames.map((galgame) => (
-            <PatchCard key={galgame.id} patch={galgame} />
+            <GalgameCard key={galgame.id} patch={galgame} />
           ))}
         </div>
       </section>

@@ -29,6 +29,7 @@ export const getGalgame = async (input: z.infer<typeof galgameSchema>) => {
 
   const galgames: GalgameCard[] = data.map((gal) => ({
     ...gal,
+    tags: gal.tag.map((t) => t.tag.name).slice(0, 3),
     uniqueId: gal.unique_id
   }))
 

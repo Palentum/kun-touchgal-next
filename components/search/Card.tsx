@@ -30,8 +30,8 @@ export const SearchCard = ({ patch }: Props) => {
 
             <KunPatchAttribute
               types={patch.type}
-              languages={patch.language}
-              platforms={patch.platform}
+              tags={patch.tags}
+              enableTags={true}
               size="sm"
             />
           </div>
