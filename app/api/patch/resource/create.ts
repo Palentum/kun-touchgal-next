@@ -8,7 +8,7 @@ import type { PatchResource } from '~/types/api/patch'
 const uploadPatchResource = async (patchId: number, hash: string) => {
   const filePath = await getKv(hash)
   if (!filePath) {
-    return '本地临时文件存储未找到, 请重新上传补丁文件'
+    return '本地临时文件存储未找到, 请重新上传文件'
   }
   const fileName = filePath.split('/').pop()
 

@@ -243,7 +243,7 @@ export const PatchTagSelector = ({
                             <div className="flex items-center gap-2">
                               <span className="font-medium">{tag.name}</span>
                               <Chip size="sm" variant="flat">
-                                {tag.count} 个补丁
+                                {tag.count} 个游戏
                               </Chip>
                             </div>
                           </div>

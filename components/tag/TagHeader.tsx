@@ -18,7 +18,7 @@ export const TagHeader = ({ setNewTag }: Props) => {
     <>
       <KunHeader
         name="标签列表"
-        description="这里是补丁中的所有标签"
+        description="这里是本站 Galgame 中的所有标签"
         headerEndContent={
           <Button color="primary" onPress={onOpen} startContent={<Plus />}>
             创建标签

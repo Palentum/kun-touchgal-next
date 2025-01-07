@@ -22,9 +22,6 @@ export const KunMobileMenu = () => {
           <p className="ml-4 mr-2 font-bold text-inherit">
             {kunMoyuMoe.creator.name}
           </p>
-          <Chip size="sm" variant="flat" color="primary">
-            补丁
-          </Chip>
         </Link>
       </NavbarMenuItem>
       {kunMobileNavItem.map((item, index) => (

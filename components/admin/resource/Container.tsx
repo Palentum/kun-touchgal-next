@@ -62,17 +62,17 @@ export const Resource = ({ initialResources, total }: Props) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">补丁管理</h1>
+        <h1 className="text-2xl font-bold">下载资源管理</h1>
         <Chip color="primary" variant="flat">
           正在开发中...
         </Chip>
       </div>
 
       {loading ? (
-        <KunLoading hint="正在获取补丁资源数据..." />
+        <KunLoading hint="正在获取资源数据..." />
       ) : (
         <Table
-          aria-label="补丁管理"
+          aria-label="下载资源管理"
           bottomContent={
             <div className="flex justify-center w-full">
               {total >= 100 && (

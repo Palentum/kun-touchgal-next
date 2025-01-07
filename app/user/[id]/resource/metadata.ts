@@ -11,25 +11,25 @@ export const generateKunMetadataTemplate = (
   const resourceString = resourceList.toString().slice(0, 170)
 
   return {
-    title: `${user.name} 发布的补丁资源 - ${kunMoyuMoe.titleShort}`,
+    title: `${user.name} 发布的资源 - ${kunMoyuMoe.titleShort}`,
     description: resourceList.length
-      ? `查看 ${resourceString} 等 ${resourceList.length}+ 个补丁资源`
-      : `用户 ${user.name} 还没有发布过补丁资源哦`,
+      ? `查看 ${resourceString} 等 ${resourceList.length}+ 个资源`
+      : `用户 ${user.name} 还没有发布过资源哦`,
     openGraph: {
-      title: `${user.name} 发布的补丁资源`,
+      title: `${user.name} 发布的资源`,
       description: resourceList
-        ? `查看 ${resourceString} 等 ${resourceList.length}+ 个补丁资源`
-        : `用户 ${user.name} 还没有发布过补丁资源哦`,
+        ? `查看 ${resourceString} 等 ${resourceList.length}+ 个资源`
+        : `用户 ${user.name} 还没有发布过资源哦`,
       images: [{ url: user.avatar }],
       type: 'profile',
       username: user.name
     },
     twitter: {
       card: 'summary',
-      title: `${user.name} 发布的补丁资源`,
+      title: `${user.name} 发布的资源`,
       description: resourceList
-        ? `查看 ${resourceString} 等 ${resourceList.length}+ 个补丁资源`
-        : `用户 ${user.name} 还没有发布过补丁资源哦`,
+        ? `查看 ${resourceString} 等 ${resourceList.length}+ 个资源`
+        : `用户 ${user.name} 还没有发布过资源哦`,
       images: [user.avatar]
     },
     alternates: {

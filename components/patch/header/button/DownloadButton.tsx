@@ -13,12 +13,12 @@ export const DownloadButton = ({ patch }: Props) => {
   const router = useRouter()
 
   return (
-    <Tooltip content="下载游戏补丁">
+    <Tooltip content="下载游戏">
       <Button
         color="primary"
         variant="shadow"
         isIconOnly
-        aria-label="下载游戏补丁"
+        aria-label="下载游戏"
         onPress={() => router.push(`/${patch.uniqueId}`)}
       >
         <Download className="size-5" />

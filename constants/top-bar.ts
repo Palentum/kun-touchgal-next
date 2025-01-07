@@ -21,11 +21,11 @@ export const kunNavItem: KunNavItem[] = [
 export const kunMobileNavItem: KunNavItem[] = [
   ...kunNavItem,
   {
-    name: '补丁评论列表',
+    name: '评论列表',
     href: '/comment'
   },
   {
-    name: '补丁资源列表',
+    name: '下载资源列表',
     href: '/resource'
   },
   {

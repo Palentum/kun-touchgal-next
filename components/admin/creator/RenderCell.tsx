@@ -33,7 +33,7 @@ export const RenderCell = ({ creator, columnKey }: RenderCellProps) => {
               user={creator.sender}
               userProps={{
                 name: creator.sender.name,
-                description: `已发布 ${creator.patchResourceCount} 个补丁资源`,
+                description: `已发布 ${creator.patchResourceCount} 个资源`,
                 avatarProps: {
                   src: creator.sender?.avatar
                 }

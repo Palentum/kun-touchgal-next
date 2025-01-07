@@ -9,7 +9,7 @@ export const updateGalgame = async (
 
   const patch = await prisma.patch.findUnique({ where: { id } })
   if (!patch) {
-    return '该 ID 下未找到对应补丁'
+    return '该 ID 下未找到对应 Galgame'
   }
 
   await prisma.patch.update({

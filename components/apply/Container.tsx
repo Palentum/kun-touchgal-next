@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { kunMoyuMoe } from '~/config/moyu-moe'
 import { KunHeader } from '~/components/kun/Header'
 import {
   Button,
@@ -92,7 +93,7 @@ export const ApplyContainer = ({ count }: Props) => {
               <p className="text-default-500">
                 详细信息请查看文档{' '}
                 <Link href="/doc/notice/creator">
-                  关于鲲 Galgame 补丁创作者
+                  关于 {kunMoyuMoe.titleShort} 创作者
                 </Link>
               </p>
             </div>

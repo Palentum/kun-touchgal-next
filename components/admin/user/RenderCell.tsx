@@ -15,7 +15,7 @@ export const RenderCell = (user: AdminUserType, columnKey: string) => {
       return (
         <User
           name={user.name}
-          description={`补丁数 - ${user._count.patch} | 资源数 - ${user._count.patch_resource}`}
+          description={`发布资源数 - ${user._count.patch_resource}`}
           avatarProps={{
             src: user.avatar
           }}

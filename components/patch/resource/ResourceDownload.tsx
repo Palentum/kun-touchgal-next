@@ -53,7 +53,7 @@ export const ResourceDownload = ({ resource }: Props) => {
           user={resource.user}
           userProps={{
             name: resource.user.name,
-            description: `${formatDistanceToNow(resource.created)} • 已发布补丁 ${resource.user.patchCount} 个`,
+            description: `${formatDistanceToNow(resource.created)} • 已发布资源 ${resource.user.patchCount} 个`,
             avatarProps: {
               showFallback: true,
               src: resource.user.avatar,
@@ -68,7 +68,7 @@ export const ResourceDownload = ({ resource }: Props) => {
             color="primary"
             variant="flat"
             isIconOnly
-            aria-label={`下载 Galgame 补丁资源`}
+            aria-label={`下载 Galgame 资源`}
             onPress={() => toggleLinks(resource.id)}
           >
             <Download className="size-4" />

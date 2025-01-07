@@ -23,7 +23,7 @@ export const deleteResource = async (
     return '未找到对应的资源'
   }
   if (patchResource.user_id !== uid) {
-    return '您没有权限删除该补丁资源'
+    return '您没有权限删除该资源'
   }
 
   if (patchResource.storage === 's3') {

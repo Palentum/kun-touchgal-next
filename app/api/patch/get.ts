@@ -39,7 +39,7 @@ export const getPatchById = async (
   })
 
   if (!patch) {
-    return '未找到对应补丁'
+    return '未找到对应 Galgame'
   }
 
   await prisma.patch.update({

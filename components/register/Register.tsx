@@ -1,5 +1,6 @@
 'use client'
 
+import { kunMoyuMoe } from '~/config/moyu-moe'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -141,7 +142,7 @@ export const RegisterForm = () => {
       >
         <span>我同意</span>
         <Link className="ml-1" href="/about/notice/privacy">
-          鲲 Galgame 补丁用户协议
+          {kunMoyuMoe.titleShort} 用户协议
         </Link>
       </Checkbox>
 

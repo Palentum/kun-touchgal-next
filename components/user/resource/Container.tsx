@@ -47,7 +47,7 @@ export const UserResource = ({ resources, total, uid }: Props) => {
   return (
     <div className="space-y-4">
       {loading ? (
-        <KunLoading hint="正在获取补丁资源数据..." />
+        <KunLoading hint="正在获取资源数据..." />
       ) : (
         <>
           {patches.map((resource) => (

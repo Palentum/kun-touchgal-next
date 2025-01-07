@@ -52,15 +52,11 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
     fetchPatches()
   }, [sortField, sortOrder, selectedType, page])
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage)
-  }
-
   return (
     <div className="container mx-auto my-4 space-y-6">
       <KunHeader
         name="Galgame"
-        description="这里展示了本站所有的 Galgame, 您可以浏览 Galgame 以确认您要下载的补丁"
+        description="这里展示了本站所有的 Galgame, 您可以点击进入以下载 Galgame 资源"
       />
 
       <FilterBar
@@ -87,7 +83,7 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
           <KunPagination
             total={Math.ceil(total / 24)}
             page={page}
-            onPageChange={handlePageChange}
+            onPageChange={setPage}
             isLoading={loading}
           />
         </div>

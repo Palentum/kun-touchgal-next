@@ -64,9 +64,6 @@ export const RewritePatch = () => {
         <CardHeader className="flex gap-3">
           <div className="flex flex-col">
             <p className="text-2xl">编辑游戏信息</p>
-            <p className="text-small text-default-500">
-              您需要创建一个新游戏, 稍后在游戏页面添加补丁资源
-            </p>
           </div>
         </CardHeader>
         <CardBody className="gap-4 mt-2">

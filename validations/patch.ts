@@ -9,16 +9,13 @@ import {
 } from '~/constants/resource'
 
 export const patchTagChangeSchema = z.object({
-  patchId: z.coerce
-    .number({ message: '补丁 ID 必须为数字' })
-    .min(1)
-    .max(9999999),
+  patchId: z.coerce.number({ message: 'ID 必须为数字' }).min(1).max(9999999),
   tagId: z
     .array(
       z.coerce.number({ message: '标签 ID 必须为数字' }).min(1).max(9999999)
     )
     .min(1)
-    .max(107, { message: '一个补丁最多有 107 个标签' })
+    .max(107, { message: '一个 Galgame 最多有 107 个标签' })
 })
 
 export const patchCommentCreateSchema = z.object({
@@ -65,25 +62,25 @@ export const patchResourceCreateSchema = z.object({
   type: z
     .array(z.string())
     .min(1, { message: '请选择至少一个资源类型' })
-    .max(10, { message: '您的单个补丁资源最多有 10 条链接' })
+    .max(10, { message: '您的单个资源最多有 10 条链接' })
     .refine((types) => types.every((type) => SUPPORTED_TYPE.includes(type)), {
-      message: '非法的补丁类型'
+      message: '非法的类型'
     }),
   language: z
     .array(z.string())
     .min(1, { message: '请选择至少一个资源语言' })
-    .max(10, { message: '您的单个补丁资源最多有 10 个语言' })
+    .max(10, { message: '您的单个资源最多有 10 个语言' })
     .refine(
       (types) => types.every((type) => SUPPORTED_LANGUAGE.includes(type)),
-      { message: '非法的补丁语言' }
+      { message: '非法的语言' }
     ),
   platform: z
     .array(z.string())
     .min(1, { message: '请选择至少一个资源平台' })
-    .max(10, { message: '您的单个补丁资源最多有 10 个平台' })
+    .max(10, { message: '您的单个资源最多有 10 个平台' })
     .refine(
       (types) => types.every((type) => SUPPORTED_PLATFORM.includes(type)),
-      { message: '非法的补丁平台' }
+      { message: '非法的平台' }
     )
 })
 
@@ -94,7 +91,7 @@ export const patchResourceUpdateSchema = patchResourceCreateSchema.merge(
 )
 
 export const declinePullRequestSchema = z.object({
-  prId: z.coerce.number({ message: '补丁 ID 必须为数字' }).min(1).max(9999999),
+  prId: z.coerce.number({ message: 'ID 必须为数字' }).min(1).max(9999999),
   note: z
     .string({ message: '必须填写拒绝原因' })
     .trim()
@@ -108,21 +105,12 @@ export const updatePatchBannerSchema = z.object({
 })
 
 export const getPatchHistorySchema = z.object({
-  patchId: z.coerce
-    .number({ message: '补丁 ID 必须为数字' })
-    .min(1)
-    .max(9999999),
+  patchId: z.coerce.number({ message: 'ID 必须为数字' }).min(1).max(9999999),
   page: z.coerce.number().min(1).max(9999999),
   limit: z.coerce.number().min(1).max(30)
 })
 
 export const updatePatchResourceStatsSchema = z.object({
-  patchId: z.coerce
-    .number({ message: '补丁 ID 必须为数字' })
-    .min(1)
-    .max(9999999),
-  resourceId: z.coerce
-    .number({ message: '补丁 ID 必须为数字' })
-    .min(1)
-    .max(9999999)
+  patchId: z.coerce.number({ message: 'ID 必须为数字' }).min(1).max(9999999),
+  resourceId: z.coerce.number({ message: 'ID 必须为数字' }).min(1).max(9999999)
 })

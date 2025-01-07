@@ -7,7 +7,7 @@ import { createDedupMessage } from '~/app/api/utils/message'
 
 const patchIdSchema = z.object({
   patchId: z.coerce
-    .number({ message: '补丁 ID 必须为数字' })
+    .number({ message: 'Galgame ID 必须为数字' })
     .min(1)
     .max(9999999)
 })
@@ -22,7 +22,7 @@ export const togglePatchFavorite = async (
     where: { id: patchId }
   })
   if (!patch) {
-    return '未找到补丁'
+    return '未找到 Galgame'
   }
 
   const existingFavorite = await prisma.user_patch_favorite_relation.findUnique(

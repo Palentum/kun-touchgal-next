@@ -55,7 +55,7 @@ export const KunCardStats = ({
 
         <Tooltip
           isDisabled={disableTooltip}
-          content="补丁资源数"
+          content="下载资源数"
           placement="bottom"
         >
           <div className="flex items-center gap-1">

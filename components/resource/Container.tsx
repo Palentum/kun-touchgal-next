@@ -64,8 +64,8 @@ export const CardContainer = ({ initialResources, initialTotal }: Props) => {
   return (
     <div className="container mx-auto my-4 space-y-6">
       <KunHeader
-        name="Galgame 补丁资源"
-        description="这里展示了所有的 Galgame 补丁资源列表"
+        name="Galgame 资源"
+        description="这里展示了所有的 Galgame 资源列表"
       />
 
       <FilterBar
@@ -76,7 +76,7 @@ export const CardContainer = ({ initialResources, initialTotal }: Props) => {
       />
 
       {loading ? (
-        <KunLoading hint="正在获取补丁资源数据..." />
+        <KunLoading hint="正在获取 Galgame 资源数据..." />
       ) : (
         <KunMasonryGrid columnWidth={256} gap={24}>
           {resources.map((resource) => (

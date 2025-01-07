@@ -6,7 +6,7 @@ import { Pagination } from '@nextui-org/pagination'
 import { useMounted } from '~/hooks/useMounted'
 import { KunNull } from '~/components/kun/Null'
 import { KunLoading } from '~/components/kun/Loading'
-import { UserGalgameCard } from '../galgame/Card'
+import { UserGalgameCard } from './Card'
 
 interface Props {
   favorites: GalgameCard[]
@@ -53,7 +53,7 @@ export const UserFavorite = ({ favorites, total, uid }: Props) => {
         </>
       )}
 
-      {!total && <KunNull message="这个孩子还没有收藏过补丁哦" />}
+      {!total && <KunNull message="这个孩子还没有收藏过 Galgame 哦" />}
 
       {total > 24 && (
         <div className="flex justify-center">

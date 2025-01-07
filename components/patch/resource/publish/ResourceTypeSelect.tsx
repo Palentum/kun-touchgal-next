@@ -36,7 +36,7 @@ export const ResourceTypeSelect = ({ section, control, errors }: Props) => {
     <div className="space-y-2">
       <h3 className="text-lg font-medium">选择存储类型</h3>
       <p className="text-sm text-default-500">
-        确定您的补丁体积大小以便选择合适的存储方式
+        确定您的资源体积大小以便选择合适的存储方式
       </p>
 
       <Controller

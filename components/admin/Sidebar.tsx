@@ -36,7 +36,7 @@ const menuItems = [
     icon: BadgeCheck
   },
   {
-    name: '补丁资源管理',
+    name: '下载资源管理',
     href: '/admin/resource',
     icon: Puzzle
   },

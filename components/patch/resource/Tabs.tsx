@@ -77,7 +77,7 @@ export const ResourceTabs = ({
                         <DropdownTrigger>
                           <Button variant="light" isIconOnly>
                             <MoreHorizontal
-                              aria-label="补丁资源操作"
+                              aria-label="资源操作"
                               className="size-4"
                             />
                           </Button>

@@ -16,7 +16,7 @@ export const TagCard = ({ tag }: Props) => {
             {tag.name}
           </h2>
           <Chip size="sm" variant="flat">
-            {tag.count} 个补丁
+            {tag.count} 个 Galgame
           </Chip>
         </div>
         {tag.alias.length > 0 && (

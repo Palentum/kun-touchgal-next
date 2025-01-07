@@ -71,7 +71,7 @@ export const TagDetailCOntainer = ({
         description={tag.introduction}
         headerEndContent={
           <Chip size="lg" color="primary">
-            {tag.count} 个补丁
+            {tag.count} 个 Galgame
           </Chip>
         }
         endContent={
@@ -154,7 +154,7 @@ export const TagDetailCOntainer = ({
             </div>
           )}
 
-          {!total && <KunNull message="这个标签暂无补丁使用" />}
+          {!total && <KunNull message="这个标签暂无 Galgame 使用" />}
         </motion.div>
       )}
     </div>
