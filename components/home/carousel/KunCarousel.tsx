@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Card, Chip } from '@nextui-org/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { KunDesktopCard } from './DesktopCard'
+import { KunMobileCard } from './MobileCard'
 import type { HomeCarouselMetadata } from './mdx'
 
 interface KunCarouselProps {
@@ -86,81 +87,10 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
           }}
           className="absolute w-full h-full cursor-grab active:cursor-grabbing"
         >
-          {/* Desktop version */}
-          <div className="hidden h-full sm:block">
-            <img
-              alt={posts[currentSlide].title}
-              className="object-cover w-full h-full brightness-75 rounded-2xl"
-              src={posts[currentSlide].banner}
-            />
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/30 via-black/10 to-transparent" />
-            <Card className="absolute border-none bottom-4 left-4 right-4 bg-background/80 backdrop-blur-md">
-              <div className="p-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <img
-                    src={posts[currentSlide].authorAvatar}
-                    alt={posts[currentSlide].authorName}
-                    className="w-6 h-6 rounded-full"
-                  />
-                  <span className="text-sm text-foreground/80">
-                    {posts[currentSlide].authorName}
-                  </span>
-                </div>
-                <h2 className="mb-2 text-2xl font-bold line-clamp-1">
-                  {posts[currentSlide].title}
-                </h2>
-                <p className="mb-2 text-sm text-foreground/80 line-clamp-2">
-                  {posts[currentSlide].description}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {posts[currentSlide].tags?.map((tag) => (
-                    <Chip key={tag} variant="flat" size="sm">
-                      {tag}
-                    </Chip>
-                  ))}
-                </div>
-              </div>
-            </Card>
-          </div>
+          <KunDesktopCard posts={posts} currentSlide={currentSlide} />
 
           {/* Mobile version */}
-          <Card
-            radius="none"
-            className="h-full border-none shadow-none sm:hidden"
-          >
-            <div className="relative h-1/2">
-              <img
-                alt={posts[currentSlide].title}
-                className="object-cover w-full h-full rounded-2xl"
-                src={posts[currentSlide].banner}
-              />
-            </div>
-            <div className="p-3 h-1/2">
-              <div className="flex items-center gap-2 mb-2">
-                <img
-                  src={posts[currentSlide].authorAvatar}
-                  alt={posts[currentSlide].authorName}
-                  className="w-5 h-5 rounded-full"
-                />
-                <span className="text-xs text-foreground/80">
-                  {posts[currentSlide].authorName}
-                </span>
-              </div>
-              <h2 className="mb-1 text-lg font-bold line-clamp-1">
-                {posts[currentSlide].title}
-              </h2>
-              <p className="mb-2 text-xs text-foreground/80 line-clamp-2">
-                {posts[currentSlide].description}
-              </p>
-              <div className="flex flex-wrap gap-1">
-                {posts[currentSlide].tags?.map((tag) => (
-                  <Chip key={tag} variant="flat" size="sm">
-                    {tag}
-                  </Chip>
-                ))}
-              </div>
-            </div>
-          </Card>
+          <KunMobileCard posts={posts} currentSlide={currentSlide} />
         </motion.div>
       </AnimatePresence>
 

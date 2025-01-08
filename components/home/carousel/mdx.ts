@@ -9,9 +9,7 @@ export interface HomeCarouselMetadata {
   date: string
   authorName: string
   authorAvatar: string
-  downloads?: string
-  rating?: number
-  tags?: string[]
+  directory: string
 }
 
 const POSTS_PATH = path.join(process.cwd(), 'posts')
@@ -36,6 +34,8 @@ export const getKunPosts = (): HomeCarouselMetadata[] => {
         const fileContents = fs.readFileSync(filePath, 'utf8')
         const { data } = matter(fileContents)
 
+        const parentDirectory = path.basename(path.dirname(filePath))
+
         posts.push({
           title: data.title,
           banner: data.banner,
@@ -43,15 +43,14 @@ export const getKunPosts = (): HomeCarouselMetadata[] => {
           date: new Date(data.date).toISOString(),
           authorName: data.authorName,
           authorAvatar: data.authorAvatar,
-          downloads: data.downloads || '1K+',
-          rating: data.rating || 4.5,
-          tags: data.tags || ['New']
+          directory: parentDirectory
         })
       }
     })
   }
 
   traverseDirectory(POSTS_PATH)
+
   return posts.sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   )
