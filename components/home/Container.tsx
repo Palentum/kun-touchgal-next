@@ -3,19 +3,21 @@ import { ChevronRight } from 'lucide-react'
 import { GalgameCard } from '~/components/galgame/Card'
 import { ResourceCard } from '~/components/resource/ResourceCard'
 import Link from 'next/link'
-import { HeroContainer } from './hero/Container'
-import type { HomeComment, HomeResource } from '~/types/api/home'
+import { KunCarousel } from './carousel/KunCarousel'
+import { getKunPosts } from './carousel/mdx'
+import type { HomeResource } from '~/types/api/home'
 
 interface Props {
   galgames: GalgameCard[]
   resources: HomeResource[]
-  comments: HomeComment[]
 }
 
-export const HomeContainer = ({ galgames, resources, comments }: Props) => {
+export const HomeContainer = ({ galgames, resources }: Props) => {
+  const posts = getKunPosts()
+
   return (
-    <div className="mx-auto space-y-16 max-w-7xl">
-      <HeroContainer />
+    <div className="mx-auto space-y-8 max-w-7xl">
+      <KunCarousel posts={posts} />
 
       <section className="space-y-6">
         <div className="flex items-center space-x-4">

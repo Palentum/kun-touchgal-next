@@ -6,7 +6,6 @@ export default async function Kun() {
   const response = await kunServerFetchGet<{
     galgames: GalgameCard[]
     resources: HomeResource[]
-    comments: HomeComment[]
   }>('/home')
 
   return (
