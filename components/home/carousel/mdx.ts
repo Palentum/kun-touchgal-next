@@ -10,6 +10,7 @@ export interface HomeCarouselMetadata {
   authorName: string
   authorAvatar: string
   directory: string
+  link: string
 }
 
 const POSTS_PATH = path.join(process.cwd(), 'posts')
@@ -35,6 +36,7 @@ export const getKunPosts = (): HomeCarouselMetadata[] => {
         const { data } = matter(fileContents)
 
         const parentDirectory = path.basename(path.dirname(filePath))
+        const fileName = path.basename(file, '.mdx')
 
         posts.push({
           title: data.title,
@@ -43,7 +45,8 @@ export const getKunPosts = (): HomeCarouselMetadata[] => {
           date: new Date(data.date).toISOString(),
           authorName: data.authorName,
           authorAvatar: data.authorAvatar,
-          directory: parentDirectory
+          directory: parentDirectory,
+          link: `/doc/${parentDirectory}/${fileName}`
         })
       }
     })
