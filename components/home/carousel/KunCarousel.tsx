@@ -89,7 +89,6 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
         >
           <KunDesktopCard posts={posts} currentSlide={currentSlide} />
 
-          {/* Mobile version */}
           <KunMobileCard posts={posts} currentSlide={currentSlide} />
         </motion.div>
       </AnimatePresence>

@@ -1,26 +1,28 @@
 import { SUPPORTED_TYPE_MAP } from '~/constants/resource'
 import type { KunSiteConfig } from './config'
 
-const STATIC_SITE_NAME = 'TouchGal'
-const STATIC_SITE_MENTION = '@touchgal'
-const STATIC_SITE_TITLE = 'TouchGal - 一站式Galgame文化社区!'
-const STATIC_SITE_IMAGE =
+const KUN_SITE_NAME = 'TouchGal'
+const KUN_SITE_MENTION = '@touchgal'
+const KUN_SITE_TITLE = 'TouchGal - 一站式Galgame文化社区!'
+const KUN_SITE_IMAGE =
   'https://img.touchgalstatic.org/uploads/20241217174250074.avif'
-const STATIC_SITE_DESCRIPTION =
+const KUN_SITE_DESCRIPTION =
   'TouchGal 是一个一站式 Galgame 文化社区。提供Galgame 论坛、Galgame 下载等服务。承诺永久免费, 高质量。为Galgame 爱好者提供一片净土！'
-const STATIC_SITE_URL = 'https://www.touchgal.io'
-const STATIC_SITE_NAV = 'https://gal.red'
-const STATIC_SITE_TELEGRAM_GROUP = 'https://t.me/+yPQQaPhgLbc5MGIx'
-const STATIC_SITE_LIST = [
-  { name: STATIC_SITE_NAME, url: 'https://www.touchgal.net' },
-  { name: STATIC_SITE_NAME, url: 'https://www.touchgal.moe' },
-  { name: STATIC_SITE_NAME, url: 'https://www.touchgal.one' },
-  { name: STATIC_SITE_NAME, url: 'https://www.touchgal.com' },
-  { name: STATIC_SITE_NAME, url: 'https://www.touchgal.org' },
-  { name: STATIC_SITE_NAME, url: 'https://www.touchgal.me' },
-  { name: STATIC_SITE_NAME, url: 'https://www.touchgal.co' }
+const KUN_SITE_URL = 'https://www.touchgal.io'
+const KUN_SITE_ARCHIVE = 'https://archive.touchgal.co/'
+const KUN_SITE_FORUM = 'https://bbs.touchgal.co/'
+const KUN_SITE_NAV = 'https://gal.red'
+const KUN_SITE_TELEGRAM_GROUP = 'https://t.me/+yPQQaPhgLbc5MGIx'
+const KUN_SITE_LIST = [
+  { name: KUN_SITE_NAME, url: 'https://www.touchgal.net' },
+  { name: KUN_SITE_NAME, url: 'https://www.touchgal.moe' },
+  { name: KUN_SITE_NAME, url: 'https://www.touchgal.one' },
+  { name: KUN_SITE_NAME, url: 'https://www.touchgal.com' },
+  { name: KUN_SITE_NAME, url: 'https://www.touchgal.org' },
+  { name: KUN_SITE_NAME, url: 'https://www.touchgal.me' },
+  { name: KUN_SITE_NAME, url: 'https://www.touchgal.co' }
 ]
-const STATIC_SITE_KEYWORDS = [
+const KUN_SITE_KEYWORDS = [
   'TouchGAL',
   'Gal',
   'Galgame',
@@ -41,46 +43,48 @@ const STATIC_SITE_KEYWORDS = [
 ]
 
 export const kunMoyuMoe: KunSiteConfig = {
-  title: STATIC_SITE_TITLE,
-  titleShort: STATIC_SITE_NAME,
-  template: `%s - ${STATIC_SITE_NAME}`,
-  description: STATIC_SITE_DESCRIPTION,
-  keywords: STATIC_SITE_KEYWORDS,
-  canonical: STATIC_SITE_URL,
+  title: KUN_SITE_TITLE,
+  titleShort: KUN_SITE_NAME,
+  template: `%s - ${KUN_SITE_NAME}`,
+  description: KUN_SITE_DESCRIPTION,
+  keywords: KUN_SITE_KEYWORDS,
+  canonical: KUN_SITE_URL,
   author: [
-    { name: STATIC_SITE_TITLE, url: STATIC_SITE_URL },
-    { name: STATIC_SITE_NAME, url: STATIC_SITE_NAV },
-    ...STATIC_SITE_LIST
+    { name: KUN_SITE_TITLE, url: KUN_SITE_URL },
+    { name: KUN_SITE_NAME, url: KUN_SITE_NAV },
+    ...KUN_SITE_LIST
   ],
   creator: {
-    name: STATIC_SITE_NAME,
-    mention: STATIC_SITE_MENTION,
-    url: STATIC_SITE_URL
+    name: KUN_SITE_NAME,
+    mention: KUN_SITE_MENTION,
+    url: KUN_SITE_URL
   },
   publisher: {
-    name: STATIC_SITE_NAME,
-    mention: STATIC_SITE_MENTION,
-    url: STATIC_SITE_URL
+    name: KUN_SITE_NAME,
+    mention: KUN_SITE_MENTION,
+    url: KUN_SITE_URL
   },
   domain: {
-    main: STATIC_SITE_URL,
+    main: KUN_SITE_URL,
     imageBed: 'https://img.touchgalstatic.org',
-    storage: STATIC_SITE_URL,
-    kungal: STATIC_SITE_URL,
-    telegram_group: STATIC_SITE_TELEGRAM_GROUP
+    storage: KUN_SITE_URL,
+    kungal: KUN_SITE_URL,
+    telegram_group: KUN_SITE_TELEGRAM_GROUP,
+    archive: KUN_SITE_ARCHIVE,
+    forum: KUN_SITE_FORUM
   },
   og: {
-    title: STATIC_SITE_TITLE,
-    description: STATIC_SITE_DESCRIPTION,
-    image: STATIC_SITE_IMAGE,
-    url: STATIC_SITE_URL
+    title: KUN_SITE_TITLE,
+    description: KUN_SITE_DESCRIPTION,
+    image: KUN_SITE_IMAGE,
+    url: KUN_SITE_URL
   },
   images: [
     {
-      url: STATIC_SITE_IMAGE,
+      url: KUN_SITE_IMAGE,
       width: 1000,
       height: 800,
-      alt: STATIC_SITE_TITLE
+      alt: KUN_SITE_TITLE
     }
   ]
 }

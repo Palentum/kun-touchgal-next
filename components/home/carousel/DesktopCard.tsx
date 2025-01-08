@@ -4,6 +4,7 @@ import { Card, Chip, Button, Link } from '@nextui-org/react'
 import { Dices } from 'lucide-react'
 import { docDirectoryLabelMap } from '~/constants/doc'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
+import { KunNavigationMenu } from './NavigationMenu'
 import type { HomeCarouselMetadata } from './mdx'
 
 interface Props {
@@ -15,13 +16,16 @@ export const KunDesktopCard = ({ posts, currentSlide }: Props) => {
   const post = posts[currentSlide]
 
   return (
-    <div className="hidden h-full sm:block">
+    <div className="hidden h-full sm:block group">
       <img
         alt={post.title}
         className="object-cover w-full h-full brightness-75 rounded-2xl"
         src={post.banner}
       />
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/30 via-black/10 to-transparent" />
+
+      <KunNavigationMenu />
+
       <Card className="absolute border-none bottom-4 left-4 right-4 bg-background/80 backdrop-blur-md">
         <div className="p-4">
           <div className="flex justify-between">

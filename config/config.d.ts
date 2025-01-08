@@ -4,6 +4,8 @@ export interface KunSiteDomain {
   storage: string
   kungal: string
   telegram_group: string
+  archive: string
+  forum: string
 }
 
 export interface KunSiteAuthor {
