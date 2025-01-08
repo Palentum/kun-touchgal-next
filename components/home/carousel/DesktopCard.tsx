@@ -1,10 +1,10 @@
 'use client'
 
-import { Card, Chip, Button, Link } from '@nextui-org/react'
-import { Dices } from 'lucide-react'
+import { Card, Chip, Link } from '@nextui-org/react'
 import { docDirectoryLabelMap } from '~/constants/doc'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 import { KunNavigationMenu } from './NavigationMenu'
+import { RandomGalgameButton } from './RandomGalgameButton'
 import type { HomeCarouselMetadata } from './mdx'
 
 interface Props {
@@ -49,13 +49,9 @@ export const KunDesktopCard = ({ posts, currentSlide }: Props) => {
               </Link>
             </div>
 
-            <Button
-              color="primary"
-              variant="solid"
-              startContent={<Dices size={18} />}
-            >
+            <RandomGalgameButton color="primary" variant="solid">
               随机一部游戏
-            </Button>
+            </RandomGalgameButton>
           </div>
 
           <p className="mb-2 text-sm text-foreground/80 line-clamp-1">
