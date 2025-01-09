@@ -36,7 +36,8 @@ interface Props {
 const sortFieldLabelMap: Record<string, string> = {
   created: '创建时间',
   view: '浏览量',
-  download: '下载量'
+  download: '下载量',
+  favorite: '收藏量'
 }
 
 export const FilterBar = ({
@@ -130,7 +131,6 @@ export const FilterBar = ({
           </Select>
 
           <div className="flex items-center gap-2">
-            {/* 排序筛选 */}
             <Dropdown>
               <DropdownTrigger>
                 <Button
@@ -157,6 +157,9 @@ export const FilterBar = ({
                 </DropdownItem>
                 <DropdownItem key="download" className="text-default-700">
                   下载量
+                </DropdownItem>
+                <DropdownItem key="favorite" className="text-default-700">
+                  收藏量
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>

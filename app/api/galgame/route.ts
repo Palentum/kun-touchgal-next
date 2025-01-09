@@ -34,11 +34,16 @@ export const getGalgame = async (
     ...nsfwEnable
   }
 
+  const orderBy =
+    sortField === 'favorite'
+      ? { favorite_by: { _count: sortOrder } }
+      : { [sortField]: sortOrder }
+
   const [data, total] = await Promise.all([
     prisma.patch.findMany({
       take: limit,
       skip: offset,
-      orderBy: { [sortField]: sortOrder },
+      orderBy,
       where,
       select: GalgameCardSelectField
     }),

@@ -1,32 +1,3 @@
-export const SUPPORTED_TYPE = [
-  'pc',
-  'chinese',
-  'mobile',
-  'emulator',
-  'row',
-  'app',
-  'patch',
-  'tool',
-  'notice',
-  'other'
-]
-
-export const SUPPORTED_TYPE_MAP: Record<string, string> = {
-  all: '全部类型',
-  pc: 'PC游戏',
-  chinese: '汉化资源',
-  mobile: '手机游戏',
-  emulator: '模拟器资源',
-  row: '生肉资源',
-  app: '直装资源',
-  patch: '补丁资源',
-  tool: '游戏工具',
-  notice: '官方通知',
-  other: '其它'
-}
-
-export const ALL_SUPPORTED_TYPE = ['all', ...SUPPORTED_TYPE]
-
 export const resourceTypes = [
   {
     value: 'pc',
@@ -81,9 +52,35 @@ export const resourceTypes = [
   }
 ]
 
+export const SUPPORTED_TYPE = [
+  'pc',
+  'chinese',
+  'mobile',
+  'emulator',
+  'row',
+  'app',
+  'patch',
+  'tool',
+  'notice',
+  'other'
+]
+export const SUPPORTED_TYPE_MAP: Record<string, string> = {
+  all: '全部类型',
+  pc: 'PC游戏',
+  chinese: '汉化资源',
+  mobile: '手机游戏',
+  emulator: '模拟器资源',
+  row: '生肉资源',
+  app: '直装资源',
+  patch: '补丁资源',
+  tool: '游戏工具',
+  notice: '官方通知',
+  other: '其它'
+}
+export const ALL_SUPPORTED_TYPE = ['all', ...SUPPORTED_TYPE]
+
 export const SUPPORTED_LANGUAGE = ['zh-Hans', 'zh-Hant', 'ja', 'en', 'other']
 export const ALL_SUPPORTED_LANGUAGE = ['all', ...SUPPORTED_LANGUAGE]
-
 export const SUPPORTED_LANGUAGE_MAP: Record<string, string> = {
   all: '全部语言',
   'zh-Hans': '简体中文',
@@ -102,7 +99,6 @@ export const SUPPORTED_PLATFORM = [
   'other'
 ]
 export const ALL_SUPPORTED_PLATFORM = ['all', ...SUPPORTED_PLATFORM]
-
 export const SUPPORTED_PLATFORM_MAP: Record<string, string> = {
   all: '全部平台',
   windows: 'Windows',
