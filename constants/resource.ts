@@ -82,8 +82,10 @@ export const resourceTypes = [
 ]
 
 export const SUPPORTED_LANGUAGE = ['zh-Hans', 'zh-Hant', 'ja', 'en', 'other']
+export const ALL_SUPPORTED_LANGUAGE = ['all', ...SUPPORTED_LANGUAGE]
 
 export const SUPPORTED_LANGUAGE_MAP: Record<string, string> = {
+  all: '全部语言',
   'zh-Hans': '简体中文',
   'zh-Hant': '繁體中文',
   ja: '日本語',
@@ -99,8 +101,10 @@ export const SUPPORTED_PLATFORM = [
   'linux',
   'other'
 ]
+export const ALL_SUPPORTED_PLATFORM = ['all', ...SUPPORTED_PLATFORM]
 
 export const SUPPORTED_PLATFORM_MAP: Record<string, string> = {
+  all: '全部平台',
   windows: 'Windows',
   android: 'Android',
   macos: 'MacOS',

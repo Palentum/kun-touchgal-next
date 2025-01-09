@@ -10,7 +10,14 @@ import { Button } from '@nextui-org/button'
 import { Card, CardHeader } from '@nextui-org/card'
 import { Select, SelectItem } from '@nextui-org/select'
 import { ArrowDownAZ, ArrowUpAZ, ChevronDown, Filter } from 'lucide-react'
-import { ALL_SUPPORTED_TYPE, SUPPORTED_TYPE_MAP } from '~/constants/resource'
+import {
+  ALL_SUPPORTED_TYPE,
+  SUPPORTED_TYPE_MAP,
+  ALL_SUPPORTED_LANGUAGE,
+  SUPPORTED_LANGUAGE_MAP,
+  ALL_SUPPORTED_PLATFORM,
+  SUPPORTED_PLATFORM_MAP
+} from '~/constants/resource'
 import type { SortDirection, SortOption } from './_sort'
 
 interface Props {
@@ -20,6 +27,10 @@ interface Props {
   setSortField: (option: SortOption) => void
   sortOrder: SortDirection
   setSortOrder: (direction: SortDirection) => void
+  selectedLanguage: string
+  setSelectedLanguage: (language: string) => void
+  selectedPlatform: string
+  setSelectedPlatform: (platform: string) => void
 }
 
 const sortFieldLabelMap: Record<string, string> = {
@@ -34,7 +45,11 @@ export const FilterBar = ({
   sortField,
   setSortField,
   sortOrder,
-  setSortOrder
+  setSortOrder,
+  selectedLanguage,
+  setSelectedLanguage,
+  selectedPlatform,
+  setSelectedPlatform
 }: Props) => {
   return (
     <Card className="w-full border border-content2 bg-content1/50 backdrop-blur-lg">
@@ -62,7 +77,60 @@ export const FilterBar = ({
             ))}
           </Select>
 
+          <Select
+            label="语言筛选"
+            placeholder="选择语言"
+            selectedKeys={[selectedLanguage]}
+            className="max-w-xs"
+            onChange={(event) => setSelectedLanguage(event.target.value)}
+            startContent={<Filter className="size-4 text-default-400" />}
+            classNames={{
+              trigger: 'bg-content2/50 hover:bg-content2 transition-colors',
+              value: 'text-default-700',
+              label: 'text-default-600'
+            }}
+            radius="lg"
+            size="sm"
+          >
+            {ALL_SUPPORTED_LANGUAGE.map((language) => (
+              <SelectItem
+                key={language}
+                value={language}
+                className="text-default-700"
+              >
+                {SUPPORTED_LANGUAGE_MAP[language]}
+              </SelectItem>
+            ))}
+          </Select>
+
+          <Select
+            label="平台筛选"
+            placeholder="选择平台"
+            selectedKeys={[selectedPlatform]}
+            className="max-w-xs"
+            onChange={(event) => setSelectedPlatform(event.target.value)}
+            startContent={<Filter className="size-4 text-default-400" />}
+            classNames={{
+              trigger: 'bg-content2/50 hover:bg-content2 transition-colors',
+              value: 'text-default-700',
+              label: 'text-default-600'
+            }}
+            radius="lg"
+            size="sm"
+          >
+            {ALL_SUPPORTED_PLATFORM.map((platform) => (
+              <SelectItem
+                key={platform}
+                value={platform}
+                className="text-default-700"
+              >
+                {SUPPORTED_PLATFORM_MAP[platform]}
+              </SelectItem>
+            ))}
+          </Select>
+
           <div className="flex items-center gap-2">
+            {/* 排序筛选 */}
             <Dropdown>
               <DropdownTrigger>
                 <Button

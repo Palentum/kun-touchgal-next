@@ -20,6 +20,8 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
   const [total, setTotal] = useState(initialTotal)
   const [loading, setLoading] = useState(false)
   const [selectedType, setSelectedType] = useState<string>('all')
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('all')
+  const [selectedPlatform, setSelectedPlatform] = useState<string>('all')
   const [sortField, setSortField] = useState<SortOption>('created')
   const [sortOrder, setSortOrder] = useState<SortDirection>('desc')
   const isMounted = useMounted()
@@ -34,6 +36,8 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
       total: number
     }>('/galgame', {
       selectedType,
+      selectedLanguage,
+      selectedPlatform,
       sortField,
       sortOrder,
       page,
@@ -50,7 +54,14 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
       return
     }
     fetchPatches()
-  }, [sortField, sortOrder, selectedType, page])
+  }, [
+    sortField,
+    sortOrder,
+    selectedType,
+    selectedLanguage,
+    selectedPlatform,
+    page
+  ])
 
   return (
     <div className="container mx-auto my-4 space-y-6">
@@ -61,15 +72,15 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
 
       <FilterBar
         selectedType={selectedType}
-        setSelectedType={(key) => {
-          if (key) {
-            setSelectedType(key)
-          }
-        }}
+        setSelectedType={setSelectedType}
         sortField={sortField}
         setSortField={setSortField}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
+        selectedLanguage={selectedLanguage}
+        setSelectedLanguage={setSelectedLanguage}
+        selectedPlatform={selectedPlatform}
+        setSelectedPlatform={setSelectedPlatform}
       />
 
       <div className="grid grid-cols-2 gap-2 mx-auto mb-8 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

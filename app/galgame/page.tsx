@@ -19,6 +19,8 @@ export default async function Kun({ searchParams }: Props) {
     total: number
   }>('/galgame', {
     selectedType: 'all',
+    selectedLanguage: 'all',
+    selectedPlatform: 'all',
     sortField: 'created',
     sortOrder: 'desc',
     page: currentPage,
