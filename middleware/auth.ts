@@ -2,13 +2,10 @@ import { NextResponse } from 'next/server'
 import { parseCookies } from '~/utils/cookies'
 import type { NextRequest } from 'next/server'
 
-export const isProtectedRoute = (pathname: string) => {
-  return (
-    pathname.startsWith('/admin') ||
-    pathname.startsWith('/user') ||
-    pathname.startsWith('/comment')
-  )
-}
+const protectedPaths = ['/admin', '/user', '/comment', '/edit']
+
+export const isProtectedRoute = (pathname: string) =>
+  protectedPaths.some((path) => pathname.startsWith(path))
 
 const redirectToLogin = (request: NextRequest) => {
   const loginUrl = new URL('/login', request.url)
@@ -16,12 +13,16 @@ const redirectToLogin = (request: NextRequest) => {
   return NextResponse.redirect(loginUrl)
 }
 
-export const kunAuthMiddleware = async (request: NextRequest) => {
-  const token = parseCookies(request.headers.get('cookie') ?? '')[
-    'kun-galgame-patch-moe-token'
-  ]
+const getToken = (request: NextRequest) => {
+  const cookies = parseCookies(request.headers.get('cookie') ?? '')
+  return cookies['kun-galgame-patch-moe-token']
+}
 
-  if (isProtectedRoute(request.nextUrl.pathname) && !token) {
+export const kunAuthMiddleware = async (request: NextRequest) => {
+  const { pathname } = request.nextUrl
+  const token = getToken(request)
+
+  if (isProtectedRoute(pathname) && !token) {
     return redirectToLogin(request)
   }
 

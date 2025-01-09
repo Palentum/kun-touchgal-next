@@ -4,7 +4,6 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { patchCreateSchema, patchUpdateSchema } from '~/validations/edit'
 import { createGalgame } from './create'
 import { updateGalgame } from './update'
-import { VNDBRegex } from '~/utils/validate'
 
 const checkAliasValid = (aliasString: string) => {
   const aliasArray = JSON.parse(aliasString) as string[]
@@ -31,10 +30,8 @@ export const POST = async (req: NextRequest) => {
   if (!payload) {
     return NextResponse.json('用户未登录')
   }
-  if (payload.role < 2 && !VNDBRegex.test(input.vndbId ?? '')) {
-    return NextResponse.json(
-      '为防止恶意发布, 仅限创作者可以不填写 VNDB ID 发布游戏'
-    )
+  if (payload.role < 3) {
+    return NextResponse.json('本页面仅管理员可访问')
   }
 
   const { alias, banner, ...rest } = input
@@ -59,6 +56,9 @@ export const PUT = async (req: NextRequest) => {
   const payload = await verifyHeaderCookie(req)
   if (!payload) {
     return NextResponse.json('用户未登录')
+  }
+  if (payload.role < 3) {
+    return NextResponse.json('本页面仅管理员可访问')
   }
 
   const response = await updateGalgame(input)
