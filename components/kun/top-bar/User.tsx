@@ -14,6 +14,7 @@ import { useMounted } from '~/hooks/useMounted'
 import { UserDropdown } from './UserDropdown'
 import { KunSearch } from './Search'
 import { UserMessageBell } from './UserMessageBell'
+import { NSFWSwitcher } from './NSFWSwitcher'
 import type { UserState } from '~/store/userStore'
 import type { Message } from '~/types/api/message'
 
@@ -75,6 +76,8 @@ export const KunTopBarUser = () => {
           )}
 
           <KunSearch />
+
+          <NSFWSwitcher />
 
           <ThemeSwitcher />
 

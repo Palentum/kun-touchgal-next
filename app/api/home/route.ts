@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '~/prisma/index'
 import { HomeResource } from '~/types/api/home'
 import { GalgameCardSelectField } from '~/constants/api/select'
+import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 
-export const getHomeData = async () => {
+export const getHomeData = async (nsfwEnable: boolean) => {
   const [data, resourcesData] = await Promise.all([
     await prisma.patch.findMany({
       orderBy: { created: 'desc' },
@@ -70,6 +71,8 @@ export const getHomeData = async () => {
 }
 
 export const GET = async (req: NextRequest) => {
-  const response = await getHomeData()
+  const nsfwEnable = getNSFWHeader(req)
+
+  const response = await getHomeData(nsfwEnable)
   return NextResponse.json(response)
 }

@@ -17,7 +17,7 @@ export const PatchHeaderTabs = ({ id, intro }: PatchHeaderProps) => {
       defaultSelectedKey="introduction"
       onSelectionChange={(value) => {
         if (value === 'resources') {
-          window.scroll(0, 0)
+          window.scroll(0, 400)
         }
       }}
     >
