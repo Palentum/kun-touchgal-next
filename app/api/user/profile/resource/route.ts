@@ -4,6 +4,7 @@ import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { getUserInfoSchema } from '~/validations/user'
 import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
+import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import type { UserResource } from '~/types/api/user'
 
 export const getUserPatchResource = async (
@@ -48,6 +49,10 @@ export async function GET(req: NextRequest) {
   const input = kunParseGetQuery(req, getUserInfoSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)
+  }
+  const payload = await verifyHeaderCookie(req)
+  if (!payload) {
+    return NextResponse.json('用户登陆失效')
   }
   const nsfwEnable = getNSFWHeader(req)
 

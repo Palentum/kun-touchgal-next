@@ -12,6 +12,8 @@ import { CommentLikeButton } from './CommentLike'
 import { CommentDropdown } from './CommentDropdown'
 import { CommentContent } from './CommentContent'
 import { scrollIntoComment } from './_scrollIntoComment'
+import { useUserStore } from '~/store/providers/user'
+import { KunNull } from '~/components/kun/Null'
 import type { PatchComment } from '~/types/api/patch'
 
 interface Props {
@@ -21,8 +23,13 @@ interface Props {
 export const Comments = ({ id }: Props) => {
   const [comments, setComments] = useState<PatchComment[]>([])
   const [replyTo, setReplyTo] = useState<number | null>(null)
+  const user = useUserStore((state) => state.user)
 
   useEffect(() => {
+    if (!user.uid) {
+      return
+    }
+
     const fetchData = async () => {
       const res = await kunFetchGet<PatchComment[]>('/patch/comment', {
         patchId: Number(id)
@@ -38,6 +45,10 @@ export const Comments = ({ id }: Props) => {
       setTimeout(resolve, 500)
     })
     scrollIntoComment(newComment.id)
+  }
+
+  if (!user.uid) {
+    return <KunNull message="请登陆后查看评论" />
   }
 
   const renderComments = (comments: PatchComment[]) => {

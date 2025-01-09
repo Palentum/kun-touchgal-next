@@ -3,7 +3,11 @@ import { parseCookies } from '~/utils/cookies'
 import type { NextRequest } from 'next/server'
 
 export const isProtectedRoute = (pathname: string) => {
-  return pathname.startsWith('/admin') || pathname.startsWith('/user')
+  return (
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/user') ||
+    pathname.startsWith('/comment')
+  )
 }
 
 const redirectToLogin = (request: NextRequest) => {
