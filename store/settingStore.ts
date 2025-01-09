@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import { cookieStorage } from './_cookie'
 
 export interface KunSettingData {
-  kunNsfwEnable: boolean
+  kunNsfwEnable: string
 }
 
 interface StoreState {
@@ -14,7 +14,7 @@ interface StoreState {
 }
 
 const initialState: KunSettingData = {
-  kunNsfwEnable: false
+  kunNsfwEnable: 'sfw'
 }
 
 export const useSettingStore = create<StoreState>()(

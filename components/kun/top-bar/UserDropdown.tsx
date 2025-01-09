@@ -113,6 +113,7 @@ export const UserDropdown = () => {
           disabledKeys={user.dailyCheckIn ? ['check'] : []}
         >
           <DropdownItem
+            isReadOnly
             key="username"
             textValue="用户名"
             className="cursor-default data-[hover=true]:bg-background"
@@ -120,6 +121,7 @@ export const UserDropdown = () => {
             <p className="font-semibold">{user.name}</p>
           </DropdownItem>
           <DropdownItem
+            isReadOnly
             key="moemoepoint"
             textValue="萌萌点"
             className="cursor-default data-[hover=true]:bg-background"

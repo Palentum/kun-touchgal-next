@@ -34,15 +34,6 @@ export const SettingsDropdown = () => {
               <EyeOff className="w-4 h-4" />
             )
           }
-          endContent={
-            <Switch
-              size="sm"
-              isSelected={settings.kunNsfwEnable}
-              onValueChange={() =>
-                setData({ kunNsfwEnable: !settings.kunNsfwEnable })
-              }
-            />
-          }
         >
           显示 NSFW 内容
         </DropdownItem>

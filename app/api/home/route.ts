@@ -4,10 +4,13 @@ import { HomeResource } from '~/types/api/home'
 import { GalgameCardSelectField } from '~/constants/api/select'
 import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 
-export const getHomeData = async (nsfwEnable: boolean) => {
+export const getHomeData = async (
+  nsfwEnable: Record<string, string | undefined>
+) => {
   const [data, resourcesData] = await Promise.all([
     await prisma.patch.findMany({
       orderBy: { created: 'desc' },
+      where: nsfwEnable,
       select: GalgameCardSelectField,
       take: 20
     }),
