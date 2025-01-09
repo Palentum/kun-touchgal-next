@@ -4,7 +4,8 @@ import { adminPaginationSchema } from '~/validations/admin'
 import type { AdminResource } from '~/types/api/admin'
 
 export const getPatchResource = async (
-  input: z.infer<typeof adminPaginationSchema>
+  input: z.infer<typeof adminPaginationSchema>,
+  nsfwEnable: Record<string, string | undefined>
 ) => {
   const { page, limit } = input
   const offset = (page - 1) * limit
@@ -13,6 +14,7 @@ export const getPatchResource = async (
     await prisma.patch_resource.findMany({
       take: limit,
       skip: offset,
+      where: { patch: nsfwEnable },
       orderBy: { created: 'desc' },
       include: {
         patch: {
@@ -30,7 +32,9 @@ export const getPatchResource = async (
         }
       }
     }),
-    await prisma.patch_resource.count()
+    await prisma.patch_resource.count({
+      where: { patch: nsfwEnable }
+    })
   ])
 
   const resources: AdminResource[] = data.map((resource) => ({

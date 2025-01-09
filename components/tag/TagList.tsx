@@ -16,7 +16,9 @@ export const TagList = ({ tags, loading, searching }: TagListProps) => {
   }
 
   if (!searching && tags.length === 0) {
-    return <KunNull message="未找到相关内容, 请尝试使用游戏的日文原名搜索" />
+    return (
+      <KunNull message="未找到相关内容, 请尝试使用游戏的日文原名搜索或打开 NSFW" />
+    )
   }
 
   return (

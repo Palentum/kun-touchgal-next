@@ -32,16 +32,18 @@ export const NSFWSwitcher = () => {
         closeDelay={0}
         content="NSFW 内容切换"
       >
-        <DropdownTrigger>
-          <Button
-            isIconOnly
-            variant="light"
-            aria-label="NSFW 切换"
-            className="text-default-500"
-          >
-            {themeIcon}
-          </Button>
-        </DropdownTrigger>
+        <div className="flex">
+          <DropdownTrigger>
+            <Button
+              isIconOnly
+              variant="light"
+              aria-label="NSFW 切换"
+              className="text-default-500"
+            >
+              {themeIcon}
+            </Button>
+          </DropdownTrigger>
+        </div>
       </Tooltip>
 
       <DropdownMenu

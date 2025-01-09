@@ -3,17 +3,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { getUserInfoSchema } from '~/validations/user'
+import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 import type { UserResource } from '~/types/api/user'
 
 export const getUserPatchResource = async (
-  input: z.infer<typeof getUserInfoSchema>
+  input: z.infer<typeof getUserInfoSchema>,
+  nsfwEnable: Record<string, string | undefined>
 ) => {
   const { uid, page, limit } = input
   const offset = (page - 1) * limit
 
   const [data, total] = await Promise.all([
     await prisma.patch_resource.findMany({
-      where: { user_id: uid },
+      where: { user_id: uid, patch: nsfwEnable },
       include: {
         patch: true
       },
@@ -22,7 +24,7 @@ export const getUserPatchResource = async (
       take: limit
     }),
     await prisma.patch_resource.count({
-      where: { user_id: uid }
+      where: { user_id: uid, patch: nsfwEnable }
     })
   ])
 
@@ -47,7 +49,8 @@ export async function GET(req: NextRequest) {
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }
+  const nsfwEnable = getNSFWHeader(req)
 
-  const response = await getUserPatchResource(input)
+  const response = await getUserPatchResource(input, nsfwEnable)
   return NextResponse.json(response)
 }

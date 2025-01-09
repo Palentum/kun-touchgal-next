@@ -4,8 +4,12 @@ import { kunParsePostBody } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { searchSchema } from '~/validations/search'
 import { GalgameCardSelectField } from '~/constants/api/select'
+import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 
-export const searchGalgame = async (input: z.infer<typeof searchSchema>) => {
+export const searchGalgame = async (
+  input: z.infer<typeof searchSchema>,
+  nsfwEnable: Record<string, string | undefined>
+) => {
   const { query, page, limit } = input
 
   const offset = (page - 1) * limit
@@ -19,7 +23,8 @@ export const searchGalgame = async (input: z.infer<typeof searchSchema>) => {
             { vndb_id: { contains: q, mode: 'insensitive' } },
             { introduction: { contains: q, mode: 'insensitive' } },
             { alias: { has: q } }
-          ]
+          ],
+          ...nsfwEnable
         },
         select: GalgameCardSelectField,
         orderBy: { created: 'desc' },
@@ -37,7 +42,8 @@ export const searchGalgame = async (input: z.infer<typeof searchSchema>) => {
           { vndb_id: { contains: q, mode: 'insensitive' } },
           { introduction: { contains: q, mode: 'insensitive' } },
           { alias: { hasSome: [q] } }
-        ]
+        ],
+        ...nsfwEnable
       }))
     }
   })
@@ -64,7 +70,8 @@ export const POST = async (req: NextRequest) => {
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }
+  const nsfwEnable = getNSFWHeader(req)
 
-  const response = await searchGalgame(input)
+  const response = await searchGalgame(input, nsfwEnable)
   return NextResponse.json(response)
 }

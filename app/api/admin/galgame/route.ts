@@ -3,10 +3,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { adminPaginationSchema } from '~/validations/admin'
+import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 import type { AdminGalgame } from '~/types/api/admin'
 
 export const getGalgame = async (
-  input: z.infer<typeof adminPaginationSchema>
+  input: z.infer<typeof adminPaginationSchema>,
+  nsfwEnable: Record<string, string | undefined>
 ) => {
   const { page, limit } = input
   const offset = (page - 1) * limit
@@ -15,6 +17,7 @@ export const getGalgame = async (
     await prisma.patch.findMany({
       take: limit,
       skip: offset,
+      where: nsfwEnable,
       orderBy: { created: 'desc' },
       include: {
         user: {
@@ -26,7 +29,7 @@ export const getGalgame = async (
         }
       }
     }),
-    await prisma.patch.count()
+    await prisma.patch.count({ where: nsfwEnable })
   ])
 
   const galgames: AdminGalgame[] = data.map((galgame) => ({
@@ -46,7 +49,8 @@ export async function GET(req: NextRequest) {
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }
+  const nsfwEnable = getNSFWHeader(req)
 
-  const res = await getGalgame(input)
+  const res = await getGalgame(input, nsfwEnable)
   return NextResponse.json(res)
 }

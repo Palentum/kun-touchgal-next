@@ -131,7 +131,7 @@ export const SearchPage = () => {
           )}
 
           {hasSearched && patches.length === 0 && (
-            <KunNull message="未找到相关内容, 请尝试使用游戏的日文原名搜索" />
+            <KunNull message="未找到相关内容, 请尝试使用游戏的日文原名搜索或打开 NSFW" />
           )}
         </motion.div>
       )}

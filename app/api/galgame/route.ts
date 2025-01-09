@@ -5,8 +5,12 @@ import { prisma } from '~/prisma/index'
 import { galgameSchema } from '~/validations/galgame'
 import { ALL_SUPPORTED_TYPE } from '~/constants/resource'
 import { GalgameCardSelectField } from '~/constants/api/select'
+import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 
-export const getGalgame = async (input: z.infer<typeof galgameSchema>) => {
+export const getGalgame = async (
+  input: z.infer<typeof galgameSchema>,
+  nsfwEnable: Record<string, string | undefined>
+) => {
   const { selectedType, sortField, sortOrder, page, limit } = input
 
   const offset = (page - 1) * limit
@@ -19,11 +23,11 @@ export const getGalgame = async (input: z.infer<typeof galgameSchema>) => {
       take: limit,
       skip: offset,
       orderBy: { [sortField]: sortOrder },
-      where: typeQuery,
+      where: { ...typeQuery, ...nsfwEnable },
       select: GalgameCardSelectField
     }),
     await prisma.patch.count({
-      where: typeQuery
+      where: { ...typeQuery, ...nsfwEnable }
     })
   ])
 
@@ -44,7 +48,8 @@ export const GET = async (req: NextRequest) => {
   if (!ALL_SUPPORTED_TYPE.includes(input.selectedType)) {
     return '请选择我们支持的 Galgame 类型'
   }
+  const nsfwEnable = getNSFWHeader(req)
 
-  const response = await getGalgame(input)
+  const response = await getGalgame(input, nsfwEnable)
   return NextResponse.json(response)
 }

@@ -16,6 +16,7 @@ export const getHomeData = async (
     }),
     await prisma.patch_resource.findMany({
       orderBy: { created: 'desc' },
+      where: { patch: nsfwEnable },
       include: {
         patch: {
           select: {

@@ -6,6 +6,7 @@ import {
   kunParsePutBody
 } from '~/app/api/utils/parseQuery'
 import { adminPaginationSchema } from '~/validations/admin'
+import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 import { getPatchResource } from './get'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { patchResourceUpdateSchema } from '~/validations/patch'
@@ -19,13 +20,14 @@ const resourceIdSchema = z.object({
     .max(9999999)
 })
 
-export async function GET(req: NextRequest) {
+export const GET = async (req: NextRequest) => {
   const input = kunParseGetQuery(req, adminPaginationSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }
+  const nsfwEnable = getNSFWHeader(req)
 
-  const res = await getPatchResource(input)
+  const res = await getPatchResource(input, nsfwEnable)
   return NextResponse.json(res)
 }
 

@@ -14,7 +14,11 @@ export const RenderCell = (galgame: AdminGalgame, columnKey: string) => {
           alt={galgame.name}
           className="object-cover"
           width={128}
-          src={galgame.banner.replace(/\.avif$/, '-mini.avif')}
+          src={
+            galgame.banner
+              ? galgame.banner.replace(/\.avif$/, '-mini.avif')
+              : '/touchgal.avif'
+          }
           style={{ aspectRatio: '16/9' }}
         />
       )
