@@ -1,5 +1,6 @@
 import { kunMoyuMoe } from '~/config/moyu-moe'
 import { convert } from 'html-to-text'
+import { generateNullMetadata } from '~/utils/noIndex'
 import type { Metadata } from 'next'
 import type { Patch, PatchIntroduction } from '~/types/api/patch'
 
@@ -7,6 +8,12 @@ export const generateKunMetadataTemplate = (
   patch: Patch,
   intro: PatchIntroduction
 ): Metadata => {
+  if (patch.contentLimit === 'nsfw') {
+    return generateNullMetadata(
+      patch.alias.length ? `${patch.name} | ${patch.alias[0]}` : `${patch.name}`
+    )
+  }
+
   return {
     title: patch.alias.length
       ? `${patch.name} | ${patch.alias[0]}`
