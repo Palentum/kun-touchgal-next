@@ -13,8 +13,8 @@ import {
   GALGAME_AGE_LIMIT_DETAIL,
   GALGAME_AGE_LIMIT_MAP
 } from '~/constants/galgame'
-import type { Patch } from '~/types/api/patch'
 import { useUserStore } from '~/store/providers/user'
+import type { Patch } from '~/types/api/patch'
 
 interface Props {
   patch: Patch
@@ -53,7 +53,7 @@ export const ButtonList = ({ patch }: Props) => {
             <DeleteButton patch={patch} />
           </>
         ) : (
-          <FeedbackButton />
+          <FeedbackButton patch={patch} />
         )}
       </div>
     </div>

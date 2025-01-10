@@ -6,7 +6,9 @@ export const MESSAGE_TYPE = [
   'favorite',
   'comment',
   'follow',
-  'pr'
+  'pr',
+  'feedback',
+  'report'
 ] as const
 
 export const MESSAGE_TYPE_MAP: Record<string, string> = {
@@ -17,5 +19,7 @@ export const MESSAGE_TYPE_MAP: Record<string, string> = {
   favorite: '收藏',
   comment: '评论',
   follow: '关注',
-  pr: '更新请求'
+  pr: '更新请求',
+  feedback: '反馈',
+  report: '举报'
 }
