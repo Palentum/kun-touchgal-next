@@ -6,6 +6,7 @@ import { createButtons } from './_buttonList'
 import { VideoInsertButton } from './components/video/VideoInsertButton'
 import { LinkInsertButton } from './components/link/LinkInsertButton'
 import { ImageUploadButton } from './components/ImageUploadButton'
+import { EmojiPicker } from './components/emoji/EmojiPicker'
 import type { CmdKey } from '@milkdown/core'
 import type { UseEditorReturn } from '@milkdown/react'
 
@@ -32,6 +33,8 @@ export const KunMilkdownPluginsMenu = ({
           ariaLabel={ariaLabel}
         />
       ))}
+
+      <EmojiPicker editorInfo={editorInfo} />
 
       <LinkInsertButton call={call} />
 
