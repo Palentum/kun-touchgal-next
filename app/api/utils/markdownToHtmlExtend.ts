@@ -77,7 +77,8 @@ export const markdownToHtmlExtend = async (markdown: string) => {
           'data-href',
           'data-text',
           'className'
-        ]
+        ],
+        img: ['src', 'alt', 'title', 'class', 'loading']
       }
     })
     .use(remarkFrontmatter)
