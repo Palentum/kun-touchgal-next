@@ -7,19 +7,13 @@ import { uploadPatchBanner } from '~/app/api/edit/_upload'
 
 export const updatePatchBanner = async (
   image: ArrayBuffer,
-  patchId: number,
-  currentUserUid: number,
-  currentUserRole: number
+  patchId: number
 ) => {
   const patch = await prisma.patch.findUnique({
     where: { id: patchId }
   })
   if (!patch) {
     return '这个 Galgame 不存在'
-  }
-
-  if (currentUserUid !== patch.user_id && currentUserRole < 3) {
-    return '您没有权限更改 Galgame 的预览图片, 仅限 Galgame 发布者或管理员可以更改'
   }
 
   const res = await uploadPatchBanner(image, patchId)
@@ -42,14 +36,12 @@ export const POST = async (req: NextRequest) => {
   if (!payload) {
     return NextResponse.json('用户未登录')
   }
+  if (payload.role < 3) {
+    return NextResponse.json('本页面仅管理员可访问')
+  }
 
   const image = await new Response(input.image)?.arrayBuffer()
 
-  const response = await updatePatchBanner(
-    image,
-    input.patchId,
-    payload.uid,
-    payload.role
-  )
+  const response = await updatePatchBanner(image, input.patchId)
   return NextResponse.json(response)
 }

@@ -36,7 +36,10 @@ export const DELETE = async (req: NextRequest) => {
   if (!payload) {
     return NextResponse.json('用户未登录')
   }
+  if (payload.role < 3) {
+    return NextResponse.json('本页面仅管理员可访问')
+  }
 
-  const response = await deletePatchById(input, payload.uid)
+  const response = await deletePatchById(input)
   return NextResponse.json(response)
 }

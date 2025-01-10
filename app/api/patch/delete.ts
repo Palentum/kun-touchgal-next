@@ -6,10 +6,7 @@ const patchIdSchema = z.object({
   patchId: z.coerce.number().min(1).max(9999999)
 })
 
-export const deletePatchById = async (
-  input: z.infer<typeof patchIdSchema>,
-  uid: number
-) => {
+export const deletePatchById = async (input: z.infer<typeof patchIdSchema>) => {
   const { patchId } = input
 
   const patch = await prisma.patch.findUnique({
@@ -17,12 +14,6 @@ export const deletePatchById = async (
   })
   if (!patch) {
     return '未找到该游戏'
-  }
-  if (patch.vndb_id) {
-    return '该游戏含有 VNDB ID, 仅可以删除未填写 VNDB ID 的游戏'
-  }
-  if (uid !== patch.user_id) {
-    return '您没有权限删除该游戏, 该游戏仅限游戏发布者可删除'
   }
 
   const patchResources = await prisma.patch_resource.findMany({
