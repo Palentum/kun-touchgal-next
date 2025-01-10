@@ -3,7 +3,7 @@
 import { SetStateAction, useState } from 'react'
 import { Button } from '@nextui-org/button'
 import { Dropdown, DropdownMenu, DropdownTrigger } from '@nextui-org/dropdown'
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
+import { MoreHorizontal, Pencil, Trash2, TriangleAlert } from 'lucide-react'
 import { DropdownItem } from '@nextui-org/dropdown'
 import {
   Modal,
@@ -14,10 +14,16 @@ import {
   useDisclosure
 } from '@nextui-org/modal'
 import { Textarea } from '@nextui-org/input'
-import { kunFetchDelete, kunFetchGet, kunFetchPut } from '~/utils/kunFetch'
+import {
+  kunFetchDelete,
+  kunFetchGet,
+  kunFetchPost,
+  kunFetchPut
+} from '~/utils/kunFetch'
 import toast from 'react-hot-toast'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import { useUserStore } from '~/store/providers/user'
+import { convert } from 'html-to-text'
 import type { PatchComment } from '~/types/api/patch'
 
 interface Props {
@@ -94,6 +100,30 @@ export const CommentDropdown = ({ comment, setComments }: Props) => {
     setDeleting(false)
   }
 
+  const {
+    isOpen: isOpenReport,
+    onOpen: onOpenReport,
+    onClose: onCloseReport
+  } = useDisclosure()
+  const [reportValue, setReportValue] = useState('')
+  const [reporting, setReporting] = useState(false)
+  const handleSubmitReport = async () => {
+    setReporting(true)
+    const res = await kunFetchPost<KunResponse<{}>>('/patch/comment/report', {
+      commentId: comment.id,
+      patchId: comment.patchId,
+      content: reportValue
+    })
+    if (typeof res === 'string') {
+      toast.error(res)
+    } else {
+      setReportValue('')
+      toast.success('提交举报成功')
+    }
+    onCloseReport()
+    setReporting(false)
+  }
+
   return (
     <>
       <Dropdown>
@@ -104,7 +134,9 @@ export const CommentDropdown = ({ comment, setComments }: Props) => {
         </DropdownTrigger>
         <DropdownMenu
           aria-label="Comment actions"
-          disabledKeys={user.uid === comment.userId ? [] : ['edit', 'delete']}
+          disabledKeys={
+            user.uid === comment.userId ? ['report'] : ['edit', 'delete']
+          }
         >
           <DropdownItem
             key="edit"
@@ -119,11 +151,16 @@ export const CommentDropdown = ({ comment, setComments }: Props) => {
             className="text-danger"
             color="danger"
             startContent={<Trash2 className="size-4" />}
-            onPress={() => {
-              onOpenDelete()
-            }}
+            onPress={onOpenDelete}
           >
             删除评论
+          </DropdownItem>
+          <DropdownItem
+            key="report"
+            startContent={<TriangleAlert className="size-4" />}
+            onPress={onOpenReport}
+          >
+            举报评论
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
@@ -166,7 +203,7 @@ export const CommentDropdown = ({ comment, setComments }: Props) => {
               以及所有回复该评论的评论, 该操作不可撤销
             </p>
             <p className="pl-4 border-l-4 border-primary-500">
-              {comment.content}
+              {convert(comment.content)}
             </p>
           </ModalBody>
           <ModalFooter>
@@ -180,6 +217,34 @@ export const CommentDropdown = ({ comment, setComments }: Props) => {
               isLoading={deleting}
             >
               删除
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isOpenReport} onClose={onCloseReport}>
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">举报评论</ModalHeader>
+          <ModalBody>
+            <Textarea
+              label={`举报 ${convert(comment.content).slice(0, 20)}`}
+              isRequired
+              placeholder="请填写举报原因"
+              value={reportValue}
+              onChange={(e) => setReportValue(e.target.value)}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onPress={onCloseReport}>
+              取消
+            </Button>
+            <Button
+              color="primary"
+              onPress={handleSubmitReport}
+              isDisabled={reporting}
+              isLoading={reporting}
+            >
+              提交
             </Button>
           </ModalFooter>
         </ModalContent>
