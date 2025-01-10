@@ -20,6 +20,7 @@ import { EditTagModal } from './EditTagModel'
 import { useRouter } from 'next-nprogress-bar'
 import { KunUser } from '~/components/kun/floating-card/KunUser'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
+import { useUserStore } from '~/store/providers/user'
 
 interface Props {
   initialTag: TagDetail
@@ -33,6 +34,7 @@ export const TagDetailCOntainer = ({
   total
 }: Props) => {
   const isMounted = useMounted()
+  const user = useUserStore((state) => state.user)
   const router = useRouter()
   const [page, setPage] = useState(1)
 
@@ -87,14 +89,16 @@ export const TagDetailCOntainer = ({
               }}
             />
 
-            <Button
-              variant="flat"
-              color="primary"
-              onPress={onOpen}
-              startContent={<Pencil />}
-            >
-              编辑该标签
-            </Button>
+            {user.role > 2 && (
+              <Button
+                variant="flat"
+                color="primary"
+                onPress={onOpen}
+                startContent={<Pencil />}
+              >
+                编辑该标签
+              </Button>
+            )}
             <EditTagModal
               tag={tag}
               isOpen={isOpen}

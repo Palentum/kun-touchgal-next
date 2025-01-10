@@ -26,7 +26,7 @@ export const ButtonList = ({ patch }: Props) => {
   return (
     <div className="flex flex-col items-start justify-between space-y-2 sm:space-y-0 sm:flex-row">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-xl font-bold sm:text-3xl">
           <span>{patch.name}</span>
           <Tooltip content={GALGAME_AGE_LIMIT_DETAIL[patch.contentLimit]}>
             <Chip
