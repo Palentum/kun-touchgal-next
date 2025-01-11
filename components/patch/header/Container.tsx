@@ -11,7 +11,7 @@ import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 import { Tags } from './Tags'
 import Image from 'next/image'
 import { KunUser } from '~/components/kun/floating-card/KunUser'
-import { KunImageViewer } from '~/components/kun/image-viewer/ImageViewer'
+import { KunAutoImageViewer } from '~/components/kun/image-viewer/AutoImageViewer'
 import { ButtonList } from './ButtonList'
 import type { Patch, PatchIntroduction } from '~/types/api/patch'
 
@@ -36,19 +36,15 @@ export const PatchHeaderContainer = ({ patch, intro }: PatchHeaderProps) => {
   return (
     <>
       <div className="relative h-[512px] w-full">
-        <KunImageViewer images={[{ src: patch.banner, alt: patch.name }]}>
-          {(openLightbox) => (
-            <Image
-              src={patch.banner}
-              alt={patch.name}
-              className="absolute top-0 left-0 object-cover size-full rounded-2xl"
-              fill
-              sizes="100vw"
-              priority
-              onClick={openLightbox}
-            />
-          )}
-        </KunImageViewer>
+        <KunAutoImageViewer />
+        <Image
+          src={patch.banner}
+          alt={patch.name}
+          className="absolute top-0 left-0 object-cover size-full rounded-2xl"
+          fill
+          sizes="100vw"
+          priority
+        />
 
         <PatchHeader patch={patch} />
 
