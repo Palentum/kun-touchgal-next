@@ -20,14 +20,14 @@ import { Textarea } from '@nextui-org/input'
 import { MoreVertical } from 'lucide-react'
 import { useUserStore } from '~/store/providers/user'
 import { kunFetchPost } from '~/utils/kunFetch'
-import type { AdminFeedback } from '~/types/api/admin'
+import type { AdminReport } from '~/types/api/admin'
 import toast from 'react-hot-toast'
 
 interface Props {
-  initialFeedback: AdminFeedback
+  initialReport: AdminReport
 }
 
-export const FeedbackHandler = ({ initialFeedback }: Props) => {
+export const ReportHandler = ({ initialReport }: Props) => {
   const currentUser = useUserStore((state) => state.user)
 
   const {
@@ -37,16 +37,16 @@ export const FeedbackHandler = ({ initialFeedback }: Props) => {
   } = useDisclosure()
   const [handleContent, setHandleContent] = useState('')
   const [updating, setUpdating] = useState(false)
-  const handleUpdateFeedback = async () => {
+  const handleUpdateReport = async () => {
     if (!handleContent.trim()) {
-      toast.error('反馈回复内容不可为空')
+      toast.error('举报内容不可为空')
       return
     }
     setUpdating(true)
-    const res = await kunFetchPost<KunResponse<AdminFeedback>>(
-      '/admin/feedback/handle',
+    const res = await kunFetchPost<KunResponse<AdminReport>>(
+      '/admin/report/handle',
       {
-        messageId: initialFeedback.id,
+        messageId: initialReport.id,
         content: handleContent.trim()
       }
     )
@@ -55,7 +55,7 @@ export const FeedbackHandler = ({ initialFeedback }: Props) => {
     } else {
       onCloseHandle()
       setHandleContent('')
-      toast.success('处理反馈成功!')
+      toast.success('处理举报成功!')
     }
     setUpdating(false)
   }
@@ -73,9 +73,9 @@ export const FeedbackHandler = ({ initialFeedback }: Props) => {
             <MoreVertical size={16} />
           </Button>
         </DropdownTrigger>
-        <DropdownMenu disabledKeys={initialFeedback.status ? ['handle'] : []}>
+        <DropdownMenu disabledKeys={initialReport.status ? ['handle'] : []}>
           <DropdownItem key="handle" onPress={onOpenHandle}>
-            处理该反馈
+            处理该举报
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
@@ -105,7 +105,7 @@ export const FeedbackHandler = ({ initialFeedback }: Props) => {
             </Button>
             <Button
               color="primary"
-              onPress={handleUpdateFeedback}
+              onPress={handleUpdateReport}
               disabled={updating}
               isLoading={updating}
             >

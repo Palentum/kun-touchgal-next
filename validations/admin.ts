@@ -44,3 +44,11 @@ export const adminHandleFeedbackSchema = z.object({
     .trim()
     .max(5000, { message: '反馈回复不能超过 5000 个字符' })
 })
+
+export const adminHandleReportSchema = z.object({
+  messageId: z.coerce.number().min(1).max(9999999),
+  content: z
+    .string()
+    .trim()
+    .max(5000, { message: '举报回复不能超过 5000 个字符' })
+})

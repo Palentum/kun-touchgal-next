@@ -5,16 +5,16 @@ import { useEffect, useState } from 'react'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { KunLoading } from '~/components/kun/Loading'
 import { useMounted } from '~/hooks/useMounted'
-import { FeedbackCard } from './FeedbackCard'
-import type { AdminFeedback } from '~/types/api/admin'
+import { ReportCard } from './ReportCard'
+import type { AdminReport } from '~/types/api/admin'
 
 interface Props {
-  initialFeedbacks: AdminFeedback[]
+  initialReports: AdminReport[]
   total: number
 }
 
-export const Feedback = ({ initialFeedbacks, total }: Props) => {
-  const [feedbacks, setFeedbacks] = useState<AdminFeedback[]>(initialFeedbacks)
+export const Report = ({ initialReports, total }: Props) => {
+  const [reports, setReports] = useState<AdminReport[]>(initialReports)
   const [page, setPage] = useState(1)
   const isMounted = useMounted()
 
@@ -22,16 +22,16 @@ export const Feedback = ({ initialFeedbacks, total }: Props) => {
   const fetchData = async () => {
     setLoading(true)
 
-    const { feedbacks } = await kunFetchGet<{
-      feedbacks: AdminFeedback[]
+    const { reports } = await kunFetchGet<{
+      reports: AdminReport[]
       total: number
-    }>('/admin/feedback', {
+    }>('/admin/report', {
       page,
       limit: 30
     })
 
     setLoading(false)
-    setFeedbacks(feedbacks)
+    setReports(reports)
   }
 
   useEffect(() => {
@@ -43,15 +43,15 @@ export const Feedback = ({ initialFeedbacks, total }: Props) => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Gal 反馈管理</h1>
+      <h1 className="text-2xl font-bold">评论举报管理</h1>
 
       <div className="space-y-4">
         {loading ? (
-          <KunLoading hint="正在获取反馈数据..." />
+          <KunLoading hint="正在获取举报数据..." />
         ) : (
           <>
-            {feedbacks.map((feedback) => (
-              <FeedbackCard key={feedback.id} feedback={feedback} />
+            {reports.map((report) => (
+              <ReportCard key={report.id} report={report} />
             ))}
           </>
         )}

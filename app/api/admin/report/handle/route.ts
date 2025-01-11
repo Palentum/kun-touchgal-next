@@ -2,19 +2,19 @@ import { z } from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
 import { kunParsePostBody } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
-import { adminHandleFeedbackSchema } from '~/validations/admin'
+import { adminHandleReportSchema } from '~/validations/admin'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { sliceUntilDelimiterFromEnd } from '~/app/api/utils/sliceUntilDelimiterFromEnd'
 import { createMessage } from '~/app/api/utils/message'
 
-export const handleFeedback = async (
-  input: z.infer<typeof adminHandleFeedbackSchema>
+export const handleReport = async (
+  input: z.infer<typeof adminHandleReportSchema>
 ) => {
   const message = await prisma.user_message.findUnique({
     where: { id: input.messageId }
   })
   if (message?.status) {
-    return '该反馈已被处理'
+    return '该举报已被处理'
   }
 
   const SLICED_CONTENT = sliceUntilDelimiterFromEnd(message?.content).slice(
@@ -22,7 +22,7 @@ export const handleFeedback = async (
     200
   )
   const handleResult = input.content ? input.content : '无处理留言'
-  const feedbackContent = `您的反馈已处理!\n\n反馈原因: ${SLICED_CONTENT}\n反馈处理回复: ${handleResult}`
+  const reportContent = `您的举报已处理!\n\n举报原因: ${SLICED_CONTENT}\n举报处理回复: ${handleResult}`
 
   return prisma.$transaction(async (prisma) => {
     await prisma.user_message.update({
@@ -32,8 +32,8 @@ export const handleFeedback = async (
     })
 
     await createMessage({
-      type: 'feedback',
-      content: feedbackContent,
+      type: 'report',
+      content: reportContent,
       patch_unique_id: message?.patch_unique_id,
       recipient_id: message?.sender_id
     })
@@ -43,7 +43,7 @@ export const handleFeedback = async (
 }
 
 export const POST = async (req: NextRequest) => {
-  const input = await kunParsePostBody(req, adminHandleFeedbackSchema)
+  const input = await kunParsePostBody(req, adminHandleReportSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }
@@ -55,6 +55,6 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json('本页面仅管理员可访问')
   }
 
-  const response = await handleFeedback(input)
+  const response = await handleReport(input)
   return NextResponse.json(response)
 }

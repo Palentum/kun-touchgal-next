@@ -49,6 +49,8 @@ export type AdminComment = PatchComment
 
 export type AdminFeedback = Message
 
+export type AdminReport = Message
+
 export interface AdminLog {
   id: number
   type: string
