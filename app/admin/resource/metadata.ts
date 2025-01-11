@@ -2,20 +2,5 @@ import { kunMoyuMoe } from '~/config/moyu-moe'
 import type { Metadata } from 'next'
 
 export const kunMetadata: Metadata = {
-  title: `Galgame 资源管理 - ${kunMoyuMoe.titleShort}`,
-  description: `管理 ${kunMoyuMoe.titleShort} 所有的 Galgame 下载资源, 创建资源, 更改资源类型, 语言, 平台, 删除 Galgame 资源 等`,
-  openGraph: {
-    title: `Galgame 资源管理 - ${kunMoyuMoe.titleShort}`,
-    description: `管理 ${kunMoyuMoe.titleShort} 所有的 Galgame 下载资源, 创建资源, 更改资源类型, 语言, 平台, 删除 Galgame 资源 等`,
-    type: 'website',
-    images: kunMoyuMoe.images
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: `Galgame 资源管理 - ${kunMoyuMoe.titleShort}`,
-    description: `管理 ${kunMoyuMoe.titleShort} 所有的 Galgame 下载资源, 创建资源, 更改资源类型, 语言, 平台, 删除 Galgame 资源 等`
-  },
-  alternates: {
-    canonical: `${kunMoyuMoe.domain.main}/admin`
-  }
+  title: `Galgame 资源管理 - ${kunMoyuMoe.titleShort}`
 }

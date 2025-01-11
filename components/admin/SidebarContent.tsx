@@ -10,7 +10,9 @@ import {
   Puzzle,
   Settings,
   Users,
-  Mail
+  Mail,
+  MessageCircleQuestion,
+  TriangleAlert
 } from 'lucide-react'
 
 const menuItems = [
@@ -35,7 +37,7 @@ const menuItems = [
     icon: Puzzle
   },
   {
-    name: 'Galgame 管理',
+    name: 'Gal 管理',
     href: '/admin/galgame',
     icon: Gamepad2
   },
@@ -43,6 +45,16 @@ const menuItems = [
     name: '评论管理',
     href: '/admin/comment',
     icon: MessageSquare
+  },
+  {
+    name: 'Gal 反馈管理',
+    href: '/admin/feedback',
+    icon: MessageCircleQuestion
+  },
+  {
+    name: '评论举报管理',
+    href: '/admin/report',
+    icon: TriangleAlert
   },
   {
     name: '管理日志',

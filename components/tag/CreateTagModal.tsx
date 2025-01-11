@@ -73,11 +73,7 @@ export const CreateTagModal = ({ isOpen, onClose, onSuccess }: Props) => {
   }
 
   const handleCreateTag = async () => {
-    if (!watch().alias) {
-      return
-    }
     addTag()
-
     setIsSubmitting(true)
     const res = await kunFetchPost<KunResponse<Tag>>('/tag', watch())
     kunErrorHandler(res, (value) => {

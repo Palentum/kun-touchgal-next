@@ -9,7 +9,7 @@ interface Props {
   children: React.ReactNode
 }
 
-export default function AdminLayout({ children }: Props) {
+export default function Kun({ children }: Props) {
   return (
     <div className="container flex mx-auto my-4">
       <Sidebar />

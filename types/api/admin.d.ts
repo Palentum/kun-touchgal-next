@@ -1,5 +1,6 @@
 import type { PatchResource } from '~/types/api/patch'
 import type { PatchComment } from '~/types/api/comment'
+import type { Message } from '~/types/api/message'
 
 export interface AdminStats {
   title: string
@@ -45,6 +46,8 @@ export interface AdminResource extends PatchResource {
 }
 
 export type AdminComment = PatchComment
+
+export type AdminFeedback = Message
 
 export interface AdminLog {
   id: number
