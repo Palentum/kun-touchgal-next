@@ -34,7 +34,7 @@ export const ResourceDownload = ({ resource }: Props) => {
             title: 'font-normal text-medium',
             trigger: 'p-0 flex items-center',
             indicator: 'text-medium',
-            content: 'text-small px-2'
+            content: 'text-small px-2 whitespace-pre-wrap'
           }}
         >
           <AccordionItem

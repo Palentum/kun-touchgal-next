@@ -34,6 +34,13 @@ interface CreateResourceProps {
   onSuccess?: (res: PatchResource) => void
 }
 
+const userRoleStorageMap: Record<number, string> = {
+  1: 'user',
+  2: 's3',
+  3: 'touchgal',
+  4: 'touchgal'
+}
+
 export const PublishResource = ({
   patchId,
   onClose,
@@ -52,7 +59,7 @@ export const PublishResource = ({
     resolver: zodResolver(patchResourceCreateSchema),
     defaultValues: {
       patchId,
-      storage: user.role === 1 ? 's3' : 'user',
+      storage: userRoleStorageMap[user.role],
       name: '',
       section: user.role > 2 ? 'galgame' : 'patch',
       hash: '',
@@ -98,24 +105,10 @@ export const PublishResource = ({
   return (
     <ModalContent>
       <ModalHeader className="flex-col space-y-2">
-        <h3 className="text-lg">创建补丁资源</h3>
+        <h3 className="text-lg">创建资源</h3>
         <div className="text-sm font-medium text-default-500">
           {user.role > 1 ? (
             <div className="space-y-1">
-              <Link
-                className="flex"
-                underline="hover"
-                href="/about/notice/patch-tutorial"
-              >
-                鲲 Galgame 资源系统介绍
-              </Link>
-              <Link
-                className="flex"
-                underline="hover"
-                href="/about/notice/paradigm"
-              >
-                鲲 Galgame 资源发布规范
-              </Link>
               <p>
                 作为创作者, 您每天有 5GB (5120MB) 的上传额度, 该额度每天早上 8
                 点重置
@@ -134,13 +127,15 @@ export const PublishResource = ({
 
       <ModalBody>
         <form className="space-y-6">
-          {user.role > 2 && (
-            <ResourceSectionSelect
-              errors={errors}
-              section={watch().section}
-              setSection={(content) => setValue('section', content)}
-            />
-          )}
+          <ResourceSectionSelect
+            errors={errors}
+            section={watch().section}
+            userRole={user.role}
+            setSection={(content) => {
+              setValue('section', content)
+              setValue('storage', userRoleStorageMap[user.role])
+            }}
+          />
 
           <ResourceTypeSelect
             section={watch().section}
