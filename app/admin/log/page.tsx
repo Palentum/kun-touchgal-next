@@ -13,7 +13,7 @@ export default async function Kun() {
     total: number
   }>('/admin/log', {
     page: 1,
-    limit: 100
+    limit: 30
   })
 
   if (typeof response === 'string') {

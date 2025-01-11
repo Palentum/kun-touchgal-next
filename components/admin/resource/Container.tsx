@@ -45,7 +45,7 @@ export const Resource = ({ initialResources, total }: Props) => {
       total: number
     }>('/admin/resource', {
       page,
-      limit: 100
+      limit: 30
     })
 
     setLoading(false)
@@ -75,12 +75,12 @@ export const Resource = ({ initialResources, total }: Props) => {
           aria-label="下载资源管理"
           bottomContent={
             <div className="flex justify-center w-full">
-              {total >= 100 && (
+              {total >= 30 && (
                 <Pagination
                   showControls
                   color="primary"
                   page={page}
-                  total={Math.ceil(total / 100)}
+                  total={Math.ceil(total / 30)}
                   onChange={(page) => setPage(page)}
                 />
               )}

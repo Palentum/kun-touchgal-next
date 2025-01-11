@@ -12,7 +12,7 @@ export default async function Kun() {
     total: number
   }>('/admin/user', {
     page: 1,
-    limit: 100
+    limit: 30
   })
 
   return <User initialUsers={users} total={total} />

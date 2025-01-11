@@ -12,7 +12,7 @@ export default async function Kun() {
     total: number
   }>('/admin/feedback', {
     page: 1,
-    limit: 100
+    limit: 30
   })
 
   return <Feedback initialFeedbacks={feedbacks} total={total} />

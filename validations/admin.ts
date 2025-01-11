@@ -36,3 +36,11 @@ export const adminSendEmailSchema = z.object({
   templateId: z.string(),
   variables: z.record(z.string())
 })
+
+export const adminHandleFeedbackSchema = z.object({
+  messageId: z.coerce.number().min(1).max(9999999),
+  content: z
+    .string()
+    .trim()
+    .max(5000, { message: '反馈回复不能超过 5000 个字符' })
+})

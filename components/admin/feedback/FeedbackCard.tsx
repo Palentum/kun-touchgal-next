@@ -1,8 +1,8 @@
-import { Card, CardBody, Button } from '@nextui-org/react'
+import { Chip, Card, CardBody, Button } from '@nextui-org/react'
 import { KunAvatar } from '~/components/kun/floating-card/KunAvatar'
 import { formatDate } from '~/utils/time'
 import Link from 'next/link'
-import { FeedbackEdit } from './FeedbackEdit'
+import { FeedbackHandler } from './FeedbackHandler'
 import type { AdminFeedback } from '~/types/api/admin'
 
 interface Props {
@@ -35,6 +35,12 @@ export const FeedbackCard = ({ feedback }: Props) => {
               <p className="mt-1 whitespace-pre-wrap">{feedback.content}</p>
 
               <div className="flex items-center gap-4 mt-2">
+                <Chip
+                  color={feedback.status ? 'success' : 'danger'}
+                  variant="flat"
+                >
+                  {feedback.status ? '已处理' : '未处理'}
+                </Chip>
                 <Button
                   as={Link}
                   size="sm"
@@ -57,7 +63,7 @@ export const FeedbackCard = ({ feedback }: Props) => {
             </div>
           </div>
 
-          <FeedbackEdit initialFeedback={feedback} />
+          <FeedbackHandler initialFeedback={feedback} />
         </div>
       </CardBody>
     </Card>

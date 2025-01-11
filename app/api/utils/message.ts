@@ -5,8 +5,8 @@ interface CreateMessageType {
   type: (typeof MESSAGE_TYPE)[number]
   content: string
   patch_unique_id?: string
-  sender_id?: number
-  recipient_id?: number
+  sender_id?: number | null
+  recipient_id?: number | null
 }
 
 export const createMessage = async (data: CreateMessageType) => {
