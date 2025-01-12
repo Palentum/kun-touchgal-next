@@ -11,6 +11,7 @@ export interface UserState {
   dailyCheckIn: number
   dailyImageLimit: number
   dailyUploadLimit: number
+  enableEmailNotice: boolean
 }
 
 export interface UserStore {
@@ -28,7 +29,8 @@ const initialUserStore: UserState = {
   role: 1,
   dailyCheckIn: 1,
   dailyImageLimit: 0,
-  dailyUploadLimit: 0
+  dailyUploadLimit: 0,
+  enableEmailNotice: false
 }
 
 export const createUserStore = (initState: UserState = initialUserStore) => {

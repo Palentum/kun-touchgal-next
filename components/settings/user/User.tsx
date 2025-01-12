@@ -4,6 +4,7 @@ import { Username } from './Username'
 import { Bio } from './Bio'
 import { Email } from './Email'
 import { Password } from './Password'
+import { EmailNotice } from './EmailNotice'
 
 export const UserSettings = () => {
   return (
@@ -16,6 +17,7 @@ export const UserSettings = () => {
         <Bio />
         <Email />
         <Password />
+        <EmailNotice />
       </div>
     </div>
   )

@@ -21,10 +21,11 @@ model user {
   moemoepoint   Int      @default(0)
   bio           String   @default("") @db.VarChar(107)
 
-  daily_image_count Int    @default(0)
-  daily_check_in    Int    @default(0)
-  daily_upload_size Float  @default(0)
-  last_login_time   String @default("")
+  enable_email_notice Boolean @default(true)
+  daily_image_count   Int     @default(0)
+  daily_check_in      Int     @default(0)
+  daily_upload_size   Float   @default(0)
+  last_login_time     String  @default("")
 
   admin_log admin_log[]
   patch_tag patch_tag[]
