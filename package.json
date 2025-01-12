@@ -53,6 +53,7 @@
     "diff": "^7.0.0",
     "framer-motion": "^11.15.0",
     "gray-matter": "^4.0.3",
+    "hast-util-to-string": "^3.0.1",
     "html-to-text": "^9.0.5",
     "ioredis": "^5.4.2",
     "isomorphic-dompurify": "^2.19.0",

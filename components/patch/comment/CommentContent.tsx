@@ -1,6 +1,10 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
+import { createRoot } from 'react-dom/client'
 import DOMPurify from 'isomorphic-dompurify'
+import { useMounted } from '~/hooks/useMounted'
+import { KunExternalLink } from '~/components/kun/ExternalLink'
 import { Code } from '@nextui-org/code'
 import { Chip } from '@nextui-org/chip'
 import { Quote } from 'lucide-react'
@@ -12,6 +16,31 @@ interface Props {
 }
 
 export const CommentContent = ({ comment }: Props) => {
+  const contentRef = useRef<HTMLDivElement>(null)
+  const isMounted = useMounted()
+
+  useEffect(() => {
+    if (!contentRef.current || !isMounted) {
+      return
+    }
+
+    const externalLinkElements = contentRef.current.querySelectorAll(
+      '[data-kun-external-link]'
+    )
+    externalLinkElements.forEach((element) => {
+      const text = element.getAttribute('data-text')
+      const href = element.getAttribute('data-href')
+      if (!text || !href) {
+        return
+      }
+      const root = document.createElement('div')
+      root.className = element.className
+      element.replaceWith(root)
+      const videoRoot = createRoot(root)
+      videoRoot.render(<KunExternalLink link={href}>{text}</KunExternalLink>)
+    })
+  }, [isMounted])
+
   return (
     <>
       {comment.quotedContent && (
@@ -22,7 +51,7 @@ export const CommentContent = ({ comment }: Props) => {
         >
           <span>{comment.quotedUsername}</span>
           <Chip
-            endContent={<Quote className="text-blue-500 size-4" />}
+            endContent={<Quote className="text-primary-500 size-4" />}
             variant="light"
           >
             {comment.quotedContent}
@@ -30,6 +59,7 @@ export const CommentContent = ({ comment }: Props) => {
         </Code>
       )}
       <div
+        ref={contentRef}
         dangerouslySetInnerHTML={{
           __html: DOMPurify.sanitize(comment.content)
         }}

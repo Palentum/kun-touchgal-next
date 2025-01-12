@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
 import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
-import { markdownToHtmlExtend } from '~/app/api/utils/markdownToHtmlExtend'
+import { markdownToHtmlExtend } from '~/app/api/utils/render/markdownToHtmlExtend'
 import type { PatchIntroduction } from '~/types/api/patch'
 
 const uniqueIdSchema = z.object({

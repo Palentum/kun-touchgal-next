@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { formatComments } from './_helpers'
-import { markdownToHtml } from '~/app/api/utils/markdownToHtml'
+import { markdownToHtml } from '~/app/api/utils/render/markdownToHtml'
 import type { PatchComment } from '~/types/api/patch'
 
 const patchIdSchema = z.object({
