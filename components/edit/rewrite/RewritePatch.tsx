@@ -54,7 +54,7 @@ export const RewritePatch = () => {
     kunErrorHandler(res, async () => {
       router.push(`/${data.uniqueId}`)
     })
-    toast.success('发布编辑成功')
+    toast.success('重新编辑成功')
     setRewriting(false)
   }
 

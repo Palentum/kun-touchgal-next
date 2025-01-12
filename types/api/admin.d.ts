@@ -58,3 +58,9 @@ export interface AdminLog {
   content: string
   created: Date | string
 }
+
+export interface AdminRedirectConfig {
+  enabled: boolean
+  excludedDomains: string[]
+  delaySeconds: number
+}

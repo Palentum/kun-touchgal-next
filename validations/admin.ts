@@ -52,3 +52,11 @@ export const adminHandleReportSchema = z.object({
     .trim()
     .max(5000, { message: '举报回复不能超过 5000 个字符' })
 })
+
+export const adminUpdateRedirectSchema = z.object({
+  enabled: z.coerce.boolean(),
+  excludedDomains: z.array(
+    z.string().max(500, { message: '单个域名最长 500 个字符' })
+  ),
+  delaySeconds: z.coerce.number()
+})

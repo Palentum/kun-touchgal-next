@@ -23,7 +23,8 @@ export const markdownToHtml = async (markdown: string) => {
           'target',
           'rel',
           'className'
-        ]
+        ],
+        img: ['src', 'alt', 'title', 'class', 'loading']
       }
     })
     .use(remarkFrontmatter)

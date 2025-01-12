@@ -1,0 +1,5 @@
+{
+  "enabled": true,
+  "excludedDomains": ["github.com", "google.com"],
+  "delaySeconds": 3
+}
