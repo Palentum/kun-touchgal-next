@@ -6,9 +6,28 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { adminUpdateRedirectSchema } from '~/validations/admin'
 import type { AdminRedirectConfig } from '~/types/api/admin'
 
-const configPath = path.join(process.cwd(), 'lib/config/redirect.json')
+const configPath = path.join(process.cwd(), 'config/redirect.json')
 
-export const POST = async (req: NextRequest) => {
+export const GET = async (req: NextRequest) => {
+  const payload = await verifyHeaderCookie(req)
+  if (!payload) {
+    return NextResponse.json('用户未登录')
+  }
+  if (payload.role < 3) {
+    return NextResponse.json('本页面仅管理员可访问')
+  }
+
+  const redirectJsonFile = (await fs.readFile(
+    configPath,
+    'utf8'
+  )) as unknown as string
+
+  const setting = JSON.parse(redirectJsonFile)
+
+  return NextResponse.json({ setting })
+}
+
+export const PUT = async (req: NextRequest) => {
   const input = await kunParsePutBody(req, adminUpdateRedirectSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)

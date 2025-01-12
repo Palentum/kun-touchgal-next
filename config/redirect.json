@@ -1,5 +1,5 @@
 {
   "enabled": true,
-  "excludedDomains": ["github.com", "google.com"],
+  "excludedDomains": ["touchgal.io", "nav.kungal.com"],
   "delaySeconds": 3
 }

@@ -2,7 +2,7 @@
 
 import { Progress } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
-import { EXTERNAL_LINK_REDIRECT_TIME } from '~/config/site'
+import * as redirectConfig from '~/config/redirect.json'
 
 interface CountdownTimerProps {
   delay?: number
@@ -10,7 +10,7 @@ interface CountdownTimerProps {
 }
 
 export const CountdownTimer = ({
-  delay = EXTERNAL_LINK_REDIRECT_TIME,
+  delay = redirectConfig.delaySeconds,
   onComplete
 }: CountdownTimerProps) => {
   const [timeLeft, setTimeLeft] = useState(delay)

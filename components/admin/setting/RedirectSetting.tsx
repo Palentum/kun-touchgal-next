@@ -3,21 +3,21 @@
 import { Switch, Input, Button, Card, CardBody, Chip } from '@nextui-org/react'
 import { useState } from 'react'
 import { ExternalLink, Plus } from 'lucide-react'
+import type { AdminRedirectConfig } from '~/types/api/admin'
+import { kunFetchPut } from '~/utils/kunFetch'
+import toast from 'react-hot-toast'
 
-export const RedirectSetting = () => {
-  const [isEnabled, setIsEnabled] = useState(false)
-  const [excludedRoutes, setExcludedRoutes] = useState<string[]>([])
-  const [excludedDomains, setExcludedDomains] = useState<string[]>([])
+interface Props {
+  setting: AdminRedirectConfig
+}
 
-  const [newRoute, setNewRoute] = useState('')
+export const RedirectSetting = ({ setting }: Props) => {
+  const [delay, setDelay] = useState(setting.delaySeconds)
+  const [isEnabled, setIsEnabled] = useState(setting.enabled)
+  const [excludedDomains, setExcludedDomains] = useState<string[]>(
+    setting.excludedDomains
+  )
   const [newDomain, setNewDomain] = useState('')
-
-  const addExcludedRoute = () => {
-    if (newRoute && !excludedRoutes.includes(newRoute)) {
-      setExcludedRoutes([...excludedRoutes, newRoute])
-      setNewRoute('')
-    }
-  }
 
   const addExcludedDomain = () => {
     if (newDomain && !excludedDomains.includes(newDomain)) {
@@ -26,12 +26,25 @@ export const RedirectSetting = () => {
     }
   }
 
-  const removeRoute = (route: string) => {
-    setExcludedRoutes(excludedRoutes.filter((r) => r !== route))
-  }
-
   const removeDomain = (domain: string) => {
     setExcludedDomains(excludedDomains.filter((d) => d !== domain))
+  }
+
+  const [isSetting, setIsSetting] = useState(false)
+  const handleApplyRedirect = async () => {
+    setIsSetting(true)
+    const res = await kunFetchPut<KunResponse<{}>>('/admin/setting/redirect', {
+      enabled: isEnabled,
+      excludedDomains,
+      delaySeconds: delay
+    })
+    if (typeof res === 'string') {
+      toast.error(res)
+    } else {
+      setNewDomain('')
+      toast.success('应用设置成功')
+    }
+    setIsSetting(false)
   }
 
   return (
@@ -58,48 +71,38 @@ export const RedirectSetting = () => {
 
       <Card>
         <CardBody className="space-y-4">
-          <h3 className="text-lg font-semibold">排除路由</h3>
-          <div className="flex gap-2">
-            <Input
-              value={newRoute}
-              onChange={(e) => setNewRoute(e.target.value)}
-              placeholder={`要排除的站内页面, 例如 /friend-link`}
-              labelPlacement="outside"
-            />
-
-            <Button
-              isIconOnly
-              variant="flat"
-              color="primary"
-              onPress={addExcludedRoute}
-            >
-              <Plus className="w-4 h-4" />
-            </Button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {excludedRoutes.map((route) => (
-              <Chip
-                key={route}
-                onClose={() => removeRoute(route)}
-                variant="flat"
-                color="secondary"
-              >
-                {route}
-              </Chip>
-            ))}
-          </div>
+          <h3 className="text-lg font-semibold">
+            <p>重定向时间</p>
+            <p className="text-sm font-medium text-default-500">
+              重定向页面的重定向时间
+            </p>
+          </h3>
+          <Input
+            type="number"
+            value={delay.toString()}
+            endContent={
+              <div className="flex items-center pointer-events-none">
+                <span className="text-default-400 text-small">秒</span>
+              </div>
+            }
+            onChange={(e) => setDelay(Number(e.target.value))}
+          />
         </CardBody>
       </Card>
 
       <Card>
         <CardBody className="space-y-4">
-          <h3 className="text-lg font-semibold">排除域名</h3>
-          <div className="flex gap-2">
+          <h3 className="text-lg font-semibold">
+            <p>排除域名列表</p>
+            <p className="text-sm font-medium text-default-500">
+              包含哪些域名的链接不用重定向, 例如 touchgal.io, nav.kungal.com
+            </p>
+          </h3>
+          <div className="flex gap-2 mt-4">
             <Input
               value={newDomain}
               onChange={(e) => setNewDomain(e.target.value)}
-              placeholder={`例如 touchgal.io, nav.kungal.com`}
-              labelPlacement="outside"
+              placeholder="请输入域名, 建议不带 http / https"
             />
 
             <Button
@@ -126,6 +129,18 @@ export const RedirectSetting = () => {
           </div>
         </CardBody>
       </Card>
+
+      <div className="flex justify-end">
+        <Button
+          variant="shadow"
+          color="primary"
+          onPress={handleApplyRedirect}
+          isLoading={isSetting}
+          isDisabled={isSetting}
+        >
+          应用设置
+        </Button>
+      </div>
     </div>
   )
 }
