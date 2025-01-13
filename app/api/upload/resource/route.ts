@@ -5,6 +5,7 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { ALLOWED_EXTENSIONS } from '~/constants/resource'
 import { sanitizeFileName } from '~/utils/sanitizeFileName'
 import { prisma } from '~/prisma'
+import { verifyReCAPTCHA } from '~/app/api/utils/verifyReCAPTCHA'
 
 const getFileExtension = (filename: string) => {
   return filename.slice(filename.lastIndexOf('.')).toLowerCase()
@@ -13,6 +14,7 @@ const getFileExtension = (filename: string) => {
 const checkRequestValid = async (req: NextRequest) => {
   const formData = await req.formData()
   const file = formData.get('file')
+  const recaptchaToken = formData.get('recaptchaToken')
 
   const payload = await verifyHeaderCookie(req)
   if (!payload) {
@@ -26,6 +28,15 @@ const checkRequestValid = async (req: NextRequest) => {
   const fileExtension = getFileExtension(file.name)
   if (!ALLOWED_EXTENSIONS.includes(fileExtension)) {
     return `不支持的文件类型: ${fileExtension}`
+  }
+
+  if (!recaptchaToken) {
+    return '未检测到 reCAPTCHA token'
+  }
+
+  const isVerified = await verifyReCAPTCHA(String(recaptchaToken))
+  if (!isVerified) {
+    return 'reCAPTCHA 人机验证分数过低或未通过, 请重试'
   }
 
   const buffer = Buffer.from(await file.arrayBuffer())

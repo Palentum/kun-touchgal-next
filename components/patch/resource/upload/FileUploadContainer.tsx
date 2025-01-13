@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import { useState } from 'react'
 import { FileDropZone } from './FileDropZone'
 import { FileUploadCard } from './FileUploadCard'
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 import type { KunUploadFileResponse } from '~/types/api/upload'
 import type { FileStatus } from '../share'
 
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export const FileUploadContainer = ({ onSuccess, handleRemoveFile }: Props) => {
+  const { executeRecaptcha } = useGoogleReCaptcha()
   const [fileData, setFileData] = useState<FileStatus | null>(null)
 
   const handleFileUpload = async (file: File) => {
@@ -34,10 +36,17 @@ export const FileUploadContainer = ({ onSuccess, handleRemoveFile }: Props) => {
       return
     }
 
-    setFileData({ file, progress: 0 })
+    if (!executeRecaptcha) {
+      toast.error('reCAPTCHA 未就绪')
+      return
+    }
+    const recaptchaToken = await executeRecaptcha()
 
     const formData = new FormData()
     formData.append('file', file)
+    formData.append('recaptchaToken', recaptchaToken)
+
+    setFileData({ file, progress: 0 })
 
     const res = await axios.post<KunUploadFileResponse | string>(
       '/api/upload/resource',
