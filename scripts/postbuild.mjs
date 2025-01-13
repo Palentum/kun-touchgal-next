@@ -22,48 +22,45 @@ const copyDirectory = (src, dest) => {
 }
 
 const copyFiles = () => {
-  exec(
-    'next-sitemap --config next-sitemap.config.js',
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error('Error generating sitemap:', error)
+  exec('pnpm build:sitemap', (error, stdout, stderr) => {
+    if (error) {
+      console.error('Error generating sitemap:', error)
+      process.exit(1)
+    }
+    if (stdout) console.log(stdout)
+    if (stderr) console.error(stderr)
+
+    if (isWindows) {
+      console.log('Detected Windows OS. Using fs module for copying files.')
+      try {
+        copyDirectory('public', '.next/standalone/public')
+        copyDirectory('.next/static', '.next/standalone/.next/static')
+        console.log('Files copied successfully.')
+      } catch (fsError) {
+        console.error('Error copying files using fs:', fsError)
         process.exit(1)
       }
-      if (stdout) console.log(stdout)
-      if (stderr) console.error(stderr)
+    } else {
+      console.log(
+        'Detected non-Windows OS. Using cp command for copying files.'
+      )
+      const commands = [
+        'cp -r public .next/standalone/',
+        'cp -r .next/static .next/standalone/.next/'
+      ]
 
-      if (isWindows) {
-        console.log('Detected Windows OS. Using fs module for copying files.')
-        try {
-          copyDirectory('public', '.next/standalone/public')
-          copyDirectory('.next/static', '.next/standalone/.next/static')
-          console.log('Files copied successfully.')
-        } catch (fsError) {
-          console.error('Error copying files using fs:', fsError)
-          process.exit(1)
-        }
-      } else {
-        console.log(
-          'Detected non-Windows OS. Using cp command for copying files.'
-        )
-        const commands = [
-          'cp -r public .next/standalone/',
-          'cp -r .next/static .next/standalone/.next/'
-        ]
-
-        commands.forEach((command) => {
-          exec(command, (error, stdout, stderr) => {
-            if (error) {
-              console.error(`Error executing command "${command}":`, error)
-              process.exit(1)
-            }
-            if (stdout) console.log(stdout)
-            if (stderr) console.error(stderr)
-          })
+      commands.forEach((command) => {
+        exec(command, (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error executing command "${command}":`, error)
+            process.exit(1)
+          }
+          if (stdout) console.log(stdout)
+          if (stderr) console.error(stderr)
         })
-      }
+      })
     }
-  )
+  })
 }
 
 copyFiles()
