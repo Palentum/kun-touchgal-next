@@ -75,6 +75,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.5",
+    "react-google-recaptcha-v3": "^1.10.1",
     "react-hook-form": "^7.54.2",
     "react-hot-toast": "^2.4.1",
     "react-hotkeys-hook": "^4.6.1",
