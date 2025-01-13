@@ -3,7 +3,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { markdownToHtmlExtend } from '~/app/api/utils/render/markdownToHtmlExtend'
+import { getKv, setKv } from '~/lib/redis'
+import { PATCH_INTRODUCTION_CACHE_DURATION } from '~/config/cache'
 import type { PatchIntroduction } from '~/types/api/patch'
+
+const CACHE_KEY = 'patch:introduction'
 
 const uniqueIdSchema = z.object({
   uniqueId: z.string().min(8).max(8)
@@ -53,7 +57,17 @@ export const GET = async (req: NextRequest) => {
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }
+  const cachedIntro = await getKv(`${CACHE_KEY}:${input.uniqueId}`)
+  if (cachedIntro) {
+    return NextResponse.json(JSON.parse(cachedIntro))
+  }
 
   const response = await getPatchIntroduction(input)
+  await setKv(
+    `${CACHE_KEY}:${input.uniqueId}`,
+    JSON.stringify(response),
+    PATCH_INTRODUCTION_CACHE_DURATION
+  )
+
   return NextResponse.json(response)
 }

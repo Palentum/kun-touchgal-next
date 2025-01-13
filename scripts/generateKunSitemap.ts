@@ -54,7 +54,7 @@ const generateKunSitemap = async () => {
               <url>
                 <loc>${WEBSITE_URL}${patch.path}</loc>
                 <lastmod>${patch.lastmod}</lastmod>
-                <changefreq>weekly</changefreq>
+                <changefreq>daily</changefreq>
                 <priority>0.8</priority>
               </url>
             `
