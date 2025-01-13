@@ -1,33 +1,10 @@
 import { writeFile } from 'fs/promises'
 import { globby } from 'globby'
 import prettier from 'prettier'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { getKunDynamicPatches } from './dynamic-routes/getKunDynamicPatches.ts'
+import { getKunDynamicBlog } from './dynamic-routes/getKunDynamicBlog.ts'
 
 const WEBSITE_URL = process.env.NEXT_PUBLIC_KUN_PATCH_ADDRESS_PROD
-
-const getKunDynamicRoutes = async () => {
-  try {
-    const patches = await prisma.patch.findMany({
-      where: { content_limit: 'sfw' },
-      select: {
-        unique_id: true,
-        updated: true
-      }
-    })
-
-    return patches.map((patch) => ({
-      path: `/${patch.unique_id}`,
-      lastmod: patch.updated?.toISOString() || new Date().toISOString()
-    }))
-  } catch (error) {
-    console.error('Error fetching dynamic routes:', error)
-    return []
-  } finally {
-    await prisma.$disconnect()
-  }
-}
 
 const generateKunSitemap = async () => {
   try {
@@ -47,7 +24,8 @@ const generateKunSitemap = async () => {
       '!app/**/user/**'
     ])
 
-    const dynamicRoutes = await getKunDynamicRoutes()
+    const dynamicPatches = await getKunDynamicPatches()
+    const dynamicBlogs = getKunDynamicBlog()
 
     const sitemap = `
       <?xml version="1.0" encoding="UTF-8"?>
@@ -70,18 +48,30 @@ const generateKunSitemap = async () => {
             `
           })
           .join('')}
-        ${dynamicRoutes
+        ${dynamicPatches
           .map(
-            (route) => `
+            (patch) => `
               <url>
-                <loc>${WEBSITE_URL}${route.path}</loc>
-                <lastmod>${route.lastmod}</lastmod>
+                <loc>${WEBSITE_URL}${patch.path}</loc>
+                <lastmod>${patch.lastmod}</lastmod>
                 <changefreq>weekly</changefreq>
                 <priority>0.8</priority>
               </url>
             `
           )
           .join('')}
+          ${dynamicBlogs
+            .map(
+              (patch) => `
+                <url>
+                  <loc>${WEBSITE_URL}${patch.path}</loc>
+                  <lastmod>${patch.lastmod}</lastmod>
+                  <changefreq>weekly</changefreq>
+                  <priority>0.9</priority>
+                </url>
+              `
+            )
+            .join('')}
       </urlset>
     `
 

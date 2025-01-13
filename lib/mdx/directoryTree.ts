@@ -46,5 +46,5 @@ export const getDirectoryTree = (): KunTreeNode => {
     return null
   }
 
-  return buildTree(POSTS_PATH, 'about') as KunTreeNode
+  return buildTree(POSTS_PATH, 'doc') as KunTreeNode
 }
