@@ -10,27 +10,21 @@ import {
 } from '@nextui-org/react'
 import { BreadcrumbItem, Breadcrumbs } from '@nextui-org/breadcrumbs'
 import { ChevronRight } from 'lucide-react'
-import { usePathname } from 'next/navigation'
-import { getKunPathLabel } from '~/constants/routes'
+import { useParams, usePathname } from 'next/navigation'
+import { createBreadcrumbItem } from '~/constants/routes/routes'
+import { dynamicRoutes } from '~/constants/routes/constants'
 import { useBreadcrumbStore } from '~/store/breadcrumb'
-import type { KunBreadcrumbItem } from '~/constants/routes'
-
-const dynamicRoutes = ['patch', 'tag', 'user']
+import type { KunBreadcrumbItem } from '~/constants/routes/constants'
 
 export const KunNavigationBreadcrumb = () => {
   const { items, setItems } = useBreadcrumbStore()
   const pathname = usePathname()
-  const label = getKunPathLabel(pathname)
+  const params = useParams()
 
   const handleRoutes = async () => {
-    if (!label) {
+    const newItem = createBreadcrumbItem(pathname, params)
+    if (!newItem) {
       return
-    }
-
-    const newItem: KunBreadcrumbItem = {
-      key: pathname,
-      label,
-      href: pathname
     }
 
     const mergedItems = [...items, newItem]
@@ -84,8 +78,12 @@ export const KunNavigationBreadcrumb = () => {
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Routes">
                   {items.map((item, index) => (
-                    <DropdownItem key={index} href={item.href}>
-                      {item.children}
+                    <DropdownItem
+                      key={index}
+                      textValue={index.toString()}
+                      href={item.href}
+                    >
+                      <p className="break-all">{item.children}</p>
                     </DropdownItem>
                   ))}
                 </DropdownMenu>
