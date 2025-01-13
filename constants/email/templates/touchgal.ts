@@ -2,7 +2,17 @@ import { kunMoyuMoe } from '~/config/moyu-moe'
 
 const iconImage = `${process.env.NEXT_PUBLIC_KUN_PATCH_ADDRESS_DEV}/favicon.webp`
 
-export const touchgalTemplate = (title: string, content: string) => `
+const domain =
+  process.env.NODE_ENV === 'development'
+    ? process.env.NEXT_PUBLIC_KUN_PATCH_ADDRESS_DEV
+    : process.env.NEXT_PUBLIC_KUN_PATCH_ADDRESS_PROD
+
+export const touchgalTemplate = (
+  title: string,
+  content: string,
+  email: string,
+  validateEmailCode: string
+) => `
 <!doctype html>
 <html>
   <head>
@@ -77,14 +87,12 @@ export const touchgalTemplate = (title: string, content: string) => `
       }
 
       .footer {
+        margin-top: 30px;
         color: #a1a1aa;
+        text-align: center;
+        padding: 24px;
         font-size: 14px;
-        margin-top: 36px;
-        padding-top: 24px;
         border-top: 1px solid #e4e4e7;
-        display: flex;
-        justify-content: center;
-        align-items: center;
       }
 
       a {
@@ -114,6 +122,7 @@ export const touchgalTemplate = (title: string, content: string) => `
         ${content}
         <div class="footer">
           <p style="margin: 0;">此消息为系统自动发布, 请勿回复此消息, 如果有任何问题, 请联系 <a href="${kunMoyuMoe.domain.main}" target="_blank">${kunMoyuMoe.titleShort}</a> </p>
+          <p style="margin: 0;">要取消邮件通知, 请点击 <a href="${domain}/auth/email-notice?email=${email}&code=${validateEmailCode}" target="_blank">退订邮件</a> </p>
         </div>
       </div>
     </div>

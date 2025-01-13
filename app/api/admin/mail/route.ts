@@ -18,6 +18,7 @@ export const sendBulkEmail = async (
   const { templateId, variables } = input
 
   const users = await prisma.user.findMany({
+    where: { enable_email_notice: true },
     select: { email: true }
   })
 

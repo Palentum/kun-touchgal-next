@@ -73,3 +73,8 @@ export const captchaSchema = z.object({
     .min(1, { message: '验证图片中最少有一只白毛小只可爱软萌妹子' })
     .max(3, { message: '验证图片中最多有三只白毛小只可爱软萌妹子' })
 })
+
+export const disableEmailNoticeSchema = z.object({
+  email: z.string().email({ message: '非法的邮箱格式' }),
+  validateEmailCode: z.string().uuid({ message: '非法的邮箱验证码格式' })
+})
