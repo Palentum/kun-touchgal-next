@@ -58,14 +58,6 @@ export const sendRegisterEmailVerificationCodeSchema = z.object({
   recaptchaToken: z.string().max(5000)
 })
 
-export const captchaSchema = z.object({
-  sessionId: z.string().trim().uuid({ message: '非法的 sessionId 格式' }),
-  selectedIds: z
-    .array(z.string().trim().uuid({ message: '非法的验证图片 ID' }))
-    .min(1, { message: '验证图片中最少有一只白毛小只可爱软萌妹子' })
-    .max(3, { message: '验证图片中最多有三只白毛小只可爱软萌妹子' })
-})
-
 export const disableEmailNoticeSchema = z.object({
   email: z.string().email({ message: '非法的邮箱格式' }),
   validateEmailCode: z.string().uuid({ message: '非法的邮箱验证码格式' })

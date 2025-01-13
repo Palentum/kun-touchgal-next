@@ -12,7 +12,7 @@ import { useUserStore } from '~/store/providers/user'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import { redirect } from 'next/navigation'
 import toast from 'react-hot-toast'
-import { EmailVerification } from '~/components/kun/verification-code/Code'
+import { VerificationCodeProvider } from '~/components/kun/verification-code/VerificationCodeProvider'
 import { useRouter } from 'next-nprogress-bar'
 import { KunTextDivider } from '~/components/kun/TextDivider'
 import type { UserState } from '~/store/userStore'
@@ -108,7 +108,7 @@ export const RegisterForm = () => {
             autoComplete="one-time-code"
             className="mb-4"
             endContent={
-              <EmailVerification
+              <VerificationCodeProvider
                 username={watch().name}
                 email={watch().email}
                 type="register"

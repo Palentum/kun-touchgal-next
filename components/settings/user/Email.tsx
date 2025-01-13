@@ -8,7 +8,7 @@ import { Card, CardBody, CardFooter, CardHeader } from '@nextui-org/card'
 import { Input } from '@nextui-org/input'
 import { Button } from '@nextui-org/button'
 import { KeyRound, Mail } from 'lucide-react'
-import { EmailVerification } from '~/components/kun/verification-code/Code'
+import { VerificationCodeProvider } from '~/components/kun/verification-code/VerificationCodeProvider'
 import { resetEmailSchema } from '~/validations/user'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
@@ -89,7 +89,7 @@ export const Email = () => {
                   <KeyRound className="text-2xl pointer-events-none shrink-0 text-default-400" />
                 }
                 endContent={
-                  <EmailVerification
+                  <VerificationCodeProvider
                     username=""
                     email={watch().email}
                     type="email"
