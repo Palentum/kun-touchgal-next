@@ -71,7 +71,8 @@ export const kunMoyuMoe: KunSiteConfig = {
     kungal: KUN_SITE_URL,
     telegram_group: KUN_SITE_TELEGRAM_GROUP,
     archive: KUN_SITE_ARCHIVE,
-    forum: KUN_SITE_FORUM
+    forum: KUN_SITE_FORUM,
+    nav: KUN_SITE_NAV
   },
   og: {
     title: KUN_SITE_TITLE,

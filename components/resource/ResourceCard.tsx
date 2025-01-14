@@ -25,7 +25,7 @@ export const ResourceCard = ({ resource }: Props) => {
             user={resource.user}
             userProps={{
               name: resource.user.name,
-              description: `${formatDistanceToNow(resource.created)} • 已发布补丁 ${resource.user.patchCount} 个`,
+              description: `${formatDistanceToNow(resource.created)} • 已发布资源 ${resource.user.patchCount} 个`,
               avatarProps: {
                 showFallback: true,
                 src: resource.user.avatar,

@@ -24,11 +24,11 @@ export const KunFooter = () => {
               使用指南
             </Link>
             <Link
-              href="https://nav.kungal.org"
+              href={kunMoyuMoe.domain.nav}
               target="_blank"
               className="flex items-center"
             >
-              网站集群
+              导航页面
             </Link>
 
             <Link href="/friend-link" className="flex items-center">
@@ -36,7 +36,7 @@ export const KunFooter = () => {
             </Link>
 
             <Link
-              href="https://github.com/KUN1007/kun-galgame-patch-next"
+              href="https://github.com/KUN1007/kun-touchgal-next"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center"
@@ -48,7 +48,7 @@ export const KunFooter = () => {
           <div className="flex space-x-8">
             <span className="flex items-center">联系我们</span>
             <Link
-              href="https://t.me/kungalgame"
+              href={kunMoyuMoe.domain.telegram_group}
               className="flex items-center"
               target="_blank"
               rel="noopener noreferrer"

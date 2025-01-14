@@ -13,12 +13,6 @@
       "link": "https://www.kungal.com/zh-cn"
     },
     {
-      "name": "鲲 Galgame 补丁",
-      "avatar": "https://www.moyu.moe/favicon.webp",
-      "label": "开源, 免费, 零门槛, 纯手写, 最先进的 Galgame 补丁资源下载站, 提供 Windows, 安卓, KRKR, Tyranor 等各类平台的 Galgame 补丁资源下载。永远免费！",
-      "link": "https://www.moyu.moe"
-    },
-    {
       "name": "喵源领域",
       "avatar": "https://www.nekotaku.me/wp-content/uploads/2023/11/lite_logo_256.webp",
       "label": "喵源领域是一个专注于高质量的Galgame文化分享网站, 提供最新最全的Galgame相关文件下载服务, 助力将Galgame游戏文化推向世界!",
@@ -29,6 +23,12 @@
       "avatar": "https://img.touchgalstatic.org/2024/06/33a35b632820240624201041.jpg",
       "label": "喵源领域是一个专注于高质量的Galgame文化分享网站, 提供最新最全的Galgame相关文件下载服务, 助力将Galgame游戏文化推向世界!",
       "link": "https://www.mikiacg.com/"
+    },
+    {
+      "name": "鲲 Galgame 补丁",
+      "avatar": "https://www.moyu.moe/favicon.webp",
+      "label": "开源, 免费, 零门槛, 纯手写, 最先进的 Galgame 补丁资源下载站, 提供 Windows, 安卓, KRKR, Tyranor 等各类平台的 Galgame 补丁资源下载。永远免费！",
+      "link": "https://www.moyu.moe"
     }
   ]
 }

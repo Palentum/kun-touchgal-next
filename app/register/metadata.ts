@@ -31,7 +31,7 @@ export const kunMetadata: Metadata = {
     google: 'google-site-verification-code'
   },
   alternates: {
-    canonical: 'https://www.kungal.com/zh-cn/register',
+    canonical: `${kunMoyuMoe.domain.main}/register`,
     languages: {
       'zh-Hans': `${kunMoyuMoe.domain.main}/register`
     }

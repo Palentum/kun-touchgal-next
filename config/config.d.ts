@@ -6,6 +6,7 @@ export interface KunSiteDomain {
   telegram_group: string
   archive: string
   forum: string
+  nav: string
 }
 
 export interface KunSiteAuthor {
