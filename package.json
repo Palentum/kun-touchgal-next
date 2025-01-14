@@ -7,7 +7,7 @@
     "dev:webpack": "next dev --hostname=127.0.0.1 --port=3000",
     "dev": "next dev --turbo --hostname=127.0.0.1 --port=3000",
     "build": "next build",
-    "build:sitemap": "node --loader ts-node/esm scripts/generateKunSitemap.ts",
+    "build:sitemap": "esno scripts/generateKunSitemap.ts",
     "postbuild": "node scripts/postbuild.mjs",
     "format": "prettier . --write",
     "lint": "next lint",
@@ -150,6 +150,7 @@
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-tailwindcss": "^3.17.5",
+    "esno": "^4.8.0",
     "pg": "^8.13.1",
     "postcss": "^8.5.1",
     "postcss-html": "^1.8.0",
@@ -166,7 +167,6 @@
     "stylelint-config-standard": "^37.0.0",
     "stylelint-order": "^6.0.4",
     "tailwindcss": "^3.4.17",
-    "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   }
 }

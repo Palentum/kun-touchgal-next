@@ -1,8 +1,8 @@
 import { writeFile } from 'fs/promises'
 import { globby } from 'globby'
 import prettier from 'prettier'
-import { getKunDynamicPatches } from './dynamic-routes/getKunDynamicPatches.ts'
-import { getKunDynamicBlog } from './dynamic-routes/getKunDynamicBlog.ts'
+import { getKunDynamicPatches } from './dynamic-routes/getKunDynamicPatches'
+import { getKunDynamicBlog } from './dynamic-routes/getKunDynamicBlog'
 
 const WEBSITE_URL = process.env.NEXT_PUBLIC_KUN_PATCH_ADDRESS_PROD
 
@@ -21,7 +21,8 @@ const generateKunSitemap = async () => {
       '!app/**/admin/**',
       '!app/**/edit/**',
       '!app/**/message/**',
-      '!app/**/user/**'
+      '!app/**/user/**',
+      '!app/**/doc/**/**'
     ])
 
     const dynamicPatches = await getKunDynamicPatches()
@@ -31,6 +32,7 @@ const generateKunSitemap = async () => {
       <?xml version="1.0" encoding="UTF-8"?>
       <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
         ${pages
+          .concat(['app/doc/page.tsx'])
           .map((page) => {
             const path = page
               .replace('app', '')
