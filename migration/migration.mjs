@@ -210,6 +210,13 @@ const extractIntroduction = (content, contentLimit) => {
     '## ▼ 支持正版'
   ]
 
+  const tipRegex = /\{\% tip info \%\}([\s\S]*?)\{\% endtip \%\}/
+  const tipMatch = content.match(tipRegex)
+  const tipText = tipMatch ? tipMatch[1].trim() : ''
+
+  // 去除 {% tip info %} 块
+  content = content.replace(tipRegex, '').trim()
+
   let result = sections
     .map((section) => {
       const regex = new RegExp(`${section}\\s*([\\s\\S]*?)(?=\\n## \\▼|$)`, 'g')
@@ -232,8 +239,14 @@ const extractIntroduction = (content, contentLimit) => {
     )
     .replace(/▼ /g, '')
 
+  if (tipText) {
+    result = result.replace(
+      /(## 游戏介绍)(\s*[\s\S]*?)(?=\n## ▼|$)/,
+      (match, header, content) => `${header}\n${tipText}\n\n${content.trim()}`
+    )
+  }
+
   if (contentLimit === 'nsfw') {
-    // 删除第一张图片
     result = result.replace(/!\[\]\([^)]+\)/, '')
   }
 
