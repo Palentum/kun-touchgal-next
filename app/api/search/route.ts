@@ -5,24 +5,51 @@ import { prisma } from '~/prisma/index'
 import { searchSchema } from '~/validations/search'
 import { GalgameCardSelectField } from '~/constants/api/select'
 import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
+import { Prisma } from '@prisma/client'
 
 export const searchGalgame = async (
   input: z.infer<typeof searchSchema>,
   nsfwEnable: Record<string, string | undefined>
 ) => {
-  const { query, page, limit } = input
+  const { query, page, limit, searchOptions } = input
 
   const offset = (page - 1) * limit
+  const insensitive = Prisma.QueryMode.insensitive
 
   const data = await Promise.all(
     query.map(async (q) =>
       prisma.patch.findMany({
         where: {
           OR: [
-            { name: { contains: q, mode: 'insensitive' } },
-            { vndb_id: { contains: q, mode: 'insensitive' } },
-            { introduction: { contains: q, mode: 'insensitive' } },
-            { alias: { has: q } }
+            { name: { contains: q, mode: insensitive } },
+            { vndb_id: { contains: q, mode: insensitive } },
+            ...(searchOptions.searchInIntroduction
+              ? [
+                  {
+                    introduction: {
+                      contains: q,
+                      mode: insensitive
+                    }
+                  }
+                ]
+              : []),
+            ...(searchOptions.searchInAlias ? [{ alias: { has: q } }] : []),
+            ...(searchOptions.searchInTags
+              ? [
+                  {
+                    tag: {
+                      some: {
+                        tag: {
+                          name: {
+                            contains: q,
+                            mode: insensitive
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              : [])
           ],
           ...nsfwEnable
         },
@@ -38,10 +65,35 @@ export const searchGalgame = async (
     where: {
       OR: query.map((q) => ({
         OR: [
-          { name: { contains: q, mode: 'insensitive' } },
-          { vndb_id: { contains: q, mode: 'insensitive' } },
-          { introduction: { contains: q, mode: 'insensitive' } },
-          { alias: { hasSome: [q] } }
+          { name: { contains: q, mode: insensitive } },
+          { vndb_id: { contains: q, mode: insensitive } },
+          ...(searchOptions.searchInIntroduction
+            ? [
+                {
+                  introduction: {
+                    contains: q,
+                    mode: insensitive
+                  }
+                }
+              ]
+            : []),
+          ...(searchOptions.searchInAlias ? [{ alias: { hasSome: [q] } }] : []),
+          ...(searchOptions.searchInTags
+            ? [
+                {
+                  tag: {
+                    some: {
+                      tag: {
+                        name: {
+                          contains: q,
+                          mode: insensitive
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            : [])
         ],
         ...nsfwEnable
       }))

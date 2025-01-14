@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Input } from '@nextui-org/input'
-import { Button } from '@nextui-org/react'
+import { Button, Checkbox } from '@nextui-org/react'
 import { Pagination } from '@nextui-org/pagination'
 import { KunLoading } from '~/components/kun/Loading'
 import { KunMasonryGrid } from '~/components/kun/MasonryGrid'
-import { Search } from 'lucide-react'
+import { Search, Clock, X } from 'lucide-react'
 import { useDebounce } from 'use-debounce'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { KunHeader } from '~/components/kun/Header'
@@ -15,6 +15,14 @@ import { KunNull } from '~/components/kun/Null'
 import { SearchCard } from './Card'
 import { motion } from 'framer-motion'
 import { cardContainer, cardItem } from '~/motion/card'
+
+const MAX_HISTORY_ITEMS = 10
+
+interface SearchOptions {
+  searchInIntroduction: boolean
+  searchInAlias: boolean
+  searchInTags: boolean
+}
 
 export const SearchPage = () => {
   const searchParams = useSearchParams()
@@ -28,6 +36,20 @@ export const SearchPage = () => {
   const [patches, setPatches] = useState<GalgameCard[]>([])
   const [loading, setLoading] = useState(false)
   const [total, setTotal] = useState(0)
+  const [searchHistory, setSearchHistory] = useState<string[]>([])
+  const [showHistory, setShowHistory] = useState(false)
+  const [searchOptions, setSearchOptions] = useState<SearchOptions>({
+    searchInIntroduction: false,
+    searchInAlias: false,
+    searchInTags: false
+  })
+
+  useEffect(() => {
+    const history = localStorage.getItem('searchHistory')
+    if (history) {
+      setSearchHistory(JSON.parse(history))
+    }
+  }, [])
 
   useEffect(() => {
     if (debouncedQuery) {
@@ -37,7 +59,24 @@ export const SearchPage = () => {
       setTotal(0)
       setHasSearched(false)
     }
-  }, [debouncedQuery])
+  }, [debouncedQuery, searchOptions])
+
+  const addToHistory = (searchQuery: string) => {
+    if (!searchQuery.trim()) return
+
+    const newHistory = [
+      searchQuery,
+      ...searchHistory.filter((item) => item !== searchQuery)
+    ].slice(0, MAX_HISTORY_ITEMS)
+
+    setSearchHistory(newHistory)
+    localStorage.setItem('searchHistory', JSON.stringify(newHistory))
+  }
+
+  const clearHistory = () => {
+    setSearchHistory([])
+    localStorage.removeItem('searchHistory')
+  }
 
   const handleSearch = async () => {
     if (!query.trim()) {
@@ -45,13 +84,17 @@ export const SearchPage = () => {
     }
 
     setLoading(true)
+    addToHistory(query)
+    setShowHistory(false)
+
     const { galgames, total } = await kunFetchPost<{
       galgames: GalgameCard[]
       total: number
     }>('/search', {
       query: query.split(' ').filter((term) => term.length > 0),
       page,
-      limit: 10
+      limit: 10,
+      searchOptions
     })
 
     setPatches(galgames)
@@ -66,31 +109,104 @@ export const SearchPage = () => {
     setLoading(false)
   }
 
+  const handleHistoryClick = (historyItem: string) => {
+    setQuery(historyItem)
+    setShowHistory(false)
+  }
+
   return (
     <div className="w-full my-4">
       <KunHeader name="搜索 Galgame" description="输入内容以自动搜索 Galgame" />
 
-      <div className="mb-8">
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="可以用空格分隔您的搜索关键字"
-          size="lg"
-          radius="lg"
-          endContent={
-            <Button
-              isIconOnly
-              variant="light"
-              aria-label="搜索 Galgame"
-              onPress={() => handleSearch()}
-            >
-              <Search />
-            </Button>
-          }
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleSearch()
-          }}
-        />
+      <div className="mb-8 space-y-4">
+        <div className="relative">
+          <Input
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value)
+              setShowHistory(true)
+            }}
+            onFocus={() => setShowHistory(true)}
+            placeholder="可以用空格分隔您的搜索关键字"
+            size="lg"
+            radius="lg"
+            startContent={<Search className="text-default-400" />}
+            endContent={
+              <Button
+                isIconOnly
+                variant="light"
+                aria-label="搜索 Galgame"
+                onPress={() => handleSearch()}
+              >
+                <Search />
+              </Button>
+            }
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSearch()
+            }}
+          />
+
+          {showHistory && searchHistory.length > 0 && (
+            <div className="absolute z-50 w-full mt-1 border rounded-lg shadow-lg bg-content1 border-default-200">
+              <div className="flex items-center justify-between p-2 border-b border-default-200">
+                <span className="flex items-center gap-1 text-sm text-default-500">
+                  <Clock size={16} /> 搜索历史
+                </span>
+                <Button
+                  size="sm"
+                  variant="light"
+                  color="danger"
+                  startContent={<X size={16} />}
+                  onPress={clearHistory}
+                >
+                  清除历史
+                </Button>
+              </div>
+              <div className="overflow-y-auto max-h-60">
+                {searchHistory.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 p-2 cursor-pointer hover:bg-default-100"
+                    onClick={() => handleHistoryClick(item)}
+                  >
+                    <Clock size={16} className="text-default-400" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <Checkbox
+            isSelected={searchOptions.searchInIntroduction}
+            onValueChange={(checked) =>
+              setSearchOptions((prev) => ({
+                ...prev,
+                searchInIntroduction: checked
+              }))
+            }
+          >
+            搜索游戏简介
+          </Checkbox>
+          <Checkbox
+            isSelected={searchOptions.searchInAlias}
+            onValueChange={(checked) =>
+              setSearchOptions((prev) => ({ ...prev, searchInAlias: checked }))
+            }
+          >
+            搜索别名
+          </Checkbox>
+          <Checkbox
+            isSelected={searchOptions.searchInTags}
+            onValueChange={(checked) =>
+              setSearchOptions((prev) => ({ ...prev, searchInTags: checked }))
+            }
+          >
+            搜索标签
+          </Checkbox>
+        </div>
       </div>
 
       {loading ? (
