@@ -99,6 +99,11 @@ const processMarkdownFile = async (filePath, contentLimit) => {
     const language = determineLanguage(type)
     const platform = determinePlatform(type)
 
+    if (type.includes('官方通知')) {
+      console.log(`跳过官方通知类型文件: ${filePath}`)
+      return { status: 'fulfilled' }
+    }
+
     // 处理 introduction
     const introduction = extractIntroduction(content, contentLimit)
 

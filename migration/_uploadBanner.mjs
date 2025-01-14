@@ -1,6 +1,9 @@
+import dotenv from 'dotenv'
 import sharp from 'sharp'
 import { S3Client } from '@aws-sdk/client-s3'
 import { PutObjectCommand } from '@aws-sdk/client-s3'
+
+dotenv.config()
 
 // 初始化 S3 客户端
 const s3 = new S3Client({
@@ -66,7 +69,7 @@ const uploadPatchBanner = async (imageBuffer, id) => {
 export const uploadImageFromURL = async (
   imageUrl,
   id,
-  maxRetries = 10,
+  maxRetries = 20,
   timeout = 2000,
   minDelay = 100,
   maxDelay = 1000
