@@ -13,9 +13,9 @@ export const searchSchema = z.object({
     .max(10, { message: '您最多使用 10 组关键词' }),
   page: z.coerce.number().min(1).max(9999999),
   limit: z.coerce.number().min(1).max(24),
-  searchOptions: z.object({
+  searchOption: z.object({
     searchInIntroduction: z.boolean().default(false),
     searchInAlias: z.boolean().default(false),
-    searchInTags: z.boolean().default(false)
+    searchInTag: z.boolean().default(false)
   })
 })

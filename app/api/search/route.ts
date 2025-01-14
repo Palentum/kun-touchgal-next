@@ -11,7 +11,7 @@ export const searchGalgame = async (
   input: z.infer<typeof searchSchema>,
   nsfwEnable: Record<string, string | undefined>
 ) => {
-  const { query, page, limit, searchOptions } = input
+  const { query, page, limit, searchOption } = input
 
   const offset = (page - 1) * limit
   const insensitive = Prisma.QueryMode.insensitive
@@ -23,7 +23,7 @@ export const searchGalgame = async (
           OR: [
             { name: { contains: q, mode: insensitive } },
             { vndb_id: { contains: q, mode: insensitive } },
-            ...(searchOptions.searchInIntroduction
+            ...(searchOption.searchInIntroduction
               ? [
                   {
                     introduction: {
@@ -33,8 +33,8 @@ export const searchGalgame = async (
                   }
                 ]
               : []),
-            ...(searchOptions.searchInAlias ? [{ alias: { has: q } }] : []),
-            ...(searchOptions.searchInTags
+            ...(searchOption.searchInAlias ? [{ alias: { has: q } }] : []),
+            ...(searchOption.searchInTag
               ? [
                   {
                     tag: {
@@ -67,7 +67,7 @@ export const searchGalgame = async (
         OR: [
           { name: { contains: q, mode: insensitive } },
           { vndb_id: { contains: q, mode: insensitive } },
-          ...(searchOptions.searchInIntroduction
+          ...(searchOption.searchInIntroduction
             ? [
                 {
                   introduction: {
@@ -77,8 +77,8 @@ export const searchGalgame = async (
                 }
               ]
             : []),
-          ...(searchOptions.searchInAlias ? [{ alias: { hasSome: [q] } }] : []),
-          ...(searchOptions.searchInTags
+          ...(searchOption.searchInAlias ? [{ alias: { hasSome: [q] } }] : []),
+          ...(searchOption.searchInTag
             ? [
                 {
                   tag: {

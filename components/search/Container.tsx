@@ -15,41 +15,25 @@ import { KunNull } from '~/components/kun/Null'
 import { SearchCard } from './Card'
 import { motion } from 'framer-motion'
 import { cardContainer, cardItem } from '~/motion/card'
+import { useSearchStore } from '~/store/searchStore'
 
 const MAX_HISTORY_ITEMS = 10
 
-interface SearchOptions {
-  searchInIntroduction: boolean
-  searchInAlias: boolean
-  searchInTags: boolean
-}
-
 export const SearchPage = () => {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const currentPage = Number(searchParams.get('page') || '1')
 
-  const router = useRouter()
   const [page, setPage] = useState(currentPage)
   const [query, setQuery] = useState(searchParams.get('q') || '')
   const [debouncedQuery] = useDebounce(query, 500)
   const [hasSearched, setHasSearched] = useState(false)
   const [patches, setPatches] = useState<GalgameCard[]>([])
-  const [loading, setLoading] = useState(false)
   const [total, setTotal] = useState(0)
-  const [searchHistory, setSearchHistory] = useState<string[]>([])
-  const [showHistory, setShowHistory] = useState(false)
-  const [searchOptions, setSearchOptions] = useState<SearchOptions>({
-    searchInIntroduction: false,
-    searchInAlias: false,
-    searchInTags: false
-  })
 
-  useEffect(() => {
-    const history = localStorage.getItem('searchHistory')
-    if (history) {
-      setSearchHistory(JSON.parse(history))
-    }
-  }, [])
+  const [showHistory, setShowHistory] = useState(false)
+  const searchData = useSearchStore((state) => state.data)
+  const setSearchData = useSearchStore((state) => state.setData)
 
   useEffect(() => {
     if (debouncedQuery) {
@@ -59,25 +43,25 @@ export const SearchPage = () => {
       setTotal(0)
       setHasSearched(false)
     }
-  }, [debouncedQuery, searchOptions])
+  }, [
+    debouncedQuery,
+    searchData.searchInAlias,
+    searchData.searchInIntroduction,
+    searchData.searchInTag
+  ])
 
   const addToHistory = (searchQuery: string) => {
     if (!searchQuery.trim()) return
 
     const newHistory = [
       searchQuery,
-      ...searchHistory.filter((item) => item !== searchQuery)
+      ...searchData.searchHistory.filter((item) => item !== searchQuery)
     ].slice(0, MAX_HISTORY_ITEMS)
 
-    setSearchHistory(newHistory)
-    localStorage.setItem('searchHistory', JSON.stringify(newHistory))
+    setSearchData({ ...searchData, searchHistory: newHistory })
   }
 
-  const clearHistory = () => {
-    setSearchHistory([])
-    localStorage.removeItem('searchHistory')
-  }
-
+  const [loading, setLoading] = useState(false)
   const handleSearch = async () => {
     if (!query.trim()) {
       return
@@ -94,7 +78,11 @@ export const SearchPage = () => {
       query: query.split(' ').filter((term) => term.length > 0),
       page,
       limit: 10,
-      searchOptions
+      searchOption: {
+        searchInIntroduction: searchData.searchInAlias,
+        searchInAlias: searchData.searchInIntroduction,
+        searchInTag: searchData.searchInTag
+      }
     })
 
     setPatches(galgames)
@@ -146,7 +134,7 @@ export const SearchPage = () => {
             }}
           />
 
-          {showHistory && searchHistory.length > 0 && (
+          {showHistory && searchData.searchHistory.length > 0 && (
             <div className="absolute z-50 w-full mt-1 border rounded-lg shadow-lg bg-content1 border-default-200">
               <div className="flex items-center justify-between p-2 border-b border-default-200">
                 <span className="flex items-center gap-1 text-sm text-default-500">
@@ -157,13 +145,15 @@ export const SearchPage = () => {
                   variant="light"
                   color="danger"
                   startContent={<X size={16} />}
-                  onPress={clearHistory}
+                  onPress={() =>
+                    setSearchData({ ...searchData, searchHistory: [] })
+                  }
                 >
                   清除历史
                 </Button>
               </div>
               <div className="overflow-y-auto max-h-60">
-                {searchHistory.map((item, index) => (
+                {searchData.searchHistory.map((item, index) => (
                   <div
                     key={index}
                     className="flex items-center gap-2 p-2 cursor-pointer hover:bg-default-100"
@@ -180,28 +170,25 @@ export const SearchPage = () => {
 
         <div className="flex flex-wrap gap-3">
           <Checkbox
-            isSelected={searchOptions.searchInIntroduction}
+            isSelected={searchData.searchInIntroduction}
             onValueChange={(checked) =>
-              setSearchOptions((prev) => ({
-                ...prev,
-                searchInIntroduction: checked
-              }))
+              setSearchData({ ...searchData, searchInIntroduction: checked })
             }
           >
             搜索游戏简介
           </Checkbox>
           <Checkbox
-            isSelected={searchOptions.searchInAlias}
+            isSelected={searchData.searchInAlias}
             onValueChange={(checked) =>
-              setSearchOptions((prev) => ({ ...prev, searchInAlias: checked }))
+              setSearchData({ ...searchData, searchInAlias: checked })
             }
           >
             搜索别名
           </Checkbox>
           <Checkbox
-            isSelected={searchOptions.searchInTags}
+            isSelected={searchData.searchInTag}
             onValueChange={(checked) =>
-              setSearchOptions((prev) => ({ ...prev, searchInTags: checked }))
+              setSearchData({ ...searchData, searchInTag: checked })
             }
           >
             搜索标签
