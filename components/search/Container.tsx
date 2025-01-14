@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Input } from '@nextui-org/input'
-import { Button, Checkbox } from '@nextui-org/react'
+import { Checkbox } from '@nextui-org/react'
 import { Pagination } from '@nextui-org/pagination'
 import { KunLoading } from '~/components/kun/Loading'
 import { KunMasonryGrid } from '~/components/kun/MasonryGrid'
-import { Search, Clock, X } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { useDebounce } from 'use-debounce'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { KunHeader } from '~/components/kun/Header'
@@ -16,6 +16,7 @@ import { SearchCard } from './Card'
 import { motion } from 'framer-motion'
 import { cardContainer, cardItem } from '~/motion/card'
 import { useSearchStore } from '~/store/searchStore'
+import { SearchHistory } from './SearchHistory'
 
 const MAX_HISTORY_ITEMS = 10
 
@@ -51,7 +52,9 @@ export const SearchPage = () => {
   ])
 
   const addToHistory = (searchQuery: string) => {
-    if (!searchQuery.trim()) return
+    if (!searchQuery.trim()) {
+      return
+    }
 
     const newHistory = [
       searchQuery,
@@ -79,8 +82,8 @@ export const SearchPage = () => {
       page,
       limit: 10,
       searchOption: {
-        searchInIntroduction: searchData.searchInAlias,
-        searchInAlias: searchData.searchInIntroduction,
+        searchInIntroduction: searchData.searchInIntroduction,
+        searchInAlias: searchData.searchInAlias,
         searchInTag: searchData.searchInTag
       }
     })
@@ -97,11 +100,6 @@ export const SearchPage = () => {
     setLoading(false)
   }
 
-  const handleHistoryClick = (historyItem: string) => {
-    setQuery(historyItem)
-    setShowHistory(false)
-  }
-
   return (
     <div className="w-full my-4">
       <KunHeader name="搜索 Galgame" description="输入内容以自动搜索 Galgame" />
@@ -115,57 +113,28 @@ export const SearchPage = () => {
               setShowHistory(true)
             }}
             onFocus={() => setShowHistory(true)}
+            onBlur={async () => {
+              await new Promise((resolve) => {
+                setTimeout(resolve, 100)
+              })
+              setShowHistory(false)
+            }}
             placeholder="可以用空格分隔您的搜索关键字"
             size="lg"
             radius="lg"
             startContent={<Search className="text-default-400" />}
-            endContent={
-              <Button
-                isIconOnly
-                variant="light"
-                aria-label="搜索 Galgame"
-                onPress={() => handleSearch()}
-              >
-                <Search />
-              </Button>
-            }
             onKeyDown={(e) => {
-              if (e.key === 'Enter') handleSearch()
+              if (e.key === 'Enter') {
+                handleSearch()
+              }
             }}
           />
 
-          {showHistory && searchData.searchHistory.length > 0 && (
-            <div className="absolute z-50 w-full mt-1 border rounded-lg shadow-lg bg-content1 border-default-200">
-              <div className="flex items-center justify-between p-2 border-b border-default-200">
-                <span className="flex items-center gap-1 text-sm text-default-500">
-                  <Clock size={16} /> 搜索历史
-                </span>
-                <Button
-                  size="sm"
-                  variant="light"
-                  color="danger"
-                  startContent={<X size={16} />}
-                  onPress={() =>
-                    setSearchData({ ...searchData, searchHistory: [] })
-                  }
-                >
-                  清除历史
-                </Button>
-              </div>
-              <div className="overflow-y-auto max-h-60">
-                {searchData.searchHistory.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2 p-2 cursor-pointer hover:bg-default-100"
-                    onClick={() => handleHistoryClick(item)}
-                  >
-                    <Clock size={16} className="text-default-400" />
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <SearchHistory
+            showHistory={showHistory}
+            setShowHistory={setShowHistory}
+            setQuery={setQuery}
+          />
         </div>
 
         <div className="flex flex-wrap gap-3">
