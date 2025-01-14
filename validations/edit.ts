@@ -33,7 +33,8 @@ export const patchUpdateSchema = z.object({
         .max(500, { message: '单个别名至多 500 个字符' })
     )
     .max(30, { message: '您最多使用 30 个别名' })
-    .optional()
+    .optional(),
+  contentLimit: z.string().max(10)
 })
 
 export const duplicateSchema = z.object({

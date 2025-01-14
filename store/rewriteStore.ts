@@ -5,6 +5,7 @@ export interface RewritePatchData {
   name: string
   introduction: string
   alias: string[]
+  contentLimit: string
 }
 
 interface StoreState {
@@ -19,7 +20,8 @@ const initialState: RewritePatchData = {
   uniqueId: '',
   name: '',
   introduction: '',
-  alias: []
+  alias: [],
+  contentLimit: 'sfw'
 }
 
 export const useRewritePatchStore = create<StoreState>()((set, get) => ({

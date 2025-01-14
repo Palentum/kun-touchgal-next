@@ -97,7 +97,9 @@ export const EditTagModal = ({ tag, isOpen, onClose, onSuccess }: Props) => {
 
     kunErrorHandler(res, (value) => {
       reset()
-      toast.success('标签重新编辑成功!')
+      toast.success(
+        '标签重新编辑成功, 由于缓存影响, 您的更改将在至多 30 秒后生效'
+      )
       onSuccess(value)
     })
     setIsSubmitting(false)

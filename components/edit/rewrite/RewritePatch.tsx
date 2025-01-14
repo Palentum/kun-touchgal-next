@@ -11,6 +11,7 @@ import { patchUpdateSchema } from '~/validations/edit'
 import { useRouter } from 'next-nprogress-bar'
 import { GameNameInput } from './GameNameInput'
 import { AliasManager } from './AliasManager'
+import { ContentLimit } from './ContentLimit'
 import type { RewritePatchData } from '~/store/rewriteStore'
 
 export const RewritePatch = () => {
@@ -54,7 +55,7 @@ export const RewritePatch = () => {
     kunErrorHandler(res, async () => {
       router.push(`/${data.uniqueId}`)
     })
-    toast.success('重新编辑成功')
+    toast.success('重新编辑成功, 由于缓存影响, 您的更改将在至多 30 秒后生效')
     setRewriting(false)
   }
 
@@ -90,6 +91,8 @@ export const RewritePatch = () => {
             }
             errors={errors.alias}
           />
+
+          <ContentLimit errors={errors.contentLimit} />
 
           <Button
             color="primary"

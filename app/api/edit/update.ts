@@ -5,7 +5,7 @@ import { patchUpdateSchema } from '~/validations/edit'
 export const updateGalgame = async (
   input: z.infer<typeof patchUpdateSchema>
 ) => {
-  const { id, name, alias, introduction } = input
+  const { id, name, alias, introduction, contentLimit } = input
 
   const patch = await prisma.patch.findUnique({ where: { id } })
   if (!patch) {
@@ -17,7 +17,8 @@ export const updateGalgame = async (
     data: {
       name,
       alias: alias ? alias : [],
-      introduction
+      introduction,
+      content_limit: contentLimit
     }
   })
 
