@@ -1,4 +1,5 @@
 import { Tags, MessageSquare, Archive } from 'lucide-react'
+import { kunMoyuMoe } from '~/config/moyu-moe'
 import type { LucideProps } from 'lucide-react'
 import type { ForwardRefExoticComponent, RefAttributes } from 'react'
 
@@ -23,14 +24,14 @@ export const homeNavigationItems: HomeNavItem[] = [
   {
     icon: MessageSquare,
     label: '论坛',
-    href: '/games',
+    href: kunMoyuMoe.domain.forum,
     color: 'secondary',
     isExternal: true
   },
   {
     icon: Archive,
     label: '归档',
-    href: '/community',
+    href: kunMoyuMoe.domain.archive,
     color: 'success',
     isExternal: true
   }

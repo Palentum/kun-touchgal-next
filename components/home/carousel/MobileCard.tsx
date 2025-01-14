@@ -23,10 +23,8 @@ export const KunMobileCard = ({ posts, currentSlide }: Props) => {
             src={post.banner}
           />
 
-          {/* Overlay gradient for better text readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-2xl" />
 
-          {/* Content overlay */}
           <div className="absolute inset-0 flex flex-col justify-end p-4 space-y-2">
             <Link
               color="foreground"

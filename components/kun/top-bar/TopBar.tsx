@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import {
   Navbar,
   NavbarContent,
@@ -15,9 +16,19 @@ import { KunMobileMenu } from './KunMobileMenu'
 
 export const KunTopBar = () => {
   const pathname = usePathname()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  useEffect(() => {
+    setIsMenuOpen(false)
+  }, [pathname])
 
   return (
-    <Navbar maxWidth="xl" classNames={{ wrapper: 'px-3 sm:px-6' }}>
+    <Navbar
+      maxWidth="xl"
+      isMenuOpen={isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
+      classNames={{ wrapper: 'px-3 sm:px-6' }}
+    >
       <NavbarContent className="sm:hidden" justify="start">
         <li className="h-full">
           <NavbarMenuToggle />
