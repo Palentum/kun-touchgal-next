@@ -137,6 +137,9 @@ export const SearchPage = () => {
           />
         </div>
 
+        <p className="text-sm text-default-500">
+          搜索默认搜索游戏标题, 您可以选择性的添加游戏属性进行搜索
+        </p>
         <div className="flex flex-wrap gap-3">
           <Checkbox
             isSelected={searchData.searchInIntroduction}
@@ -144,7 +147,7 @@ export const SearchPage = () => {
               setSearchData({ ...searchData, searchInIntroduction: checked })
             }
           >
-            搜索游戏简介
+            包含简介
           </Checkbox>
           <Checkbox
             isSelected={searchData.searchInAlias}
@@ -152,7 +155,7 @@ export const SearchPage = () => {
               setSearchData({ ...searchData, searchInAlias: checked })
             }
           >
-            搜索别名
+            包含别名
           </Checkbox>
           <Checkbox
             isSelected={searchData.searchInTag}
@@ -160,7 +163,7 @@ export const SearchPage = () => {
               setSearchData({ ...searchData, searchInTag: checked })
             }
           >
-            搜索标签
+            包含标签
           </Checkbox>
         </div>
       </div>
