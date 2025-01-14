@@ -100,7 +100,7 @@ const processMarkdownFile = async (filePath, contentLimit) => {
     const platform = determinePlatform(type)
 
     // 处理 introduction
-    const introduction = extractIntroduction(content)
+    const introduction = extractIntroduction(content, contentLimit)
 
     // 检查是否已存在
     const existPatch = await prisma.patch.findUnique({
@@ -202,14 +202,15 @@ const determinePlatform = (type) => {
   return platforms.length ? platforms : ['other']
 }
 
-const extractIntroduction = (content) => {
+const extractIntroduction = (content, contentLimit) => {
   const sections = [
     '## ▼ 游戏介绍',
     '## ▼ 游戏截图',
     '## ▼ PV鉴赏',
     '## ▼ 支持正版'
   ]
-  return sections
+
+  let result = sections
     .map((section) => {
       const regex = new RegExp(`${section}\\s*([\\s\\S]*?)(?=\\n## \\▼|$)`, 'g')
       const match = content.match(regex)
@@ -221,9 +222,22 @@ const extractIntroduction = (content) => {
     .replace(/\{\% video (.+?) \%\}/g, '::kun-video{src="$1"}')
     .replace(
       /\{\% link ([^,]+),([^,]+),(.+?) \%\}/g,
-      '::kun-link{href="$3" text="$1, $2"}'
+      (match, text, alt, url) => {
+        if (url === '#') {
+          return `${text},${alt}`
+        } else {
+          return `::kun-link{href="${url}" text="${text}, ${alt}"}`
+        }
+      }
     )
     .replace(/▼ /g, '')
+
+  if (contentLimit === 'nsfw') {
+    // 删除第一张图片
+    result = result.replace(/!\[\]\([^)]+\)/, '')
+  }
+
+  return result
 }
 
 const mapTypes = (type) => type.map((t) => TYPE_MAP[t])
