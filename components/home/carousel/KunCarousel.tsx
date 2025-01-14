@@ -107,7 +107,7 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
         <ChevronRight className="w-4 h-4" />
       </button>
 
-      <div className="absolute z-10 flex gap-1 -translate-x-1/2 bottom-1 left-1/2">
+      <div className="absolute z-10 flex gap-1 -translate-x-1/2 top-[188px] sm:top-[288px] left-1/2">
         {posts.map((_, index) => (
           <button
             key={index}

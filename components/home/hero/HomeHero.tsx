@@ -6,8 +6,9 @@ import { Sparkles } from 'lucide-react'
 import { KunCarousel } from '../carousel/KunCarousel'
 import { getKunPosts } from '../carousel/mdx'
 import { RandomGalgameButton } from '../carousel/RandomGalgameButton'
-import { homeNavigationItems } from '~/constants/home'
 import { Telegram } from '~/components/kun/icons/Telegram'
+import { KunHomeNavigationItems } from '../NavigationItems'
+import { kunMoyuMoe } from '~/config/moyu-moe'
 
 export const HomeHero = () => {
   const posts = getKunPosts()
@@ -15,8 +16,8 @@ export const HomeHero = () => {
   return (
     <div className="w-full mx-auto">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 sm:gap-6 min-h-[300px]">
-        <div className="flex flex-col justify-center order-2 space-y-2 sm:space-y-6 sm:order-1">
-          <Card className="hidden h-full border-none sm:block bg-gradient-to-br from-primary-500/20 via-secondary-500/20 to-success-500/20">
+        <div className="flex-col justify-center order-2 hidden space-y-2 sm:flex sm:space-y-6 sm:order-1">
+          <Card className="h-full border-none bg-gradient-to-br from-primary-500/20 via-secondary-500/20 to-success-500/20">
             <CardBody className="space-y-4">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary-500" />
@@ -40,8 +41,9 @@ export const HomeHero = () => {
                 </RandomGalgameButton>
                 <Button
                   isIconOnly
+                  isExternal
                   as={Link}
-                  href="/learn-more"
+                  href={kunMoyuMoe.domain.telegram_group}
                   variant="flat"
                   color="secondary"
                 >
@@ -52,31 +54,7 @@ export const HomeHero = () => {
           </Card>
 
           <div className="grid grid-cols-3 gap-3 sm:gap-6">
-            {homeNavigationItems.map((item) => (
-              <div key={item.label}>
-                <Button
-                  as={Link}
-                  href={item.href}
-                  startContent={<item.icon className="w-5 h-5" />}
-                  className="hidden w-full sm:flex"
-                  color={item.color as any}
-                  variant="flat"
-                  size="lg"
-                >
-                  {item.label}
-                </Button>
-                <Button
-                  as={Link}
-                  href={item.href}
-                  startContent={<item.icon className="w-5 h-5" />}
-                  className="flex w-full sm:hidden"
-                  color={item.color as any}
-                  variant="flat"
-                >
-                  {item.label}
-                </Button>
-              </div>
-            ))}
+            <KunHomeNavigationItems buttonSize="lg" />
           </div>
         </div>
 

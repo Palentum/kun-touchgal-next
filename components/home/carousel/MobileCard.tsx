@@ -1,9 +1,8 @@
 'use client'
 
-import { Card, Chip, Link } from '@nextui-org/react'
-import { docDirectoryLabelMap } from '~/constants/doc'
-import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
+import { Card, Link } from '@nextui-org/react'
 import { RandomGalgameButton } from './RandomGalgameButton'
+import { KunHomeNavigationItems } from '../NavigationItems'
 import type { HomeCarouselMetadata } from './mdx'
 
 interface Props {
@@ -15,50 +14,47 @@ export const KunMobileCard = ({ posts, currentSlide }: Props) => {
   const post = posts[currentSlide]
 
   return (
-    <Card className="h-full bg-transparent border-none shadow-none sm:hidden">
-      <div className="relative h-1/2">
-        <img
-          alt={post.title}
-          className="object-cover w-full h-full rounded-2xl"
-          src={post.banner}
-        />
-      </div>
-      <div className="py-3 h-1/2">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <img
-              src={post.authorAvatar}
-              alt={post.authorName}
-              className="w-8 h-8 rounded-full"
-            />
-            <span className="text-sm text-foreground/80">
-              {post.authorName}
-            </span>
-          </div>
+    <Card className="h-[300px] bg-transparent border-none shadow-none sm:hidden">
+      <div className="flex flex-col h-full">
+        <div className="relative">
+          <img
+            alt={post.title}
+            className="object-cover w-full rounded-2xl h-[200px]"
+            src={post.banner}
+          />
 
-          <RandomGalgameButton color="primary" variant="flat" size="sm">
-            随机一部游戏
-          </RandomGalgameButton>
+          {/* Overlay gradient for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-2xl" />
+
+          {/* Content overlay */}
+          <div className="absolute inset-0 flex flex-col justify-end p-4 space-y-2">
+            <Link
+              color="foreground"
+              className="text-lg font-bold text-white hover:text-primary-500 line-clamp-1"
+              href={post.link}
+            >
+              <h1>{post.title}</h1>
+            </Link>
+
+            <p className="mb-4 text-xs text-white/80 line-clamp-2">
+              {post.description}
+            </p>
+          </div>
         </div>
 
-        <Link
-          color="foreground"
-          className="text-lg font-bold hover:text-primary-500 line-clamp-1"
-          href={post.link}
-        >
-          <h1>{post.title}</h1>
-        </Link>
+        <div className="py-3 space-y-3">
+          <RandomGalgameButton
+            color="primary"
+            variant="flat"
+            size="sm"
+            fullWidth
+          >
+            随机一部游戏
+          </RandomGalgameButton>
 
-        <p className="mb-2 text-xs text-foreground/80 line-clamp-2">
-          {post.description}
-        </p>
-        <div className="flex flex-wrap gap-1">
-          <Chip variant="flat" size="sm" color="primary">
-            {docDirectoryLabelMap[post.directory]}
-          </Chip>
-          <Chip variant="flat" size="sm">
-            {formatDistanceToNow(post.date)}
-          </Chip>
+          <div className="grid grid-cols-3 gap-3 sm:hidden sm:gap-6">
+            <KunHomeNavigationItems buttonSize="sm" />
+          </div>
         </div>
       </div>
     </Card>
