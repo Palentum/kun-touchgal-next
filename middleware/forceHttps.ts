@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export const kunForceHttpsMiddleware = async (request: NextRequest) => {
-  const protocol = request.headers.get('X-Forwarded-Proto') || 'https'
+  const protocol = request.headers.get('x-forwarded-proto') || 'https'
 
   if (protocol === 'http') {
     const httpsUrl = new URL(request.url)
