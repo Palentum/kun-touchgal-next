@@ -18,8 +18,8 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const MARKDOWN_DIR = path.join(__dirname, './markdown')
 const FOLDERS = {
-  SFW: 'sfw',
-  NSFW: 'nsfw'
+  SFW: 'SFW',
+  NSFW: 'NSFW'
 }
 
 // 支持的分类
