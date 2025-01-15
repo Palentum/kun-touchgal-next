@@ -1,11 +1,9 @@
 'use client'
 
-import { Chip } from '@nextui-org/chip'
-import { Tooltip } from '@nextui-org/tooltip'
+import { Chip, Tooltip, Button } from '@nextui-org/react'
 import { FavoriteButton } from './button/FavoriteButton'
 import { ShareButton } from './button/ShareButton'
 import { EditButton } from './button/EditButton'
-import { DownloadButton } from './button/DownloadButton'
 import { DeleteButton } from './button/DeleteButton'
 import { FeedbackButton } from './button/FeedbackButton'
 import { Tags } from './Tags'
@@ -14,13 +12,15 @@ import {
   GALGAME_AGE_LIMIT_MAP
 } from '~/constants/galgame'
 import { useUserStore } from '~/store/providers/user'
+import { Download } from 'lucide-react'
 import type { Patch } from '~/types/api/patch'
 
 interface Props {
   patch: Patch
+  handleClickDownloadNav: () => void
 }
 
-export const ButtonList = ({ patch }: Props) => {
+export const ButtonList = ({ patch, handleClickDownloadNav }: Props) => {
   const user = useUserStore((state) => state.user)
 
   return (
@@ -43,7 +43,18 @@ export const ButtonList = ({ patch }: Props) => {
         </div>
       </div>
       <div className="flex gap-2 ml-auto">
-        <DownloadButton patch={patch} />
+        <Tooltip content="下载游戏">
+          <Button
+            color="primary"
+            variant="shadow"
+            isIconOnly
+            aria-label="下载游戏"
+            onPress={handleClickDownloadNav}
+          >
+            <Download className="size-5" />
+          </Button>
+        </Tooltip>
+
         <FavoriteButton patchId={patch.id} isFavorite={patch.isFavorite} />
         <ShareButton patch={patch} />
 

@@ -3,13 +3,21 @@ import { IntroductionTab } from '~/components/patch/introduction/IntroductionTab
 import { ResourceTab } from '~/components/patch/resource/ResourceTab'
 import { CommentTab } from '~/components/patch/comment/CommentTab'
 import type { PatchIntroduction } from '~/types/api/patch'
+import type { Dispatch, SetStateAction } from 'react'
 
 interface PatchHeaderProps {
   id: number
   intro: PatchIntroduction
+  selected: string
+  setSelected: Dispatch<SetStateAction<string>>
 }
 
-export const PatchHeaderTabs = ({ id, intro }: PatchHeaderProps) => {
+export const PatchHeaderTabs = ({
+  id,
+  intro,
+  selected,
+  setSelected
+}: PatchHeaderProps) => {
   return (
     <Tabs
       className="w-full my-6 overflow-hidden shadow-medium rounded-large"
@@ -19,7 +27,9 @@ export const PatchHeaderTabs = ({ id, intro }: PatchHeaderProps) => {
         if (value === 'resources') {
           window.scroll(0, 400)
         }
+        setSelected(value.toString())
       }}
+      selectedKey={selected}
     >
       <Tab key="introduction" title="游戏信息" className="p-0">
         <IntroductionTab intro={intro} patchId={Number(id)} />

@@ -87,9 +87,9 @@ export const Password = () => {
         </CardBody>
 
         <CardFooter className="flex-wrap">
-          <p className="text-gray-500">
-            密码长度最短 6 个字符, 最长 1000 个字符, 可以包含任意字符,
-            至少包含数字和英语字母
+          <p className="text-default-500">
+            密码长度最短 6 个字符, 最长 1000 个字符, 可以选择性的包含
+            @!#$%^&*()_-+=\/ 等特殊字符, 至少包含数字和英语字母
           </p>
           <Button
             color="primary"

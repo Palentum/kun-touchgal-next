@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, CardBody } from '@nextui-org/card'
 import { Divider } from '@nextui-org/divider'
 import { useRewritePatchStore } from '~/store/rewriteStore'
@@ -22,6 +22,7 @@ interface PatchHeaderProps {
 
 export const PatchHeaderContainer = ({ patch, intro }: PatchHeaderProps) => {
   const { setData } = useRewritePatchStore()
+  const [selected, setSelected] = useState('introduction')
 
   useEffect(() => {
     setData({
@@ -51,7 +52,10 @@ export const PatchHeaderContainer = ({ patch, intro }: PatchHeaderProps) => {
 
         <Card className="absolute bottom-0 w-full rounded-none shadow-lg rounded-b-2xl bg-background/70 backdrop-blur-xl">
           <CardBody>
-            <ButtonList patch={patch} />
+            <ButtonList
+              patch={patch}
+              handleClickDownloadNav={() => setSelected('resources')}
+            />
 
             <Divider className="my-4" />
 
@@ -79,7 +83,12 @@ export const PatchHeaderContainer = ({ patch, intro }: PatchHeaderProps) => {
         <Tags patch={patch} />
       </div>
 
-      <PatchHeaderTabs id={patch.id} intro={intro} />
+      <PatchHeaderTabs
+        id={patch.id}
+        intro={intro}
+        selected={selected}
+        setSelected={setSelected}
+      />
     </>
   )
 }
