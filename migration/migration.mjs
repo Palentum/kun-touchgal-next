@@ -51,35 +51,6 @@ export const markdownToText = (markdown) => {
     .trim()
 }
 
-// 创建标签
-const createTag = async (input, uid) => {
-  const { name, introduction = '', alias = [] } = input
-
-  const existingTag = await prisma.patch_tag.findFirst({
-    where: {
-      OR: [{ name }, { alias: { has: name } }]
-    }
-  })
-  if (existingTag) {
-    return null
-  }
-
-  return await prisma.patch_tag.create({
-    data: {
-      user_id: uid,
-      name,
-      introduction,
-      alias
-    },
-    select: {
-      id: true,
-      name: true,
-      count: true,
-      alias: true
-    }
-  })
-}
-
 // 处理 Markdown 文件
 const processMarkdownFile = async (filePath, contentLimit) => {
   try {
@@ -262,7 +233,12 @@ const mapTypes = (type) => type.map((t) => TYPE_MAP[t])
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-const withExponentialBackoff = async (fn, retries = 10, delay = 100) => {
+const withExponentialBackoff = async (
+  fn,
+  name = 'Psql execute race error.',
+  retries = 10,
+  delay = 100
+) => {
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
       return await fn()
@@ -271,7 +247,7 @@ const withExponentialBackoff = async (fn, retries = 10, delay = 100) => {
         // 指数退避 + 随机抖动
         const backoff = delay * Math.pow(2, attempt) + Math.random() * delay
         console.warn(
-          `Attempt ${attempt + 1} failed. Psql execute race error. Retrying in ${Math.round(backoff)}ms...`
+          `Attempt ${attempt + 1} failed. ${name} Retrying in ${Math.round(backoff)}ms...`
         )
         await sleep(backoff)
       } else {
@@ -282,41 +258,67 @@ const withExponentialBackoff = async (fn, retries = 10, delay = 100) => {
   }
 }
 
-const createAndLinkTags = async (tags, patchId) => {
-  await withExponentialBackoff(async () => {
-    return await prisma.$transaction(
-      async (prisma) => {
-        const tagIds = await Promise.all(
-          tags.map(async (tagName) => {
-            const tag = await createTag({ name: tagName.toString() }, USER_ID)
-            if (tag) {
-              return tag.id
-            } else {
-              const existTag = await prisma.patch_tag.findFirst({
-                where: { name: tagName.toString() }
-              })
-              return existTag?.id
+const createTags = async (tags) => {
+  return await withExponentialBackoff(async () => {
+    return await prisma.$transaction(async (prisma) => {
+      const tagIds = await Promise.all(
+        tags.map(async (tagName) => {
+          const name = tagName.toString()
+          const existingTag = await prisma.patch_tag.findFirst({
+            where: {
+              OR: [{ name }, { alias: { has: name } }]
             }
           })
-        )
-        const filteredTagIds = tagIds.filter((item) => item !== undefined)
+          if (existingTag) {
+            return existingTag.id
+          }
 
-        if (filteredTagIds.length) {
-          const relationData = filteredTagIds.map((tagId) => ({
-            patch_id: patchId,
-            tag_id: tagId
-          }))
+          const newTag = await prisma.patch_tag.create({
+            data: {
+              user_id: USER_ID,
+              name,
+              introduction: '',
+              alias: []
+            },
+            select: {
+              id: true
+            }
+          })
 
+          return newTag.id
+        })
+      )
+
+      return tagIds.filter((id) => id !== undefined)
+    })
+  }, 'createTags')
+}
+
+const linkTagsToPatch = async (tagIds, patchId) => {
+  if (tagIds.length) {
+    const relationData = tagIds.map((tagId) => ({
+      patch_id: patchId,
+      tag_id: tagId
+    }))
+
+    await withExponentialBackoff(async () => {
+      await prisma.$transaction(
+        async (prisma) => {
           await prisma.patch_tag_relation.createMany({ data: relationData })
           await prisma.patch_tag.updateMany({
-            where: { id: { in: filteredTagIds } },
+            where: { id: { in: tagIds } },
             data: { count: { increment: 1 } }
           })
-        }
-      },
-      { timeout: 60000 }
-    )
-  })
+        },
+        { timeout: 60000 }
+      )
+    }, 'linkTagsToPatch')
+  }
+}
+
+const createAndLinkTags = async (tags, patchId) => {
+  const tagIds = await createTags(tags)
+  await linkTagsToPatch(tagIds, patchId)
 }
 
 const extractNoteSection = (content) => {
