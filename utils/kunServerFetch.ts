@@ -13,19 +13,10 @@ export const kunServerFetchGet = async <T>(
         .join('&')
     : ''
 
-  let fetchAddress =
+  const fetchAddress =
     process.env.NODE_ENV === 'development'
       ? process.env.NEXT_PUBLIC_KUN_PATCH_ADDRESS_DEV
       : process.env.NEXT_PUBLIC_KUN_PATCH_ADDRESS_PROD
-
-  if (
-    process.env.NODE_ENV === 'production' &&
-    fetchAddress &&
-    !fetchAddress.startsWith('https://')
-  ) {
-    fetchAddress = fetchAddress.replace(/^http:/, 'https:')
-  }
-
   const fullUrl = `${fetchAddress}/api${url}${queryString}`
 
   const cookieStore = await cookies()
