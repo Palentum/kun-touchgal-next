@@ -43,7 +43,7 @@ export const createBreadcrumbItem = (
     string,
     { keyPrefix: string; hrefSuffix: string }
   > = {
-    patch: { keyPrefix: `/patch/${params.id}`, hrefSuffix: `/introduction` },
+    patch: { keyPrefix: `/${params.id}`, hrefSuffix: '' },
     tag: { keyPrefix: `/tag/${params.id}`, hrefSuffix: '' },
     user: { keyPrefix: `/user/${params.id}`, hrefSuffix: `/resource` }
   }
