@@ -31,14 +31,9 @@ export const SearchCard = ({ patch }: Props) => {
               {patch.name}
             </h2>
 
-            <KunCardStats patch={patch} />
+            <KunCardStats patch={patch} isMobile={true} />
 
-            <KunPatchAttribute
-              types={patch.type}
-              tags={patch.tags}
-              enableTags={true}
-              size="sm"
-            />
+            <KunPatchAttribute types={patch.type} size="sm" />
           </div>
         </div>
       </CardBody>

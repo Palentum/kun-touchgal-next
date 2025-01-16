@@ -29,7 +29,7 @@ export const PatchCard = ({ patch }: Props) => {
           <h2 className="text-lg font-semibold transition-colors line-clamp-2 hover:text-primary-500">
             {patch.name}
           </h2>
-          <KunCardStats patch={patch} />
+          <KunCardStats patch={patch} isMobile={true} />
         </div>
       </CardBody>
     </Card>

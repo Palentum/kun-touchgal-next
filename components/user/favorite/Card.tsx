@@ -36,7 +36,7 @@ export const UserGalgameCard = ({ galgame }: Props) => {
               <Chip variant="flat">{formatDistanceToNow(galgame.created)}</Chip>
             </div>
 
-            <KunCardStats patch={galgame} />
+            <KunCardStats patch={galgame} isMobile={true} />
 
             <div className="flex flex-wrap gap-2">
               {galgame.type.map((type) => (

@@ -54,15 +54,10 @@ export const GalgameCard = ({ patch }: Props) => {
         <h2 className="font-semibold transition-colors text-small sm:text-lg line-clamp-2 hover:text-primary-500">
           {patch.name}
         </h2>
-        <KunCardStats patch={patch} />
+        <KunCardStats patch={patch} isMobile={true} />
       </CardBody>
       <CardFooter className="pt-0">
-        <KunPatchAttribute
-          types={patch.type}
-          tags={patch.tags}
-          enableTags={true}
-          size="sm"
-        />
+        <KunPatchAttribute types={patch.type} size="sm" />
       </CardFooter>
     </Card>
   )
