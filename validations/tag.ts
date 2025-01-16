@@ -53,3 +53,18 @@ export const searchTagSchema = z.object({
     .min(1)
     .max(10, { message: '您最多使用 10 组关键词' })
 })
+
+export const searchGalgameByTagSchema = z.object({
+  query: z
+    .array(
+      z
+        .string()
+        .trim()
+        .min(1)
+        .max(107, { message: '单个搜索标签的最大长度为 107' })
+    )
+    .min(1)
+    .max(10, { message: '您最多使用 10 个标签' }),
+  page: z.coerce.number().min(1).max(9999999),
+  limit: z.coerce.number().min(1).max(24)
+})

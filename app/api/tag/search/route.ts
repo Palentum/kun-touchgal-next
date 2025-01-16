@@ -7,28 +7,24 @@ import { searchTagSchema } from '~/validations/tag'
 export const searchTag = async (input: z.infer<typeof searchTagSchema>) => {
   const { query } = input
 
-  const tags = await Promise.all(
-    query.map(async (q) =>
-      prisma.patch_tag.findMany({
-        where: {
-          OR: [
-            { name: { contains: q, mode: 'insensitive' } },
-            { alias: { has: q } }
-          ]
-        },
-        select: {
-          id: true,
-          name: true,
-          count: true,
-          alias: true
-        },
-        orderBy: { count: 'desc' },
-        take: 100
-      })
-    )
-  )
+  const tags = await prisma.patch_tag.findMany({
+    where: {
+      OR: query.flatMap((q) => [
+        { name: { contains: q, mode: 'insensitive' } },
+        { alias: { has: q } }
+      ])
+    },
+    select: {
+      id: true,
+      name: true,
+      count: true,
+      alias: true
+    },
+    orderBy: { count: 'desc' },
+    take: 100
+  })
 
-  return tags.flat()
+  return tags
 }
 
 export const POST = async (req: NextRequest) => {
