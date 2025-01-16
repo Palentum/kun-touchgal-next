@@ -15,7 +15,7 @@ export const Tags = ({ patch }: PatchHeaderProps) => {
     <>
       {patch.platform.length > 0 &&
         patch.platform.map((platform) => (
-          <Chip key={platform} variant="flat">
+          <Chip key={platform} color="secondary" variant="flat">
             {SUPPORTED_PLATFORM_MAP[platform]}
           </Chip>
         ))}

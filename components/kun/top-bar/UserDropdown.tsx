@@ -22,6 +22,7 @@ import {
   LogOut,
   Lollipop,
   Settings,
+  ArrowLeftRight,
   Sparkles,
   UserRound
 } from 'lucide-react'
@@ -33,6 +34,7 @@ import toast from 'react-hot-toast'
 import { useMounted } from '~/hooks/useMounted'
 import { showKunSooner } from '~/components/kun/Sooner'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
+import { NSFWSwitcher } from './NSFWSwitcher'
 import type { UserState } from '~/store/userStore'
 
 export const UserDropdown = () => {
@@ -122,8 +124,8 @@ export const UserDropdown = () => {
           </DropdownItem>
           <DropdownItem
             isReadOnly
-            key="moemoepoint"
             textValue="萌萌点"
+            key="moemoepoint"
             className="cursor-default data-[hover=true]:bg-background"
             startContent={<Lollipop className="size-4" />}
             endContent={user.moemoepoint}
@@ -150,6 +152,14 @@ export const UserDropdown = () => {
             startContent={<CircleHelp className="size-4" />}
           >
             帮助与反馈
+          </DropdownItem>
+          <DropdownItem
+            isReadOnly
+            textValue="萌萌点"
+            key="nsfw_toggle"
+            startContent={<ArrowLeftRight className="size-4" />}
+          >
+            <NSFWSwitcher />
           </DropdownItem>
           <DropdownItem
             key="logout"
