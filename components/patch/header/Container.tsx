@@ -37,7 +37,7 @@ export const PatchHeaderContainer = ({ patch, intro }: PatchHeaderProps) => {
 
   return (
     <>
-      <div className="relative h-[512px] w-full">
+      <div className="relative h-[380px] sm:h-[512px] w-full">
         <KunAutoImageViewer />
         <Image
           src={patch.banner}

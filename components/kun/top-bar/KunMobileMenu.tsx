@@ -1,7 +1,6 @@
 'use client'
 
 import { NavbarMenu, NavbarMenuItem } from '@nextui-org/navbar'
-import { Chip } from '@nextui-org/chip'
 import Link from 'next/link'
 import Image from 'next/image'
 import { kunMoyuMoe } from '~/config/moyu-moe'
@@ -9,7 +8,7 @@ import { kunMobileNavItem } from '~/constants/top-bar'
 
 export const KunMobileMenu = () => {
   return (
-    <NavbarMenu>
+    <NavbarMenu className="space-y-4">
       <NavbarMenuItem>
         <Link className="flex items-center" href="/">
           <Image
@@ -19,14 +18,15 @@ export const KunMobileMenu = () => {
             height={50}
             priority
           />
-          <p className="ml-4 mr-2 font-bold text-inherit">
+          <p className="ml-4 mr-2 text-3xl font-bold">
             {kunMoyuMoe.creator.name}
           </p>
         </Link>
       </NavbarMenuItem>
+
       {kunMobileNavItem.map((item, index) => (
         <NavbarMenuItem key={index}>
-          <Link className="w-full" href={item.href}>
+          <Link className="w-full font-semibold" href={item.href}>
             {item.name}
           </Link>
         </NavbarMenuItem>
