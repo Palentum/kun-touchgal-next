@@ -13,7 +13,7 @@ export const searchGalgameByTag = async (
   const { query, page, limit } = input
   const offset = (page - 1) * limit
 
-  const [galgames, total] = await Promise.all([
+  const [data, total] = await Promise.all([
     await prisma.patch.findMany({
       where: {
         OR: [
@@ -51,6 +51,12 @@ export const searchGalgameByTag = async (
       }
     })
   ])
+
+  const galgames = data.map((gal) => ({
+    ...gal,
+    tags: gal.tag.map((t) => t.tag.name).slice(0, 3),
+    uniqueId: gal.unique_id
+  }))
 
   return { galgames, total }
 }

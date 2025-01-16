@@ -1,37 +1,36 @@
 'use client'
 
-import { Input } from '@nextui-org/input'
+import { Input } from '@nextui-org/react'
 import { Button } from '@nextui-org/react'
 import { Search } from 'lucide-react'
-import { Chip } from '@nextui-org/chip'
-import { ScrollShadow } from '@nextui-org/scroll-shadow'
-import { KunLoading } from '~/components/kun/Loading'
+import { Chip } from '@nextui-org/react'
+import { ScrollShadow } from '@nextui-org/react'
 import type { Tag as TagType } from '~/types/api/tag'
 
-interface SearchTagsProps {
+interface TagInputProps {
   query: string
   setQuery: (value: string) => void
   handleSearch: () => void
-  searching: boolean
   suggestions: TagType[]
   selectedTags: string[]
   onTagSelect: (tag: string) => void
   onTagRemove: (tag: string) => void
 }
 
-export const SearchTags = ({
+export const TagInput = ({
   query,
   setQuery,
   handleSearch,
-  searching,
   suggestions,
   selectedTags,
   onTagSelect,
   onTagRemove
-}: SearchTagsProps) => {
+}: TagInputProps) => {
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap gap-2 min-h-[40px]">
+    <div>
+      <div
+        className={`flex flex-wrap ${selectedTags.length ? 'mb-4 gap-2' : ''}`}
+      >
         {selectedTags.map((tag) => (
           <Chip
             key={tag}
@@ -66,13 +65,13 @@ export const SearchTags = ({
 
         {suggestions.length > 0 && query && (
           <ScrollShadow
-            className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 max-h-[200px] overflow-auto"
+            className="absolute z-50 w-full bg-background mt-1 rounded-2xl shadow-lg border border-default-200 max-h-[200px] overflow-auto"
             hideScrollBar
           >
             {suggestions.map((tag) => (
               <div
                 key={tag.id}
-                className="flex items-center justify-between px-4 py-2 cursor-pointer hover:bg-gray-100"
+                className="flex items-center justify-between px-4 py-2 cursor-pointer hover:bg-default-100"
                 onClick={() => {
                   onTagSelect(tag.name)
                   setQuery('')
@@ -87,8 +86,6 @@ export const SearchTags = ({
           </ScrollShadow>
         )}
       </div>
-
-      {searching && <KunLoading hint="正在搜索标签数据..." />}
     </div>
   )
 }
