@@ -27,12 +27,12 @@ export const ButtonList = ({ patch, handleClickDownloadNav }: Props) => {
     <div className="flex flex-col items-start justify-between space-y-2 sm:space-y-0 sm:flex-row">
       <div className="space-y-2">
         <h1 className="text-xl font-bold sm:text-3xl">
-          <span>{patch.name}</span>
+          <span className="align-middle">{patch.name}</span>
           <Tooltip content={GALGAME_AGE_LIMIT_DETAIL[patch.contentLimit]}>
             <Chip
               color={patch.contentLimit === 'sfw' ? 'success' : 'danger'}
               variant="flat"
-              className="ml-2"
+              className="ml-2 align-middle"
             >
               {GALGAME_AGE_LIMIT_MAP[patch.contentLimit]}
             </Chip>

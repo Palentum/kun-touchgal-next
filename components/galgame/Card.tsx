@@ -28,6 +28,7 @@ export const GalgameCard = ({ patch }: Props) => {
             style={{ aspectRatio: '16/9' }}
           />
           <Image
+            radius="none"
             alt={patch.name}
             className={cn(
               'size-full object-cover transition-all duration-300',

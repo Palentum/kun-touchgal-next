@@ -12,6 +12,8 @@ import { KunLink } from '~/components/kun/milkdown/plugins/components/link/KunLi
 import { KunExternalLink } from '~/components/kun/ExternalLink'
 import type { PatchIntroduction } from '~/types/api/patch'
 
+import './_adjust.scss'
+
 const KunPlyr = dynamic(
   () =>
     import('~/components/kun/milkdown/plugins/components/video/Plyr').then(
@@ -83,9 +85,6 @@ export const IntroductionTab = ({ intro, patchId }: Props) => {
 
   return (
     <Card className="p-1 sm:p-8">
-      <CardHeader className="p-4">
-        <h2 className="text-2xl font-medium">游戏信息</h2>
-      </CardHeader>
       <CardBody className="p-4 space-y-6">
         <div
           ref={contentRef}

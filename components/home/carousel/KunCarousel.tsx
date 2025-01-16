@@ -96,7 +96,13 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
       </AnimatePresence>
 
       <div className="w-full py-3 space-y-3 sm:hidden">
-        <RandomGalgameButton color="primary" variant="flat" size="sm" fullWidth>
+        <RandomGalgameButton
+          className="shadow-md"
+          color="primary"
+          variant="flat"
+          size="sm"
+          fullWidth
+        >
           随机一部游戏
         </RandomGalgameButton>
 
