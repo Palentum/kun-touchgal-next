@@ -16,9 +16,9 @@ export const HomeHero = () => {
   return (
     <div className="w-full mx-auto">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 sm:gap-6 min-h-[300px]">
-        <div className="flex-col justify-center order-2 hidden space-y-2 sm:flex sm:space-y-6 sm:order-1">
+        <div className="flex-col justify-center hidden space-y-2 sm:flex sm:space-y-6">
           <Card className="h-full border-none bg-gradient-to-br from-primary-500/20 via-secondary-500/20 to-success-500/20">
-            <CardBody className="space-y-4">
+            <CardBody className="flex justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary-500" />
                 <Chip color="primary" variant="flat">
@@ -27,10 +27,10 @@ export const HomeHero = () => {
               </div>
 
               <div className="space-y-4">
-                <h1 className="py-1 text-2xl font-bold text-transparent lg:text-3xl xl:text-4xl bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text">
+                <h1 className="py-1 text-3xl font-bold text-transparent xl:text-4xl bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text">
                   一站式 Galgame 文化社区！
                 </h1>
-                <p className="text-lg text-default-600">
+                <p className="text-md text-default-600">
                   免费, 高质量的 Galgame 资源下载站
                 </p>
               </div>
@@ -58,9 +58,7 @@ export const HomeHero = () => {
           </div>
         </div>
 
-        <div className="order-1 sm:order-2">
-          <KunCarousel posts={posts} />
-        </div>
+        <KunCarousel posts={posts} />
       </div>
     </div>
   )

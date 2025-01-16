@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { KunDesktopCard } from './DesktopCard'
 import { KunMobileCard } from './MobileCard'
+import { RandomGalgameButton } from './RandomGalgameButton'
+import { KunHomeNavigationItems } from '../NavigationItems'
 import type { HomeCarouselMetadata } from './mdx'
 
 interface KunCarouselProps {
@@ -57,7 +59,7 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
 
   return (
     <div
-      className="relative h-[300px] overflow-hidden group touch-pan-y"
+      className="relative h-[300px] overflow-hidden group touch-pan-y flex items-end"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -92,6 +94,16 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
           <KunMobileCard posts={posts} currentSlide={currentSlide} />
         </motion.div>
       </AnimatePresence>
+
+      <div className="w-full py-3 space-y-3 sm:hidden">
+        <RandomGalgameButton color="primary" variant="flat" size="sm" fullWidth>
+          随机一部游戏
+        </RandomGalgameButton>
+
+        <div className="grid grid-cols-3 gap-3 sm:hidden sm:gap-6">
+          <KunHomeNavigationItems buttonSize="sm" />
+        </div>
+      </div>
 
       <button
         className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/20 hover:bg-background/40 p-1.5 rounded-full backdrop-blur-sm transition-all opacity-0 group-hover:opacity-100 touch:opacity-100 z-10"
