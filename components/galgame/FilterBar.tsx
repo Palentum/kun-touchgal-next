@@ -135,9 +135,13 @@ export const FilterBar = ({
               <DropdownTrigger>
                 <Button
                   variant="flat"
-                  className="transition-colors bg-content2/50 hover:bg-content2"
+                  className="transition-colors bg-content2/50 hover:bg-content"
+                  style={{
+                    fontSize: '0.875rem'
+                  }}
                   endContent={<ChevronDown className="size-4" />}
                   radius="lg"
+                  size="lg"
                 >
                   {sortFieldLabelMap[sortField]}
                 </Button>
@@ -167,6 +171,9 @@ export const FilterBar = ({
             <Button
               variant="flat"
               className="transition-colors bg-content2/50 hover:bg-content2"
+              style={{
+                fontSize: '0.875rem'
+              }}
               onPress={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
               startContent={
                 sortOrder === 'asc' ? (
@@ -176,6 +183,7 @@ export const FilterBar = ({
                 )
               }
               radius="lg"
+              size="lg"
             >
               {sortOrder === 'asc' ? '升序' : '降序'}
             </Button>
