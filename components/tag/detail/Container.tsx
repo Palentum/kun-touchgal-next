@@ -12,7 +12,7 @@ import { KunLoading } from '~/components/kun/Loading'
 import { KunHeader } from '~/components/kun/Header'
 import { KunMasonryGrid } from '~/components/kun/MasonryGrid'
 import { useMounted } from '~/hooks/useMounted'
-import { SearchCard } from '~/components/search/Card'
+import { GalgameCard } from '~/components/galgame/Card'
 import { motion } from 'framer-motion'
 import { cardContainer, cardItem } from '~/motion/card'
 import { KunNull } from '~/components/kun/Null'
@@ -129,14 +129,12 @@ export const TagDetailCOntainer = ({
       {loading ? (
         <KunLoading hint="正在获取 Galgame 中..." />
       ) : (
-        <motion.div variants={cardContainer} initial="hidden" animate="show">
-          <KunMasonryGrid columnWidth={512} gap={24}>
-            {patches.map((patch) => (
-              <motion.div key={patch.id} variants={cardItem}>
-                <SearchCard patch={patch} />
-              </motion.div>
+        <>
+          <div className="grid grid-cols-2 gap-2 mx-auto mb-8 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {patches.map((pa) => (
+              <GalgameCard key={pa.id} patch={pa} />
             ))}
-          </KunMasonryGrid>
+          </div>
 
           {total > 24 && (
             <div className="flex justify-center">
@@ -159,7 +157,7 @@ export const TagDetailCOntainer = ({
           )}
 
           {!total && <KunNull message="这个标签暂无 Galgame 使用" />}
-        </motion.div>
+        </>
       )}
     </div>
   )

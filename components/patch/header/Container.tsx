@@ -42,7 +42,7 @@ export const PatchHeaderContainer = ({ patch, intro }: PatchHeaderProps) => {
         <Image
           src={patch.banner}
           alt={patch.name}
-          className="absolute top-0 left-0 object-cover size-full rounded-2xl"
+          className="absolute top-0 left-0 object-cover size-full rounded-t-2xl rounded-b-3xl"
           fill
           sizes="100vw"
           priority
