@@ -46,7 +46,9 @@ export const getPatchResource = async (
         }
       }
     }),
-    await prisma.patch_resource.count({ where: { patch: nsfwEnable } })
+    await prisma.patch_resource.count({
+      where: { patch: nsfwEnable, section: 'patch' }
+    })
   ])
 
   const resources: PatchResource[] = resourcesData.map((resource) => ({

@@ -9,7 +9,12 @@ interface Props {
 
 export const PatchCard = ({ patch }: Props) => {
   return (
-    <Card isPressable as={Link} href={`/${patch.uniqueId}`} className="w-full">
+    <Card
+      isPressable
+      as={Link}
+      href={`/${patch.uniqueId}`}
+      className="w-full border border-default-100 dark:border-default-200"
+    >
       <CardBody>
         <div className="relative w-full pb-[56.25%]">
           <Image

@@ -16,7 +16,12 @@ export const GalgameCard = ({ patch }: Props) => {
   const [imageLoaded, setImageLoaded] = useState(false)
 
   return (
-    <Card isPressable as={Link} href={`/${patch.uniqueId}`} className="w-full">
+    <Card
+      isPressable
+      as={Link}
+      href={`/${patch.uniqueId}`}
+      className="w-full border border-default-100 dark:border-default-200"
+    >
       <CardHeader className="p-0">
         <div className="relative w-full mx-auto overflow-hidden text-center rounded-t-lg opacity-90">
           <div

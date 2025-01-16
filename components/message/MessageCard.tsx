@@ -58,7 +58,12 @@ export const MessageCard = ({ msg }: Props) => {
   const href = getCardRoute(msg)
 
   return (
-    <Card isPressable as={Link} href={href} className="w-full">
+    <Card
+      isPressable
+      as={Link}
+      href={href}
+      className="w-full border border-default-100 dark:border-default-200"
+    >
       <CardBody className="flex flex-row items-center gap-4">
         {msg.sender ? (
           <KunAvatar

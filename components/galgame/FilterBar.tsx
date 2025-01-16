@@ -53,7 +53,7 @@ export const FilterBar = ({
   setSelectedPlatform
 }: Props) => {
   return (
-    <Card className="w-full border border-content2 bg-content1/50 backdrop-blur-lg">
+    <Card className="w-full border border-default-100 bg-content1/50 backdrop-blur-lg">
       <CardHeader>
         <div className="flex flex-col w-full gap-4 sm:flex-row sm:items-center sm:justify-between">
           <Select

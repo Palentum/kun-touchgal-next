@@ -9,7 +9,12 @@ interface Props {
 
 export const TagCard = ({ tag }: Props) => {
   return (
-    <Card isPressable as={Link} href={`/tag/${tag.id}`} className="w-full">
+    <Card
+      isPressable
+      as={Link}
+      href={`/tag/${tag.id}`}
+      className="w-full border border-default-100 dark:border-default-200"
+    >
       <CardBody className="gap-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-lg font-semibold transition-colors line-clamp-2 hover:text-primary-500">

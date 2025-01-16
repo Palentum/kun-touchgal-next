@@ -31,6 +31,7 @@ export const KunFriendLink = () => {
               isPressable
               isHoverable
               onPress={() => window.open(friend.link, '_blank')}
+              className="border border-default-200"
             >
               <CardBody className="p-0 overflow-visible">
                 <div className="flex justify-center w-full pt-4">
