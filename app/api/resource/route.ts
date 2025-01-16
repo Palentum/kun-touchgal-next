@@ -24,7 +24,7 @@ export const getPatchResource = async (
       take: limit,
       skip: offset,
       orderBy: orderByField,
-      where: { patch: nsfwEnable },
+      where: { patch: nsfwEnable, section: 'patch' },
       include: {
         patch: {
           select: {
