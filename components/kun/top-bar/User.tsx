@@ -73,12 +73,7 @@ export const KunTopBarUser = () => {
                 </Button>
               </NavbarItem>
               <NavbarItem className="flex lg:hidden">
-                <Button
-                  as={Link}
-                  color="primary"
-                  href="/register"
-                  variant="flat"
-                >
+                <Button as={Link} color="primary" href="/login" variant="flat">
                   登录
                 </Button>
               </NavbarItem>

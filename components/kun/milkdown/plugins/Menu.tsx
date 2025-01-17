@@ -10,11 +10,15 @@ import { EmojiPicker } from './components/emoji/EmojiPicker'
 import type { CmdKey } from '@milkdown/core'
 import type { UseEditorReturn } from '@milkdown/react'
 
-export const KunMilkdownPluginsMenu = ({
-  editorInfo
-}: {
+interface Props {
   editorInfo: UseEditorReturn
-}) => {
+  disableUserKey?: boolean
+}
+
+export const KunMilkdownPluginsMenu = ({
+  editorInfo,
+  disableUserKey = false
+}: Props) => {
   const { get } = editorInfo
   const call = <T,>(command: CmdKey<T>, payload?: T) => {
     return get()?.action(callCommand(command, payload))
@@ -36,11 +40,15 @@ export const KunMilkdownPluginsMenu = ({
 
       <EmojiPicker editorInfo={editorInfo} />
 
-      <LinkInsertButton call={call} />
-
       <ImageUploadButton editorInfo={editorInfo} />
 
-      <VideoInsertButton call={call} />
+      {!disableUserKey && (
+        <>
+          <LinkInsertButton call={call} />
+
+          <VideoInsertButton call={call} />
+        </>
+      )}
     </div>
   )
 }

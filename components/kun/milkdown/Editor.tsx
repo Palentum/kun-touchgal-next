@@ -58,9 +58,14 @@ import markdown from 'refractor/lang/markdown'
 type Props = {
   valueMarkdown: string
   saveMarkdown: (markdown: string) => void
+  disableUserKey?: boolean
 }
 
-export const KunEditor = ({ valueMarkdown, saveMarkdown }: Props) => {
+export const KunEditor = ({
+  valueMarkdown,
+  saveMarkdown,
+  disableUserKey = false
+}: Props) => {
   const editor = useEditor((root) =>
     Editor.make()
       .config((ctx) => {
@@ -134,8 +139,13 @@ export const KunEditor = ({ valueMarkdown, saveMarkdown }: Props) => {
 
   return (
     <div className="min-h-64" onClick={(e) => e.stopPropagation()}>
-      <KunMilkdownPluginsMenu editorInfo={editor} />
+      <KunMilkdownPluginsMenu
+        editorInfo={editor}
+        disableUserKey={disableUserKey}
+      />
+
       <Milkdown />
+
       {editor.loading && (
         <KunLoading className="min-h-48" hint="正在加载编辑器" />
       )}

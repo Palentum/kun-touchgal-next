@@ -1,3 +1,4 @@
+import { kunMoyuMoe } from '~/config/moyu-moe'
 import { Card, CardBody, CardHeader } from '@nextui-org/card'
 import { Avatar } from '@nextui-org/avatar'
 import { Chip } from '@nextui-org/chip'
@@ -41,12 +42,12 @@ export const UserProfile = ({ user }: { user: UserInfo }) => {
             <div className="flex items-center gap-2">
               <LinkIcon className="size-4 text-default-400" />
               <a
-                href={`https://www.moyu.moe/user/${user.id}`}
+                href={`${kunMoyuMoe.domain.main}/user/${user.id}`}
                 className="text-small text-primary hover:underline"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {`https://www.moyu.moe/user/${user.id}`}
+                {`${kunMoyuMoe.domain.main}/user/${user.id}`}
               </a>
             </div>
             <div className="flex items-center gap-2">

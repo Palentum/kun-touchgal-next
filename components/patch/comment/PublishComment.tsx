@@ -79,6 +79,7 @@ export const PublishComment = ({
           <KunEditor
             valueMarkdown={getData().content}
             saveMarkdown={(markdown: string) => setData({ content: markdown })}
+            disableUserKey={true}
           />
         </MilkdownProvider>
 
