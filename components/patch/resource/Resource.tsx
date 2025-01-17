@@ -75,7 +75,7 @@ export const Resources = ({ id }: Props) => {
       <div className="flex justify-end">
         <Button
           color="primary"
-          variant="solid"
+          variant="flat"
           startContent={<Plus className="size-4" />}
           onPress={onOpenCreate}
         >

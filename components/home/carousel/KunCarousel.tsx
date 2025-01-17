@@ -95,7 +95,7 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
         </motion.div>
       </AnimatePresence>
 
-      <div className="w-full py-3 space-y-3 sm:hidden">
+      <div className="z-10 w-full py-3 space-y-3 sm:hidden">
         <RandomGalgameButton
           className="shadow-md"
           color="primary"

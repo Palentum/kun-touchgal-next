@@ -37,14 +37,16 @@ export const Info = ({ intro }: Props) => {
       </div>
 
       {intro.alias.length > 0 && (
-        <div className="mt-4">
-          <h2 className="mb-4 text-xl font-medium">游戏别名</h2>
+        <>
+          <h2 className="pt-8 mt-12 text-2xl border-t border-default-200">
+            游戏别名
+          </h2>
           <ul className="text-sm list-disc list-inside text-default-500">
             {intro.alias.map((alias) => (
               <li key={Math.random()}>{alias}</li>
             ))}
           </ul>
-        </div>
+        </>
       )}
     </>
   )

@@ -31,8 +31,7 @@ export const KunBackToTop = () => {
     <Button
       isIconOnly
       color="primary"
-      variant="flat"
-      className="fixed z-50 bottom-12 right-3"
+      className="fixed z-50 bottom-12 right-6"
       onPress={scrollToTop}
       aria-label="Back to top"
     >

@@ -66,7 +66,6 @@ export const ResourceDownload = ({ resource }: Props) => {
           <ResourceLikeButton resource={resource} />
           <Button
             color="primary"
-            variant="flat"
             isIconOnly
             aria-label={`下载 Galgame 资源`}
             onPress={() => toggleLinks(resource.id)}
