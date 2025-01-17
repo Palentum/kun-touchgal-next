@@ -25,7 +25,7 @@ export const getLog = async (input: z.infer<typeof adminPaginationSchema>) => {
         }
       }
     }),
-    await prisma.patch.count()
+    await prisma.admin_log.count()
   ])
 
   const logs: AdminLog[] = data.map((log) => ({

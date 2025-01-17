@@ -30,7 +30,7 @@ const redirectJsonPath = path.join(__dirname, 'config', 'redirect.json')
 const redirectJsonContent = {
   enabled: true,
   excludedDomains: ['touchgal.io', 'nav.kungal.com'],
-  delaySeconds: 3
+  delaySeconds: 5
 }
 
 const configDir = path.dirname(redirectJsonPath)

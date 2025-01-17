@@ -34,10 +34,9 @@ export const KunExternalLink = ({
 
   return (
     <Link
-      isExternal
+      isExternal={!isRequireRedirect && !redirectConfig.enabled}
       showAnchorIcon={showAnchorIcon}
       href={urlHref()}
-      rel="noopener noreferrer"
     >
       {children}
     </Link>
