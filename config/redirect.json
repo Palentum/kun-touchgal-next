@@ -1,5 +1,0 @@
-{
-  "enabled": true,
-  "excludedDomains": ["touchgal.io", "nav.kungal.com"],
-  "delaySeconds": 3
-}
