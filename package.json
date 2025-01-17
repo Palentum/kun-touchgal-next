@@ -8,7 +8,7 @@
     "dev": "next dev --turbo --hostname=127.0.0.1 --port=3000",
     "build": "next build",
     "build:sitemap": "esno scripts/generateKunSitemap.ts",
-    "postbuild": "node scripts/postbuild.mjs",
+    "postbuild": "esno scripts/postbuild.ts",
     "format": "prettier . --write",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
@@ -16,8 +16,8 @@
     "prisma:generate": "pnpx prisma generate",
     "start": "pm2 start ecosystem.config.js",
     "stop": "pm2 delete kun-touchgal-next",
-    "deploy:install": "pnpm install && pnpx prisma db push && mkdir uploads && chmod 777 uploads",
-    "deploy:run": "git pull && pnpm build && pnpm stop && pnpm start"
+    "deploy:install": "esno scripts/deployInstall.ts",
+    "deploy:run": "git pull && pnpm prisma:push && pnpm build && pnpm stop && pnpm start"
   },
   "author": {
     "name": "KUN1007",
