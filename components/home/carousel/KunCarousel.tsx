@@ -8,7 +8,6 @@ import { KunMobileCard } from './MobileCard'
 import { RandomGalgameButton } from './RandomGalgameButton'
 import { KunHomeNavigationItems } from '../NavigationItems'
 import type { HomeCarouselMetadata } from './mdx'
-import { cn } from '~/utils/cn'
 
 interface KunCarouselProps {
   posts: HomeCarouselMetadata[]
@@ -18,7 +17,6 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
   const [direction, setDirection] = useState(0)
-  const [moving, setMoving] = useState(false)
 
   useEffect(() => {
     if (!isHovered) {
@@ -61,10 +59,7 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
 
   return (
     <div
-      className={cn(
-        'relative h-[300px] rounded-2xl overflow-hidden group touch-pan-y flex items-end transition-shadow',
-        !moving && 'shadow-lg'
-      )}
+      className="relative h-[300px] overflow-hidden group touch-pan-y flex items-end"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -83,9 +78,7 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={1}
-          onDragStart={() => setMoving(true)}
           onDragEnd={(_, { offset, velocity }) => {
-            setMoving(false)
             const swipe = swipePower(offset.x, velocity.x)
 
             if (swipe < -swipeConfidenceThreshold) {

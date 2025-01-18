@@ -14,7 +14,7 @@ export const KunDesktopCard = ({ posts, currentSlide }: Props) => {
   const post = posts[currentSlide]
 
   return (
-    <div className="hidden h-full rounded-2xl sm:block group">
+    <div className="hidden h-full sm:block group">
       <img
         alt={post.title}
         className="object-cover w-full h-full brightness-75 rounded-2xl"

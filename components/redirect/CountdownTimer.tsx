@@ -2,7 +2,8 @@
 
 import { Progress } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
-import * as redirectConfig from '~/config/redirect.json'
+// Do not use `~`
+import * as redirectConfig from '../../config/redirect.json'
 
 interface CountdownTimerProps {
   delay?: number
