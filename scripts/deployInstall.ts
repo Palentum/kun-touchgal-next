@@ -1,10 +1,6 @@
 import { execSync } from 'child_process'
 import { writeFileSync, existsSync, mkdirSync } from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 const runCommand = (command: string) => {
   try {
@@ -36,10 +32,16 @@ const redirectJsonContent = {
 const configDir = path.dirname(redirectJsonPath)
 if (!existsSync(configDir)) {
   mkdirSync(configDir, { recursive: true })
+  console.log(`Created directory: ${configDir}`)
 }
 
 writeFileSync(redirectJsonPath, JSON.stringify(redirectJsonContent, null, 2))
+console.log(`Redirect configuration written to: ${redirectJsonPath}`)
 
-runCommand('chmod 777 config/redirect.json')
-
-console.log('Deployment script executed successfully.')
+if (existsSync(redirectJsonPath)) {
+  console.log('File exists, changing permissions...')
+  runCommand('chmod 777 ' + redirectJsonPath)
+} else {
+  console.error(`Error: ${redirectJsonPath} does not exist.`)
+  process.exit(1)
+}
