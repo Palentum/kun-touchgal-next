@@ -3,9 +3,9 @@
 import { Switch, Input, Button, Card, CardBody, Chip } from '@nextui-org/react'
 import { useState } from 'react'
 import { ExternalLink, Plus } from 'lucide-react'
-import type { AdminRedirectConfig } from '~/types/api/admin'
 import { kunFetchPut } from '~/utils/kunFetch'
 import toast from 'react-hot-toast'
+import type { AdminRedirectConfig } from '~/types/api/admin'
 
 interface Props {
   setting: AdminRedirectConfig

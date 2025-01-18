@@ -9,7 +9,7 @@ import { PatchTag } from './Tag'
 import dynamic from 'next/dynamic'
 import { useMounted } from '~/hooks/useMounted'
 import { KunLink } from '~/components/kun/milkdown/plugins/components/link/KunLink'
-import { KunExternalLink } from '~/components/kun/ExternalLink'
+import { KunExternalLink } from '~/components/kun/external-link/ExternalLink'
 import type { PatchIntroduction } from '~/types/api/patch'
 
 import './_adjust.scss'

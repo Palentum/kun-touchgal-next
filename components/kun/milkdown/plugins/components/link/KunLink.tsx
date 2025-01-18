@@ -2,7 +2,7 @@
 
 import { Card, CardBody, Chip } from '@nextui-org/react'
 import { isValidURL } from '~/utils/validate'
-import { KunExternalLink } from '~/components/kun/ExternalLink'
+import { KunExternalLink } from '~/components/kun/external-link/ExternalLink'
 
 interface KunLinkProps {
   href: string

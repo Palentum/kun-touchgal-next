@@ -16,3 +16,9 @@ export const ADMIN_LOG_TYPE_MAP: Record<string, string> = {
 export const ALLOWED_VIDEO_MIME_TYPES = ['video/mp4', 'video/wmv', 'video/webm']
 
 export const ALLOWED_VIDEO_EXTENSIONS = ['.mp4', '.wmv', '.webm']
+
+export const DEFAULT_REDIRECT_CONFIG = {
+  enabled: true,
+  excludedDomains: ['touchgal.io', 'nav.kungal.com'],
+  delaySeconds: 3
+}

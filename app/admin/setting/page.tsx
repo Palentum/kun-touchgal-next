@@ -9,10 +9,7 @@ export const metadata: Metadata = kunMetadata
 export default async function Kun() {
   const { setting } = await kunServerFetchGet<{
     setting: AdminRedirectConfig
-  }>('/admin/setting/redirect', {
-    page: 1,
-    limit: 30
-  })
+  }>('/admin/setting/redirect')
 
   return <AdminSetting setting={setting} />
 }

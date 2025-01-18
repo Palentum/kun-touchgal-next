@@ -1,6 +1,7 @@
-import { execSync } from 'child_process'
-import { writeFileSync, existsSync, mkdirSync } from 'fs'
 import path from 'path'
+import { writeFileSync, existsSync, mkdirSync } from 'fs'
+import { execSync } from 'child_process'
+import { DEFAULT_REDIRECT_CONFIG } from '~/constants/admin'
 
 const runCommand = (command: string) => {
   try {
@@ -23,11 +24,6 @@ if (!existsSync(uploadsDir)) {
 runCommand('chmod 777 uploads')
 
 const redirectJsonPath = path.join(__dirname, '..', 'config', 'redirect.json')
-const redirectJsonContent = {
-  enabled: true,
-  excludedDomains: ['touchgal.io', 'nav.kungal.com'],
-  delaySeconds: 5
-}
 
 const configDir = path.dirname(redirectJsonPath)
 if (!existsSync(configDir)) {
@@ -35,7 +31,10 @@ if (!existsSync(configDir)) {
   console.log(`Created directory: ${configDir}`)
 }
 
-writeFileSync(redirectJsonPath, JSON.stringify(redirectJsonContent, null, 2))
+writeFileSync(
+  redirectJsonPath,
+  JSON.stringify(DEFAULT_REDIRECT_CONFIG, null, 2)
+)
 console.log(`Redirect configuration written to: ${redirectJsonPath}`)
 
 if (existsSync(redirectJsonPath)) {

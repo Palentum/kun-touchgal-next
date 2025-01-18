@@ -15,13 +15,13 @@ import {
   ModalBody,
   ModalFooter,
   Alert,
-  Spinner
+  Spinner,
+  Link
 } from '@nextui-org/react'
 import { useState } from 'react'
 import { Mail } from 'lucide-react'
 import { emailTemplates } from '~/constants/email/group-templates'
 import { EmailPreview } from './EmailPreview'
-import { KunExternalLink } from '~/components/kun/ExternalLink'
 import { kunFetchPost } from '~/utils/kunFetch'
 import toast from 'react-hot-toast'
 
@@ -113,12 +113,13 @@ export const EmailTemplate = () => {
             />
             <p className="text-sm">
               内容支持 HTML, 可以使用{' '}
-              <KunExternalLink
-                isRequireRedirect={false}
-                link="https://www.wangeditor.com/demo/get-html.html"
+              <Link
+                isExternal
+                showAnchorIcon
+                href="https://www.wangeditor.com/demo/get-html.html"
               >
                 wangEditor
-              </KunExternalLink>
+              </Link>
               进行编辑, 编辑完成后复制下方输出的 HTML 即可
             </p>
           </>
