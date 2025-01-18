@@ -22,7 +22,7 @@ if (!existsSync(uploadsDir)) {
 }
 runCommand('chmod 777 uploads')
 
-const redirectJsonPath = path.join(__dirname, 'config', 'redirect.json')
+const redirectJsonPath = path.join(__dirname, '..', 'config', 'redirect.json')
 const redirectJsonContent = {
   enabled: true,
   excludedDomains: ['touchgal.io', 'nav.kungal.com'],
