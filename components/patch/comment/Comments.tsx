@@ -12,7 +12,7 @@ import { CommentLikeButton } from './CommentLike'
 import { CommentDropdown } from './CommentDropdown'
 import { CommentContent } from './CommentContent'
 import { scrollIntoComment } from './_scrollIntoComment'
-import { useUserStore } from '~/store/providers/user'
+import { useUserStore } from '~/store/userStore'
 import { KunNull } from '~/components/kun/Null'
 import type { PatchComment } from '~/types/api/patch'
 

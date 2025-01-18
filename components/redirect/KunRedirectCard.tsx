@@ -1,36 +1,25 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { kunMoyuMoe } from '~/config/moyu-moe'
 import { Button, Card, CardBody, CardFooter, Snippet } from '@nextui-org/react'
 import { ExternalLink, ShieldAlert } from 'lucide-react'
 import { CountdownTimer } from './CountdownTimer'
 import { useSearchParams } from 'next/navigation'
-import { kunFetchGet } from '~/utils/kunFetch'
-import type { AdminRedirectConfig } from '~/types/api/admin'
+import { useUserStore } from '~/store/userStore'
+import { useMounted } from '~/hooks/useMounted'
 
 export const KunRedirectCard = () => {
-  const [isCountdownComplete, setIsCountdownComplete] = useState(false)
-  // TODO: check link safe
-  const [isUrlSafe] = useState(true)
-
+  const isMounted = useMounted()
   const searchParams = useSearchParams()
+  const userConfig = useUserStore((state) => state.user)
+
+  const [isCountdownComplete, setIsCountdownComplete] = useState(false)
   const url = searchParams.get('url') || kunMoyuMoe.domain.main
 
   const handleRedirect = () => {
     window.location.href = url
   }
-
-  const [redirectConfig, setRedirectConfig] = useState<AdminRedirectConfig>()
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await kunFetchGet<{
-        setting: AdminRedirectConfig
-      }>('/admin/setting/redirect')
-      setRedirectConfig(response.setting)
-    }
-    fetchData()
-  }, [])
 
   return (
     <Card className="w-full max-w-2xl">
@@ -48,16 +37,16 @@ export const KunRedirectCard = () => {
             symbol=""
             size="lg"
             className="w-full overflow-auto"
-            color={isUrlSafe ? 'primary' : 'danger'}
+            color="primary"
             copyIcon={<ExternalLink />}
           >
             {url}
           </Snippet>
         </div>
 
-        {redirectConfig && (
+        {isMounted && (
           <CountdownTimer
-            redirectConfig={redirectConfig}
+            delay={userConfig.delaySeconds}
             onComplete={() => setIsCountdownComplete(true)}
           />
         )}

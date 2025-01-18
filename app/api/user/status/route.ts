@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '~/prisma/index'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
+import { getRedirectConfig } from '~/app/api/admin/setting/redirect/getRedirectConfig'
 import type { UserState } from '~/store/userStore'
 
 export const getStatus = async (uid: number | undefined) => {
@@ -16,6 +17,7 @@ export const getStatus = async (uid: number | undefined) => {
     data: { last_login_time: { set: Date.now().toString() } }
   })
 
+  const redirectConfig = await getRedirectConfig()
   const responseData: UserState = {
     uid: user.id,
     name: user.name,
@@ -26,7 +28,8 @@ export const getStatus = async (uid: number | undefined) => {
     dailyCheckIn: user.daily_check_in,
     dailyImageLimit: user.daily_image_count,
     dailyUploadLimit: user.daily_upload_size,
-    enableEmailNotice: user.enable_email_notice
+    enableEmailNotice: user.enable_email_notice,
+    ...redirectConfig
   }
 
   return responseData

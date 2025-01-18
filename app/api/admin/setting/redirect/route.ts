@@ -1,12 +1,12 @@
-import path from 'path'
-import { promises as fs } from 'fs'
 import { NextRequest, NextResponse } from 'next/server'
 import { kunParsePutBody } from '~/app/api/utils/parseQuery'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { adminUpdateRedirectSchema } from '~/validations/admin'
+import { setKv } from '~/lib/redis'
+import { getRedirectConfig } from './getRedirectConfig'
 import type { AdminRedirectConfig } from '~/types/api/admin'
 
-const configPath = path.join(process.cwd(), 'config/redirect.json')
+const REDIS_KEY = 'admin:config:redirect'
 
 export const GET = async (req: NextRequest) => {
   const payload = await verifyHeaderCookie(req)
@@ -17,14 +17,8 @@ export const GET = async (req: NextRequest) => {
     return NextResponse.json('本页面仅管理员可访问')
   }
 
-  const redirectJsonFile = (await fs.readFile(
-    configPath,
-    'utf8'
-  )) as unknown as string
-
-  const setting = JSON.parse(redirectJsonFile)
-
-  return NextResponse.json({ setting })
+  const config = await getRedirectConfig()
+  return NextResponse.json(config)
 }
 
 export const PUT = async (req: NextRequest) => {
@@ -32,6 +26,7 @@ export const PUT = async (req: NextRequest) => {
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }
+
   const payload = await verifyHeaderCookie(req)
   if (!payload) {
     return NextResponse.json('用户未登录')
@@ -40,10 +35,12 @@ export const PUT = async (req: NextRequest) => {
     return NextResponse.json('本页面仅管理员可访问')
   }
 
-  await fs.writeFile(
-    configPath,
-    JSON.stringify(input as AdminRedirectConfig, null, 2)
-  )
+  console.log(input)
 
+  await setKv(
+    REDIS_KEY,
+    JSON.stringify(input as AdminRedirectConfig),
+    365 * 24 * 60 * 60
+  )
   return NextResponse.json({})
 }

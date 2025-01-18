@@ -5,7 +5,7 @@ import { Chip } from '@nextui-org/chip'
 import { Tooltip } from '@nextui-org/tooltip'
 import { Link } from '@nextui-org/link'
 import { PatchTagSelector } from './PatchTagSelector'
-import { useUserStore } from '~/store/providers/user'
+import { useUserStore } from '~/store/userStore'
 import type { Tag } from '~/types/api/tag'
 
 interface Props {

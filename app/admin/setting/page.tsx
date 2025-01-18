@@ -7,9 +7,9 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = kunMetadata
 
 export default async function Kun() {
-  const { setting } = await kunServerFetchGet<{
-    setting: AdminRedirectConfig
-  }>('/admin/setting/redirect')
+  const setting = await kunServerFetchGet<AdminRedirectConfig>(
+    '/admin/setting/redirect'
+  )
 
   return <AdminSetting setting={setting} />
 }

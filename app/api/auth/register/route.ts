@@ -8,6 +8,7 @@ import { getRemoteIp } from '~/app/api/utils/getRemoteIp'
 import { generateKunToken } from '~/app/api/utils/jwt'
 import { registerSchema } from '~/validations/auth'
 import { prisma } from '~/prisma/index'
+import { getRedirectConfig } from '~/app/api/admin/setting/redirect/getRedirectConfig'
 import type { UserState } from '~/store/userStore'
 
 export const register = async (
@@ -53,6 +54,7 @@ export const register = async (
     maxAge: 30 * 24 * 60 * 60 * 1000
   })
 
+  const redirectConfig = await getRedirectConfig()
   const responseData: UserState = {
     uid: user.id,
     name: user.name,
@@ -63,7 +65,8 @@ export const register = async (
     dailyCheckIn: user.daily_check_in,
     dailyImageLimit: user.daily_image_count,
     dailyUploadLimit: user.daily_upload_size,
-    enableEmailNotice: user.enable_email_notice
+    enableEmailNotice: user.enable_email_notice,
+    ...redirectConfig
   }
   return responseData
 }

@@ -13,7 +13,7 @@ interface Props {
 
 export const RedirectSetting = ({ setting }: Props) => {
   const [delay, setDelay] = useState(setting.delaySeconds)
-  const [isEnabled, setIsEnabled] = useState(setting.enabled)
+  const [isEnabled, setIsEnabled] = useState(setting.enableRedirect)
   const [excludedDomains, setExcludedDomains] = useState<string[]>(
     setting.excludedDomains
   )
@@ -34,7 +34,7 @@ export const RedirectSetting = ({ setting }: Props) => {
   const handleApplyRedirect = async () => {
     setIsSetting(true)
     const res = await kunFetchPut<KunResponse<{}>>('/admin/setting/redirect', {
-      enabled: isEnabled,
+      enableRedirect: isEnabled,
       excludedDomains,
       delaySeconds: delay
     })
@@ -130,7 +130,8 @@ export const RedirectSetting = ({ setting }: Props) => {
         </CardBody>
       </Card>
 
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between">
+        <p className="text-default-500">需要点击应用设置才能使设置生效</p>
         <Button
           variant="shadow"
           color="primary"

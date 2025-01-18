@@ -20,7 +20,7 @@ import { EditTagModal } from './EditTagModel'
 import { useRouter } from 'next-nprogress-bar'
 import { KunUser } from '~/components/kun/floating-card/KunUser'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
-import { useUserStore } from '~/store/providers/user'
+import { useUserStore } from '~/store/userStore'
 
 interface Props {
   initialTag: TagDetail

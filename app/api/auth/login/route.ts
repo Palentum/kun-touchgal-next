@@ -7,6 +7,7 @@ import { generateKunToken } from '~/app/api/utils/jwt'
 import { loginSchema } from '~/validations/auth'
 import { prisma } from '~/prisma/index'
 import { verifyReCAPTCHA } from '~/app/api/utils/verifyReCAPTCHA'
+import { getRedirectConfig } from '~/app/api/admin/setting/redirect/getRedirectConfig'
 import type { UserState } from '~/store/userStore'
 
 export const login = async (input: z.infer<typeof loginSchema>) => {
@@ -45,6 +46,7 @@ export const login = async (input: z.infer<typeof loginSchema>) => {
     maxAge: 30 * 24 * 60 * 60 * 1000
   })
 
+  const redirectConfig = await getRedirectConfig()
   const responseData: UserState = {
     uid: user.id,
     name: user.name,
@@ -55,7 +57,8 @@ export const login = async (input: z.infer<typeof loginSchema>) => {
     dailyCheckIn: user.daily_check_in,
     dailyImageLimit: user.daily_image_count,
     dailyUploadLimit: user.daily_upload_size,
-    enableEmailNotice: user.enable_email_notice
+    enableEmailNotice: user.enable_email_notice,
+    ...redirectConfig
   }
 
   return responseData

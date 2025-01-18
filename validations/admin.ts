@@ -54,7 +54,7 @@ export const adminHandleReportSchema = z.object({
 })
 
 export const adminUpdateRedirectSchema = z.object({
-  enabled: z.coerce.boolean(),
+  enableRedirect: z.coerce.boolean(),
   excludedDomains: z.array(
     z.string().max(500, { message: '单个域名最长 500 个字符' })
   ),

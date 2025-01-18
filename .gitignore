@@ -42,7 +42,7 @@ next-env.d.ts
 # uploads
 /uploads
 
-# baclup
+# backup
 /backup
 
 # sitemap
@@ -52,6 +52,3 @@ next-env.d.ts
 /migration/markdown
 /migration/*.txt
 /migration/*.json
-
-# config
-config/redirect.json

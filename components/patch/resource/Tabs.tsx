@@ -13,7 +13,7 @@ import {
   Tab
 } from '@nextui-org/react'
 import { Edit, MoreHorizontal, Trash2 } from 'lucide-react'
-import { useUserStore } from '~/store/providers/user'
+import { useUserStore } from '~/store/userStore'
 import { ResourceInfo } from './ResourceInfo'
 import { ResourceDownload } from './ResourceDownload'
 import {

@@ -60,7 +60,7 @@ export interface AdminLog {
 }
 
 export interface AdminRedirectConfig {
-  enabled: boolean
+  enableRedirect: boolean
   excludedDomains: string[]
   delaySeconds: number
 }

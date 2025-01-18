@@ -22,7 +22,7 @@ import {
 } from '~/utils/kunFetch'
 import toast from 'react-hot-toast'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
-import { useUserStore } from '~/store/providers/user'
+import { useUserStore } from '~/store/userStore'
 import { convert } from 'html-to-text'
 import type { PatchComment } from '~/types/api/patch'
 

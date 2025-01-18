@@ -11,7 +11,7 @@ import {
   GALGAME_AGE_LIMIT_DETAIL,
   GALGAME_AGE_LIMIT_MAP
 } from '~/constants/galgame'
-import { useUserStore } from '~/store/providers/user'
+import { useUserStore } from '~/store/userStore'
 import { Download } from 'lucide-react'
 import type { Patch } from '~/types/api/patch'
 

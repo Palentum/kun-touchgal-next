@@ -1,4 +1,5 @@
-// import path from 'path'
+import path from 'path'
+import { config } from 'dotenv'
 // import { fileURLToPath } from 'url'
 import { env } from './validations/dotenv-check'
 import createMDX from '@next/mdx'
@@ -10,6 +11,9 @@ import type { NextConfig } from 'next'
 
 // const __filename = fileURLToPath(import.meta.url)
 // const __dirname = path.dirname(__filename)
+
+const envPath = path.resolve(__dirname, '.env')
+config({ path: envPath })
 
 const nextConfig: NextConfig = {
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],

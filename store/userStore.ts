@@ -1,4 +1,4 @@
-import { createStore } from 'zustand/vanilla'
+import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
 export interface UserState {
@@ -12,6 +12,10 @@ export interface UserState {
   dailyImageLimit: number
   dailyUploadLimit: number
   enableEmailNotice: boolean
+
+  enableRedirect: boolean
+  excludedDomains: string[]
+  delaySeconds: number
 }
 
 export interface UserStore {
@@ -30,21 +34,23 @@ const initialUserStore: UserState = {
   dailyCheckIn: 1,
   dailyImageLimit: 0,
   dailyUploadLimit: 0,
-  enableEmailNotice: false
+  enableEmailNotice: false,
+
+  enableRedirect: true,
+  excludedDomains: [],
+  delaySeconds: 5
 }
 
-export const createUserStore = (initState: UserState = initialUserStore) => {
-  return createStore<UserStore>()(
-    persist(
-      (set) => ({
-        user: initState,
-        setUser: (user: UserState) => set({ user }),
-        logout: () => set({ user: initState })
-      }),
-      {
-        name: 'kun-patch-user-store',
-        storage: createJSONStorage(() => localStorage)
-      }
-    )
+export const useUserStore = create<UserStore>()(
+  persist(
+    (set) => ({
+      user: initialUserStore,
+      setUser: (user: UserState) => set({ user }),
+      logout: () => set({ user: initialUserStore })
+    }),
+    {
+      name: 'kun-patch-user-store',
+      storage: createJSONStorage(() => localStorage)
+    }
   )
-}
+)

@@ -23,7 +23,7 @@ import { ResourceSectionSelect } from './ResourceSectionSelect'
 import { Upload } from 'lucide-react'
 import { FileUploadContainer } from '../upload/FileUploadContainer'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
-import { useUserStore } from '~/store/providers/user'
+import { useUserStore } from '~/store/userStore'
 import { KunReCaptchaProvider } from '~/components/kun/ReCaptchaProvider'
 import type { PatchResource } from '~/types/api/patch'
 
