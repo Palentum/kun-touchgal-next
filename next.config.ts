@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: process.env.KUN_VISUAL_NOVEL_IMAGE_BED_HOST!,
+        hostname: env.data!.KUN_VISUAL_NOVEL_IMAGE_BED_HOST,
         port: '',
         pathname: '/**'
       },

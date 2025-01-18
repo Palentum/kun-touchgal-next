@@ -35,8 +35,6 @@ export const PUT = async (req: NextRequest) => {
     return NextResponse.json('本页面仅管理员可访问')
   }
 
-  console.log(input)
-
   await setKv(
     REDIS_KEY,
     JSON.stringify(input as AdminRedirectConfig),

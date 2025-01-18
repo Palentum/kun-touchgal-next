@@ -2,7 +2,6 @@
 
 import { Progress } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
-import { useUserStore } from '~/store/userStore'
 
 interface CountdownTimerProps {
   delay: number
@@ -10,8 +9,6 @@ interface CountdownTimerProps {
 }
 
 export const CountdownTimer = ({ delay, onComplete }: CountdownTimerProps) => {
-  console.log(delay)
-
   const [timeLeft, setTimeLeft] = useState(delay)
   const progress = ((delay - timeLeft) / delay) * 100
 
