@@ -15,6 +15,7 @@ import { kunFetchDelete, kunFetchGet } from '~/utils/kunFetch'
 import { PublishResource } from './publish/PublishResource'
 import { EditResourceDialog } from './edit/EditResourceDialog'
 import { ResourceTabs } from './Tabs'
+import { KunLoading } from '~/components/kun/Loading'
 import toast from 'react-hot-toast'
 import type { PatchResource } from '~/types/api/patch'
 
@@ -23,12 +24,15 @@ interface Props {
 }
 
 export const Resources = ({ id }: Props) => {
+  const [loading, setLoading] = useState(false)
   const [resources, setResources] = useState<PatchResource[]>([])
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true)
       const res = await kunFetchGet<PatchResource[]>('/patch/resource', {
         patchId: Number(id)
       })
+      setLoading(false)
       setResources(res)
     }
     fetchData()
@@ -83,13 +87,17 @@ export const Resources = ({ id }: Props) => {
         </Button>
       </div>
 
-      <ResourceTabs
-        resources={resources}
-        setEditResource={setEditResource}
-        onOpenEdit={onOpenEdit}
-        onOpenDelete={onOpenDelete}
-        setDeleteResourceId={setDeleteResourceId}
-      />
+      {loading ? (
+        <KunLoading hint="正在获取 Galgame 资源数据..." />
+      ) : (
+        <ResourceTabs
+          resources={resources}
+          setEditResource={setEditResource}
+          onOpenEdit={onOpenEdit}
+          onOpenDelete={onOpenDelete}
+          setDeleteResourceId={setDeleteResourceId}
+        />
+      )}
 
       <Modal
         size="3xl"
