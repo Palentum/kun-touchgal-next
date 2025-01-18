@@ -6,7 +6,7 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { adminUpdateRedirectSchema } from '~/validations/admin'
 import type { AdminRedirectConfig } from '~/types/api/admin'
 
-const configPath = path.resolve(__dirname, 'config/redirect.json')
+const configPath = path.join(process.cwd(), 'config/redirect.json')
 
 export const GET = async (req: NextRequest) => {
   const payload = await verifyHeaderCookie(req)

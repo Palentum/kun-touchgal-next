@@ -1,11 +1,9 @@
-const path = require('path')
-
 module.exports = {
   apps: [
     {
       name: 'kun-touchgal-next',
       port: 3000,
-      cwd: path.join(__dirname),
+      cwd: '.',
       instances: 1,
       autorestart: true,
       watch: false,
