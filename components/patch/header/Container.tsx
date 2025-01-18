@@ -39,6 +39,7 @@ export const PatchHeaderContainer = ({ patch, intro }: PatchHeaderProps) => {
     <>
       <div className="relative h-[380px] sm:h-[512px] w-full">
         <KunAutoImageViewer />
+        {/* Why use unoptimized? Production env unknown error */}
         <Image
           src={patch.banner}
           alt={patch.name}
@@ -46,6 +47,7 @@ export const PatchHeaderContainer = ({ patch, intro }: PatchHeaderProps) => {
           fill
           sizes="100vw"
           priority
+          unoptimized
         />
 
         <PatchHeader patch={patch} />
