@@ -2,18 +2,18 @@
 
 import { Progress } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
-// Do not use `~`
-import * as redirectConfig from '../../config/redirect.json'
+import type { AdminRedirectConfig } from '~/types/api/admin'
 
 interface CountdownTimerProps {
-  delay?: number
+  redirectConfig: AdminRedirectConfig
   onComplete: () => void
 }
 
 export const CountdownTimer = ({
-  delay = redirectConfig.delaySeconds,
+  redirectConfig,
   onComplete
 }: CountdownTimerProps) => {
+  const delay = redirectConfig.delaySeconds
   const [timeLeft, setTimeLeft] = useState(delay)
   const progress = ((delay - timeLeft) / delay) * 100
 

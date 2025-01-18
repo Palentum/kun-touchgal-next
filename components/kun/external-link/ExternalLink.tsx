@@ -1,9 +1,11 @@
 'use client'
 
 import { Link } from '@nextui-org/link'
-// Do not use `~`
-import * as redirectConfig from '../../../config/redirect.json'
+import { useEffect, useState } from 'react'
+import { kunFetchGet } from '~/utils/kunFetch'
+import { DEFAULT_REDIRECT_CONFIG } from '~/constants/admin'
 import type { ReactNode } from 'react'
+import type { AdminRedirectConfig } from '~/types/api/admin'
 
 interface Props {
   link: string
@@ -19,6 +21,19 @@ export const KunExternalLink = ({
   showAnchorIcon = true
 }: Props) => {
   const encodeLink = encodeURIComponent(link)
+  const [redirectConfig, setRedirectConfig] = useState<AdminRedirectConfig>(
+    DEFAULT_REDIRECT_CONFIG
+  )
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await kunFetchGet<{
+        setting: AdminRedirectConfig
+      }>('/admin/setting/redirect')
+      setRedirectConfig(response.setting)
+    }
+    fetchData()
+  }, [])
 
   const urlHref = () => {
     const isExcludedDomain = redirectConfig.excludedDomains.some((domain) =>

@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { kunMoyuMoe } from '~/config/moyu-moe'
 import { Button, Card, CardBody, CardFooter, Snippet } from '@nextui-org/react'
 import { ExternalLink, ShieldAlert } from 'lucide-react'
 import { CountdownTimer } from './CountdownTimer'
 import { useSearchParams } from 'next/navigation'
+import { kunFetchGet } from '~/utils/kunFetch'
+import type { AdminRedirectConfig } from '~/types/api/admin'
 
 export const KunRedirectCard = () => {
   const [isCountdownComplete, setIsCountdownComplete] = useState(false)
@@ -18,6 +20,17 @@ export const KunRedirectCard = () => {
   const handleRedirect = () => {
     window.location.href = url
   }
+
+  const [redirectConfig, setRedirectConfig] = useState<AdminRedirectConfig>()
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await kunFetchGet<{
+        setting: AdminRedirectConfig
+      }>('/admin/setting/redirect')
+      setRedirectConfig(response.setting)
+    }
+    fetchData()
+  }, [])
 
   return (
     <Card className="w-full max-w-2xl">
@@ -42,7 +55,12 @@ export const KunRedirectCard = () => {
           </Snippet>
         </div>
 
-        <CountdownTimer onComplete={() => setIsCountdownComplete(true)} />
+        {redirectConfig && (
+          <CountdownTimer
+            redirectConfig={redirectConfig}
+            onComplete={() => setIsCountdownComplete(true)}
+          />
+        )}
       </CardBody>
 
       <CardFooter className="justify-center">
