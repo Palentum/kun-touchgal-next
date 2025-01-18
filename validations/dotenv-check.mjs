@@ -2,14 +2,22 @@ import { z } from 'zod'
 
 const envSchema = z.object({
   KUN_DATABASE_URL: z.string().url(),
+  WALINE_DATABASE_URL: z.string().url(),
+
+  KUN_VISUAL_NOVEL_SITE_URL: z.string().url(),
+
   NEXT_PUBLIC_KUN_PATCH_ADDRESS_DEV: z.string(),
   NEXT_PUBLIC_KUN_PATCH_ADDRESS_PROD: z.string(),
+
   REDIS_HOST: z.string(),
   REDIS_PORT: z.string(),
+
   JWT_ISS: z.string(),
   JWT_AUD: z.string(),
   JWT_SECRET: z.string(),
+
   NODE_ENV: z.enum(['development', 'test', 'production']),
+
   KUN_VISUAL_NOVEL_EMAIL_FROM: z.string(),
   KUN_VISUAL_NOVEL_EMAIL_HOST: z.string(),
   KUN_VISUAL_NOVEL_EMAIL_PORT: z.string(),
@@ -23,6 +31,10 @@ const envSchema = z.object({
   KUN_VISUAL_NOVEL_S3_STORAGE_REGION: z.string(),
   KUN_VISUAL_NOVEL_S3_STORAGE_URL: z.string(),
 
+  NEXT_PUBLIC_KUN_RECAPTCHA_SITE_KEY: z.string(),
+  KUN_RECAPTCHA_SECRET_KEY: z.string(),
+
+  KUN_VISUAL_NOVEL_IMAGE_BED_HOST: z.string(),
   KUN_VISUAL_NOVEL_IMAGE_BED_URL: z.string()
 })
 

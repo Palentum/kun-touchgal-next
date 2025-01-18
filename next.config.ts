@@ -28,13 +28,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'sticker.kungal.com',
-        port: '',
-        pathname: '/**'
-      },
-      {
-        protocol: 'https',
-        hostname: 'touchgal-image.moyu.moe',
+        hostname: process.env.KUN_VISUAL_NOVEL_IMAGE_BED_HOST!,
         port: '',
         pathname: '/**'
       },
