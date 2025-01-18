@@ -3,7 +3,6 @@
 import { Link } from '@nextui-org/link'
 import { useEffect, useState } from 'react'
 import { kunFetchGet } from '~/utils/kunFetch'
-import { useMounted } from '~/hooks/useMounted'
 import { DEFAULT_REDIRECT_CONFIG } from '~/constants/admin'
 import type { ReactNode } from 'react'
 import type { AdminRedirectConfig } from '~/types/api/admin'
@@ -22,15 +21,11 @@ export const KunExternalLink = ({
   showAnchorIcon = true
 }: Props) => {
   const encodeLink = encodeURIComponent(link)
-  const isMounted = useMounted()
   const [redirectConfig, setRedirectConfig] = useState<AdminRedirectConfig>(
     DEFAULT_REDIRECT_CONFIG
   )
 
   useEffect(() => {
-    if (!isMounted) {
-      return
-    }
     const fetchData = async () => {
       const response = await kunFetchGet<{
         setting: AdminRedirectConfig
