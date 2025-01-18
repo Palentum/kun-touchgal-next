@@ -17,7 +17,7 @@
     "start": "pm2 start ecosystem.config.js",
     "stop": "pm2 delete kun-touchgal-next",
     "deploy:install": "esno scripts/deployInstall.ts",
-    "deploy:run": "git pull && pnpm prisma:push && pnpm build && pnpm stop && pnpm start"
+    "deploy:build": "esno scripts/deployBuild.ts"
   },
   "author": {
     "name": "KUN1007",
