@@ -9,6 +9,7 @@ export interface HomeCarouselMetadata {
   date: string
   authorName: string
   authorAvatar: string
+  pin: boolean
   directory: string
   link: string
 }
@@ -35,6 +36,10 @@ export const getKunPosts = (): HomeCarouselMetadata[] => {
         const fileContents = fs.readFileSync(filePath, 'utf8')
         const { data } = matter(fileContents)
 
+        if (!data.pin) {
+          return
+        }
+
         const parentDirectory = path.basename(path.dirname(filePath))
         const fileName = path.basename(file, '.mdx')
 
@@ -45,6 +50,7 @@ export const getKunPosts = (): HomeCarouselMetadata[] => {
           date: new Date(data.date).toISOString(),
           authorName: data.authorName,
           authorAvatar: data.authorAvatar,
+          pin: data.pin,
           directory: parentDirectory,
           link: `/doc/${parentDirectory}/${fileName}`
         })

@@ -25,6 +25,7 @@ export interface KunFrontmatter {
   authorName: string
   authorAvatar: string
   authorHomepage: string
+  pin: boolean
 }
 
 export interface KunBlog {
