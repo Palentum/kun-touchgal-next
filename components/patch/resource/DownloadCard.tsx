@@ -2,11 +2,11 @@
 
 import { Snippet } from '@nextui-org/snippet'
 import { Chip } from '@nextui-org/chip'
-import { Link } from '@nextui-org/link'
 import { Cloud, Link as LinkIcon, Database } from 'lucide-react'
 import { Microsoft } from '~/components/kun/icons/Microsoft'
 import { SUPPORTED_RESOURCE_LINK_MAP } from '~/constants/resource'
 import { kunFetchPut } from '~/utils/kunFetch'
+import { KunExternalLink } from '~/components/kun/external-link/ExternalLink'
 import type { JSX } from 'react'
 import type { PatchResource } from '~/types/api/patch'
 
@@ -51,15 +51,13 @@ export const ResourceDownloadCard = ({ resource }: Props) => {
 
       {resource.content.split(',').map((link) => (
         <div key={Math.random()} className="space-y-2">
-          <Link
-            isExternal
+          <KunExternalLink
             onPress={handleClickDownload}
             underline="always"
-            className="block overflow-auto whitespace-normal"
-            href={link}
+            link={link}
           >
             {link}
-          </Link>
+          </KunExternalLink>
 
           {resource.storage === 's3' && (
             <>
