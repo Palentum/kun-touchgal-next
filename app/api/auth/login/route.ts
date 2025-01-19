@@ -21,7 +21,7 @@ export const login = async (input: z.infer<typeof loginSchema>) => {
   const user = await prisma.user.findFirst({
     where: {
       OR: [
-        { email: normalizedName },
+        { email: { equals: normalizedName, mode: 'insensitive' } },
         { name: { equals: normalizedName, mode: 'insensitive' } }
       ]
     }
