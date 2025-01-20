@@ -11,7 +11,7 @@ const prisma = new PrismaClient()
 // 用户 ID, 根据生产环境的实际 uid 确定
 const USER_ID = 1
 // 处理文件最大并发数
-const MAX_CONCURRENT = 70
+const MAX_CONCURRENT = 20
 
 // 文件夹路径
 const __filename = fileURLToPath(import.meta.url)
@@ -259,42 +259,37 @@ const withExponentialBackoff = async (
 }
 
 const createTags = async (tags) => {
-  return await prisma.$transaction(async (prisma) => {
-    const tagIds = []
+  return await withExponentialBackoff(async () => {
+    return await prisma.$transaction(async (prisma) => {
+      const tagIds = await Promise.all(
+        tags.map(async (tagName) => {
+          const name = tagName.toString()
+          const existingTag = await prisma.patch_tag.findFirst({
+            where: { name }
+          })
+          if (existingTag) {
+            return existingTag.id
+          }
 
-    // Note: cannot use Promise.all
-    for (const tagName of tags) {
-      const name = tagName.toString()
+          const newTag = await prisma.patch_tag.create({
+            data: {
+              user_id: USER_ID,
+              name,
+              introduction: '',
+              alias: []
+            },
+            select: {
+              id: true,
+              name: true
+            }
+          })
+          return newTag.id
+        })
+      )
 
-      const existingTag = await prisma.patch_tag.findFirst({
-        where: {
-          OR: [{ name }, { alias: { has: name } }]
-        }
-      })
-
-      if (existingTag) {
-        tagIds.push(existingTag.id)
-        return
-      }
-
-      const newTag = await prisma.patch_tag.create({
-        data: {
-          user_id: USER_ID,
-          name,
-          introduction: '',
-          alias: []
-        },
-        select: {
-          id: true
-        }
-      })
-      console.log(`已创建新标签 - ID: ${newTag.id} - NAME: ${newTag.name}`)
-
-      tagIds.push(newTag.id)
-    }
-
-    return tagIds.filter((id) => id !== undefined)
-  })
+      return tagIds.filter((id) => id !== undefined)
+    })
+  }, 'createTags')
 }
 
 const linkTagsToPatch = async (tagIds, patchId) => {
