@@ -1,4 +1,3 @@
-import path from 'path'
 import { existsSync, mkdirSync } from 'fs'
 import { execSync } from 'child_process'
 
@@ -16,8 +15,7 @@ runCommand('pnpm install')
 
 runCommand('pnpx prisma db push')
 
-const uploadsDir = path.join(__dirname, 'uploads')
-if (!existsSync(uploadsDir)) {
-  mkdirSync(uploadsDir)
+if (!existsSync('./uploads')) {
+  mkdirSync('./uploads')
 }
 runCommand('chmod 777 uploads')
