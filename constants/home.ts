@@ -17,7 +17,7 @@ export const homeNavigationItems: HomeNavItem[] = [
   {
     icon: Tags,
     label: '标签',
-    href: '/docs',
+    href: '/tags',
     color: 'primary',
     isExternal: false
   },

@@ -25,7 +25,7 @@ const formatStats = (stats: AdminStats[]) => {
         icon = Gamepad2
         break
       case 'patch':
-        title = '补丁总数量'
+        title = '资源总数量'
         icon = Puzzle
         break
       case 'comment':
