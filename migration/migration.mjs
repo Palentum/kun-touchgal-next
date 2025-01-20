@@ -259,41 +259,39 @@ const withExponentialBackoff = async (
 }
 
 const createTags = async (tags) => {
-  return await withExponentialBackoff(async () => {
-    return await prisma.$transaction(async (prisma) => {
-      const tagIds = []
+  return await prisma.$transaction(async (prisma) => {
+    const tagIds = []
 
-      // Note: cannot use Promise.all
-      for (const tagName of tags) {
-        const name = tagName.toString()
+    // Note: cannot use Promise.all
+    for (const tagName of tags) {
+      const name = tagName.toString()
 
-        const existingTag = await prisma.patch_tag.findFirst({
-          where: {
-            OR: [{ name }, { alias: { has: name } }]
+      const existingTag = await prisma.patch_tag.findFirst({
+        where: {
+          OR: [{ name }, { alias: { has: name } }]
+        }
+      })
+
+      if (existingTag) {
+        tagIds.push(existingTag.id)
+      } else {
+        const newTag = await prisma.patch_tag.create({
+          data: {
+            user_id: USER_ID,
+            name,
+            introduction: '',
+            alias: []
+          },
+          select: {
+            id: true
           }
         })
-
-        if (existingTag) {
-          tagIds.push(existingTag.id)
-        } else {
-          const newTag = await prisma.patch_tag.create({
-            data: {
-              user_id: USER_ID,
-              name,
-              introduction: '',
-              alias: []
-            },
-            select: {
-              id: true
-            }
-          })
-          tagIds.push(newTag.id)
-        }
+        tagIds.push(newTag.id)
       }
+    }
 
-      return tagIds.filter((id) => id !== undefined)
-    })
-  }, 'createTags')
+    return tagIds.filter((id) => id !== undefined)
+  })
 }
 
 const linkTagsToPatch = async (tagIds, patchId) => {
