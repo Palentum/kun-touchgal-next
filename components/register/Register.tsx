@@ -58,7 +58,7 @@ export const RegisterForm = () => {
   }
 
   return (
-    <form className="flex flex-col w-72">
+    <form className="flex flex-col space-y-4 w-72">
       <Controller
         name="name"
         control={control}
@@ -72,7 +72,6 @@ export const RegisterForm = () => {
             autoComplete="username"
             isInvalid={!!errors.name}
             errorMessage={errors.name?.message}
-            className="mb-4"
           />
         )}
       />
@@ -89,7 +88,6 @@ export const RegisterForm = () => {
             autoComplete="email"
             isInvalid={!!errors.email}
             errorMessage={errors.email?.message}
-            className="mb-4"
           />
         )}
       />
@@ -106,7 +104,6 @@ export const RegisterForm = () => {
             isInvalid={!!errors.code}
             errorMessage={errors.code?.message}
             autoComplete="one-time-code"
-            className="mb-4"
             endContent={
               <VerificationCodeProvider
                 username={watch().name}
@@ -130,21 +127,18 @@ export const RegisterForm = () => {
             autoComplete="current-password"
             isInvalid={!!errors.password}
             errorMessage={errors.password?.message}
-            className="mb-4"
           />
         )}
       />
 
-      <Checkbox
-        className="mb-2"
-        isSelected={isAgree}
-        onValueChange={setIsAgree}
-      >
-        <span>我同意</span>
+      <div>
+        <Checkbox isSelected={isAgree} onValueChange={setIsAgree}>
+          <span>我同意</span>
+        </Checkbox>
         <Link className="ml-1" href="/about/notice/privacy">
           {kunMoyuMoe.titleShort} 用户协议
         </Link>
-      </Checkbox>
+      </div>
 
       <Button
         color="primary"
