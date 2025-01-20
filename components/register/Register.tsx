@@ -135,7 +135,7 @@ export const RegisterForm = () => {
         <Checkbox isSelected={isAgree} onValueChange={setIsAgree}>
           <span>我同意</span>
         </Checkbox>
-        <Link className="ml-1" href="/about/notice/privacy">
+        <Link className="ml-1" href="/doc/notice/privacy">
           {kunMoyuMoe.titleShort} 用户协议
         </Link>
       </div>
