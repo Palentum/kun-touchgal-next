@@ -78,5 +78,5 @@ export const sendEmailHTML = async (
     html: content
   }
 
-  transporter.sendMail(mailOptions)
+  await transporter.sendMail(mailOptions)
 }

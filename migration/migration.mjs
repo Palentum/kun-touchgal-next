@@ -274,20 +274,23 @@ const createTags = async (tags) => {
 
       if (existingTag) {
         tagIds.push(existingTag.id)
-      } else {
-        const newTag = await prisma.patch_tag.create({
-          data: {
-            user_id: USER_ID,
-            name,
-            introduction: '',
-            alias: []
-          },
-          select: {
-            id: true
-          }
-        })
-        tagIds.push(newTag.id)
+        return
       }
+
+      const newTag = await prisma.patch_tag.create({
+        data: {
+          user_id: USER_ID,
+          name,
+          introduction: '',
+          alias: []
+        },
+        select: {
+          id: true
+        }
+      })
+      console.log(`已创建新标签 - ID: ${newTag.id} - NAME: ${newTag.name}`)
+
+      tagIds.push(newTag.id)
     }
 
     return tagIds.filter((id) => id !== undefined)

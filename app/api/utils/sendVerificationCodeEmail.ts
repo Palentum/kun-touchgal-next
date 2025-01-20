@@ -48,5 +48,5 @@ export const sendVerificationCodeEmail = async (
     html: createKunVerificationEmailTemplate(type, code)
   }
 
-  transporter.sendMail(mailOptions)
+  await transporter.sendMail(mailOptions)
 }
