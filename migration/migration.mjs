@@ -11,7 +11,7 @@ const prisma = new PrismaClient()
 // 用户 ID, 根据生产环境的实际 uid 确定
 const USER_ID = 1
 // 处理文件最大并发数
-const MAX_CONCURRENT = 20
+const MAX_CONCURRENT = 70
 
 // 文件夹路径
 const __filename = fileURLToPath(import.meta.url)
@@ -105,13 +105,13 @@ const processMarkdownFile = async (filePath, contentLimit) => {
     })
 
     // 上传 Banner 并更新记录
-    const bannerLink = await uploadImageFromURL(banner, patch.id)
-    console.log(bannerLink)
+    // const bannerLink = await uploadImageFromURL(banner, patch.id)
+    // console.log(bannerLink)
 
-    await prisma.patch.update({
-      where: { id: patch.id },
-      data: { banner: bannerLink }
-    })
+    // await prisma.patch.update({
+    //   where: { id: patch.id },
+    //   data: { banner: bannerLink }
+    // })
 
     // 创建标签并建立关联
     await createAndLinkTags(tags, patch.id)
@@ -244,14 +244,13 @@ const withExponentialBackoff = async (
       return await fn()
     } catch (error) {
       if (attempt < retries - 1) {
-        // 指数退避 + 随机抖动
         const backoff = delay * Math.pow(2, attempt) + Math.random() * delay
         console.warn(
           `Attempt ${attempt + 1} failed. ${name} Retrying in ${Math.round(backoff)}ms...`
         )
         await sleep(backoff)
       } else {
-        console.error(`All ${retries} retries failed.`)
+        console.error(`All ${retries} attempts failed.`)
         throw error
       }
     }
@@ -261,40 +260,41 @@ const withExponentialBackoff = async (
 const createTags = async (tags) => {
   return await withExponentialBackoff(async () => {
     return await prisma.$transaction(async (prisma) => {
-      const tagIds = await Promise.all(
-        tags.map(async (tagName) => {
-          const name = tagName.toString()
-          const existingTag = await prisma.patch_tag.findFirst({
-            where: { name }
-          })
-          if (existingTag) {
-            return existingTag.id
-          }
+      const tagsData = tags.map((tagName) => ({
+        user_id: USER_ID,
+        name: tagName.toString(),
+        introduction: '',
+        alias: []
+      }))
 
-          const newTag = await prisma.patch_tag.create({
-            data: {
-              user_id: USER_ID,
-              name,
-              introduction: '',
-              alias: []
-            },
-            select: {
-              id: true,
-              name: true
-            }
-          })
-          return newTag.id
-        })
-      )
+      await prisma.patch_tag.createMany({
+        data: tagsData,
+        skipDuplicates: true
+      })
 
-      return tagIds.filter((id) => id !== undefined)
+      const tagIds = await prisma.patch_tag.findMany({
+        where: {
+          name: { in: tags.map((t) => t.toString()) }
+        },
+        select: { id: true }
+      })
+
+      return tagIds.map((tag) => tag.id)
     })
   }, 'createTags')
 }
 
 const linkTagsToPatch = async (tagIds, patchId) => {
-  if (tagIds.length) {
-    const relationData = tagIds.map((tagId) => ({
+  if (!tagIds.length) return
+
+  const BATCH_SIZE = 5
+  const batches = []
+  for (let i = 0; i < tagIds.length; i += BATCH_SIZE) {
+    batches.push(tagIds.slice(i, i + BATCH_SIZE))
+  }
+
+  for (const batchTagIds of batches) {
+    const relationData = batchTagIds.map((tagId) => ({
       patch_id: patchId,
       tag_id: tagId
     }))
@@ -302,13 +302,27 @@ const linkTagsToPatch = async (tagIds, patchId) => {
     await withExponentialBackoff(async () => {
       await prisma.$transaction(
         async (prisma) => {
-          await prisma.patch_tag_relation.createMany({ data: relationData })
-          await prisma.patch_tag.updateMany({
-            where: { id: { in: tagIds } },
-            data: { count: { increment: 1 } }
+          const currentTags = await prisma.patch_tag.findMany({
+            where: { id: { in: batchTagIds } },
+            select: { id: true, count: true }
           })
+
+          await prisma.patch_tag_relation.createMany({
+            data: relationData,
+            skipDuplicates: true
+          })
+
+          for (const tag of currentTags) {
+            await prisma.patch_tag.update({
+              where: { id: tag.id },
+              data: { count: tag.count + 1 }
+            })
+          }
         },
-        { timeout: 60000 }
+        {
+          timeout: 60000,
+          isolationLevel: 'Serializable'
+        }
       )
     }, 'linkTagsToPatch')
   }
