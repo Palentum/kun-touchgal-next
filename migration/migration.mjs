@@ -105,13 +105,13 @@ const processMarkdownFile = async (filePath, contentLimit) => {
     })
 
     // 上传 Banner 并更新记录
-    // const bannerLink = await uploadImageFromURL(banner, patch.id)
-    // console.log(bannerLink)
+    const bannerLink = await uploadImageFromURL(banner, patch.id)
+    console.log(bannerLink)
 
-    // await prisma.patch.update({
-    //   where: { id: patch.id },
-    //   data: { banner: bannerLink }
-    // })
+    await prisma.patch.update({
+      where: { id: patch.id },
+      data: { banner: bannerLink }
+    })
 
     // 创建标签并建立关联
     await createAndLinkTags(tags, patch.id)
