@@ -6,6 +6,7 @@ import { Plus } from 'lucide-react'
 import { CreateTagModal } from '~/components/tag/CreateTagModal'
 import { KunHeader } from '../kun/Header'
 import type { Tag as TagType } from '~/types/api/tag'
+import { useUserStore } from '~/store/userStore'
 
 interface Props {
   setNewTag: (tag: TagType) => void
@@ -13,6 +14,7 @@ interface Props {
 
 export const TagHeader = ({ setNewTag }: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const user = useUserStore((state) => state.user)
 
   return (
     <>
@@ -20,9 +22,13 @@ export const TagHeader = ({ setNewTag }: Props) => {
         name="标签列表"
         description="这里是本站 Galgame 中的所有标签"
         headerEndContent={
-          <Button color="primary" onPress={onOpen} startContent={<Plus />}>
-            创建标签
-          </Button>
+          <>
+            {user.role > 2 && (
+              <Button color="primary" onPress={onOpen} startContent={<Plus />}>
+                创建标签
+              </Button>
+            )}
+          </>
         }
       />
 
