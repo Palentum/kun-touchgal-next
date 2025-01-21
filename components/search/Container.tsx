@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Input } from '@nextui-org/input'
-import { Checkbox } from '@nextui-org/react'
+import { Checkbox, Link } from '@nextui-org/react'
 import { Pagination } from '@nextui-org/pagination'
 import { KunLoading } from '~/components/kun/Loading'
 import { KunMasonryGrid } from '~/components/kun/MasonryGrid'
@@ -137,9 +137,12 @@ export const SearchPage = () => {
           />
         </div>
 
-        <p className="text-sm text-default-500">
-          搜索默认搜索游戏标题, 您可以选择性的添加游戏属性进行搜索
-        </p>
+        <div className="text-sm text-default-500">
+          搜索默认搜索游戏标题, 您可以选择性的添加游戏属性进行搜索, 您也可以
+          <Link href="/tag" size="sm" underline="always">
+            前往多标签搜索
+          </Link>
+        </div>
         <div className="flex flex-wrap gap-3">
           <Checkbox
             isSelected={searchData.searchInIntroduction}
