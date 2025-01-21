@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getKv, setKv } from '~/lib/redis'
 import type { AdminStats } from '~/types/api/admin'
 import {
   getCommentStats,
@@ -8,15 +7,7 @@ import {
   getUserStats
 } from './stats'
 
-const CACHE_KEY = 'admin:stats'
-
 export const getAdminStats = async () => {
-  const cachedStats = await getKv(CACHE_KEY)
-
-  if (cachedStats) {
-    return JSON.parse(cachedStats)
-  }
-
   const today = new Date()
   const yesterday = new Date(today)
   yesterday.setDate(yesterday.getDate() - 1)
@@ -64,8 +55,6 @@ export const getAdminStats = async () => {
       change: todayComments - yesterdayComments
     }
   ]
-
-  await setKv(CACHE_KEY, JSON.stringify(stats), 60 * 60)
 
   return stats
 }

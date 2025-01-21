@@ -36,7 +36,7 @@ export const getComment = async (
         }
       }
     }),
-    await prisma.patch.count()
+    await prisma.patch_comment.count()
   ])
 
   const comments: AdminComment[] = data.map((comment) => ({
