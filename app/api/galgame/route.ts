@@ -16,9 +16,9 @@ export const getGalgame = async (
   nsfwEnable: Record<string, string | undefined>
 ) => {
   const {
-    selectedType,
-    selectedLanguage,
-    selectedPlatform,
+    selectedType = 'all',
+    selectedLanguage = 'all',
+    selectedPlatform = 'all',
     sortField,
     sortOrder,
     page,

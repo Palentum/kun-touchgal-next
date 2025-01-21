@@ -61,7 +61,12 @@ export const FilterBar = ({
             placeholder="选择类型"
             selectedKeys={[selectedType]}
             className="max-w-xs"
-            onChange={(event) => setSelectedType(event.target.value)}
+            onChange={(event) => {
+              if (!event.target.value) {
+                return
+              }
+              setSelectedType(event.target.value)
+            }}
             startContent={<Filter className="size-4 text-default-400" />}
             classNames={{
               trigger: 'bg-content2/50 hover:bg-content2 transition-colors',
@@ -83,7 +88,12 @@ export const FilterBar = ({
             placeholder="选择语言"
             selectedKeys={[selectedLanguage]}
             className="max-w-xs"
-            onChange={(event) => setSelectedLanguage(event.target.value)}
+            onChange={(event) => {
+              if (!event.target.value) {
+                return
+              }
+              setSelectedLanguage(event.target.value)
+            }}
             startContent={<Filter className="size-4 text-default-400" />}
             classNames={{
               trigger: 'bg-content2/50 hover:bg-content2 transition-colors',
@@ -109,7 +119,12 @@ export const FilterBar = ({
             placeholder="选择平台"
             selectedKeys={[selectedPlatform]}
             className="max-w-xs"
-            onChange={(event) => setSelectedPlatform(event.target.value)}
+            onChange={(event) => {
+              if (!event.target.value) {
+                return
+              }
+              setSelectedPlatform(event.target.value)
+            }}
             startContent={<Filter className="size-4 text-default-400" />}
             classNames={{
               trigger: 'bg-content2/50 hover:bg-content2 transition-colors',
