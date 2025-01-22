@@ -73,11 +73,6 @@ export const kunCMTheme = () => {
       borderLeftWidth: '2px'
     },
 
-    '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection':
-      {
-        backgroundColor: `${colors.overlay}`
-      },
-
     '.cm-panels': {
       backgroundColor: colors.background,
       color: colors.foreground,

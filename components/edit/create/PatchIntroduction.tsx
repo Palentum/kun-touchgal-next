@@ -1,7 +1,6 @@
 'use client'
 
-import { KunEditorProvider } from '~/components/kun/milkdown/KunEditorProvider'
-import { KunCodemirrorProvider } from '~/components/kun/milkdown/KunCodemirrorProvider'
+import { KunDualEditorProvider } from '~/components/kun/milkdown/DualEditorProvider'
 import { useCreatePatchStore } from '~/store/editStore'
 import { markdownToText } from '~/utils/markdownToText'
 
@@ -19,10 +18,7 @@ export const PatchIntroduction = ({ errors }: Props) => {
       </p>
       {errors && <p className="text-xs text-danger-500">{errors}</p>}
 
-      <div className="grid grid-cols-2">
-        <KunEditorProvider storeName="patchCreate" />
-        <KunCodemirrorProvider storeName="patchCreate" />
-      </div>
+      <KunDualEditorProvider storeName="patchCreate" />
 
       <p className="text-small text-default-500">
         字数: {markdownToText(data.introduction).length}

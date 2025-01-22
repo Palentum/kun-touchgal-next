@@ -26,7 +26,6 @@ import {
   rectangularSelection
 } from '@codemirror/view'
 import { kunCM } from './theme'
-import type { RefObject } from 'react'
 import type { Extension } from '@codemirror/state'
 
 const basicSetup: Extension = [
@@ -56,15 +55,10 @@ const basicSetup: Extension = [
 
 interface StateOptions {
   onChange: (getString: () => string) => void
-  setFocus: (focus: 'cm' | null) => void
   content: string
 }
 
-export const createCodeMirrorState = ({
-  onChange,
-  setFocus,
-  content
-}: StateOptions) => {
+export const createCodeMirrorState = ({ onChange, content }: StateOptions) => {
   return EditorState.create({
     doc: content,
     extensions: [
@@ -72,9 +66,6 @@ export const createCodeMirrorState = ({
       basicSetup,
       markdown(),
       EditorView.updateListener.of((viewUpdate) => {
-        if (viewUpdate.focusChanged)
-          setFocus(viewUpdate.view.hasFocus ? 'cm' : null)
-
         if (viewUpdate.docChanged) {
           const getString = () => viewUpdate.state.doc.toString()
           onChange(getString)

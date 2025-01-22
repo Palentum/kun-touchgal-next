@@ -5,7 +5,6 @@ import { useRewritePatchStore } from '~/store/rewriteStore'
 import { useMounted } from '~/hooks/useMounted'
 import { KunLoading } from '../Loading'
 import { KunEditor } from './Editor'
-import { useEffect } from 'react'
 
 interface Props {
   storeName: 'patchCreate' | 'patchRewrite'
