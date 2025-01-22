@@ -18,7 +18,6 @@ import { EditorState } from '@codemirror/state'
 import {
   EditorView,
   crosshairCursor,
-  drawSelection,
   dropCursor,
   highlightActiveLine,
   highlightActiveLineGutter,
@@ -34,7 +33,6 @@ const basicSetup: Extension = [
   highlightActiveLineGutter(),
   highlightSpecialChars(),
   history(),
-  drawSelection(),
   dropCursor(),
   EditorState.allowMultipleSelections.of(true),
   indentOnInput(),
@@ -58,13 +56,13 @@ const basicSetup: Extension = [
 
 interface StateOptions {
   onChange: (getString: () => string) => void
-  lock: RefObject<boolean>
+  setFocus: (focus: 'cm' | null) => void
   content: string
 }
 
 export const createCodeMirrorState = ({
   onChange,
-  lock,
+  setFocus,
   content
 }: StateOptions) => {
   return EditorState.create({
@@ -74,7 +72,8 @@ export const createCodeMirrorState = ({
       basicSetup,
       markdown(),
       EditorView.updateListener.of((viewUpdate) => {
-        if (viewUpdate.focusChanged) lock.current = viewUpdate.view.hasFocus
+        if (viewUpdate.focusChanged)
+          setFocus(viewUpdate.view.hasFocus ? 'cm' : null)
 
         if (viewUpdate.docChanged) {
           const getString = () => viewUpdate.state.doc.toString()

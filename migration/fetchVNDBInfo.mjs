@@ -20,19 +20,20 @@ const fetchVnDetails = async (name) => {
     },
     body: JSON.stringify({
       filters: ['search', '=', name],
-      fields: 'title, titles.title, aliases, released'
+      fields: 'id, aliases, released'
     })
   })
 
   const vndbData = await vndbResponse.json()
 
   if (vndbData.results.length === 0) {
-    console.log('No results found for the given name')
+    console.log('No results found for the given name: ', name)
     return
   }
 
   const vn = vndbData.results[0]
   return {
+    id: vn.id,
     released: vn.released,
     aliases: vn.aliases
   }
@@ -43,21 +44,44 @@ const updatePatchInfo = async () => {
 
   for (const patch of patches) {
     const searchTerm = extractSearchTerm(patch.name)
-    const { released, aliases } = await fetchVnDetails(searchTerm)
+    const res = await fetchVnDetails(searchTerm)
+    if (!res) {
+      continue
+    }
 
-    await prisma.patch.update({
-      where: { id: patch.id },
-      data: {
-        released: released ?? '',
-        alias: aliases
+    const { id, released, aliases } = res
+
+    try {
+      const existingPatch = await prisma.patch.findFirst({
+        where: {
+          vndb_id: id
+        }
+      })
+
+      if (existingPatch) {
+        console.log(
+          `Skipping update for ${patch.name} because vndb_id ${id} already exists.`
+        )
+        continue
       }
-    })
 
-    console.log(
-      `Updated galgame ${patch.name} with released: ${released}, aliases: ${aliases}`
-    )
+      await prisma.patch.update({
+        where: { id: patch.id },
+        data: {
+          vndb_id: id ?? '',
+          released: released ?? '',
+          alias: aliases
+        }
+      })
 
-    await sleep(1000)
+      console.log(
+        `Updated galgame ${patch.name} with vndb_id: ${id}, released: ${released}, aliases: ${aliases}`
+      )
+    } catch (error) {
+      console.error(`Failed to update patch ${patch.name}:`, error)
+    }
+
+    await sleep(1700)
   }
 }
 

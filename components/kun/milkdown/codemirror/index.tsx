@@ -1,4 +1,10 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
+import {
+  forwardRef,
+  useLayoutEffect,
+  useImperativeHandle,
+  useRef,
+  useState
+} from 'react'
 import { createCodeMirrorState, createCodeMirrorView } from './setup'
 import type { RefObject } from 'react'
 
@@ -13,21 +19,20 @@ export interface CodemirrorRef {
 }
 
 export const Codemirror = forwardRef<CodemirrorRef, CodemirrorProps>(
-  ({ content, onChange, lock }, ref) => {
+  ({ content, onChange }, ref) => {
+    const [focus, setFocus] = useState<'cm' | null>(null)
     const divRef = useRef<HTMLDivElement>(null)
     const editorRef = useRef<ReturnType<typeof createCodeMirrorView>>(null)
 
-    useEffect(() => {
+    useLayoutEffect(() => {
       if (!divRef.current) {
         return
       }
 
-      console.log(11111111111)
-
       const editor = createCodeMirrorView({
         root: divRef.current,
         onChange,
-        lock,
+        setFocus,
         content
       })
       editorRef.current = editor
@@ -35,14 +40,18 @@ export const Codemirror = forwardRef<CodemirrorRef, CodemirrorProps>(
       return () => {
         editor.destroy()
       }
-    }, [onChange, content, lock])
+    }, [onChange, content, focus])
 
     useImperativeHandle(ref, () => ({
       update: (content: string) => {
         const { current } = editorRef
         if (!current) return
 
-        const state = createCodeMirrorState({ onChange, lock, content })
+        const state = createCodeMirrorState({
+          onChange,
+          setFocus,
+          content
+        })
         current.setState(state)
       }
     }))
@@ -50,5 +59,3 @@ export const Codemirror = forwardRef<CodemirrorRef, CodemirrorProps>(
     return <div className="h-full min-h-64" ref={divRef} />
   }
 )
-
-Codemirror.displayName = 'Codemirror'
