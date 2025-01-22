@@ -3,12 +3,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { kunParsePostBody } from '~/app/api/utils/parseQuery'
 import { sendVerificationCodeEmail } from '~/app/api/utils/sendVerificationCodeEmail'
 import { sendRegisterEmailVerificationCodeSchema } from '~/validations/auth'
+import { checkKunCaptchaExist } from '~/app/api/utils/verifyKunCaptcha'
 import { prisma } from '~/prisma/index'
 
 export const sendRegisterCode = async (
   input: z.infer<typeof sendRegisterEmailVerificationCodeSchema>,
   headers: Headers
 ) => {
+  const res = await checkKunCaptchaExist(input.captcha)
+  if (!res) {
+    return '人机验证无效, 请完成人机验证'
+  }
+
   const normalizedName = input.name.toLowerCase()
   const sameUsernameUser = await prisma.user.findFirst({
     where: { name: { equals: normalizedName, mode: 'insensitive' } }

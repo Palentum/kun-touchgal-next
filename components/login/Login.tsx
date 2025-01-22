@@ -4,21 +4,21 @@ import { useState } from 'react'
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Input, Link } from '@nextui-org/react'
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
+import { Button, Input, Link, useDisclosure } from '@nextui-org/react'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { loginSchema } from '~/validations/auth'
 import { useUserStore } from '~/store/userStore'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import { useRouter } from 'next-nprogress-bar'
 import toast from 'react-hot-toast'
+import { KunCaptchaModal } from '~/components/kun/auth/CaptchaModal'
 import { KunTextDivider } from '~/components/kun/TextDivider'
 import type { UserState } from '~/store/userStore'
 
 type LoginFormData = z.infer<typeof loginSchema>
 
 export const LoginForm = () => {
-  const { executeRecaptcha } = useGoogleReCaptcha()
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const { setUser } = useUserStore((state) => state)
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -31,18 +31,13 @@ export const LoginForm = () => {
     }
   })
 
-  const handleLogin = async () => {
-    if (!executeRecaptcha) {
-      toast.error('reCAPTCHA 未就绪')
-      return
-    }
-
-    const recaptchaToken = await executeRecaptcha()
+  const handleCaptchaSuccess = async (code: string) => {
+    onClose()
 
     setLoading(true)
     const res = await kunFetchPost<KunResponse<UserState>>('/auth/login', {
       ...watch(),
-      recaptchaToken
+      captcha: code
     })
     setLoading(false)
 
@@ -92,13 +87,19 @@ export const LoginForm = () => {
       />
       <Button
         color="primary"
-        className="w-full mb-4"
+        className="w-full"
         isDisabled={loading}
         isLoading={loading}
-        onPress={handleLogin}
+        onPress={onOpen}
       >
         登录
       </Button>
+
+      <KunCaptchaModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onSuccess={handleCaptchaSuccess}
+      />
 
       <KunTextDivider text="或" />
 

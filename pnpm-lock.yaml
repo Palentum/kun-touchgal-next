@@ -170,9 +170,6 @@ importers:
       react-dropzone:
         specifier: ^14.3.5
         version: 14.3.5(react@19.0.0)
-      react-google-recaptcha-v3:
-        specifier: ^1.10.1
-        version: 1.10.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react-hook-form:
         specifier: ^7.54.2
         version: 7.54.2(react@19.0.0)
@@ -4382,9 +4379,6 @@ packages:
   hastscript@9.0.0:
     resolution: {integrity: sha512-jzaLBGavEDKHrc5EfFImKN7nZKKBdSLIdGvCwDZ9TfzbF2ffXiov8CKE445L2Z1Ek2t/m4SKQ2j6Ipv7NyUolw==}
 
-  hoist-non-react-statics@3.3.2:
-    resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
-
   hookified@1.6.0:
     resolution: {integrity: sha512-se7cpwTA+iA/eY548Bu03JJqBiEZAqU2jnyKdj5B5qurtBg64CZGHTgqCv4Yh7NWu6FGI09W61MCq+NoPj9GXA==}
 
@@ -5662,12 +5656,6 @@ packages:
     engines: {node: '>= 10.13'}
     peerDependencies:
       react: '>= 16.8 || 18.0.0'
-
-  react-google-recaptcha-v3@1.10.1:
-    resolution: {integrity: sha512-K3AYzSE0SasTn+XvV2tq+6YaxM+zQypk9rbCgG4OVUt7Rh4ze9basIKefoBz9sC0CNslJj9N1uwTTgRMJQbQJQ==}
-    peerDependencies:
-      react: ^16.3 || ^17.0 || ^18.0
-      react-dom: ^17.0 || ^18.0
 
   react-hook-form@7.54.2:
     resolution: {integrity: sha512-eHpAUgUjWbZocoQYUHposymRb4ZP6d0uwUnooL2uOybA9/3tPUvoAKqEWK1WaSiTxxOfTpffNZP7QwlnM3/gEg==}
@@ -12394,10 +12382,6 @@ snapshots:
       property-information: 6.5.0
       space-separated-tokens: 2.0.2
 
-  hoist-non-react-statics@3.3.2:
-    dependencies:
-      react-is: 16.13.1
-
   hookified@1.6.0: {}
 
   html-encoding-sniffer@4.0.0:
@@ -14134,12 +14118,6 @@ snapshots:
       file-selector: 2.1.2
       prop-types: 15.8.1
       react: 19.0.0
-
-  react-google-recaptcha-v3@1.10.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
-    dependencies:
-      hoist-non-react-statics: 3.3.2
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
 
   react-hook-form@7.54.2(react@19.0.0):
     dependencies:

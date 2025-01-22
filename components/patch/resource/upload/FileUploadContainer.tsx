@@ -5,7 +5,8 @@ import toast from 'react-hot-toast'
 import { useState } from 'react'
 import { FileDropZone } from './FileDropZone'
 import { FileUploadCard } from './FileUploadCard'
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
+import { KunCaptchaModal } from '~/components/kun/auth/CaptchaModal'
+import { useDisclosure } from '@nextui-org/modal'
 import type { KunUploadFileResponse } from '~/types/api/upload'
 import type { FileStatus } from '../share'
 
@@ -20,33 +21,20 @@ interface Props {
 }
 
 export const FileUploadContainer = ({ onSuccess, handleRemoveFile }: Props) => {
-  const { executeRecaptcha } = useGoogleReCaptcha()
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const [fileData, setFileData] = useState<FileStatus | null>(null)
 
-  const handleFileUpload = async (file: File) => {
-    if (!file) {
-      return
-    }
+  const handleCaptchaSuccess = async (code: string) => {
+    onClose()
 
-    const fileSizeMB = file.size / (1024 * 1024)
-    if (fileSizeMB > 100) {
-      toast.error(
-        `文件大小超出限制: ${fileSizeMB.toFixed(3)} MB, 最大允许大小为 100 MB`
-      )
+    if (!fileData || !fileData.file) {
+      toast.error('未找到资源文件, 请重试')
       return
     }
-
-    if (!executeRecaptcha) {
-      toast.error('reCAPTCHA 未就绪')
-      return
-    }
-    const recaptchaToken = await executeRecaptcha()
 
     const formData = new FormData()
-    formData.append('file', file)
-    formData.append('recaptchaToken', recaptchaToken)
-
-    setFileData({ file, progress: 0 })
+    formData.append('file', fileData.file)
+    formData.append('captcha', code)
 
     const res = await axios.post<KunUploadFileResponse | string>(
       '/api/upload/resource',
@@ -73,6 +61,23 @@ export const FileUploadContainer = ({ onSuccess, handleRemoveFile }: Props) => {
     onSuccess(filetype, fileHash, `https://www.moyu.moe/${fileHash}`, fileSize)
   }
 
+  const handleFileUpload = async (file: File) => {
+    if (!file) {
+      return
+    }
+
+    const fileSizeMB = file.size / (1024 * 1024)
+    if (fileSizeMB > 100) {
+      toast.error(
+        `文件大小超出限制: ${fileSizeMB.toFixed(3)} MB, 最大允许大小为 100 MB`
+      )
+      return
+    }
+
+    setFileData({ file, progress: 0 })
+    onOpen()
+  }
+
   const removeFile = () => {
     setFileData(null)
     handleRemoveFile()
@@ -85,6 +90,13 @@ export const FileUploadContainer = ({ onSuccess, handleRemoveFile }: Props) => {
         您的文件在上传后将会被去除特殊字符, 仅保留下划线 ( _ ) 或连字符 ( - ),
         以及后缀
       </p>
+
+      <KunCaptchaModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onSuccess={handleCaptchaSuccess}
+      />
+
       {!fileData ? (
         <FileDropZone onFileUpload={handleFileUpload} />
       ) : (

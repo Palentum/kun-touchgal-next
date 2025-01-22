@@ -19,7 +19,11 @@ export const loginSchema = z.object({
     message:
       '非法的密码格式，密码的长度为 6 到 1007 位，必须包含至少一个英文字符和一个数字，可以选择性的包含 @!#$%^&*()_-+=\\/ 等特殊字符'
   }),
-  recaptchaToken: z.string().max(5000)
+  captcha: z
+    .string()
+    .trim()
+    .min(10, { message: '非法的人机验证码格式' })
+    .max(10)
 })
 
 export const registerSchema = z.object({
@@ -55,10 +59,22 @@ export const sendRegisterEmailVerificationCodeSchema = z.object({
         message: '非法的用户名，用户名为 1~17 位任意字符'
       })
     ),
-  recaptchaToken: z.string().max(5000)
+  captcha: z
+    .string()
+    .trim()
+    .min(10, { message: '非法的人机验证码格式' })
+    .max(10)
 })
 
 export const disableEmailNoticeSchema = z.object({
   email: z.string().email({ message: '非法的邮箱格式' }),
   validateEmailCode: z.string().uuid({ message: '非法的邮箱验证码格式' })
+})
+
+export const captchaSchema = z.object({
+  sessionId: z.string().trim().uuid({ message: '非法的 sessionId 格式' }),
+  selectedIds: z
+    .array(z.string().trim().uuid({ message: '非法的验证图片 ID' }))
+    .min(1, { message: '验证图片中最少有一只白毛小只可爱软萌妹子' })
+    .max(3, { message: '验证图片中最多有三只白毛小只可爱软萌妹子' })
 })
