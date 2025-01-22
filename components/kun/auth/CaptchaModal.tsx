@@ -85,7 +85,7 @@ export const KunCaptchaModal = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalContent>
         <ModalHeader className="flex-col">
-          <h3 className="text-lg">验证</h3>
+          <h3 className="text-lg">人机验证</h3>
           <p className="font-medium">请选择下面所有的 白毛 女孩子</p>
         </ModalHeader>
         <ModalBody>
@@ -105,32 +105,17 @@ export const KunCaptchaModal = ({
             </div>
           )}
         </ModalBody>
-        <ModalFooter className="flex-col">
-          <p className="text-sm">
-            由{' '}
-            <Link
-              size="sm"
-              isExternal
-              showAnchorIcon
-              href="https://sticker.kungal.com"
-            >
-              鲲 Galgame 表情包
-            </Link>{' '}
-            提供技术支持
-          </p>
-
-          <div className="ml-auto space-x-2">
-            <Button color="danger" variant="light" onPress={onClose}>
-              取消
-            </Button>
-            <Button
-              color="primary"
-              onPress={handleVerify}
-              isDisabled={selectedImages.size === 0}
-            >
-              确定
-            </Button>
-          </div>
+        <ModalFooter>
+          <Button color="danger" variant="light" onPress={onClose}>
+            取消
+          </Button>
+          <Button
+            color="primary"
+            onPress={handleVerify}
+            isDisabled={selectedImages.size === 0}
+          >
+            确定
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

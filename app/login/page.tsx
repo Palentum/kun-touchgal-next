@@ -1,4 +1,4 @@
-import { LoginProvider } from '~/components/login/LoginProvider'
+import { LoginForm } from '~/components/login/Login'
 import { kunMetadata } from './metadata'
 import { Card, CardBody, CardHeader } from '@nextui-org/card'
 import Image from 'next/image'
@@ -27,7 +27,7 @@ export default function Kun() {
           <h1 className="text-3xl font-bold">登录</h1>
         </CardHeader>
         <CardBody className="flex justify-center px-8 py-6">
-          <LoginProvider />
+          <LoginForm />
         </CardBody>
       </Card>
     </div>
