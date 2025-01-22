@@ -74,7 +74,7 @@ export const RewritePatch = () => {
             error={errors.name}
           />
 
-          <p className="text-sm">游戏介绍 (必须, 十个字符以上)</p>
+          <h2 className="text-xl">游戏介绍 (可选)</h2>
           {errors.introduction && (
             <p className="text-xs text-danger-500">{errors.introduction}</p>
           )}

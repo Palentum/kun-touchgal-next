@@ -11,9 +11,36 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.726.1
         version: 3.726.1
+      '@codemirror/autocomplete':
+        specifier: ^6.18.4
+        version: 6.18.4
+      '@codemirror/commands':
+        specifier: ^6.8.0
+        version: 6.8.0
+      '@codemirror/lang-markdown':
+        specifier: ^6.3.2
+        version: 6.3.2
+      '@codemirror/language':
+        specifier: ^6.10.8
+        version: 6.10.8
+      '@codemirror/lint':
+        specifier: ^6.8.4
+        version: 6.8.4
+      '@codemirror/search':
+        specifier: ^6.5.8
+        version: 6.5.8
+      '@codemirror/state':
+        specifier: ^6.5.1
+        version: 6.5.1
+      '@codemirror/view':
+        specifier: ^6.36.2
+        version: 6.36.2
       '@hookform/resolvers':
         specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.54.2(react@19.0.0))
+      '@lezer/highlight':
+        specifier: ^1.2.1
+        version: 1.2.1
       '@mdx-js/loader':
         specifier: ^3.1.0
         version: 3.1.0(acorn@8.14.0)

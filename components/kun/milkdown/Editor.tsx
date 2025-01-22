@@ -138,7 +138,7 @@ export const KunEditor = ({
   )
 
   return (
-    <div className="min-h-64" onClick={(e) => e.stopPropagation()}>
+    <div className="w-full min-h-64" onClick={(e) => e.stopPropagation()}>
       <KunMilkdownPluginsMenu
         editorInfo={editor}
         disableUserKey={disableUserKey}
