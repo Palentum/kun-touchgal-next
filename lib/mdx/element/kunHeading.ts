@@ -1,4 +1,26 @@
-import React, { ReactNode } from 'react'
+import { createElement, isValidElement, ReactNode, ReactElement } from 'react'
+
+const getTextContent = (children: ReactNode): string => {
+  if (typeof children === 'string') {
+    return children
+  }
+
+  if (Array.isArray(children)) {
+    return children.map((child) => getTextContent(child)).join('')
+  }
+
+  if (isValidElement(children)) {
+    // TODO: resolve this any
+    return getTextContent((children.props as any)?.children)
+  }
+
+  if (children && typeof children === 'object' && 'props' in children) {
+    // TODO: resolve this any
+    return getTextContent((children.props as any).children)
+  }
+
+  return ''
+}
 
 const slugify = (str: string): string => {
   return str
@@ -14,12 +36,14 @@ const slugify = (str: string): string => {
 
 export const createKunHeading = (level: number) => {
   const Heading = ({ children }: { children: ReactNode }) => {
-    const slug = slugify(children?.toString() || '')
-    return React.createElement(
+    const text = getTextContent(children)
+    const slug = slugify(text)
+
+    return createElement(
       `h${level}`,
       { id: slug },
       [
-        React.createElement('a', {
+        createElement('a', {
           href: `#${slug}`,
           key: `kun-link-${slug}`,
           className: 'kun-anchor',
