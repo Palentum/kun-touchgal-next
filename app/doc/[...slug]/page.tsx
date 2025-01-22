@@ -49,9 +49,7 @@ export default async function Kun({ params }: Props) {
       </div>
 
       <div>
-        <div className="fixed">
-          <TableOfContents />
-        </div>
+        <TableOfContents />
       </div>
     </div>
   )

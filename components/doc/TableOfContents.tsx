@@ -54,30 +54,32 @@ export const TableOfContents = () => {
 
   return (
     <nav className="hidden w-64 lg:block">
-      <h2 className="mb-4 text-lg font-semibold">本页面索引</h2>
-      <ul className="space-y-2">
-        {headings.map((heading) => (
-          <li
-            key={heading.id}
-            style={{ paddingLeft: `${(heading.level - 1) * 1}rem` }}
-          >
-            <a
-              href={`#${heading.id}`}
-              onClick={(e) => {
-                e.preventDefault()
-                scrollToHeading(heading.id)
-              }}
-              className={`block py-1 text-sm hover:text-primary-500 ${
-                activeId === heading.id
-                  ? 'font-medium text-primary-500'
-                  : 'text-default-600 dark:text-default-400'
-              }`}
+      <div className="fixed top-32">
+        <h2 className="mb-4 text-lg font-semibold">本页面索引</h2>
+        <ul className="space-y-2 h-[calc(100dvh-256px)] overflow-scroll scrollbar-hide">
+          {headings.map((heading) => (
+            <li
+              key={heading.id}
+              style={{ paddingLeft: `${(heading.level - 1) * 1}rem` }}
             >
-              {heading.text}
-            </a>
-          </li>
-        ))}
-      </ul>
+              <a
+                href={`#${heading.id}`}
+                onClick={(e) => {
+                  e.preventDefault()
+                  scrollToHeading(heading.id)
+                }}
+                className={`block py-1 text-sm hover:text-primary-500 ${
+                  activeId === heading.id
+                    ? 'font-medium text-primary-500'
+                    : 'text-default-600 dark:text-default-400'
+                }`}
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </nav>
   )
 }

@@ -19,19 +19,20 @@ export const KunFriendLink = () => {
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
         {kunFriends.map((friend, index) => (
           <motion.div
             key={friend.name}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
+            className="w-full h-full"
           >
             <Card
               isPressable
               isHoverable
               onPress={() => window.open(friend.link, '_blank')}
-              className="border border-default-200"
+              className="w-full h-full border border-default-200"
             >
               <CardBody className="p-0 overflow-visible">
                 <div className="flex justify-center w-full pt-4">
