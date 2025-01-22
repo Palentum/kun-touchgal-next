@@ -2,10 +2,11 @@
 
 import { useState } from 'react'
 import { Button } from '@nextui-org/button'
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
+import { KunCaptchaModal } from '~/components/kun/auth/CaptchaModal'
 import toast from 'react-hot-toast'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
+import { useDisclosure } from '@nextui-org/modal'
 
 interface Props {
   username: string
@@ -14,7 +15,7 @@ interface Props {
 }
 
 export const EmailVerification = ({ username, email, type }: Props) => {
-  const { executeRecaptcha } = useGoogleReCaptcha()
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const [countdown, setCountdown] = useState(0)
   const [loading, setLoading] = useState(false)
 
@@ -31,20 +32,15 @@ export const EmailVerification = ({ username, email, type }: Props) => {
     }, 1000)
   }
 
-  const handleSendCode = async () => {
+  const handleSendCode = async (code: string) => {
     if (!email) {
       toast.error('请输入合法的邮箱格式')
       return
     }
-    if (!executeRecaptcha) {
-      toast.error('reCAPTCHA 未就绪')
-      return
-    }
+    setLoading(true)
 
-    const recaptchaToken = await executeRecaptcha()
     let res
 
-    setLoading(true)
     if (type === 'register') {
       if (!username) {
         toast.error('用户名不可为空')
@@ -53,12 +49,12 @@ export const EmailVerification = ({ username, email, type }: Props) => {
       res = await kunFetchPost<KunResponse<{}>>('/auth/send-register-code', {
         name: username,
         email,
-        recaptchaToken
+        captcha: code
       })
     } else {
       res = await kunFetchPost<KunResponse<{}>>(
         '/user/setting/send-reset-email-code',
-        { email, recaptchaToken }
+        { email, captcha: code }
       )
     }
 
@@ -70,18 +66,31 @@ export const EmailVerification = ({ username, email, type }: Props) => {
     setLoading(false)
   }
 
+  const handleCaptchaSuccess = async (code: string) => {
+    onClose()
+    await handleSendCode(code)
+  }
+
   return (
-    <Button
-      onPress={handleSendCode}
-      isDisabled={countdown > 0 || loading}
-      size="sm"
-      variant="light"
-    >
-      {loading
-        ? '发送中...'
-        : countdown > 0
-          ? `${countdown}秒后重试`
-          : '发送验证码'}
-    </Button>
+    <>
+      <Button
+        onPress={onOpen}
+        isDisabled={countdown > 0 || loading}
+        size="sm"
+        variant="light"
+      >
+        {loading
+          ? '发送中...'
+          : countdown > 0
+            ? `${countdown}秒后重试`
+            : '发送验证码'}
+      </Button>
+
+      <KunCaptchaModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onSuccess={handleCaptchaSuccess}
+      />
+    </>
   )
 }

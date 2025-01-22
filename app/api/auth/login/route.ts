@@ -6,15 +6,15 @@ import { verifyPassword } from '~/app/api/utils/algorithm'
 import { generateKunToken } from '~/app/api/utils/jwt'
 import { loginSchema } from '~/validations/auth'
 import { prisma } from '~/prisma/index'
-import { verifyReCAPTCHA } from '~/app/api/utils/verifyReCAPTCHA'
+import { checkKunCaptchaExist } from '~/app/api/utils/verifyKunCaptcha'
 import { getRedirectConfig } from '~/app/api/admin/setting/redirect/getRedirectConfig'
 import type { UserState } from '~/store/userStore'
 
 export const login = async (input: z.infer<typeof loginSchema>) => {
-  const { name, password, recaptchaToken } = input
-  const isVerified = await verifyReCAPTCHA(recaptchaToken)
-  if (!isVerified) {
-    return 'reCAPTCHA 人机验证分数过低或未通过, 请重试'
+  const { name, password, captcha } = input
+  const res = await checkKunCaptchaExist(captcha)
+  if (!res) {
+    return '人机验证无效, 请完成人机验证'
   }
 
   const normalizedName = name.toLowerCase()

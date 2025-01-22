@@ -33,7 +33,7 @@ export const resetEmailSchema = z.object({
 
 export const sendResetEmailVerificationCodeSchema = z.object({
   email: z.string().email({ message: '请输入合法的邮箱格式' }),
-  recaptchaToken: z.string().max(5000)
+  captcha: z.string().max(5000)
 })
 
 export const passwordSchema = z.object({

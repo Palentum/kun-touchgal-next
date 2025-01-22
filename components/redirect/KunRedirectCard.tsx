@@ -36,7 +36,7 @@ export const KunRedirectCard = () => {
             disableCopy
             symbol=""
             size="lg"
-            className="w-full overflow-auto"
+            className="w-full overflow-auto scrollbar-hide"
             color="primary"
             copyIcon={<ExternalLink />}
           >
