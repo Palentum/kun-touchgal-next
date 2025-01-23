@@ -74,7 +74,7 @@ const processMarkdownFile = async (filePath, contentLimit) => {
       where: { unique_id: uniqueId }
     })
     if (!existPatch) {
-      console.log('未找到该游戏, 跳过该游戏')
+      console.log(`未找到该游戏, 跳过该游戏: ${uniqueId}`)
       return { status: 'fulfilled' }
     }
 
@@ -109,7 +109,7 @@ const processMarkdownFiles = async (filePaths, contentLimit) => {
     )
     results.push(...batchResults)
 
-    console.log(`已处理 ${i + 1} 批游戏, 休息 1s`)
+    console.log(`已处理 ${i + 1} 个游戏, 休息 1s`)
     await sleep(1000)
   }
 
