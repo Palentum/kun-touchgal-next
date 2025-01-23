@@ -1,5 +1,9 @@
-import { Codemirror } from './codemirror/Codemirror'
+'use client'
+
 import { useCallback, useState } from 'react'
+import { Tabs, Tab } from '@nextui-org/tabs'
+import { Code, Edit } from 'lucide-react'
+import { Codemirror } from './codemirror/Codemirror'
 import { useCreatePatchStore } from '~/store/editStore'
 import { useRewritePatchStore } from '~/store/rewriteStore'
 import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/react'
@@ -70,23 +74,41 @@ export const KunDualEditorProvider = ({ storeName }: Props) => {
   )
 
   return (
-    <div className="grid grid-cols-2">
-      <MilkdownProvider>
-        <ProsemirrorAdapterProvider>
-          <KunEditor
-            valueMarkdown={getMarkdown()}
-            saveMarkdown={saveMarkdown}
-          />
-        </ProsemirrorAdapterProvider>
-      </MilkdownProvider>
+    <Tabs aria-label="Editor options" size="lg" variant="underlined">
+      <Tab
+        key="editor"
+        title={
+          <div className="flex items-center gap-2">
+            <Edit size={18} />
+            <span>编辑预览</span>
+          </div>
+        }
+      >
+        <MilkdownProvider>
+          <ProsemirrorAdapterProvider>
+            <KunEditor
+              valueMarkdown={getMarkdown()}
+              saveMarkdown={saveMarkdown}
+            />
+          </ProsemirrorAdapterProvider>
+        </MilkdownProvider>
+      </Tab>
 
-      <div className="w-full min-h-64">
+      <Tab
+        key="code"
+        title={
+          <div className="flex items-center gap-2">
+            <Code size={18} />
+            <span>代码编辑</span>
+          </div>
+        }
+      >
         <Codemirror
           markdown={getMarkdown()}
           setCmAPI={setCmAPI}
           onChange={onCodemirrorChange}
         />
-      </div>
-    </div>
+      </Tab>
+    </Tabs>
   )
 }

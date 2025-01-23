@@ -35,34 +35,30 @@ export const kunCMTheme = () => {
       backgroundColor: colors.backgroundAlpha,
       borderRadius: '0.75rem',
       lineHeight: '1.5',
-      scrollbarWidth: 'thin',
-      scrollbarColor: `${colors.content3} transparent`
-    },
-
-    '.cm-editor': {
-      '&.cm-focused': {
-        outline: `2px solid ${colors.primaryLight}`,
-        outlineOffset: '2px'
-      }
+      scrollbarWidth: 'none',
+      minHeight: '256px'
     },
 
     '&.cm-focused': {
-      outline: 'none !important'
+      outline: 'none'
     },
 
     '.cm-scroller': {
+      display: 'block !important',
       lineHeight: '1.5',
-      padding: '1rem 0.5rem'
-    },
-
-    '.cm-content': {
-      caretColor: colors.primary,
-      padding: '0.5rem'
+      padding: '1rem 0.5rem',
+      maxWidth: '100%',
+      scrollbarWidth: 'none',
+      '&>.div': {
+        maxWidth: '100%'
+      }
     },
 
     '.cm-line': {
-      padding: '0 0.5rem',
+      padding: '0',
       borderRadius: '0.375rem',
+      maxWidth: '100%',
+      whiteSpace: 'pre-wrap',
       '&:hover': {
         backgroundColor: colors.overlayLight
       }
