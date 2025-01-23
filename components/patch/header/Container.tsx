@@ -28,6 +28,7 @@ export const PatchHeaderContainer = ({ patch, intro }: PatchHeaderProps) => {
     setData({
       id: patch.id,
       uniqueId: patch.uniqueId,
+      vndbId: patch.vndbId ?? '',
       name: patch.name,
       introduction: patch.introduction,
       alias: patch.alias,

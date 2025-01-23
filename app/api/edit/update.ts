@@ -11,16 +11,27 @@ export const updateGalgame = async (
   if (!patch) {
     return '该 ID 下未找到对应 Galgame'
   }
+  if (input.vndbId) {
+    const galgame = await prisma.patch.findUnique({
+      where: { vndb_id: input.vndbId }
+    })
+    if (galgame) {
+      return `Galgame VNDB ID 与游戏 ID 为 ${galgame.unique_id} 的游戏重复`
+    }
+  }
 
-  const { id, name, alias, introduction, contentLimit } = input
+  const { id, vndbId, name, alias, introduction, contentLimit, released } =
+    input
 
   await prisma.patch.update({
     where: { id },
     data: {
       name,
+      vndb_id: vndbId,
       alias: alias ? alias : [],
       introduction,
-      content_limit: contentLimit
+      content_limit: contentLimit,
+      released
     }
   })
 

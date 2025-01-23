@@ -8,35 +8,53 @@ interface Props {
 
 export const ReleaseDateInput = ({ date, setDate, errors }: Props) => {
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, '')
+    let value = e.target.value
 
-    if (value.length > 8) {
-      value = value.slice(0, 8)
-    }
+    if (value.includes('-')) {
+      const parts = value.split('-')
 
-    if (value.length >= 4) {
-      const year = value.slice(0, 4)
-      const month = value.slice(4, 6)
-      const day = value.slice(6, 8)
-
-      let formattedDate = year
-      if (month) {
-        const monthNum = parseInt(month)
-        if (monthNum > 0 && monthNum <= 12) {
-          formattedDate += `-${parseInt(month)}`
-        }
+      if (parts[0] && parts[0].length > 4) {
+        parts[0] = parts[0].slice(0, 4)
       }
-      if (day) {
-        const dayNum = parseInt(day)
-        if (dayNum > 0 && dayNum <= 31) {
-          formattedDate += `-${parseInt(day)}`
+
+      if (parts[1]) {
+        const monthNum = parseInt(parts[1])
+        if (monthNum > 12) {
+          parts[1] = '12'
         }
       }
 
-      setDate(formattedDate)
+      if (parts[2]) {
+        const dayNum = parseInt(parts[2])
+        if (dayNum > 31) {
+          parts[2] = '31'
+        }
+      }
+
+      value = parts.join('-')
     } else {
-      setDate(value)
+      value = value.replace(/\D/g, '')
+
+      if (value.length > 8) {
+        value = value.slice(0, 8)
+      }
+
+      if (value.length >= 4) {
+        const year = value.slice(0, 4)
+        const month = value.slice(4, 6)
+        const day = value.slice(6, 8)
+
+        value = year
+        if (month) {
+          value += `-${month}`
+        }
+        if (day) {
+          value += `-${day}`
+        }
+      }
     }
+
+    setDate(value)
   }
 
   return (

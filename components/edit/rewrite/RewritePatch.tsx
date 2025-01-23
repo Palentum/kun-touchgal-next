@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Button, Card, CardBody, CardHeader, Textarea } from '@nextui-org/react'
+import { Button, Card, CardBody, CardHeader } from '@nextui-org/react'
 import { useRewritePatchStore } from '~/store/rewriteStore'
 import { KunDualEditorProvider } from '~/components/kun/milkdown/DualEditorProvider'
 import toast from 'react-hot-toast'
@@ -14,6 +14,7 @@ import { AliasManager } from './AliasManager'
 import { ContentLimit } from './ContentLimit'
 import { BatchTag } from '../components/BatchTag'
 import { ReleaseDateInput } from '../components/ReleaseDateInput'
+import { VNDBInput } from './VNDBInput'
 import type { RewritePatchData } from '~/store/rewriteStore'
 
 export const RewritePatch = () => {
@@ -70,6 +71,17 @@ export const RewritePatch = () => {
           </div>
         </CardHeader>
         <CardBody className="mt-4 space-y-12">
+          <VNDBInput
+            vndbId={data.vndbId}
+            setVNDBId={(id) =>
+              setData({
+                ...data,
+                vndbId: id
+              })
+            }
+            errors={errors.vndbId}
+          />
+
           <GameNameInput
             name={data.name}
             onChange={(name) => setData({ ...data, name })}

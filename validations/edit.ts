@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const patchCreateSchema = z.object({
   banner: z.any(),
   name: z.string().trim().min(1, { message: '游戏名称是必填项' }),
-  vndbId: z.string().max(10).optional(),
+  vndbId: z.string().max(10),
   introduction: z
     .string()
     .trim()
@@ -15,13 +15,14 @@ export const patchCreateSchema = z.object({
   tag: z
     .string()
     .max(2333, { message: '别名字符串总长度不可超过 3000 个字符' }),
-  released: z.string().optional(),
+  released: z.string(),
   contentLimit: z.string().max(10)
 })
 
 export const patchUpdateSchema = z.object({
   id: z.coerce.number().min(1).max(9999999),
   name: z.string().trim().min(1, { message: '游戏名称是必填项' }),
+  vndbId: z.string().max(10),
   introduction: z
     .string()
     .trim()
@@ -41,7 +42,8 @@ export const patchUpdateSchema = z.object({
       .min(1, { message: '单个别名至少一个字符' })
       .max(500, { message: '单个别名至多 500 个字符' })
   ),
-  contentLimit: z.string().max(10)
+  contentLimit: z.string().max(10),
+  released: z.string().optional()
 })
 
 export const duplicateSchema = z.object({
