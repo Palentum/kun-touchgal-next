@@ -17,9 +17,6 @@ export const updatePatchBanner = async (
   }
 
   const res = await uploadPatchBanner(image, patchId)
-  if (!res) {
-    return '上传图片错误, 未知错误'
-  }
   if (typeof res === 'string') {
     return res
   }
