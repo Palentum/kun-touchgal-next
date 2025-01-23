@@ -56,7 +56,7 @@ export const TableOfContents = () => {
     <nav className="hidden w-64 lg:block">
       <div className="fixed top-32">
         <h2 className="mb-4 text-lg font-semibold">本页面索引</h2>
-        <ul className="space-y-2 h-[calc(100dvh-256px)] overflow-scroll scrollbar-hide">
+        <ul className="space-y-2 h-[calc(100dvh-256px)] max-w-64 overflow-scroll scrollbar-hide">
           {headings.map((heading) => (
             <li
               key={heading.id}
