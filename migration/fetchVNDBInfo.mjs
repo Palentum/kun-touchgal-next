@@ -50,7 +50,11 @@ const fetchVnDetails = async (name) => {
 }
 
 const updatePatchInfo = async () => {
-  const patches = await prisma.patch.findMany()
+  const patches = await prisma.patch.findMany({
+    where: {
+      vndb_id: null
+    }
+  })
   let requestCount = 0
 
   for (const patch of patches) {
