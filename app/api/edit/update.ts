@@ -27,7 +27,7 @@ export const updateGalgame = async (
     where: { id },
     data: {
       name,
-      vndb_id: vndbId,
+      vndb_id: vndbId ? vndbId : null,
       alias: alias ? alias : [],
       introduction,
       content_limit: contentLimit,

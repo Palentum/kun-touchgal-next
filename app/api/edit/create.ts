@@ -32,7 +32,7 @@ export const createGalgame = async (
         data: {
           name,
           unique_id: galgameUniqueId,
-          vndb_id: vndbId ?? '',
+          vndb_id: vndbId ? vndbId : null,
           alias: alias ? alias : [],
           introduction,
           user_id: uid,
