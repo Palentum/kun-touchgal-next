@@ -182,6 +182,15 @@ const createPatchResources = async (
         const excludedPlatform = platform.filter(
           (p) => !section.excludePlatform.has(p)
         )
+
+        const resource = await prisma.patch_resource.findFirst({
+          where: { content: link }
+        })
+        if (resource) {
+          console.log('检测到已添加过的手机资源, 自动跳过')
+          return
+        }
+
         await createPatchResource(
           {
             patchId,
@@ -231,11 +240,6 @@ const createPatchResource = async (input, uid) => {
 // 主函数
 const kun = async () => {
   try {
-    // 重置所有手机资源
-    await prisma.patch_resource.deleteMany({
-      where: { platform: { has: 'android' } }
-    })
-
     // 处理 SFW 文件夹
     const sfwPath = path.join(MARKDOWN_DIR, FOLDERS.SFW)
     if (fs.existsSync(sfwPath)) {
