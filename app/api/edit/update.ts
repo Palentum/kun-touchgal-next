@@ -12,6 +12,18 @@ export const updateGalgame = async (
     return '该 ID 下未找到对应 Galgame'
   }
 
-  const res = await handleBatchPatchTags(input, uid)
+  const { id, name, alias, introduction, contentLimit } = input
+
+  await prisma.patch.update({
+    where: { id },
+    data: {
+      name,
+      alias: alias ? alias : [],
+      introduction,
+      content_limit: contentLimit
+    }
+  })
+
+  const res = await handleBatchPatchTags(input.id, input.tag, uid)
   return res
 }

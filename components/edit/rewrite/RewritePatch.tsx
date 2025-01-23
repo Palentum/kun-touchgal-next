@@ -12,6 +12,7 @@ import { useRouter } from 'next-nprogress-bar'
 import { GameNameInput } from './GameNameInput'
 import { AliasManager } from './AliasManager'
 import { ContentLimit } from './ContentLimit'
+import { BatchTag } from '../components/BatchTag'
 import type { RewritePatchData } from '~/store/rewriteStore'
 
 export const RewritePatch = () => {
@@ -92,21 +93,15 @@ export const RewritePatch = () => {
             errors={errors.alias}
           />
 
-          <h2 className="text-xl">游戏标签 (可选)</h2>
-          {errors.tag && (
-            <p className="text-xs text-danger-500">{errors.tag}</p>
-          )}
-          <Textarea
-            placeholder="每个标签需要使用英语 , 分隔"
-            value={data.tag.toString()}
-            onChange={(e) => {
+          <BatchTag
+            initialTag={data.tag}
+            saveTag={(tag) =>
               setData({
                 ...data,
-                tag: e.target.value.split(',').map((tag) => tag.trim())
+                tag
               })
-            }}
-            className="w-full"
-            minRows={3}
+            }
+            errors={errors.tag}
           />
 
           <ContentLimit errors={errors.contentLimit} />

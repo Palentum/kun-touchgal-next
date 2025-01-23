@@ -12,6 +12,9 @@ export const patchCreateSchema = z.object({
   alias: z
     .string()
     .max(2333, { message: '别名字符串总长度不可超过 3000 个字符' }),
+  tag: z
+    .string()
+    .max(2333, { message: '别名字符串总长度不可超过 3000 个字符' }),
   released: z.string().optional(),
   contentLimit: z.string().max(10)
 })

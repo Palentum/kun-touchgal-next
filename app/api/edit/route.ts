@@ -5,18 +5,20 @@ import { patchCreateSchema, patchUpdateSchema } from '~/validations/edit'
 import { createGalgame } from './create'
 import { updateGalgame } from './update'
 
-const checkAliasValid = (aliasString: string) => {
+const checkStringArrayValid = (type: 'alias' | 'tag', aliasString: string) => {
+  const label = type === 'alias' ? '别名' : '标签'
+
   const aliasArray = JSON.parse(aliasString) as string[]
-  if (aliasArray.length > 30) {
-    return '您最多使用 30 个别名'
+  if (aliasArray.length > 100) {
+    return `您最多使用 100 个${label}`
   }
   const maxLength = aliasArray.some((alias) => alias.length > 500)
   if (maxLength) {
-    return '单个别名的长度不可超过 500 个字符'
+    return `单个${label}的长度不可超过 500 个字符`
   }
   const minLength = aliasArray.some((alias) => alias.trim.length)
   if (minLength) {
-    return '单个别名至少一个字符'
+    return `单个${label}至少一个字符`
   }
   return aliasArray.map((a) => a.trim())
 }
@@ -34,15 +36,19 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json('本页面仅管理员可访问')
   }
 
-  const { alias, banner, ...rest } = input
-  const res = checkAliasValid(alias)
-  if (typeof res === 'string') {
-    return NextResponse.json(res)
+  const { alias, banner, tag, ...rest } = input
+  const aliasResult = checkStringArrayValid('alias', alias)
+  if (typeof aliasResult === 'string') {
+    return NextResponse.json(aliasResult)
+  }
+  const tagResult = checkStringArrayValid('tag', tag)
+  if (typeof tagResult === 'string') {
+    return NextResponse.json(tagResult)
   }
   const bannerArrayBuffer = await new Response(banner)?.arrayBuffer()
 
   const response = await createGalgame(
-    { alias: res, banner: bannerArrayBuffer, ...rest },
+    { alias: aliasResult, tag: tagResult, banner: bannerArrayBuffer, ...rest },
     payload.uid
   )
   return NextResponse.json(response)

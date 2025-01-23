@@ -9,6 +9,7 @@ import { BannerImage } from './BannerImage'
 import { PublishButton } from './PublishButton'
 import { PatchIntroduction } from './PatchIntroduction'
 import { ContentLimit } from './ContentLimit'
+import { BatchTag } from '../components/BatchTag'
 import type { CreatePatchRequestData } from '~/store/editStore'
 
 export const CreatePatch = () => {
@@ -47,6 +48,17 @@ export const CreatePatch = () => {
           <PatchIntroduction errors={errors.banner} />
 
           <AliasInput errors={errors.alias} />
+
+          <BatchTag
+            initialTag={data.tag}
+            saveTag={(tag) =>
+              setData({
+                ...data,
+                tag
+              })
+            }
+            errors={errors.tag}
+          />
 
           <ContentLimit errors={errors.contentLimit} />
 

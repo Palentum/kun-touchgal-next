@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button, Card, CardBody, Image, useDisclosure } from '@nextui-org/react'
 import { KunImageUploader } from './KunImageUploader'
 import { KunImageCropperModal } from './KunImageCropperModal'
@@ -23,7 +23,7 @@ export const KunImageCropper = ({
   removeImage
 }: Props) => {
   const [imgSrc, setImgSrc] = useState(initialImage ?? '')
-  const [croppedImage, setCroppedImage] = useState<string>()
+  const [previewImage, setPreviewImage] = useState<string>(initialImage ?? '')
   const {
     isOpen: isOpenCropper,
     onOpen: onOpenCropper,
@@ -35,17 +35,29 @@ export const KunImageCropper = ({
     onClose: onCloseMosaic
   } = useDisclosure()
 
+  useEffect(() => {
+    if (initialImage) {
+      setPreviewImage(initialImage)
+    }
+  }, [initialImage])
+
   const handleCropComplete = (image: string) => {
     setImgSrc(image)
+    setPreviewImage(image)
     onImageComplete?.(image)
   }
 
   const handleMosaicComplete = (mosaicImage: string) => {
     setImgSrc(mosaicImage)
+    setPreviewImage(mosaicImage)
     onImageComplete?.(mosaicImage)
   }
 
-  const previewImage = croppedImage ? croppedImage : initialImage
+  const handleRemoveImage = () => {
+    setPreviewImage('')
+    setImgSrc('')
+    removeImage?.()
+  }
 
   return (
     <div className="gap-6 size-full">
@@ -70,10 +82,7 @@ export const KunImageCropper = ({
               variant="bordered"
               size="sm"
               className="absolute z-10 right-2 top-2"
-              onPress={() => {
-                setCroppedImage('')
-                removeImage?.()
-              }}
+              onPress={handleRemoveImage}
             >
               移除
             </Button>

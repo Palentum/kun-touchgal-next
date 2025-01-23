@@ -3,20 +3,30 @@ import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { uploadPatchBanner } from './_upload'
 import { patchCreateSchema } from '~/validations/edit'
+import { handleBatchPatchTags } from './batchTag'
 
 export const createGalgame = async (
-  input: Omit<z.infer<typeof patchCreateSchema>, 'alias'> & {
+  input: Omit<z.infer<typeof patchCreateSchema>, 'alias' | 'tag'> & {
     alias: string[]
+    tag: string[]
   },
   uid: number
 ) => {
-  const { name, vndbId, alias, banner, introduction, released, contentLimit } =
-    input
+  const {
+    name,
+    vndbId,
+    alias,
+    banner,
+    tag,
+    introduction,
+    released,
+    contentLimit
+  } = input
 
   const bannerArrayBuffer = banner as ArrayBuffer
   const galgameUniqueId = crypto.randomBytes(4).toString('hex')
 
-  return await prisma.$transaction(
+  const res = await prisma.$transaction(
     async (prisma) => {
       const patch = await prisma.patch.create({
         data: {
@@ -53,8 +63,16 @@ export const createGalgame = async (
         }
       })
 
-      return { uniqueId: galgameUniqueId }
+      return { patchId: patch.id }
     },
     { timeout: 60000 }
   )
+
+  if (typeof res === 'string') {
+    return res
+  }
+
+  await handleBatchPatchTags(res.patchId, tag, uid)
+
+  return { uniqueId: galgameUniqueId }
 }
