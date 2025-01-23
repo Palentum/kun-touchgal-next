@@ -95,6 +95,8 @@ const processMarkdownFile = async (filePath, contentLimit) => {
   }
 }
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
 const processMarkdownFiles = async (filePaths, contentLimit) => {
   console.time('Total Processing Time')
   const results = []
@@ -106,6 +108,9 @@ const processMarkdownFiles = async (filePaths, contentLimit) => {
       batch.map((filePath) => processMarkdownFile(filePath, contentLimit))
     )
     results.push(...batchResults)
+
+    console.log(`已处理 ${i + 1} 批游戏, 休息 1s`)
+    await sleep(1000)
   }
 
   // 统计结果
