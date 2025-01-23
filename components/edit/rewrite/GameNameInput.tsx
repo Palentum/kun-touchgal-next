@@ -7,7 +7,7 @@ interface Props {
 }
 
 export const GameNameInput = ({ name, onChange, error }: Props) => (
-  <>
+  <div className="space-y-2">
     <h2 className="text-xl">游戏名称 (必须)</h2>
     <Input
       isRequired
@@ -20,5 +20,5 @@ export const GameNameInput = ({ name, onChange, error }: Props) => (
       isInvalid={!!error}
       errorMessage={error}
     />
-  </>
+  </div>
 )

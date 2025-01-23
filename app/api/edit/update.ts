@@ -24,6 +24,9 @@ export const updateGalgame = async (
     }
   })
 
-  const res = await handleBatchPatchTags(input.id, input.tag, uid)
-  return res
+  if (input.tag.length) {
+    await handleBatchPatchTags(input.id, input.tag, uid)
+  }
+
+  return {}
 }

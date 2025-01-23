@@ -8,15 +8,7 @@ export const EditButton = () => {
   const router = useRouter()
 
   return (
-    <Tooltip
-      content={
-        <div className="px-1 py-2">
-          <div className="font-bold text-small">编辑游戏信息</div>
-          <div className="text-tiny">任何人都可以编辑游戏信息</div>
-          <div className="text-tiny">但需要提交更新请求</div>
-        </div>
-      }
-    >
+    <Tooltip content="编辑游戏信息">
       <Button
         variant="bordered"
         isIconOnly

@@ -13,6 +13,7 @@ import { GameNameInput } from './GameNameInput'
 import { AliasManager } from './AliasManager'
 import { ContentLimit } from './ContentLimit'
 import { BatchTag } from '../components/BatchTag'
+import { ReleaseDateInput } from '../components/ReleaseDateInput'
 import type { RewritePatchData } from '~/store/rewriteStore'
 
 export const RewritePatch = () => {
@@ -68,18 +69,20 @@ export const RewritePatch = () => {
             <p className="text-2xl">编辑游戏信息</p>
           </div>
         </CardHeader>
-        <CardBody className="gap-4 mt-2">
+        <CardBody className="mt-4 space-y-12">
           <GameNameInput
             name={data.name}
             onChange={(name) => setData({ ...data, name })}
             error={errors.name}
           />
 
-          <h2 className="text-xl">游戏介绍 (可选)</h2>
-          {errors.introduction && (
-            <p className="text-xs text-danger-500">{errors.introduction}</p>
-          )}
-          <KunDualEditorProvider storeName="patchRewrite" />
+          <div className="space-y-2">
+            <h2 className="text-xl">游戏介绍 (可选)</h2>
+            {errors.introduction && (
+              <p className="text-xs text-danger-500">{errors.introduction}</p>
+            )}
+            <KunDualEditorProvider storeName="patchRewrite" />
+          </div>
 
           <AliasManager
             aliasList={data.alias}
@@ -91,6 +94,14 @@ export const RewritePatch = () => {
               })
             }
             errors={errors.alias}
+          />
+
+          <ReleaseDateInput
+            date={data.released}
+            setDate={(date) => {
+              setData({ ...data, released: date })
+            }}
+            errors={errors.released}
           />
 
           <BatchTag

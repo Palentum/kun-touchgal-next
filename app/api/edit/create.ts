@@ -72,7 +72,9 @@ export const createGalgame = async (
     return res
   }
 
-  await handleBatchPatchTags(res.patchId, tag, uid)
+  if (tag.length) {
+    await handleBatchPatchTags(res.patchId, tag, uid)
+  }
 
   return { uniqueId: galgameUniqueId }
 }

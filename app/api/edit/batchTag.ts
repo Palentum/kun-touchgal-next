@@ -26,7 +26,6 @@ export const createTag = async (name: string, uid: number) => {
   return newTag
 }
 
-// 批量处理 tags
 export const handleBatchPatchTags = async (
   patchId: number,
   tagArray: string[],

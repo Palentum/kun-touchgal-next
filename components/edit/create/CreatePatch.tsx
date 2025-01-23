@@ -10,6 +10,7 @@ import { PublishButton } from './PublishButton'
 import { PatchIntroduction } from './PatchIntroduction'
 import { ContentLimit } from './ContentLimit'
 import { BatchTag } from '../components/BatchTag'
+import { ReleaseDateInput } from '../components/ReleaseDateInput'
 import type { CreatePatchRequestData } from '~/store/editStore'
 
 export const CreatePatch = () => {
@@ -29,7 +30,7 @@ export const CreatePatch = () => {
         <CardBody className="mt-4 space-y-12">
           <VNDBInput errors={errors.vndbId} />
 
-          <div>
+          <div className="space-y-2">
             <h2 className="text-xl">游戏名称 (必须)</h2>
             <Input
               isRequired
@@ -48,6 +49,14 @@ export const CreatePatch = () => {
           <PatchIntroduction errors={errors.banner} />
 
           <AliasInput errors={errors.alias} />
+
+          <ReleaseDateInput
+            date={data.released}
+            setDate={(date) => {
+              setData({ ...data, released: date })
+            }}
+            errors={errors.released}
+          />
 
           <BatchTag
             initialTag={data.tag}
