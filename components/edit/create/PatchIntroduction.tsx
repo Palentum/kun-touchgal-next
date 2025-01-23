@@ -10,6 +10,7 @@ interface Props {
 
 export const PatchIntroduction = ({ errors }: Props) => {
   const { data } = useCreatePatchStore()
+
   return (
     <div className="space-y-2">
       <h2 className="text-xl">游戏介绍 (可选)</h2>

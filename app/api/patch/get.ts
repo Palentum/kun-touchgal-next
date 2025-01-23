@@ -60,7 +60,7 @@ export const getPatchById = async (
     type: patch.type,
     language: patch.language,
     platform: patch.platform,
-    tags: patch.tag.map((t) => t.tag.name).slice(0, 3),
+    tags: patch.tag.map((t) => t.tag.name),
     alias: patch.alias,
     isFavorite: patch.favorite_by.length > 0,
     contentLimit: patch.content_limit,

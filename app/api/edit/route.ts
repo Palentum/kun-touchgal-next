@@ -61,6 +61,6 @@ export const PUT = async (req: NextRequest) => {
     return NextResponse.json('本页面仅管理员可访问')
   }
 
-  const response = await updateGalgame(input)
+  const response = await updateGalgame(input, payload.uid)
   return NextResponse.json(response)
 }

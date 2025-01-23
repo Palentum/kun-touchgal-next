@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button, Card, CardBody, CardHeader } from '@nextui-org/react'
+import { Button, Card, CardBody, CardHeader, Textarea } from '@nextui-org/react'
 import { useRewritePatchStore } from '~/store/rewriteStore'
-import { KunEditorProvider } from '~/components/kun/milkdown/KunEditorProvider'
+import { KunDualEditorProvider } from '~/components/kun/milkdown/DualEditorProvider'
 import toast from 'react-hot-toast'
 import { kunFetchPut } from '~/utils/kunFetch'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
@@ -78,7 +78,7 @@ export const RewritePatch = () => {
           {errors.introduction && (
             <p className="text-xs text-danger-500">{errors.introduction}</p>
           )}
-          <KunEditorProvider storeName="patchRewrite" />
+          <KunDualEditorProvider storeName="patchRewrite" />
 
           <AliasManager
             aliasList={data.alias}
@@ -90,6 +90,23 @@ export const RewritePatch = () => {
               })
             }
             errors={errors.alias}
+          />
+
+          <h2 className="text-xl">游戏标签 (可选)</h2>
+          {errors.tag && (
+            <p className="text-xs text-danger-500">{errors.tag}</p>
+          )}
+          <Textarea
+            placeholder="每个标签需要使用英语 , 分隔"
+            value={data.tag.toString()}
+            onChange={(e) => {
+              setData({
+                ...data,
+                tag: e.target.value.split(',').map((tag) => tag.trim())
+              })
+            }}
+            className="w-full"
+            minRows={3}
           />
 
           <ContentLimit errors={errors.contentLimit} />

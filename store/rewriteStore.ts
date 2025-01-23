@@ -5,6 +5,7 @@ export interface RewritePatchData {
   name: string
   introduction: string
   alias: string[]
+  tag: string[]
   contentLimit: string
 }
 
@@ -21,6 +22,7 @@ const initialState: RewritePatchData = {
   name: '',
   introduction: '',
   alias: [],
+  tag: [],
   contentLimit: 'sfw'
 }
 
