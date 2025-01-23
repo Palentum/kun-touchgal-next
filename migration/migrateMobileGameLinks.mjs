@@ -169,6 +169,12 @@ const createPatchResources = async (
 ) => {
   const sections = [
     {
+      marker: '## ▼ PE版下载链接',
+      name: '手机版游戏本体下载资源',
+      excludeType: new Set(['PC游戏']),
+      excludePlatform: new Set(['windows'])
+    },
+    {
       marker: '## ▼ PE版下载地址',
       name: '手机版游戏本体下载资源',
       excludeType: new Set(['PC游戏']),
