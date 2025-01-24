@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import type { ZodSchema } from 'zod'
 import { NextRequest } from 'next/server'
+import type { ZodSchema } from 'zod'
 
 export const kunParseGetQuery = <T extends ZodSchema>(
   req: NextRequest,

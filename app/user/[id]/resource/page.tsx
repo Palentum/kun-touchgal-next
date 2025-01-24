@@ -1,6 +1,6 @@
 import { UserResource } from '~/components/user/resource/Container'
-import { kunServerFetchGet } from '~/utils/kunServerFetch'
-import type { UserResource as UserResourceType } from '~/types/api/user'
+import { kunGetActions } from './actions'
+import { ErrorComponent } from '~/components/error/ErrorComponent'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -9,14 +9,20 @@ interface Props {
 export default async function Kun({ params }: Props) {
   const { id } = await params
 
-  const { resources, total } = await kunServerFetchGet<{
-    resources: UserResourceType[]
-    total: number
-  }>('/user/profile/resource', {
+  const response = await kunGetActions({
     uid: Number(id),
     page: 1,
     limit: 20
   })
+  if (typeof response === 'string') {
+    return <ErrorComponent error={response} />
+  }
 
-  return <UserResource resources={resources} total={total} uid={Number(id)} />
+  return (
+    <UserResource
+      resources={response.resources}
+      total={response.total}
+      uid={Number(id)}
+    />
+  )
 }

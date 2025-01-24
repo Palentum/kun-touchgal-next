@@ -1,6 +1,6 @@
 import { UserComment } from '~/components/user/comment/Container'
-import { kunServerFetchGet } from '~/utils/kunServerFetch'
-import type { UserComment as UserCommentType } from '~/types/api/user'
+import { kunGetActions } from './actions'
+import { ErrorComponent } from '~/components/error/ErrorComponent'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -9,14 +9,20 @@ interface Props {
 export default async function Kun({ params }: Props) {
   const { id } = await params
 
-  const { comments, total } = await kunServerFetchGet<{
-    comments: UserCommentType[]
-    total: number
-  }>('/user/profile/comment', {
+  const response = await kunGetActions({
     uid: Number(id),
     page: 1,
     limit: 20
   })
+  if (typeof response === 'string') {
+    return <ErrorComponent error={response} />
+  }
 
-  return <UserComment initComments={comments} total={total} uid={Number(id)} />
+  return (
+    <UserComment
+      initComments={response.comments}
+      total={response.total}
+      uid={Number(id)}
+    />
+  )
 }
