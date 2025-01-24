@@ -38,10 +38,6 @@ export const FeedbackHandler = ({ initialFeedback }: Props) => {
   const [handleContent, setHandleContent] = useState('')
   const [updating, setUpdating] = useState(false)
   const handleUpdateFeedback = async () => {
-    if (!handleContent.trim()) {
-      toast.error('反馈回复内容不可为空')
-      return
-    }
     setUpdating(true)
     const res = await kunFetchPost<KunResponse<AdminFeedback>>(
       '/admin/feedback/handle',
