@@ -16,17 +16,17 @@ export const searchGalgameByTag = async (
   const [data, total] = await Promise.all([
     await prisma.patch.findMany({
       where: {
-        OR: [
+        AND: [
           nsfwEnable,
-          {
+          ...query.map((q) => ({
             tag: {
               some: {
                 tag: {
-                  OR: [{ name: { in: query } }, { alias: { hasSome: query } }]
+                  OR: [{ name: q }, { alias: { has: q } }]
                 }
               }
             }
-          }
+          }))
         ]
       },
       select: GalgameCardSelectField,
@@ -36,17 +36,17 @@ export const searchGalgameByTag = async (
     }),
     await prisma.patch.count({
       where: {
-        OR: [
+        AND: [
           nsfwEnable,
-          {
+          ...query.map((q) => ({
             tag: {
               some: {
                 tag: {
-                  OR: [{ name: { in: query } }, { alias: { hasSome: query } }]
+                  OR: [{ name: q }, { alias: { has: q } }]
                 }
               }
             }
-          }
+          }))
         ]
       }
     })
