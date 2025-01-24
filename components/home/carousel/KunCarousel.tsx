@@ -31,17 +31,20 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
   const slideVariants = {
     enter: (direction: number) => ({
       x: direction > 0 ? '100%' : '-100%',
-      opacity: 0
+      opacity: 0,
+      scale: 0.95
     }),
     center: {
       zIndex: 1,
       x: 0,
-      opacity: 1
+      opacity: 1,
+      scale: 1
     },
     exit: (direction: number) => ({
       zIndex: 0,
       x: direction < 0 ? '100%' : '-100%',
-      opacity: 0
+      opacity: 0,
+      scale: 0.95
     })
   }
 
@@ -63,7 +66,7 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <AnimatePresence initial={false} custom={direction} mode="popLayout">
+      <AnimatePresence initial={false} custom={direction} mode="sync">
         <motion.div
           key={currentSlide}
           custom={direction}
@@ -72,12 +75,13 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
           animate="center"
           exit="exit"
           transition={{
-            x: { type: 'spring', stiffness: 300, damping: 30 },
-            opacity: { duration: 0.2 }
+            x: { type: 'tween', duration: 0.4, ease: 'easeInOut' },
+            opacity: { duration: 0.3 },
+            scale: { duration: 0.3 }
           }}
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={1}
+          dragElastic={0.7}
           onDragEnd={(_, { offset, velocity }) => {
             const swipe = swipePower(offset.x, velocity.x)
 
