@@ -1,6 +1,10 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
+import { getKv, setKv } from '~/lib/redis'
+import { PATCH_CACHE_DURATION } from '~/config/cache'
 import type { Patch } from '~/types/api/patch'
+
+const CACHE_KEY = 'patch'
 
 const uniqueIdSchema = z.object({
   uniqueId: z.string().min(8).max(8)
@@ -10,6 +14,11 @@ export const getPatchById = async (
   input: z.infer<typeof uniqueIdSchema>,
   uid: number
 ) => {
+  const cachedPatch = await getKv(`${CACHE_KEY}:${input.uniqueId}`)
+  if (cachedPatch) {
+    return JSON.parse(cachedPatch) as Patch
+  }
+
   const { uniqueId } = input
 
   const patch = await prisma.patch.findUnique({
@@ -73,6 +82,12 @@ export const getPatchById = async (
     updated: String(patch.updated),
     _count: patch._count
   }
+
+  await setKv(
+    `${CACHE_KEY}:${input.uniqueId}`,
+    JSON.stringify(response),
+    PATCH_CACHE_DURATION
+  )
 
   return response
 }

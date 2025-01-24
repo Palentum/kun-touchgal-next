@@ -16,6 +16,11 @@ const uniqueIdSchema = z.object({
 export const getPatchIntroduction = async (
   input: z.infer<typeof uniqueIdSchema>
 ) => {
+  const cachedIntro = await getKv(`${CACHE_KEY}:${input.uniqueId}`)
+  if (cachedIntro) {
+    return JSON.parse(cachedIntro) as PatchIntroduction
+  }
+
   const { uniqueId } = input
 
   const patch = await prisma.patch.findUnique({
@@ -49,6 +54,12 @@ export const getPatchIntroduction = async (
     updated: String(patch.updated)
   }
 
+  await setKv(
+    `${CACHE_KEY}:${input.uniqueId}`,
+    JSON.stringify(response),
+    PATCH_INTRODUCTION_CACHE_DURATION
+  )
+
   return response
 }
 
@@ -57,17 +68,7 @@ export const GET = async (req: NextRequest) => {
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }
-  const cachedIntro = await getKv(`${CACHE_KEY}:${input.uniqueId}`)
-  if (cachedIntro) {
-    return NextResponse.json(JSON.parse(cachedIntro))
-  }
 
   const response = await getPatchIntroduction(input)
-  await setKv(
-    `${CACHE_KEY}:${input.uniqueId}`,
-    JSON.stringify(response),
-    PATCH_INTRODUCTION_CACHE_DURATION
-  )
-
   return NextResponse.json(response)
 }

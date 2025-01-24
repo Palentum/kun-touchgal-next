@@ -7,10 +7,6 @@ import {
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { getPatchById } from './get'
 import { deletePatchById } from './delete'
-import { getKv, setKv } from '~/lib/redis'
-import { PATCH_CACHE_DURATION } from '~/config/cache'
-
-const CACHE_KEY = 'patch'
 
 const uniqueIdSchema = z.object({
   uniqueId: z.string().min(8).max(8)
@@ -25,20 +21,9 @@ export const GET = async (req: NextRequest) => {
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }
-  const cachedPatch = await getKv(`${CACHE_KEY}:${input.uniqueId}`)
-  if (cachedPatch) {
-    return NextResponse.json(JSON.parse(cachedPatch))
-  }
-
   const payload = await verifyHeaderCookie(req)
 
   const response = await getPatchById(input, payload?.uid ?? 0)
-  await setKv(
-    `${CACHE_KEY}:${input.uniqueId}`,
-    JSON.stringify(response),
-    PATCH_CACHE_DURATION
-  )
-
   return NextResponse.json(response)
 }
 
