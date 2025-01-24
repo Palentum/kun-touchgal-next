@@ -1,9 +1,10 @@
 import { CardContainer } from '~/components/resource/Container'
 import { kunMetadata } from './metadata'
 import { Suspense } from 'react'
-import type { Metadata } from 'next'
 import { kunGetActions } from './actions'
 import { ErrorComponent } from '~/components/error/ErrorComponent'
+import type { Metadata } from 'next'
+
 export const metadata: Metadata = kunMetadata
 
 interface Props {
