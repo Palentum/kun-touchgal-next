@@ -1,9 +1,8 @@
 import { Stats } from '~/components/admin/stats'
-import { kunServerFetchGet } from '~/utils/kunServerFetch'
-import type { AdminStats } from '~/types/api/admin'
+import { kunGetActions } from './actions'
 
 export default async function Kun() {
-  const stats = await kunServerFetchGet<AdminStats[]>('/admin/stats')
+  const stats = await kunGetActions()
 
   return <Stats stats={stats} />
 }

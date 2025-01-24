@@ -1,19 +1,21 @@
 import { Feedback } from '~/components/admin/feedback/Container'
-import { kunServerFetchGet } from '~/utils/kunServerFetch'
 import { kunMetadata } from './metadata'
-import type { AdminFeedback } from '~/types/api/admin'
+import { kunGetActions } from './actions'
+import { ErrorComponent } from '~/components/error/ErrorComponent'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = kunMetadata
 
 export default async function Kun() {
-  const { feedbacks, total } = await kunServerFetchGet<{
-    feedbacks: AdminFeedback[]
-    total: number
-  }>('/admin/feedback', {
+  const response = await kunGetActions({
     page: 1,
     limit: 30
   })
+  if (typeof response === 'string') {
+    return <ErrorComponent error={response} />
+  }
 
-  return <Feedback initialFeedbacks={feedbacks} total={total} />
+  return (
+    <Feedback initialFeedbacks={response.feedbacks} total={response.total} />
+  )
 }

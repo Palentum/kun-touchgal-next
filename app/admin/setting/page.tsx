@@ -1,15 +1,12 @@
 import { AdminSetting } from '~/components/admin/setting/Container'
-import { kunServerFetchGet } from '~/utils/kunServerFetch'
 import { kunMetadata } from './metadata'
-import type { AdminRedirectConfig } from '~/types/api/admin'
+import { kunGetActions } from './actions'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = kunMetadata
 
 export default async function Kun() {
-  const setting = await kunServerFetchGet<AdminRedirectConfig>(
-    '/admin/setting/redirect'
-  )
+  const setting = await kunGetActions()
 
   return <AdminSetting setting={setting} />
 }
