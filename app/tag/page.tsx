@@ -2,6 +2,7 @@ import { Container } from '~/components/tag/Container'
 import { kunMetadata } from './metadata'
 import { kunGetActions } from './actions'
 import { ErrorComponent } from '~/components/error/ErrorComponent'
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = kunMetadata
@@ -15,5 +16,9 @@ export default async function Kun() {
     return <ErrorComponent error={response} />
   }
 
-  return <Container initialTags={response.tags} initialTotal={response.total} />
+  return (
+    <Suspense>
+      <Container initialTags={response.tags} initialTotal={response.total} />
+    </Suspense>
+  )
 }
