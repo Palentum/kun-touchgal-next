@@ -1,2 +1,2 @@
-export type SortOption = 'created' | 'view' | 'download' | 'favorite'
-export type SortDirection = 'asc' | 'desc'
+export type SortField = 'created' | 'view' | 'download' | 'favorite'
+export type SortOrder = 'asc' | 'desc'
