@@ -25,7 +25,7 @@ export const ResourceDownload = ({ resource }: Props) => {
 
   return (
     <div className="space-y-2">
-      {resource.note && (
+      {resource.note ? (
         <Accordion
           fullWidth={true}
           className="p-0"
@@ -46,6 +46,8 @@ export const ResourceDownload = ({ resource }: Props) => {
             {resource.note}
           </AccordionItem>
         </Accordion>
+      ) : (
+        <p>{resource.name}</p>
       )}
 
       <div className="flex justify-between">
