@@ -5,8 +5,12 @@ import type { KunBreadcrumbItem } from './constants'
 
 type NextParams = Record<string, string | Array<string> | undefined>
 
+// Some path's length is equal to galgame uniqueId (8 digits and chars)
+const pathToIgnore = ['/resource', '/register', '/redirect', '/settings']
+
 export const getKunPathLabel = (pathname: string): string => {
-  if (isPatchPath(pathname)) {
+  const hasIgnorePath = pathToIgnore.some((p) => p === pathname)
+  if (isPatchPath(pathname) && !hasIgnorePath) {
     return pathname
   }
 
@@ -47,9 +51,6 @@ export const createBreadcrumbItem = (
     tag: { keyPrefix: `/tag/${params.id}`, hrefSuffix: '' },
     user: { keyPrefix: `/user/${params.id}`, hrefSuffix: `/resource` }
   }
-
-  // Some path's length is equal to galgame uniqueId (8 digits and chars)
-  const pathToIgnore = ['/resource']
 
   for (const [pathKey, { keyPrefix, hrefSuffix }] of Object.entries(
     pathHandlers
