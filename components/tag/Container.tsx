@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useDebounce } from 'use-debounce'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { TagHeader } from './TagHeader'
 import { TagInput } from './TagInput'
 import { DefaultTagList } from './DefaultTagList'
@@ -16,6 +17,8 @@ interface Props {
 }
 
 export const Container = ({ initialTags, initialTotal }: Props) => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [tags, setTags] = useState<TagType[]>(initialTags)
   const [loading, setLoading] = useState(false)
   const isMounted = useMounted()
@@ -23,11 +26,25 @@ export const Container = ({ initialTags, initialTotal }: Props) => {
   const [query, setQuery] = useState('')
   const [debouncedQuery] = useDebounce(query, 500)
   const [suggestions, setSuggestions] = useState<TagType[]>([])
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [selectedTags, setSelectedTags] = useState<string[]>(() => {
+    const tagsParam = searchParams.get('tags')
+    return tagsParam ? tagsParam.split(',') : []
+  })
   const [galgames, setGalgames] = useState<GalgameCard[]>([])
 
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(initialTotal)
+
+  const updateSearchParams = (newTags: string[]) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (newTags.length > 0) {
+      params.set('tags', newTags.join(','))
+    } else {
+      params.delete('tags')
+    }
+    router.replace(`?${params.toString()}`, { scroll: false })
+  }
+
   const fetchTags = async (currentPage: number) => {
     setLoading(true)
     const { tags: newTags, total: newTotal } = await kunFetchGet<{
@@ -64,6 +81,7 @@ export const Container = ({ initialTags, initialTotal }: Props) => {
   const [searching, setSearching] = useState(false)
   const [searchPage, setSearchPage] = useState(1)
   const [searchTotal, setSearchTotal] = useState(0)
+
   const fetchGalgamesWithTags = async (currentPage: number) => {
     if (selectedTags.length === 0) {
       setGalgames([])
@@ -93,6 +111,7 @@ export const Container = ({ initialTags, initialTotal }: Props) => {
   }, [debouncedQuery])
 
   useEffect(() => {
+    updateSearchParams(selectedTags)
     if (selectedTags.length > 0) {
       setSearchPage(1)
       fetchGalgamesWithTags(1)

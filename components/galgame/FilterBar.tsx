@@ -18,15 +18,15 @@ import {
   ALL_SUPPORTED_PLATFORM,
   SUPPORTED_PLATFORM_MAP
 } from '~/constants/resource'
-import type { SortDirection, SortOption } from './_sort'
+import type { SortField, SortOrder } from './_sort'
 
 interface Props {
   selectedType: string
   setSelectedType: (types: string) => void
-  sortField: SortOption
-  setSortField: (option: SortOption) => void
-  sortOrder: SortDirection
-  setSortOrder: (direction: SortDirection) => void
+  sortField: SortField
+  setSortField: (option: SortField) => void
+  sortOrder: SortOrder
+  setSortOrder: (direction: SortOrder) => void
   selectedLanguage: string
   setSelectedLanguage: (language: string) => void
   selectedPlatform: string
@@ -164,7 +164,7 @@ export const FilterBar = ({
               <DropdownMenu
                 aria-label="排序选项"
                 selectedKeys={new Set([sortField])}
-                onAction={(key) => setSortField(key as SortOption)}
+                onAction={(key) => setSortField(key as SortField)}
                 selectionMode="single"
                 className="min-w-[120px]"
               >
