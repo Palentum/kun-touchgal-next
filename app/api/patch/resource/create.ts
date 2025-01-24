@@ -15,7 +15,7 @@ const uploadPatchResource = async (patchId: number, hash: string) => {
   const s3Key = `patch/${patchId}/resource/${hash}/${fileName}`
   await uploadFileToS3(s3Key, filePath)
 
-  const downloadLink = `${process.env.KUN_VISUAL_NOVEL_S3_STORAGE_URL!}/${s3Key}`
+  const downloadLink = `${process.env.NEXT_PUBLIC_KUN_VISUAL_NOVEL_S3_STORAGE_URL!}/${s3Key}`
   return { downloadLink }
 }
 

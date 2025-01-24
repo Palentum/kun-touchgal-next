@@ -58,7 +58,12 @@ export const FileUploadContainer = ({ onSuccess, handleRemoveFile }: Props) => {
 
     const { filetype, fileHash, fileSize } = res.data
     setFileData((prev) => (prev ? { ...prev, hash: fileHash, filetype } : null))
-    onSuccess(filetype, fileHash, `https://www.moyu.moe/${fileHash}`, fileSize)
+    onSuccess(
+      filetype,
+      fileHash,
+      `${process.env.NEXT_PUBLIC_KUN_VISUAL_NOVEL_S3_STORAGE_URL}/${fileHash}`,
+      fileSize
+    )
   }
 
   const handleFileUpload = async (file: File) => {
