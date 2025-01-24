@@ -48,6 +48,9 @@ export const createBreadcrumbItem = (
     user: { keyPrefix: `/user/${params.id}`, hrefSuffix: `/resource` }
   }
 
+  // Some path's length is equal to galgame uniqueId (8 digits and chars)
+  const pathToIgnore = ['/resource']
+
   for (const [pathKey, { keyPrefix, hrefSuffix }] of Object.entries(
     pathHandlers
   )) {
@@ -56,8 +59,9 @@ export const createBreadcrumbItem = (
       tag: isTagPath,
       user: isUserPath
     }[pathKey]
+    const hasIgnorePath = pathToIgnore.some((p) => p === pathname)
 
-    if (isPath && isPath(pathname)) {
+    if (isPath && isPath(pathname) && !hasIgnorePath) {
       return {
         ...defaultItem,
         key: keyPrefix,
