@@ -31,7 +31,6 @@ const colors = {
 export const kunCMTheme = () => {
   return EditorView.theme({
     '&': {
-      color: colors.foreground,
       backgroundColor: colors.backgroundAlpha,
       borderRadius: '0.75rem',
       lineHeight: '1.5',
@@ -213,7 +212,7 @@ export const kunCMHighlightStyle = () =>
     { tag: t.regexp, color: colors.warning },
 
     // Special syntax
-    { tag: [t.meta, t.comment], color: colors.content4, fontStyle: 'italic' },
+    { tag: [t.meta, t.comment], color: colors.foreground, fontStyle: 'italic' },
     { tag: t.tagName, color: colors.primary, fontWeight: '500' },
     { tag: t.attributeName, color: colors.warning },
 

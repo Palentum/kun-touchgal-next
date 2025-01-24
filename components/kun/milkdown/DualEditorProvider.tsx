@@ -76,6 +76,22 @@ export const KunDualEditorProvider = ({ storeName }: Props) => {
   return (
     <Tabs aria-label="Editor options" size="lg" variant="underlined">
       <Tab
+        key="code"
+        title={
+          <div className="flex items-center gap-2">
+            <Code size={18} />
+            <span>代码编辑</span>
+          </div>
+        }
+      >
+        <Codemirror
+          markdown={getMarkdown()}
+          setCmAPI={setCmAPI}
+          onChange={onCodemirrorChange}
+        />
+      </Tab>
+
+      <Tab
         key="editor"
         title={
           <div className="flex items-center gap-2">
@@ -92,22 +108,6 @@ export const KunDualEditorProvider = ({ storeName }: Props) => {
             />
           </ProsemirrorAdapterProvider>
         </MilkdownProvider>
-      </Tab>
-
-      <Tab
-        key="code"
-        title={
-          <div className="flex items-center gap-2">
-            <Code size={18} />
-            <span>代码编辑</span>
-          </div>
-        }
-      >
-        <Codemirror
-          markdown={getMarkdown()}
-          setCmAPI={setCmAPI}
-          onChange={onCodemirrorChange}
-        />
       </Tab>
     </Tabs>
   )
