@@ -33,6 +33,7 @@ export const getPatchByTag = async (
   const patches = data.map((p) => p.patch)
   const galgames = patches.map((gal) => ({
     ...gal,
+    tags: gal.tag.map((t) => t.tag.name).slice(0, 3),
     uniqueId: gal.unique_id
   }))
 
