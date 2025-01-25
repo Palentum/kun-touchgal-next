@@ -45,6 +45,7 @@ export const TagInput = ({
 
       <div className="relative">
         <Input
+          autoFocus
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="输入标签名称进行搜索"

@@ -111,6 +111,7 @@ export const SearchPage = () => {
       <div className="mb-8 space-y-4">
         <div className="relative">
           <Input
+            autoFocus
             value={query}
             onChange={(e) => {
               setQuery(e.target.value)
