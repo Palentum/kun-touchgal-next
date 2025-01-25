@@ -1,8 +1,5 @@
-import { Stats } from '~/components/admin/stats'
-import { kunGetActions } from './actions'
+import { KunStats } from '~/components/admin/stats/KunStats'
 
 export default async function Kun() {
-  const stats = await kunGetActions()
-
-  return <Stats stats={stats} />
+  return <KunStats />
 }

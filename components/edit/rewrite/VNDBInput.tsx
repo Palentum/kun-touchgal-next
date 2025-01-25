@@ -17,8 +17,8 @@ export const VNDBInput = ({ vndbId, setVNDBId, errors }: Props) => {
   const { data, setData } = useRewritePatchStore()
 
   const handleCheckDuplicate = async () => {
-    if (!VNDBRegex.test(data.vndbId)) {
-      toast.error('您输入的 VNDB ID 格式无效')
+    if (!data.vndbId) {
+      toast.error('VNDB ID 不可为空')
       return
     }
 

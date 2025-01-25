@@ -4,7 +4,6 @@ import { Button, Input, Link } from '@nextui-org/react'
 import { useCreatePatchStore } from '~/store/editStore'
 import toast from 'react-hot-toast'
 import { kunFetchGet } from '~/utils/kunFetch'
-import { VNDBRegex } from '~/utils/validate'
 import type { VNDBResponse } from '../VNDB'
 
 interface Props {
@@ -15,8 +14,8 @@ export const VNDBInput = ({ errors }: Props) => {
   const { data, setData } = useCreatePatchStore()
 
   const handleCheckDuplicate = async () => {
-    if (!VNDBRegex.test(data.vndbId)) {
-      toast.error('您输入的 VNDB ID 格式无效')
+    if (!data.vndbId) {
+      toast.error('VNDB ID 不可为空')
       return
     }
 

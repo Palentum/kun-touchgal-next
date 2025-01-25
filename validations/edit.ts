@@ -47,7 +47,7 @@ export const patchUpdateSchema = z.object({
 })
 
 export const duplicateSchema = z.object({
-  vndbId: z.string().regex(/^v\d{1,6}$/, { message: 'VNDB ID 格式无效' })
+  vndbId: z.string().max(10)
 })
 
 export const imageSchema = z.object({
