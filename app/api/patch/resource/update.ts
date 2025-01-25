@@ -5,7 +5,8 @@ import type { PatchResource } from '~/types/api/patch'
 
 export const updatePatchResource = async (
   input: z.infer<typeof patchResourceUpdateSchema>,
-  uid: number
+  uid: number,
+  userRole: number
 ) => {
   const { resourceId, patchId, content, ...resourceData } = input
   const resource = await prisma.patch_resource.findUnique({
@@ -14,13 +15,15 @@ export const updatePatchResource = async (
   if (!resource) {
     return '未找到该资源'
   }
-  if (resource.user_id !== uid) {
+
+  const resourceUserUid = resource.user_id
+  if (resource.user_id !== uid && userRole < 3) {
     return '您没有权限更改该资源'
   }
 
   return await prisma.$transaction(async (prisma) => {
     const newResource = await prisma.patch_resource.update({
-      where: { id: resourceId, user_id: uid },
+      where: { id: resourceId, user_id: resourceUserUid },
       data: {
         ...resourceData
       },

@@ -70,7 +70,7 @@ export const DeleteButton = ({ patch }: Props) => {
           </ModalHeader>
           <ModalBody>
             严重警告, 删除 Galgame 将会删除这个 Galgame 下面所有的评论,
-            所有的资源链接, 所有的贡献历史记录, 您确定要删除吗
+            所有的资源链接, 您确定要删除吗
           </ModalBody>
           <ModalFooter>
             <Button variant="light" onPress={onClose}>
@@ -79,7 +79,7 @@ export const DeleteButton = ({ patch }: Props) => {
             <Button
               color="danger"
               onPress={handleDelete}
-              isDisabled={deleting || patch.vndbId !== ''}
+              isDisabled={deleting}
               isLoading={deleting}
             >
               删除

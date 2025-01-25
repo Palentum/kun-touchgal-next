@@ -85,9 +85,9 @@ export const ResourceTabs = ({
                         <DropdownMenu
                           aria-label="Resource actions"
                           disabledKeys={
-                            user.uid === resource.userId
-                              ? []
-                              : ['edit', 'delete']
+                            user.uid !== resource.userId && user.role < 3
+                              ? ['edit', 'delete']
+                              : []
                           }
                         >
                           <DropdownItem

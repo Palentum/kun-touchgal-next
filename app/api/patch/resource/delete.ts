@@ -11,7 +11,8 @@ const resourceIdSchema = z.object({
 
 export const deleteResource = async (
   input: z.infer<typeof resourceIdSchema>,
-  uid: number
+  uid: number,
+  userRole: number
 ) => {
   const patchResource = await prisma.patch_resource.findUnique({
     where: {
@@ -22,7 +23,9 @@ export const deleteResource = async (
   if (!patchResource) {
     return '未找到对应的资源'
   }
-  if (patchResource.user_id !== uid) {
+
+  const resourceUserUid = patchResource.user_id
+  if (patchResource.user_id !== uid && userRole < 3) {
     return '您没有权限删除该资源'
   }
 
@@ -34,7 +37,7 @@ export const deleteResource = async (
 
   return await prisma.$transaction(async (prisma) => {
     await prisma.user.update({
-      where: { id: uid },
+      where: { id: resourceUserUid },
       data: { moemoepoint: { increment: -3 } }
     })
 

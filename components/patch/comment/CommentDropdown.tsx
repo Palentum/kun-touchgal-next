@@ -135,7 +135,9 @@ export const CommentDropdown = ({ comment, setComments }: Props) => {
         <DropdownMenu
           aria-label="Comment actions"
           disabledKeys={
-            user.uid === comment.userId ? ['report'] : ['edit', 'delete']
+            user.uid !== comment.userId && user.role < 3
+              ? ['edit', 'delete']
+              : ['report']
           }
         >
           <DropdownItem

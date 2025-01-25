@@ -24,16 +24,20 @@ const deleteCommentWithReplies = async (commentId: number) => {
 
 export const deleteComment = async (
   input: z.infer<typeof commentIdSchema>,
-  uid: number
+  uid: number,
+  userRole: number
 ) => {
   const comment = await prisma.patch_comment.findUnique({
     where: {
-      id: input.commentId,
-      user_id: uid
+      id: input.commentId
     }
   })
   if (!comment) {
     return '未找到对应的评论'
+  }
+
+  if (comment.user_id !== uid && userRole < 3) {
+    return '您没有权限删除该评论'
   }
 
   return await prisma.$transaction(async (prisma) => {

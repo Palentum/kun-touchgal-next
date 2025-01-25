@@ -70,7 +70,7 @@ export const PUT = async (req: NextRequest) => {
     return NextResponse.json('用户未登录')
   }
 
-  const response = await updatePatchResource(input, payload.uid)
+  const response = await updatePatchResource(input, payload.uid, payload.role)
   return NextResponse.json(response)
 }
 
@@ -84,6 +84,6 @@ export const DELETE = async (req: NextRequest) => {
     return NextResponse.json('用户未登录')
   }
 
-  const response = await deleteResource(input, payload.uid)
+  const response = await deleteResource(input, payload.uid, payload.role)
   return NextResponse.json(response)
 }
