@@ -100,6 +100,10 @@ export const SearchPage = () => {
     setLoading(false)
   }
 
+  useEffect(() => {
+    handleSearch()
+  }, [page])
+
   return (
     <div className="w-full my-4">
       <KunHeader name="搜索 Galgame" description="输入内容以自动搜索 Galgame" />
@@ -193,10 +197,7 @@ export const SearchPage = () => {
               <Pagination
                 total={Math.ceil(total / 10)}
                 page={page}
-                onChange={(newPage: number) => {
-                  setPage(newPage)
-                  handleSearch()
-                }}
+                onChange={setPage}
                 showControls
                 size="lg"
                 radius="lg"
