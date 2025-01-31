@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+
 import { defaultValueCtx, Editor, rootCtx } from '@milkdown/core'
 import { Milkdown, useEditor } from '@milkdown/react'
 import { commonmark } from '@milkdown/preset-commonmark'
@@ -12,6 +14,7 @@ import { indent } from '@milkdown/plugin-indent'
 import { trailing } from '@milkdown/plugin-trailing'
 import { upload, uploadConfig } from '@milkdown/plugin-upload'
 import { automd } from '@milkdown/plugin-automd'
+import { replaceAll } from '@milkdown/utils'
 
 import { remarkDirective } from './plugins/components/remarkDirective'
 import { KunMilkdownPluginsMenu } from './plugins/Menu'
@@ -33,6 +36,7 @@ import {
 } from './plugins/components/link/linkPlugin'
 import { KunLoading } from '../Loading'
 import '~/styles/editor.scss'
+import { useKunMilkdownStore } from '~/store/milkdownStore'
 
 import bash from 'refractor/lang/bash'
 import c from 'refractor/lang/c'
@@ -66,6 +70,10 @@ export const KunEditor = ({
   saveMarkdown,
   disableUserKey = false
 }: Props) => {
+  const refreshContentStatus = useKunMilkdownStore(
+    (state) => state.data.refreshContentStatus
+  )
+
   const editor = useEditor((root) =>
     Editor.make()
       .config((ctx) => {
@@ -135,6 +143,11 @@ export const KunEditor = ({
           kunLinkNode
         ].flat()
       )
+  )
+
+  useEffect(
+    () => editor.get()?.action(replaceAll(valueMarkdown, true)),
+    [refreshContentStatus]
   )
 
   return (
