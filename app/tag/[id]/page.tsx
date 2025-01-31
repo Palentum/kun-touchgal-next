@@ -1,4 +1,4 @@
-import { TagDetailCOntainer } from '~/components/tag/detail/Container'
+import { TagDetailContainer } from '~/components/tag/detail/Container'
 import { generateKunMetadataTemplate } from './metadata'
 import { kunGetTagByIdActions, kunTagGalgameActions } from './actions'
 import { ErrorComponent } from '~/components/error/ErrorComponent'
@@ -37,7 +37,7 @@ export default async function Kun({ params }: Props) {
   }
 
   return (
-    <TagDetailCOntainer
+    <TagDetailContainer
       initialTag={tag}
       initialPatches={response.galgames}
       total={response.total}
