@@ -7,6 +7,7 @@ import type { Metadata } from 'next'
 
 interface Props {
   params: Promise<{ id: string }>
+  searchParams?: Promise<{ page?: number }>
 }
 
 export const generateMetadata = async ({
@@ -20,8 +21,10 @@ export const generateMetadata = async ({
   return generateKunMetadataTemplate(tag)
 }
 
-export default async function Kun({ params }: Props) {
+export default async function Kun({ params, searchParams }: Props) {
   const { id } = await params
+  const res = await searchParams
+  const currentPage = res?.page ? res.page : 1
 
   const tag = await kunGetTagByIdActions({ tagId: Number(id) })
   if (typeof tag === 'string') {
@@ -30,7 +33,7 @@ export default async function Kun({ params }: Props) {
 
   const response = await kunTagGalgameActions({
     tagId: Number(id),
-    page: 1,
+    page: currentPage,
     limit: 24
   })
   if (typeof response === 'string') {

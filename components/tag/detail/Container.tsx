@@ -12,7 +12,6 @@ import { KunLoading } from '~/components/kun/Loading'
 import { KunHeader } from '~/components/kun/Header'
 import { useMounted } from '~/hooks/useMounted'
 import { GalgameCard } from '~/components/galgame/Card'
-import { motion } from 'framer-motion'
 import { KunNull } from '~/components/kun/Null'
 import { EditTagModal } from './EditTagModal'
 import { useRouter } from 'next-nprogress-bar'
@@ -43,8 +42,6 @@ export const TagDetailContainer = ({
   const [loading, setLoading] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const params = new URLSearchParams()
-
   const fetchPatches = async () => {
     setLoading(true)
 
@@ -65,7 +62,13 @@ export const TagDetailContainer = ({
     if (!isMounted) {
       return
     }
+
+    const params = new URLSearchParams()
     params.set('page', page.toString())
+    const queryString = params.toString()
+    const url = queryString ? `?${queryString}` : ''
+    router.push(url, { scroll: false })
+
     fetchPatches()
   }, [page])
 
@@ -109,7 +112,6 @@ export const TagDetailContainer = ({
               onSuccess={(newTag) => {
                 setTag(newTag)
                 onClose()
-                router.refresh()
               }}
             />
           </div>

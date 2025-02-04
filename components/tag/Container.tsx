@@ -32,19 +32,30 @@ export const Container = ({ initialTags, initialTotal }: Props) => {
   })
   const [galgames, setGalgames] = useState<GalgameCard[]>([])
 
-  const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
+  const [page, setPage] = useState(1)
   const [total, setTotal] = useState(initialTotal)
 
-  const params = new URLSearchParams()
+  const [searching, setSearching] = useState(false)
+  const [searchPage, setSearchPage] = useState(
+    Number(searchParams.get('searchPage')) || 1
+  )
+  const [searchTotal, setSearchTotal] = useState(0)
 
-  const updateSearchParams = (newTags: string[]) => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (newTags.length > 0) {
-      params.set('tags', newTags.join(','))
-    } else {
-      params.delete('tags')
+  const updateSearchParams = (params: {
+    tags?: string[]
+    searchPage?: number
+  }) => {
+    const newParams = new URLSearchParams(searchParams.toString())
+
+    if (params.tags && params.tags.length > 0) {
+      newParams.set('tags', params.tags.join(','))
     }
-    router.replace(`?${params.toString()}`, { scroll: false })
+
+    if (params.searchPage && params.searchPage > 1) {
+      newParams.set('searchPage', params.searchPage.toString())
+    }
+
+    router.replace(`?${newParams.toString()}`, { scroll: false })
   }
 
   const fetchTags = async (currentPage: number) => {
@@ -65,7 +76,6 @@ export const Container = ({ initialTags, initialTotal }: Props) => {
     if (!isMounted) {
       return
     }
-    params.set('page', page.toString())
     fetchTags(page)
   }, [page, isMounted])
 
@@ -80,12 +90,6 @@ export const Container = ({ initialTags, initialTotal }: Props) => {
     })
     setSuggestions(response)
   }
-
-  const [searching, setSearching] = useState(false)
-  const [searchPage, setSearchPage] = useState(
-    Number(searchParams.get('page')) || 1
-  )
-  const [searchTotal, setSearchTotal] = useState(0)
 
   const fetchGalgamesWithTags = async (currentPage: number) => {
     if (selectedTags.length === 0) {
@@ -116,17 +120,27 @@ export const Container = ({ initialTags, initialTotal }: Props) => {
   }, [debouncedQuery])
 
   useEffect(() => {
-    updateSearchParams(selectedTags)
-    if (selectedTags.length > 0) {
+    const prevTags = searchParams.get('tags')?.split(',') || []
+    const tagsChanged = prevTags.join(',') !== selectedTags.join(',')
+
+    updateSearchParams({ tags: selectedTags })
+
+    if (!selectedTags.length) {
+      return
+    }
+
+    if (tagsChanged) {
       setSearchPage(1)
       fetchGalgamesWithTags(1)
+    } else {
+      fetchGalgamesWithTags(searchPage)
     }
   }, [selectedTags])
 
   useEffect(() => {
-    params.set('page', searchPage.toString())
     if (selectedTags.length > 0) {
       fetchGalgamesWithTags(searchPage)
+      updateSearchParams({ searchPage })
     }
   }, [searchPage])
 
