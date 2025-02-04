@@ -144,12 +144,7 @@ export const TagDetailContainer = ({
               <Pagination
                 total={Math.ceil(total / 24)}
                 page={page}
-                onChange={(newPage: number) => {
-                  setPage(newPage)
-                  // react setState is async, so this function is invalid, because page is old. but useEffect work.
-                  // you can use `useRef` to save page state
-                  // fetchPatches()
-                }}
+                onChange={setPage}
                 showControls
                 size="lg"
                 radius="lg"
