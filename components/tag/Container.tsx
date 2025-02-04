@@ -32,8 +32,10 @@ export const Container = ({ initialTags, initialTotal }: Props) => {
   })
   const [galgames, setGalgames] = useState<GalgameCard[]>([])
 
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
   const [total, setTotal] = useState(initialTotal)
+
+  const params = new URLSearchParams()
 
   const updateSearchParams = (newTags: string[]) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -63,6 +65,7 @@ export const Container = ({ initialTags, initialTotal }: Props) => {
     if (!isMounted) {
       return
     }
+    params.set('page', page.toString())
     fetchTags(page)
   }, [page, isMounted])
 
@@ -79,7 +82,9 @@ export const Container = ({ initialTags, initialTotal }: Props) => {
   }
 
   const [searching, setSearching] = useState(false)
-  const [searchPage, setSearchPage] = useState(1)
+  const [searchPage, setSearchPage] = useState(
+    Number(searchParams.get('page')) || 1
+  )
   const [searchTotal, setSearchTotal] = useState(0)
 
   const fetchGalgamesWithTags = async (currentPage: number) => {
@@ -119,6 +124,7 @@ export const Container = ({ initialTags, initialTotal }: Props) => {
   }, [selectedTags])
 
   useEffect(() => {
+    params.set('page', searchPage.toString())
     if (selectedTags.length > 0) {
       fetchGalgamesWithTags(searchPage)
     }

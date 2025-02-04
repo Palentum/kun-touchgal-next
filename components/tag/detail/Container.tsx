@@ -19,6 +19,7 @@ import { useRouter } from 'next-nprogress-bar'
 import { KunUser } from '~/components/kun/floating-card/KunUser'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 import { useUserStore } from '~/store/userStore'
+import { useSearchParams } from 'next/navigation'
 
 interface Props {
   initialTag: TagDetail
@@ -34,12 +35,15 @@ export const TagDetailContainer = ({
   const isMounted = useMounted()
   const user = useUserStore((state) => state.user)
   const router = useRouter()
-  const [page, setPage] = useState(1)
+  const searchParams = useSearchParams()
+  const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
 
   const [tag, setTag] = useState(initialTag)
   const [patches, setPatches] = useState<GalgameCard[]>(initialPatches)
   const [loading, setLoading] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const params = new URLSearchParams()
 
   const fetchPatches = async () => {
     setLoading(true)
@@ -61,6 +65,7 @@ export const TagDetailContainer = ({
     if (!isMounted) {
       return
     }
+    params.set('page', page.toString())
     fetchPatches()
   }, [page])
 
@@ -139,10 +144,7 @@ export const TagDetailContainer = ({
               <Pagination
                 total={Math.ceil(total / 24)}
                 page={page}
-                onChange={(newPage: number) => {
-                  setPage(newPage)
-                  fetchPatches()
-                }}
+                onChange={setPage}
                 showControls
                 size="lg"
                 radius="lg"
