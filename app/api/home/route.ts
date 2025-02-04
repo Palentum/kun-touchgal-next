@@ -8,13 +8,13 @@ export const getHomeData = async (
   nsfwEnable: Record<string, string | undefined>
 ) => {
   const [data, resourcesData] = await Promise.all([
-    await prisma.patch.findMany({
+    prisma.patch.findMany({
       orderBy: { created: 'desc' },
       where: nsfwEnable,
       select: GalgameCardSelectField,
       take: 20
     }),
-    await prisma.patch_resource.findMany({
+    prisma.patch_resource.findMany({
       orderBy: { created: 'desc' },
       where: { patch: nsfwEnable, section: 'patch' },
       include: {

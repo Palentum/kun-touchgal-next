@@ -14,7 +14,7 @@ export const searchGalgameByTag = async (
   const offset = (page - 1) * limit
 
   const [data, total] = await Promise.all([
-    await prisma.patch.findMany({
+    prisma.patch.findMany({
       where: {
         AND: [
           nsfwEnable,
@@ -34,7 +34,7 @@ export const searchGalgameByTag = async (
       take: limit,
       skip: offset
     }),
-    await prisma.patch.count({
+    prisma.patch.count({
       where: {
         AND: [
           nsfwEnable,

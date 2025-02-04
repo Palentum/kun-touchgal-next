@@ -14,7 +14,7 @@ export const getPatchByTag = async (
   const offset = (page - 1) * limit
 
   const [data, total] = await Promise.all([
-    await prisma.patch_tag_relation.findMany({
+    prisma.patch_tag_relation.findMany({
       where: { tag_id: tagId, patch: nsfwEnable },
       select: {
         patch: {
@@ -25,7 +25,7 @@ export const getPatchByTag = async (
       take: limit,
       skip: offset
     }),
-    await prisma.patch_tag_relation.count({
+    prisma.patch_tag_relation.count({
       where: { tag_id: tagId, patch: nsfwEnable }
     })
   ])

@@ -11,7 +11,7 @@ export const getPatchResource = async (
   const offset = (page - 1) * limit
 
   const [data, total] = await Promise.all([
-    await prisma.patch_resource.findMany({
+    prisma.patch_resource.findMany({
       take: limit,
       skip: offset,
       where: { patch: nsfwEnable },
@@ -32,7 +32,7 @@ export const getPatchResource = async (
         }
       }
     }),
-    await prisma.patch_resource.count({
+    prisma.patch_resource.count({
       where: { patch: nsfwEnable }
     })
   ])

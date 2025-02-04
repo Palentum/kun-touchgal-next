@@ -15,7 +15,7 @@ export const getUserFavorite = async (
   const offset = (page - 1) * limit
 
   const [data, total] = await Promise.all([
-    await prisma.user_patch_favorite_relation.findMany({
+    prisma.user_patch_favorite_relation.findMany({
       where: { user_id: uid, patch: nsfwEnable },
       include: {
         patch: {
@@ -26,7 +26,7 @@ export const getUserFavorite = async (
       take: limit,
       skip: offset
     }),
-    await prisma.user_patch_favorite_relation.count({
+    prisma.user_patch_favorite_relation.count({
       where: { user_id: uid, patch: nsfwEnable }
     })
   ])

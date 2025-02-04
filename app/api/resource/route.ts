@@ -20,7 +20,7 @@ export const getPatchResource = async (
       : { [sortField]: sortOrder }
 
   const [resourcesData, total] = await Promise.all([
-    await prisma.patch_resource.findMany({
+    prisma.patch_resource.findMany({
       take: limit,
       skip: offset,
       orderBy: orderByField,
@@ -46,7 +46,7 @@ export const getPatchResource = async (
         }
       }
     }),
-    await prisma.patch_resource.count({
+    prisma.patch_resource.count({
       where: { patch: nsfwEnable, section: 'patch' }
     })
   ])
