@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { TagDetailContainer } from '~/components/tag/detail/Container'
 import { generateKunMetadataTemplate } from './metadata'
 import { kunGetTagByIdActions, kunTagGalgameActions } from './actions'
@@ -37,10 +38,12 @@ export default async function Kun({ params }: Props) {
   }
 
   return (
-    <TagDetailContainer
-      initialTag={tag}
-      initialPatches={response.galgames}
-      total={response.total}
-    />
+    <Suspense>
+      <TagDetailContainer
+        initialTag={tag}
+        initialPatches={response.galgames}
+        total={response.total}
+      />
+    </Suspense>
   )
 }
