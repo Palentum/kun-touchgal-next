@@ -20,9 +20,12 @@ https://t.me/+yPQQaPhgLbc5MGIx
 
 确保本地安装有 Node.js, pnpm, PostgreSQL, Redis 环境
 
-使用 `git clone` 本项目后, 参考项目根目录的 `.env.example` 文件自行填写环境变量后即可使用 `pnpm dev` 运行
+- 使用 `git clone` 拉取本项目至本地目录
+- 参考项目根目录的 `.env.example` 文件，新建 `.env` 文件，并自行填写环境变量（`postgresql` 的本地连接配置）
+- 初次运行本项目，可执行 `pnpm prisma:push` 创建此项目所使用的本地数据库
+- 使用 `pnpm dev` 即可运行
 
-``` env
+```env
 # 数据库 URL, 我们使用 psql
 KUN_DATABASE_URL = "postgresql://postgres:kunloveren@localhost:5432/touchgal?schema=public"
 
