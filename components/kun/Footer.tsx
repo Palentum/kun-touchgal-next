@@ -16,7 +16,7 @@ export const KunFooter = () => {
               width={30}
               height={30}
             />
-            <span>© 2024 {kunMoyuMoe.titleShort}</span>
+            <span>© 2025 {kunMoyuMoe.titleShort}</span>
           </Link>
 
           <div className="flex space-x-8">
