@@ -20,7 +20,11 @@ export const SearchCard = ({ patch }: Props) => {
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="relative w-full sm:w-40">
             <Image
-              src={patch.banner.replace(/\.avif$/, '-mini.avif')}
+              src={
+                patch.banner
+                  ? patch.banner.replace(/\.avif$/, '-mini.avif')
+                  : '/touchgal.avif'
+              }
               alt={patch.name}
               className="object-cover rounded-lg size-full"
               radius="lg"

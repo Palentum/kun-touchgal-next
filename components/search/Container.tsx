@@ -38,7 +38,8 @@ export const SearchPage = () => {
 
   useEffect(() => {
     if (debouncedQuery) {
-      handleSearch()
+      setPage(1)
+      handleSearch(1)
     } else {
       setPatches([])
       setTotal(0)
@@ -65,7 +66,7 @@ export const SearchPage = () => {
   }
 
   const [loading, setLoading] = useState(false)
-  const handleSearch = async () => {
+  const handleSearch = async (currentPage = page) => {
     if (!query.trim()) {
       return
     }
@@ -79,7 +80,7 @@ export const SearchPage = () => {
       total: number
     }>('/search', {
       query: query.split('|').filter((term) => term.length > 0),
-      page,
+      page: currentPage,
       limit: 10,
       searchOption: {
         searchInIntroduction: searchData.searchInIntroduction,
@@ -94,14 +95,16 @@ export const SearchPage = () => {
 
     const params = new URLSearchParams()
     params.set('q', query)
-    params.set('page', page.toString())
+    params.set('page', currentPage.toString())
     router.push(`/search?${params.toString()}`)
 
     setLoading(false)
   }
 
   useEffect(() => {
-    handleSearch()
+    if (page !== 1) {
+      handleSearch()
+    }
   }, [page])
 
   return (
@@ -128,11 +131,6 @@ export const SearchPage = () => {
             size="lg"
             radius="lg"
             startContent={<Search className="text-default-400" />}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleSearch()
-              }
-            }}
           />
 
           <SearchHistory

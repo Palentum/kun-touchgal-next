@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from '@nextui-org/react'
 import { Clock, X } from 'lucide-react'
 import { useSearchStore } from '~/store/searchStore'
