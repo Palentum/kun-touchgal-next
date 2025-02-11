@@ -12,21 +12,6 @@ type BreadcrumbStore = {
 
 export const initialItem: KunBreadcrumbItem[] = [
   {
-    key: '/resource',
-    label: '资源下载',
-    href: '/resource'
-  },
-  {
-    key: '/galgame',
-    label: 'Galgame',
-    href: '/galgame'
-  },
-  {
-    key: '/comment',
-    label: '评论',
-    href: '/comment'
-  },
-  {
     key: '/',
     label: '主页',
     href: '/'

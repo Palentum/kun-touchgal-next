@@ -9,3 +9,7 @@ export const isTagPath = (pathname: string): boolean => {
 export const isUserPath = (pathname: string): boolean => {
   return /^\/user\/\d+/.test(pathname)
 }
+
+export const isDocPath = (pathname: string): boolean => {
+  return /^\/doc\/.*/.test(pathname)
+}

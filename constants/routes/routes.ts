@@ -1,4 +1,4 @@
-import { isPatchPath, isTagPath, isUserPath } from './matcher'
+import { isPatchPath, isTagPath, isUserPath, isDocPath } from './matcher'
 import { keyLabelMap } from './constants'
 import { kunMoyuMoe } from '~/config/moyu-moe'
 import type { KunBreadcrumbItem } from './constants'
@@ -8,9 +8,64 @@ type NextParams = Record<string, string | Array<string> | undefined>
 // Some path's length is equal to galgame uniqueId (8 digits and chars)
 const pathToIgnore = ['/resource', '/register', '/redirect', '/settings']
 
+const createPatchBreadcrumb = (
+  params: NextParams,
+  defaultItem: KunBreadcrumbItem,
+  pageTitle: string
+) => {
+  return {
+    ...defaultItem,
+    key: `/${params.id}`,
+    label: pageTitle,
+    href: `/${params.id}`
+  }
+}
+
+const createTagBreadcrumb = (
+  params: NextParams,
+  defaultItem: KunBreadcrumbItem,
+  pageTitle: string
+) => {
+  return {
+    ...defaultItem,
+    key: `/tag/${params.id}`,
+    label: pageTitle,
+    href: `/tag/${params.id}`
+  }
+}
+
+const createUserBreadcrumb = (
+  params: NextParams,
+  defaultItem: KunBreadcrumbItem,
+  pageTitle: string
+) => {
+  return {
+    ...defaultItem,
+    key: `/user/${params.id}`,
+    label: pageTitle,
+    href: `/user/${params.id}/resource`
+  }
+}
+
+const createDocBreadcrumb = (
+  params: NextParams,
+  defaultItem: KunBreadcrumbItem,
+  pageTitle: string
+) => {
+  return {
+    ...defaultItem,
+    key: `/doc/${params.id}`,
+    label: pageTitle,
+    href: `/doc/${params.id}`
+  }
+}
+
 export const getKunPathLabel = (pathname: string): string => {
   const hasIgnorePath = pathToIgnore.some((p) => p === pathname)
   if (isPatchPath(pathname) && !hasIgnorePath) {
+    return pathname
+  }
+  if (isDocPath(pathname)) {
     return pathname
   }
 
@@ -24,13 +79,41 @@ export const getKunPathLabel = (pathname: string): string => {
   return keyLabelMap[pathname]
 }
 
+const extractPatchCategory = (pageTitle: string): KunBreadcrumbItem[] => {
+  const categoryRouteMap: Record<string, string> = {
+    'PC + 安卓':
+      '/galgame?type=all&language=all&platform=all&sortField=created&sortOrder=desc&page=1',
+    'PC 游戏':
+      '/galgame?type=all&language=all&platform=windows&sortField=created&sortOrder=desc&page=1',
+    安卓游戏:
+      '/galgame?type=all&language=all&platform=android&sortField=created&sortOrder=desc&page=1'
+  }
+
+  const match = pageTitle.match(/(?:\s*\|\s*)(.*?)\s*-.*$/)
+  if (match && match[1]) {
+    return [
+      {
+        key: match[1].trim(),
+        label: match[1].trim(),
+        href: categoryRouteMap[match[1].trim()]
+      }
+    ]
+  }
+
+  return []
+}
+
 export const createBreadcrumbItem = (
   pathname: string,
   params: NextParams
-): KunBreadcrumbItem | null => {
+): KunBreadcrumbItem[] => {
+  if (pathname === '/') {
+    return []
+  }
+
   const label = getKunPathLabel(pathname)
   if (!label) {
-    return null
+    return []
   }
 
   const defaultItem: KunBreadcrumbItem = {
@@ -43,34 +126,37 @@ export const createBreadcrumbItem = (
     .replace(` - ${kunMoyuMoe.titleShort}`, '')
     .replace(/\|.*$/, '')
 
-  const pathHandlers: Record<
-    string,
-    { keyPrefix: string; hrefSuffix: string }
-  > = {
-    patch: { keyPrefix: `/${params.id}`, hrefSuffix: '' },
-    tag: { keyPrefix: `/tag/${params.id}`, hrefSuffix: '' },
-    user: { keyPrefix: `/user/${params.id}`, hrefSuffix: `/resource` }
+  const hasIgnorePath = pathToIgnore.some((p) => p === pathname)
+  if (hasIgnorePath) {
+    return [defaultItem]
   }
 
-  for (const [pathKey, { keyPrefix, hrefSuffix }] of Object.entries(
-    pathHandlers
-  )) {
-    const isPath = {
-      patch: isPatchPath,
-      tag: isTagPath,
-      user: isUserPath
-    }[pathKey]
-    const hasIgnorePath = pathToIgnore.some((p) => p === pathname)
-
-    if (isPath && isPath(pathname) && !hasIgnorePath) {
-      return {
-        ...defaultItem,
-        key: keyPrefix,
-        label: pageTitle,
-        href: `${keyPrefix}${hrefSuffix}`
-      }
+  if (isPatchPath(pathname)) {
+    const patchCategoryRoute = extractPatchCategory(document.title)
+    return [
+      ...patchCategoryRoute,
+      createPatchBreadcrumb(params, defaultItem, pageTitle)
+    ]
+  }
+  if (isTagPath(pathname)) {
+    const allTagRoute: KunBreadcrumbItem = {
+      key: 'tag',
+      label: '补丁标签',
+      href: '/tag'
     }
+    return [allTagRoute, createTagBreadcrumb(params, defaultItem, pageTitle)]
+  }
+  if (isUserPath(pathname)) {
+    return [createUserBreadcrumb(params, defaultItem, pageTitle)]
+  }
+  if (isDocPath(pathname)) {
+    const allDocRoute: KunBreadcrumbItem = {
+      key: 'doc',
+      label: '帮助文档',
+      href: '/doc'
+    }
+    return [allDocRoute, createDocBreadcrumb(params, defaultItem, pageTitle)]
   }
 
-  return defaultItem
+  return [defaultItem]
 }
