@@ -146,7 +146,6 @@ model patch {
   download      Int      @default(0)
   view          Int      @default(0)
   type          String[]
-  alias         String[]
   language      String[]
   engine        String[]
   platform      String[]
@@ -154,6 +153,7 @@ model patch {
   user_id Int
   user    user @relation("user_patch", fields: [user_id], references: [id])
 
+  aliases     patch_alias[]
   tag         patch_tag_relation[]
   favorite_by user_patch_favorite_relation[]
 
@@ -162,6 +162,19 @@ model patch {
 
   created DateTime @default(now())
   updated DateTime @updatedAt
+}
+
+model patch_alias {
+  id       Int    @id @default(autoincrement())
+  name     String @db.VarChar(1007)
+  patch_id Int
+  patch    patch  @relation(fields: [patch_id], references: [id], onDelete: Cascade)
+
+  created DateTime @default(now())
+  updated DateTime @updatedAt
+
+  @@index([patch_id])
+  @@index([name])
 }
 
 model patch_tag {
