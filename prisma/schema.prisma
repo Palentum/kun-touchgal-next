@@ -153,7 +153,7 @@ model patch {
   user_id Int
   user    user @relation("user_patch", fields: [user_id], references: [id])
 
-  aliases     patch_alias[]
+  alias       patch_alias[]
   tag         patch_tag_relation[]
   favorite_by user_patch_favorite_relation[]
 

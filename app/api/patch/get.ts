@@ -32,6 +32,11 @@ export const getPatchById = async (
           }
         }
       },
+      alias: {
+        select: {
+          name: true
+        }
+      },
       _count: {
         select: {
           favorite_by: true,
@@ -70,7 +75,7 @@ export const getPatchById = async (
     language: patch.language,
     platform: patch.platform,
     tags: patch.tag.map((t) => t.tag.name),
-    alias: patch.alias,
+    alias: patch.alias.map((a) => a.name),
     isFavorite: patch.favorite_by.length > 0,
     contentLimit: patch.content_limit,
     user: {

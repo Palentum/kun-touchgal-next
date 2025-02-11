@@ -33,7 +33,6 @@ export const createGalgame = async (
           name,
           unique_id: galgameUniqueId,
           vndb_id: vndbId ? vndbId : null,
-          alias: alias ? alias : [],
           introduction,
           user_id: uid,
           banner: '',
@@ -44,9 +43,9 @@ export const createGalgame = async (
 
       const newId = patch.id
 
-      const res = await uploadPatchBanner(bannerArrayBuffer, newId)
-      if (typeof res === 'string') {
-        return res
+      const uploadResult = await uploadPatchBanner(bannerArrayBuffer, newId)
+      if (typeof uploadResult === 'string') {
+        return uploadResult
       }
       const imageLink = `${process.env.KUN_VISUAL_NOVEL_IMAGE_BED_URL}/patch/${newId}/banner/banner.avif`
 
@@ -54,6 +53,17 @@ export const createGalgame = async (
         where: { id: newId },
         data: { banner: imageLink }
       })
+
+      if (alias.length) {
+        const aliasData = alias.map((name) => ({
+          name,
+          patch_id: newId
+        }))
+        await prisma.patch_alias.createMany({
+          data: aliasData,
+          skipDuplicates: true
+        })
+      }
 
       await prisma.user.update({
         where: { id: uid },
@@ -63,7 +73,7 @@ export const createGalgame = async (
         }
       })
 
-      return { patchId: patch.id }
+      return { patchId: newId }
     },
     { timeout: 60000 }
   )

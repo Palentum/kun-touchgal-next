@@ -26,6 +26,11 @@ export const getPatchIntroduction = async (
   const patch = await prisma.patch.findUnique({
     where: { unique_id: uniqueId },
     include: {
+      alias: {
+        select: {
+          name: true
+        }
+      },
       tag: {
         include: {
           tag: {
@@ -48,7 +53,7 @@ export const getPatchIntroduction = async (
     vndbId: patch.vndb_id,
     introduction: await markdownToHtmlExtend(patch.introduction),
     released: patch.released,
-    alias: patch.alias,
+    alias: patch.alias.map((a) => a.name),
     tag: patch.tag.map((tag) => tag.tag),
     created: String(patch.created),
     updated: String(patch.updated)
