@@ -15,10 +15,7 @@ export const deleteResource = async (
   userRole: number
 ) => {
   const patchResource = await prisma.patch_resource.findUnique({
-    where: {
-      id: input.resourceId,
-      user_id: uid
-    }
+    where: { id: input.resourceId }
   })
   if (!patchResource) {
     return '未找到对应的资源'
