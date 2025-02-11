@@ -13,7 +13,6 @@ config({ path: envPath })
 
 export const envSchema = z.object({
   KUN_DATABASE_URL: z.string().url(),
-  WALINE_DATABASE_URL: z.string().url(),
   KUN_VISUAL_NOVEL_SITE_URL: z.string().url(),
 
   NEXT_PUBLIC_KUN_PATCH_ADDRESS_DEV: z.string(),

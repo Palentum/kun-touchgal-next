@@ -8,7 +8,8 @@ export const MESSAGE_TYPE = [
   'follow',
   'pr',
   'feedback',
-  'report'
+  'report',
+  ''
 ] as const
 
 export const MESSAGE_TYPE_MAP: Record<string, string> = {
