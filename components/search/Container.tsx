@@ -79,7 +79,7 @@ export const SearchPage = () => {
       galgames: GalgameCard[]
       total: number
     }>('/search', {
-      query: query.split('|').filter((term) => term.length > 0),
+      query: query.split(' ').filter((term) => term.length > 0),
       page: currentPage,
       limit: 10,
       searchOption: {
@@ -127,7 +127,7 @@ export const SearchPage = () => {
               })
               setShowHistory(false)
             }}
-            placeholder="可以用 | 分隔您的搜索关键字"
+            placeholder="您可以用空格分隔您的搜索关键字，也可以直接使用vndb id搜索"
             size="lg"
             radius="lg"
             startContent={<Search className="text-default-400" />}

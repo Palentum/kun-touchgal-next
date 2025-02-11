@@ -12,110 +12,72 @@ export const searchGalgame = async (
   nsfwEnable: Record<string, string | undefined>
 ) => {
   const { query, page, limit, searchOption } = input
-
   const offset = (page - 1) * limit
   const insensitive = Prisma.QueryMode.insensitive
 
-  const data = await Promise.all(
-    query.map(async (q) =>
-      prisma.patch.findMany({
-        where: {
-          OR: [
-            { name: { contains: q, mode: insensitive } },
-            { vndb_id: { contains: q, mode: insensitive } },
-            ...(searchOption.searchInIntroduction
-              ? [
-                  {
-                    introduction: {
-                      contains: q,
-                      mode: insensitive
-                    }
-                  }
-                ]
-              : []),
-            ...(searchOption.searchInAlias ? [{ alias: { has: q } }] : []),
-            ...(searchOption.searchInTag
-              ? [
-                  {
-                    tag: {
-                      some: {
-                        tag: {
-                          name: {
-                            contains: q,
-                            mode: insensitive
-                          }
-                        }
-                      }
-                    }
-                  }
-                ]
-              : [])
-          ],
-          ...nsfwEnable
-        },
-        select: GalgameCardSelectField,
-        orderBy: { created: 'desc' },
-        take: limit,
-        skip: offset
-      })
-    )
-  )
-
-  const total = await prisma.patch.count({
+  const data = await prisma.patch.findMany({
     where: {
-      OR: query.map((q) => ({
+      AND: query.map((q) => ({
         OR: [
           { name: { contains: q, mode: insensitive } },
           { vndb_id: { contains: q, mode: insensitive } },
           ...(searchOption.searchInIntroduction
-            ? [
-                {
-                  introduction: {
-                    contains: q,
-                    mode: insensitive
+            ? [{ introduction: { contains: q, mode: insensitive } }]
+            : []),
+          ...(searchOption.searchInAlias ? [{ alias: { has: q } }] : []),
+          ...(searchOption.searchInTag
+            ? [{
+                tag: {
+                  some: {
+                    tag: { name: { contains: q, mode: insensitive } }
                   }
                 }
-              ]
+              }]
+            : [])
+        ]
+      })),
+      ...nsfwEnable
+    },
+    select: GalgameCardSelectField,
+    orderBy: { created: 'desc' },
+    take: limit,
+    skip: offset
+  })
+
+  const total = await prisma.patch.count({
+    where: {
+      AND: query.map((q) => ({
+        OR: [
+          { name: { contains: q, mode: insensitive } },
+          { vndb_id: { contains: q, mode: insensitive } },
+          ...(searchOption.searchInIntroduction
+            ? [{ introduction: { contains: q, mode: insensitive } }]
             : []),
           ...(searchOption.searchInAlias ? [{ alias: { hasSome: [q] } }] : []),
           ...(searchOption.searchInTag
-            ? [
-                {
-                  tag: {
-                    some: {
-                      tag: {
-                        name: {
-                          contains: q,
-                          mode: insensitive
-                        }
-                      }
-                    }
+            ? [{
+                tag: {
+                  some: {
+                    tag: { name: { contains: q, mode: insensitive } }
                   }
                 }
-              ]
+              }]
             : [])
-        ],
-        ...nsfwEnable
-      }))
+        ]
+      })),
+      ...nsfwEnable
     }
   })
 
-  const galgames: GalgameCard[] = data.flat().map((gal) => ({
+  const galgames: GalgameCard[] = data.map((gal) => ({
     ...gal,
     tags: gal.tag.map((t) => t.tag.name).slice(0, 3),
     uniqueId: gal.unique_id
   }))
-  const uniqueGalgames: GalgameCard[] = Array.from(
-    galgames
-      .reduce(
-        (map, gal) => map.set(gal.id, gal),
-        new Map<number, GalgameCard>()
-      )
-      .values()
-  )
 
-  return { galgames: uniqueGalgames, total }
+  return { galgames, total }
 }
+
 
 export const POST = async (req: NextRequest) => {
   const input = await kunParsePostBody(req, searchSchema)
