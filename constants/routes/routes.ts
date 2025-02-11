@@ -89,13 +89,18 @@ const extractPatchCategory = (pageTitle: string): KunBreadcrumbItem[] => {
       '/galgame?type=all&language=all&platform=android&sortField=created&sortOrder=desc&page=1'
   }
 
-  const match = pageTitle.match(/(?:\s*\|\s*)(.*?)\s*-.*$/)
-  if (match && match[1]) {
+  const lastPipeIndex = pageTitle.lastIndexOf(' | ')
+  if (lastPipeIndex !== -1) {
+    const categoryName = pageTitle.slice(lastPipeIndex + 3).split(' ')[0]
+    if (categoryName === '-') {
+      return []
+    }
+
     return [
       {
-        key: match[1].trim(),
-        label: match[1].trim(),
-        href: categoryRouteMap[match[1].trim()]
+        key: categoryName,
+        label: categoryName,
+        href: categoryRouteMap[categoryName]
       }
     ]
   }
