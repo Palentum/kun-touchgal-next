@@ -79,35 +79,6 @@ export const getKunPathLabel = (pathname: string): string => {
   return keyLabelMap[pathname]
 }
 
-const extractPatchCategory = (pageTitle: string): KunBreadcrumbItem[] => {
-  const categoryRouteMap: Record<string, string> = {
-    'PC + 安卓':
-      '/galgame?type=all&language=all&platform=all&sortField=created&sortOrder=desc&page=1',
-    'PC 游戏':
-      '/galgame?type=all&language=all&platform=windows&sortField=created&sortOrder=desc&page=1',
-    安卓游戏:
-      '/galgame?type=all&language=all&platform=android&sortField=created&sortOrder=desc&page=1'
-  }
-
-  const lastPipeIndex = pageTitle.lastIndexOf(' | ')
-  if (lastPipeIndex !== -1) {
-    const categoryName = pageTitle.slice(lastPipeIndex + 3).split(' ')[0]
-    if (categoryName === '-') {
-      return []
-    }
-
-    return [
-      {
-        key: categoryName,
-        label: categoryName,
-        href: categoryRouteMap[categoryName]
-      }
-    ]
-  }
-
-  return []
-}
-
 export const createBreadcrumbItem = (
   pathname: string,
   params: NextParams
@@ -137,9 +108,13 @@ export const createBreadcrumbItem = (
   }
 
   if (isPatchPath(pathname)) {
-    const patchCategoryRoute = extractPatchCategory(document.title)
+    const allGalgameRoute: KunBreadcrumbItem = {
+      key: 'galgame',
+      label: 'Galgame',
+      href: '/galgame'
+    }
     return [
-      ...patchCategoryRoute,
+      allGalgameRoute,
       createPatchBreadcrumb(params, defaultItem, pageTitle)
     ]
   }
