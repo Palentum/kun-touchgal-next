@@ -60,7 +60,6 @@ export const FilterBar = ({
             label="类型筛选"
             placeholder="选择类型"
             selectedKeys={[selectedType]}
-            className="max-w-xs"
             onChange={(event) => {
               if (!event.target.value) {
                 return
@@ -68,11 +67,6 @@ export const FilterBar = ({
               setSelectedType(event.target.value)
             }}
             startContent={<Filter className="size-4 text-default-400" />}
-            classNames={{
-              trigger: 'bg-content2/50 hover:bg-content2 transition-colors',
-              value: 'text-default-700',
-              label: 'text-default-600'
-            }}
             radius="lg"
             size="sm"
           >
@@ -87,7 +81,6 @@ export const FilterBar = ({
             label="语言筛选"
             placeholder="选择语言"
             selectedKeys={[selectedLanguage]}
-            className="max-w-xs"
             onChange={(event) => {
               if (!event.target.value) {
                 return
@@ -95,11 +88,6 @@ export const FilterBar = ({
               setSelectedLanguage(event.target.value)
             }}
             startContent={<Filter className="size-4 text-default-400" />}
-            classNames={{
-              trigger: 'bg-content2/50 hover:bg-content2 transition-colors',
-              value: 'text-default-700',
-              label: 'text-default-600'
-            }}
             radius="lg"
             size="sm"
           >
@@ -118,7 +106,6 @@ export const FilterBar = ({
             label="平台筛选"
             placeholder="选择平台"
             selectedKeys={[selectedPlatform]}
-            className="max-w-xs"
             onChange={(event) => {
               if (!event.target.value) {
                 return
@@ -126,11 +113,6 @@ export const FilterBar = ({
               setSelectedPlatform(event.target.value)
             }}
             startContent={<Filter className="size-4 text-default-400" />}
-            classNames={{
-              trigger: 'bg-content2/50 hover:bg-content2 transition-colors',
-              value: 'text-default-700',
-              label: 'text-default-600'
-            }}
             radius="lg"
             size="sm"
           >
@@ -150,7 +132,6 @@ export const FilterBar = ({
               <DropdownTrigger>
                 <Button
                   variant="flat"
-                  className="transition-colors bg-content2/50 hover:bg-content"
                   style={{
                     fontSize: '0.875rem'
                   }}
@@ -185,7 +166,6 @@ export const FilterBar = ({
 
             <Button
               variant="flat"
-              className="transition-colors bg-content2/50 hover:bg-content2"
               style={{
                 fontSize: '0.875rem'
               }}
