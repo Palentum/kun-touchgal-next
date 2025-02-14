@@ -102,7 +102,7 @@ export const SearchPage = () => {
   }
 
   useEffect(() => {
-    if (page !== 1) {
+    if (debouncedQuery) {
       handleSearch()
     }
   }, [page])
