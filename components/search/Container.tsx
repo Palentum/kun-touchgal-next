@@ -127,7 +127,7 @@ export const SearchPage = () => {
               })
               setShowHistory(false)
             }}
-            placeholder="您可以用空格分隔您的搜索关键字，也可以直接使用vndb id搜索"
+            placeholder="使用空格分隔关键词，支持使用vndb id搜索"
             size="lg"
             radius="lg"
             startContent={<Search className="text-default-400" />}
@@ -141,7 +141,7 @@ export const SearchPage = () => {
         </div>
 
         <div className="text-sm text-default-500">
-          搜索默认搜索游戏标题, 您可以选择性的添加游戏属性进行搜索, 您也可以
+          搜索默认搜索游戏标题和别名, 您可以选择性的添加游戏属性进行搜索, 您也可以
           <Link href="/tag" size="sm" underline="always">
             前往多标签搜索
           </Link>

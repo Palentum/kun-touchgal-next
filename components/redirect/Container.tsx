@@ -19,7 +19,7 @@ export const KunRedirectContainer = () => {
 
         <div className="max-w-2xl">
           <Alert
-            description="下载如果出现问题请至官方通知分类下常见问题文章中寻找解决方法, 如果下载缓慢可以试试下方广告中的加速器"
+            description="下载如果出现问题请至公告中的常见问题文章寻找解决方法, 如果下载缓慢可以试试下方广告中的加速器"
             title="公告"
             color="secondary"
             variant="faded"

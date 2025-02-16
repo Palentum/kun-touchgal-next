@@ -11,7 +11,7 @@ export interface CreateSearchData {
 const initialState: CreateSearchData = {
   searchHistory: [],
   searchInIntroduction: false,
-  searchInAlias: false,
+  searchInAlias: true,
   searchInTag: false
 }
 

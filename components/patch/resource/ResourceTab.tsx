@@ -14,10 +14,9 @@ export const ResourceTab = ({ id }: Props) => {
       <CardBody className="p-4">
         <div className="text-default-600">
           <p>
-            请注意, 本站的 Galgame 补丁 下载资源, 可能为用户自行上传,
+            请注意, 本站的 Galgame 下载资源和补丁均来自互联网或用户上传,
             请自行鉴别资源安全性。
           </p>
-          <p>Galgame 资源均可保证安全性。</p>
         </div>
 
         <Resources id={Number(id)} />
