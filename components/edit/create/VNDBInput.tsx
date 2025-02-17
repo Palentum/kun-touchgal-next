@@ -37,15 +37,17 @@ export const VNDBInput = ({ errors }: Props) => {
       },
       body: JSON.stringify({
         filters: ['id', '=', data.vndbId],
-        fields: 'title, titles.title, aliases, released'
+        fields: 'title, titles.lang, titles.title, aliases, released'
       })
     })
 
     const vndbData: VNDBResponse = await vndbResponse.json()
     const allTitles = vndbData.results.flatMap((vn) => {
+      const jaTitle = vn.titles.find((t) => t.lang === 'ja')?.title
       const titlesArray = [
+        ...(jaTitle ? [jaTitle] : []),
         vn.title,
-        ...vn.titles.map((t) => t.title),
+        ...vn.titles.filter((t) => t.lang !== 'ja').map((t) => t.title),
         ...vn.aliases
       ]
       return titlesArray
