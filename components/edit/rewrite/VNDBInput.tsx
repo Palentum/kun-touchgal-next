@@ -3,8 +3,6 @@
 import { Button, Input } from '@nextui-org/react'
 import { useRewritePatchStore } from '~/store/rewriteStore'
 import toast from 'react-hot-toast'
-import { kunFetchGet } from '~/utils/kunFetch'
-import { VNDBRegex } from '~/utils/validate'
 import type { VNDBResponse } from '../VNDB'
 
 interface Props {
@@ -16,20 +14,10 @@ interface Props {
 export const VNDBInput = ({ vndbId, setVNDBId, errors }: Props) => {
   const { data, setData } = useRewritePatchStore()
 
-  const handleCheckDuplicate = async () => {
+  const handleFetchVNDBData = async () => {
     if (!data.vndbId) {
       toast.error('VNDB ID 不可为空')
       return
-    }
-
-    const res = await kunFetchGet<KunResponse<{}>>('/edit/duplicate', {
-      vndbId: data.vndbId
-    })
-    if (typeof res === 'string') {
-      toast.error('游戏重复, 该游戏已经有人发布过了')
-      return
-    } else {
-      toast.success('检测完成, 该游戏并未重复!')
     }
 
     toast('正在从 VNDB 获取数据...')
@@ -89,7 +77,7 @@ export const VNDBInput = ({ vndbId, setVNDBId, errors }: Props) => {
             className="mr-4"
             color="primary"
             size="sm"
-            onPress={handleCheckDuplicate}
+            onPress={handleFetchVNDBData}
           >
             获取数据
           </Button>
