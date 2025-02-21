@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { setKv } from '~/lib/redis'
 import { prisma } from '~/prisma/index'
 import { KUN_PATCH_PERMANENT_BAN_USER_KEY } from '~/config/redis'
+import { deleteResource } from '../resource/delete'
 
 const userIdSchema = z.object({
   uid: z.coerce.number({ message: '用户 ID 必须为数字' }).min(1).max(9999999)
@@ -31,8 +32,20 @@ export const deleteUser = async (
   await setKv(`${KUN_PATCH_PERMANENT_BAN_USER_KEY}:${user.email}`, user.email)
   await setKv(`${KUN_PATCH_PERMANENT_BAN_USER_KEY}:${user.ip}`, user.ip)
 
+  const patchResourceS3Ids = await prisma.patch_resource.findMany({
+    where: { user_id: input.uid, storage: 's3' },
+    select: { id: true }
+  })
+  const resourceIds = patchResourceS3Ids.map((s) => s.id)
+
   return prisma.$transaction(
     async (prisma) => {
+      if (resourceIds.length) {
+        for (const res of resourceIds) {
+          await deleteResource({ resourceId: res }, uid)
+        }
+      }
+
       await prisma.user.delete({
         where: { id: input.uid }
       })
