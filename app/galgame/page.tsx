@@ -6,6 +6,8 @@ import { ErrorComponent } from '~/components/error/ErrorComponent'
 import type { Metadata } from 'next'
 import type { SortField, SortOrder } from '~/components/galgame/_sort'
 
+export const revalidate = 3
+
 export const metadata: Metadata = kunMetadata
 
 interface QueryParams {

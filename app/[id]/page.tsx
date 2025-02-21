@@ -4,6 +4,8 @@ import { generateKunMetadataTemplate } from './metadata'
 import { kunGetPatchActions, kunGetPatchIntroductionActions } from './actions'
 import type { Metadata } from 'next'
 
+export const revalidate = 3
+
 interface Props {
   params: Promise<{ id: string }>
 }

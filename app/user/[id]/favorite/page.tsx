@@ -2,6 +2,8 @@ import { UserFavorite } from '~/components/user/favorite/Container'
 import { kunGetActions } from './actions'
 import { ErrorComponent } from '~/components/error/ErrorComponent'
 
+export const revalidate = 3
+
 interface Props {
   params: Promise<{ id: string }>
 }

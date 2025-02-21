@@ -5,6 +5,8 @@ import { kunGetTagByIdActions, kunTagGalgameActions } from './actions'
 import { ErrorComponent } from '~/components/error/ErrorComponent'
 import type { Metadata } from 'next'
 
+export const revalidate = 3
+
 interface Props {
   params: Promise<{ id: string }>
   searchParams?: Promise<{ page?: number }>

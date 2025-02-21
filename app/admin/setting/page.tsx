@@ -6,6 +6,8 @@ import {
 } from './actions'
 import type { Metadata } from 'next'
 
+export const revalidate = 3
+
 export const metadata: Metadata = kunMetadata
 
 export default async function Kun() {
