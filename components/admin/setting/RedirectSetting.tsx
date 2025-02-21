@@ -131,7 +131,9 @@ export const RedirectSetting = ({ setting }: Props) => {
       </Card>
 
       <div className="flex items-center justify-between">
-        <p className="text-default-500">需要点击应用设置才能使设置生效</p>
+        <p className="text-default-500">
+          外链设置需要点击应用设置才能使设置生效
+        </p>
         <Button
           variant="shadow"
           color="primary"

@@ -60,3 +60,7 @@ export const adminUpdateRedirectSchema = z.object({
   ),
   delaySeconds: z.coerce.number()
 })
+
+export const adminUpdateDisableRegisterSchema = z.object({
+  disableRegister: z.boolean()
+})

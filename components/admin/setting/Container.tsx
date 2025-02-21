@@ -1,11 +1,14 @@
+import { Divider } from '@nextui-org/divider'
 import { RedirectSetting } from './RedirectSetting'
+import { DisableRegisterSetting } from './DisableRegisterSetting'
 import type { AdminRedirectConfig } from '~/types/api/admin'
 
 interface Props {
   setting: AdminRedirectConfig
+  disableRegister: boolean
 }
 
-export const AdminSetting = ({ setting }: Props) => {
+export const AdminSetting = ({ setting, disableRegister }: Props) => {
   return (
     <div className="space-y-6">
       <div>
@@ -13,6 +16,10 @@ export const AdminSetting = ({ setting }: Props) => {
       </div>
 
       <RedirectSetting setting={setting} />
+
+      <Divider />
+
+      <DisableRegisterSetting disableRegister={disableRegister} />
     </div>
   )
 }

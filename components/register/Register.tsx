@@ -94,7 +94,7 @@ export const RegisterForm = () => {
       <Controller
         name="code"
         control={control}
-        render={({ field, formState: { errors, defaultValues } }) => (
+        render={({ field, formState: { errors } }) => (
           <Input
             {...field}
             isRequired
