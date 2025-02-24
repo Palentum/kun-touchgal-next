@@ -55,7 +55,7 @@ export const VNDBInput = ({ errors }: Props) => {
 
     setData({
       ...data,
-      alias: allTitles,
+      alias: [...new Set(allTitles)],
       released: vndbData.results[0].released
     })
 
