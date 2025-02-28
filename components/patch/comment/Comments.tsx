@@ -14,9 +14,11 @@ import { CommentContent } from './CommentContent'
 import { scrollIntoComment } from './_scrollIntoComment'
 import { useUserStore } from '~/store/userStore'
 import { KunNull } from '~/components/kun/Null'
+import { cn } from '~/utils/cn'
 import type { PatchComment } from '~/types/api/patch'
 
 interface Props {
+  initialComments: PatchComment[]
   id: number
 }
 
@@ -51,12 +53,15 @@ export const Comments = ({ id }: Props) => {
     return <KunNull message="请登陆后查看评论" />
   }
 
-  const renderComments = (comments: PatchComment[]) => {
+  const renderComments = (comments: PatchComment[], depth = 0) => {
     return comments.map((comment) => (
-      <div key={comment.id}>
-        <Card id={`comment-${comment.id}`} className="border-none shadow-none">
-          <CardBody className="px-0">
-            <div className="flex-1 space-y-2">
+      <div
+        key={comment.id}
+        className={cn(depth <= 3 && depth !== 0 ? `ml-4` : 'ml-0', 'space-y-4')}
+      >
+        <Card id={`comment-${comment.id}`}>
+          <CardBody>
+            <div className="space-y-2">
               <div className="flex items-start justify-between">
                 <KunUser
                   user={comment.user}
@@ -98,11 +103,15 @@ export const Comments = ({ id }: Props) => {
             <PublishComment
               patchId={id}
               parentId={comment.id}
-              receiver={comment.quotedUsername}
+              receiverUsername={comment.quotedUsername}
               onSuccess={() => setReplyTo(null)}
               setNewComment={setNewComment}
             />
           </div>
+        )}
+
+        {comment.reply && comment.reply.length > 0 && (
+          <>{renderComments(comment.reply, depth + 1)}</>
         )}
       </div>
     ))
@@ -112,7 +121,7 @@ export const Comments = ({ id }: Props) => {
     <div className="space-y-4">
       <PublishComment
         patchId={id}
-        receiver={null}
+        receiverUsername={null}
         setNewComment={setNewComment}
       />
       {renderComments(comments)}

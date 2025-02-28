@@ -40,7 +40,7 @@ export const deleteComment = async (
     return '您没有权限删除该评论'
   }
 
-  return await prisma.$transaction(async (prisma) => {
+  return await prisma.$transaction(async () => {
     await deleteCommentWithReplies(input.commentId)
     return {}
   })

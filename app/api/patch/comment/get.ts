@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
-import { formatComments } from './_helpers'
+import { nestComments } from './_helpers'
 import { markdownToHtml } from '~/app/api/utils/render/markdownToHtml'
 import type { PatchComment } from '~/types/api/patch'
 
@@ -46,6 +46,7 @@ export const getPatchComment = async (
       patchId: comment.patch_id,
       created: String(comment.created),
       updated: String(comment.updated),
+      reply: [],
       user: {
         id: comment.user.id,
         name: comment.user.name,
@@ -54,7 +55,7 @@ export const getPatchComment = async (
     }))
   )
 
-  const nestedComments = formatComments(flatComments)
+  const nestedComments = nestComments(flatComments)
 
   return nestedComments
 }
