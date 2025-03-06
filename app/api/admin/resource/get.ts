@@ -7,14 +7,24 @@ export const getPatchResource = async (
   input: z.infer<typeof adminPaginationSchema>,
   nsfwEnable: Record<string, string | undefined>
 ) => {
-  const { page, limit } = input
+  const { page, limit, search } = input
   const offset = (page - 1) * limit
+
+  const where = search
+    ? {
+        content: {
+          contains: search,
+          mode: 'insensitive' as const
+        },
+        patch: nsfwEnable
+      }
+    : { patch: nsfwEnable }
 
   const [data, total] = await Promise.all([
     prisma.patch_resource.findMany({
+      where,
       take: limit,
       skip: offset,
-      where: { patch: nsfwEnable },
       orderBy: { created: 'desc' },
       include: {
         patch: {
@@ -32,9 +42,7 @@ export const getPatchResource = async (
         }
       }
     }),
-    prisma.patch_resource.count({
-      where: { patch: nsfwEnable }
-    })
+    prisma.patch_resource.count({ where })
   ])
 
   const resources: AdminResource[] = data.map((resource) => ({

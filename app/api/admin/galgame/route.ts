@@ -10,14 +10,24 @@ export const getGalgame = async (
   input: z.infer<typeof adminPaginationSchema>,
   nsfwEnable: Record<string, string | undefined>
 ) => {
-  const { page, limit } = input
+  const { page, limit, search } = input
   const offset = (page - 1) * limit
+
+  const where = search
+    ? {
+        name: {
+          contains: search,
+          mode: 'insensitive' as const
+        },
+        ...nsfwEnable
+      }
+    : nsfwEnable
 
   const [data, total] = await Promise.all([
     prisma.patch.findMany({
+      where,
       take: limit,
       skip: offset,
-      where: nsfwEnable,
       orderBy: { created: 'desc' },
       include: {
         user: {
@@ -29,7 +39,7 @@ export const getGalgame = async (
         }
       }
     }),
-    prisma.patch.count({ where: nsfwEnable })
+    prisma.patch.count({ where })
   ])
 
   const galgames: AdminGalgame[] = data.map((galgame) => ({
