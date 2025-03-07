@@ -5,9 +5,19 @@ export const resourceTypes = [
     description: '在 Windows, macOS 等电脑设备上运行的游戏'
   },
   {
+    value: 'row',
+    label: '生肉资源',
+    description: '没有中文翻译, 仅有日语或其它语言的 Galgame'
+  },
+  {
     value: 'chinese',
     label: '汉化资源',
     description: '汉化 Galgame 下载资源, 有简体中文或繁体中文支持'
+  },
+  {
+    value: 'patch',
+    label: '补丁资源',
+    description: '与这个 Galgame 相关的补丁资源'
   },
   {
     value: 'mobile',
@@ -21,19 +31,9 @@ export const resourceTypes = [
       '可以在手机模拟器, 例如 KiriKiri, ONS, Tyranor 等模拟器中运行的 Galgame 游戏'
   },
   {
-    value: 'row',
-    label: '生肉资源',
-    description: '没有中文翻译, 仅有日语或其它语言的 Galgame'
-  },
-  {
     value: 'app',
     label: '直装资源',
     description: '可以直接在手机安装并游玩的 Galgame'
-  },
-  {
-    value: 'patch',
-    label: '补丁资源',
-    description: '与这个 Galgame 相关的补丁资源'
   },
   {
     value: 'tool',
