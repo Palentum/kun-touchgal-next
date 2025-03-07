@@ -14,6 +14,7 @@ import { useMounted } from '~/hooks/useMounted'
 import { GalgameCard } from '~/components/galgame/Card'
 import { KunNull } from '~/components/kun/Null'
 import { EditTagModal } from './EditTagModal'
+import { DeleteTagModal } from './DeleteTagModal'
 import { useRouter } from 'next-nprogress-bar'
 import { KunUser } from '~/components/kun/floating-card/KunUser'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
@@ -95,25 +96,29 @@ export const TagDetailContainer = ({
               }}
             />
 
-            {user.role > 2 && (
-              <Button
-                variant="flat"
-                color="primary"
-                onPress={onOpen}
-                startContent={<Pencil />}
-              >
-                编辑该标签
-              </Button>
-            )}
-            <EditTagModal
-              tag={tag}
-              isOpen={isOpen}
-              onClose={onClose}
-              onSuccess={(newTag) => {
-                setTag(newTag)
-                onClose()
-              }}
-            />
+            <div className="flex items-center gap-2">
+              <DeleteTagModal tag={tag} />
+
+              {user.role > 2 && (
+                <Button
+                  variant="flat"
+                  color="primary"
+                  onPress={onOpen}
+                  startContent={<Pencil />}
+                >
+                  编辑该标签
+                </Button>
+              )}
+              <EditTagModal
+                tag={tag}
+                isOpen={isOpen}
+                onClose={onClose}
+                onSuccess={(newTag) => {
+                  setTag(newTag)
+                  onClose()
+                }}
+              />
+            </div>
           </div>
         }
       />

@@ -3,44 +3,23 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
   kunParseGetQuery,
   kunParsePostBody,
+  kunParseDeleteQuery,
   kunParsePutBody
 } from '~/app/api/utils/parseQuery'
-import { prisma } from '~/prisma/index'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import {
   createTagSchema,
   getTagByIdSchema,
   updateTagSchema
 } from '~/validations/tag'
-import type { TagDetail } from '~/types/api/tag'
+import { createTag } from './create'
+import { updateTag } from './update'
+import { getTagById } from './get'
+import { deleteTag } from './delete'
 
-export const getTagById = async (input: z.infer<typeof getTagByIdSchema>) => {
-  const { tagId } = input
-
-  const tag: TagDetail | null = await prisma.patch_tag.findUnique({
-    where: { id: tagId },
-    select: {
-      id: true,
-      name: true,
-      count: true,
-      alias: true,
-      introduction: true,
-      created: true,
-      user: {
-        select: {
-          id: true,
-          name: true,
-          avatar: true
-        }
-      }
-    }
-  })
-  if (!tag) {
-    return '未找到标签'
-  }
-
-  return tag
-}
+export const tagIdSchema = z.object({
+  tagId: z.coerce.number().min(1).max(9999999)
+})
 
 export const GET = async (req: NextRequest) => {
   const input = kunParseGetQuery(req, getTagByIdSchema)
@@ -50,89 +29,6 @@ export const GET = async (req: NextRequest) => {
 
   const response = await getTagById(input)
   return NextResponse.json(response)
-}
-
-export const rewriteTag = async (input: z.infer<typeof updateTagSchema>) => {
-  const { tagId, name, introduction = '', alias = [] } = input
-
-  const existingTag = await prisma.patch_tag.findFirst({
-    where: {
-      OR: [{ name }, { alias: { has: name } }]
-    }
-  })
-  if (existingTag && existingTag.id !== tagId) {
-    return '这个标签已经存在了'
-  }
-
-  const newTag: TagDetail = await prisma.patch_tag.update({
-    where: { id: tagId },
-    data: {
-      name,
-      introduction,
-      alias
-    },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          avatar: true
-        }
-      }
-    }
-  })
-
-  return newTag
-}
-
-export const PUT = async (req: NextRequest) => {
-  const input = await kunParsePutBody(req, updateTagSchema)
-  if (typeof input === 'string') {
-    return NextResponse.json(input)
-  }
-  const payload = await verifyHeaderCookie(req)
-  if (!payload) {
-    return NextResponse.json('用户未登录')
-  }
-  if (payload.role < 3) {
-    return NextResponse.json('本页面仅管理员可访问')
-  }
-
-  const response = await rewriteTag(input)
-  return NextResponse.json(response)
-}
-
-export const createTag = async (
-  input: z.infer<typeof createTagSchema>,
-  uid: number
-) => {
-  const { name, introduction = '', alias = [] } = input
-
-  const existingTag = await prisma.patch_tag.findFirst({
-    where: {
-      OR: [{ name }, { alias: { has: name } }]
-    }
-  })
-  if (existingTag) {
-    return '这个标签已经存在了'
-  }
-
-  const newTag = await prisma.patch_tag.create({
-    data: {
-      user_id: uid,
-      name,
-      introduction,
-      alias
-    },
-    select: {
-      id: true,
-      name: true,
-      count: true,
-      alias: true
-    }
-  })
-
-  return newTag
 }
 
 export const POST = async (req: NextRequest) => {
@@ -149,5 +45,39 @@ export const POST = async (req: NextRequest) => {
   }
 
   const response = await createTag(input, payload.uid)
+  return NextResponse.json(response)
+}
+
+export const PUT = async (req: NextRequest) => {
+  const input = await kunParsePutBody(req, updateTagSchema)
+  if (typeof input === 'string') {
+    return NextResponse.json(input)
+  }
+  const payload = await verifyHeaderCookie(req)
+  if (!payload) {
+    return NextResponse.json('用户未登录')
+  }
+  if (payload.role < 3) {
+    return NextResponse.json('本页面仅管理员可访问')
+  }
+
+  const response = await updateTag(input)
+  return NextResponse.json(response)
+}
+
+export const DELETE = async (req: NextRequest) => {
+  const input = kunParseDeleteQuery(req, tagIdSchema)
+  if (typeof input === 'string') {
+    return NextResponse.json(input)
+  }
+  const payload = await verifyHeaderCookie(req)
+  if (!payload) {
+    return NextResponse.json('用户未登录')
+  }
+  if (payload.role < 3) {
+    return NextResponse.json('本页面仅管理员可访问')
+  }
+
+  const response = await deleteTag(input.tagId)
   return NextResponse.json(response)
 }
