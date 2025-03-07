@@ -32,9 +32,16 @@ export const KunNavigationBreadcrumb = () => {
     setItems([...initialItem, ...newItem])
   }, [pathname])
 
+  const hideBreadcrumbRoutes = [
+    '/',
+    '/edit/create',
+    '/edit/rewrite',
+    '/redirect'
+  ]
+
   return (
     <>
-      {pathname !== '/' && (
+      {!hideBreadcrumbRoutes.includes(pathname) && (
         <div className="w-full my-4 bg-background/60 backdrop-blur-lg">
           <div className="px-3 mx-auto sm:px-6 max-w-7xl">
             <Breadcrumbs

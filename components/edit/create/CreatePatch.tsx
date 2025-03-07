@@ -20,7 +20,7 @@ export const CreatePatch = () => {
   >({})
 
   return (
-    <form className="w-full max-w-5xl mx-auto">
+    <form className="w-full max-w-5xl py-4 mx-auto">
       <Card className="w-full">
         <CardHeader className="flex gap-3">
           <div className="flex flex-col">
