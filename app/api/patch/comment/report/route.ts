@@ -25,8 +25,8 @@ export const createReport = async (
   await createMessage({
     type: 'report',
     content: STATIC_CONTENT,
-    patch_unique_id: patch?.unique_id,
-    sender_id: uid
+    sender_id: uid,
+    link: `/patch/${input.patchId}/comment`
   })
 
   return {}

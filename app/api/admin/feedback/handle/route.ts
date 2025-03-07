@@ -34,8 +34,8 @@ export const handleFeedback = async (
     await createMessage({
       type: 'feedback',
       content: feedbackContent,
-      patch_unique_id: message?.patch_unique_id,
-      recipient_id: message?.sender_id
+      recipient_id: message?.sender_id ?? undefined,
+      link: '/'
     })
 
     return {}

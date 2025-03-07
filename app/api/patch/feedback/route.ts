@@ -22,8 +22,8 @@ export const createFeedback = async (
   await createMessage({
     type: 'feedback',
     content: STATIC_CONTENT,
-    patch_unique_id: patch?.unique_id,
-    sender_id: uid
+    sender_id: uid,
+    link: `/patch/${input.patchId}/resource`
   })
 
   return {}

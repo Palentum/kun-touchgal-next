@@ -10,7 +10,6 @@ import toast from 'react-hot-toast'
 import { useUserStore } from '~/store/userStore'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import { KunAvatar } from '~/components/kun/floating-card/KunAvatar'
-import { MilkdownProvider } from '@milkdown/react'
 import { KunEditor } from '~/components/kun/milkdown/Editor'
 import { Markdown } from '~/components/kun/icons/Markdown'
 import { useKunMilkdownStore } from '~/store/milkdownStore'
@@ -81,9 +80,7 @@ export const PublishComment = ({
         </div>
       </CardHeader>
       <CardBody className="space-y-4">
-        <MilkdownProvider>
-          <KunEditor valueMarkdown={content} saveMarkdown={setContent} />
-        </MilkdownProvider>
+        <KunEditor valueMarkdown={content} saveMarkdown={setContent} />
 
         <div className="flex items-center justify-between">
           <Chip

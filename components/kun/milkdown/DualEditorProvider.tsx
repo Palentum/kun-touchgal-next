@@ -6,8 +6,6 @@ import { Code, Edit } from 'lucide-react'
 import { Codemirror } from './codemirror/Codemirror'
 import { useCreatePatchStore } from '~/store/editStore'
 import { useRewritePatchStore } from '~/store/rewriteStore'
-import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/react'
-import { MilkdownProvider } from '@milkdown/react'
 import { KunEditor } from './Editor'
 
 interface Props {
@@ -100,14 +98,7 @@ export const KunDualEditorProvider = ({ storeName }: Props) => {
           </div>
         }
       >
-        <MilkdownProvider>
-          <ProsemirrorAdapterProvider>
-            <KunEditor
-              valueMarkdown={getMarkdown()}
-              saveMarkdown={saveMarkdown}
-            />
-          </ProsemirrorAdapterProvider>
-        </MilkdownProvider>
+        <KunEditor valueMarkdown={getMarkdown()} saveMarkdown={saveMarkdown} />
       </Tab>
     </Tabs>
   )

@@ -34,8 +34,8 @@ export const handleReport = async (
     await createMessage({
       type: 'report',
       content: reportContent,
-      patch_unique_id: message?.patch_unique_id,
-      recipient_id: message?.sender_id
+      recipient_id: message?.sender_id ?? undefined,
+      link: '/'
     })
 
     return {}
