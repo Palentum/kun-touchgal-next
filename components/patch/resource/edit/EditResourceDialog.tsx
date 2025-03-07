@@ -74,7 +74,9 @@ export const EditResourceDialog = ({
             errors={errors}
             storage={watch().storage}
             content={watch().content}
+            size={watch().size}
             setContent={(content) => setValue('content', content)}
+            setSize={(size) => setValue('size', size)}
           />
           <ResourceDetailsForm control={control} errors={errors} />
         </form>

@@ -113,7 +113,7 @@ export const PublishResource = ({
                 作为创作者, 您每天有 5GB (5120MB) 的上传额度, 该额度每天早上 8
                 点重置
               </p>
-              <p>{`您今日已使用存储 ${user.dailyUploadLimit} MB`}</p>
+              <p>{`您今日已使用存储 ${user.dailyUploadLimit.toFixed(3)} MB`}</p>
               <Progress size="sm" value={progress} aria-label="已使用存储" />
             </div>
           ) : (
@@ -155,7 +155,9 @@ export const PublishResource = ({
               errors={errors}
               storage={watch().storage}
               content={watch().content}
+              size={watch().size}
               setContent={(content) => setValue('content', content)}
+              setSize={(size) => setValue('size', size)}
             />
           )}
 
