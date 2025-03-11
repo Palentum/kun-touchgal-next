@@ -1,11 +1,11 @@
 // TODO: type
-type SelectFieldKey = Exclude<keyof GalgameCard, '_count'> & {
-  select: {
-    favorite_by: boolean
-    resource: boolean
-    comment: boolean
-  }
-}
+// type SelectFieldKey = Exclude<keyof GalgameCard, '_count'> & {
+//   select: {
+//     favorite_by: boolean
+//     resource: boolean
+//     comment: boolean
+//   }
+// }
 
 export const GalgameCardSelectField = {
   id: true,

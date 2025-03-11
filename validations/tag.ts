@@ -38,7 +38,12 @@ export const getTagByIdSchema = z.object({
 export const getPatchByTagSchema = z.object({
   tagId: z.coerce.number().min(1).max(9999999),
   page: z.coerce.number().min(1).max(9999999),
-  limit: z.coerce.number().min(1).max(24)
+  limit: z.coerce.number().min(1).max(24),
+  sortField: z.union([
+    z.literal('created'),
+    z.literal('view'),
+    z.literal('download')
+  ])
 })
 
 export const searchTagSchema = z.object({

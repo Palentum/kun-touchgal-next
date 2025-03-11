@@ -21,7 +21,7 @@ export const getPatchByTag = async (
           select: GalgameCardSelectField
         }
       },
-      orderBy: { created: 'desc' },
+      orderBy: { patch: { [input.sortField]: 'desc' } },
       take: limit,
       skip: offset
     }),

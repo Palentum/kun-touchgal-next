@@ -56,7 +56,7 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
     const queryString = params.toString()
     const url = queryString ? `?${queryString}` : ''
 
-    router.push(url, { scroll: false })
+    router.push(url)
   }, [
     selectedType,
     selectedLanguage,

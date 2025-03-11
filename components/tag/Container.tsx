@@ -55,7 +55,7 @@ export const Container = ({ initialTags, initialTotal }: Props) => {
       newParams.set('searchPage', params.searchPage.toString())
     }
 
-    router.replace(`?${newParams.toString()}`, { scroll: false })
+    router.replace(`?${newParams.toString()}`)
   }
 
   const fetchTags = async (currentPage: number) => {

@@ -20,6 +20,8 @@ import { KunUser } from '~/components/kun/floating-card/KunUser'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 import { useUserStore } from '~/store/userStore'
 import { useSearchParams } from 'next/navigation'
+import { FilterBar } from './FilterBar'
+import type { SortField } from './_sort'
 
 interface Props {
   initialTag: TagDetail
@@ -37,6 +39,9 @@ export const TagDetailContainer = ({
   const router = useRouter()
   const searchParams = useSearchParams()
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
+  const [sortField, setSortField] = useState<SortField>(
+    (searchParams.get('sortField') as SortField) || 'created'
+  )
 
   const [tag, setTag] = useState(initialTag)
   const [patches, setPatches] = useState<GalgameCard[]>(initialPatches)
@@ -52,7 +57,8 @@ export const TagDetailContainer = ({
     }>('/tag/galgame', {
       tagId: tag.id,
       page,
-      limit: 24
+      limit: 24,
+      sortField
     })
 
     setPatches(galgames)
@@ -66,15 +72,17 @@ export const TagDetailContainer = ({
 
     const params = new URLSearchParams()
     params.set('page', page.toString())
+    params.set('sortField', sortField)
+
     const queryString = params.toString()
     const url = queryString ? `?${queryString}` : ''
-    router.push(url, { scroll: false })
+    router.push(url)
 
     fetchPatches()
-  }, [page])
+  }, [page, sortField])
 
   return (
-    <div className="w-full my-4">
+    <div className="w-full my-4 space-y-6">
       <KunHeader
         name={tag.name}
         description={tag.introduction}
@@ -123,8 +131,10 @@ export const TagDetailContainer = ({
         }
       />
 
+      <FilterBar sortField={sortField} setSortField={setSortField} />
+
       {tag.alias.length > 0 && (
-        <div className="mb-4">
+        <div>
           <h2 className="mb-4 text-lg font-semibold">别名</h2>
           <div className="flex flex-wrap gap-2">
             {tag.alias.map((alias, index) => (
@@ -140,7 +150,7 @@ export const TagDetailContainer = ({
         <KunLoading hint="正在获取 Galgame 中..." />
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-2 mx-auto mb-8 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 mx-auto sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {patches.map((pa) => (
               <GalgameCard key={pa.id} patch={pa} />
             ))}
