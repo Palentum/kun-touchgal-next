@@ -131,21 +131,22 @@ model user_patch_resource_like_relation {
 }
 
 model patch {
-  id            Int      @id @default(autoincrement())
-  unique_id     String   @unique @db.VarChar(8)
-  name          String   @db.VarChar(1007)
-  vndb_id       String?  @unique @db.VarChar(107)
-  banner        String   @default("") @db.VarChar(1007)
-  introduction  String   @default("") @db.VarChar(100007)
-  released      String   @default("") @db.VarChar(107)
-  content_limit String   @default("") @db.VarChar(107)
-  status        Int      @default(0)
-  download      Int      @default(0)
-  view          Int      @default(0)
-  type          String[]
-  language      String[]
-  engine        String[]
-  platform      String[]
+  id                   Int      @id @default(autoincrement())
+  unique_id            String   @unique @db.VarChar(8)
+  name                 String   @db.VarChar(1007)
+  vndb_id              String?  @unique @db.VarChar(107)
+  banner               String   @default("") @db.VarChar(1007)
+  introduction         String   @default("") @db.VarChar(100007)
+  released             String   @default("") @db.VarChar(107)
+  content_limit        String   @default("") @db.VarChar(107)
+  status               Int      @default(0)
+  download             Int      @default(0)
+  view                 Int      @default(0)
+  resource_update_time DateTime @default(now())
+  type                 String[]
+  language             String[]
+  engine               String[]
+  platform             String[]
 
   user_id Int
   user    user @relation("user_patch", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
