@@ -17,6 +17,7 @@ export const UserGalgameCard = ({ galgame }: Props) => {
       as={Link}
       href={`/${galgame.uniqueId}`}
       className="w-full"
+      target="_blank"
     >
       <CardBody className="p-4">
         <div className="flex flex-col gap-4 sm:flex-row">

@@ -12,7 +12,7 @@ import { useDebounce } from 'use-debounce'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { KunHeader } from '~/components/kun/Header'
 import { KunNull } from '~/components/kun/Null'
-import { SearchCard } from './Card'
+import { GalgameCard } from '~/components/galgame/Card'
 import { motion } from 'framer-motion'
 import { cardContainer, cardItem } from '~/motion/card'
 import { useSearchStore } from '~/store/searchStore'
@@ -80,7 +80,7 @@ export const SearchPage = () => {
     }>('/search', {
       query: query.split(' ').filter((term) => term.length > 0),
       page: currentPage,
-      limit: 10,
+      limit: 12,
       searchOption: {
         searchInIntroduction: searchData.searchInIntroduction,
         searchInAlias: searchData.searchInAlias,
@@ -181,24 +181,17 @@ export const SearchPage = () => {
       {loading ? (
         <KunLoading hint="正在搜索中..." />
       ) : (
-        <motion.div
-          variants={cardContainer}
-          initial="hidden"
-          animate="show"
-          className="space-y-6"
-        >
-          <KunMasonryGrid columnWidth={512} gap={24}>
-            {patches.map((patch) => (
-              <motion.div key={patch.id} variants={cardItem}>
-                <SearchCard patch={patch} />
-              </motion.div>
+        <>
+          <div className="grid grid-cols-2 gap-2 mx-auto mb-8 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {patches.map((pa) => (
+              <GalgameCard key={pa.id} patch={pa} />
             ))}
-          </KunMasonryGrid>
+          </div>
 
-          {total > 10 && (
+          {total > 12 && (
             <div className="flex justify-center">
               <Pagination
-                total={Math.ceil(total / 10)}
+                total={Math.ceil(total / 12)}
                 page={page}
                 onChange={setPage}
                 showControls
@@ -215,7 +208,7 @@ export const SearchPage = () => {
           {hasSearched && patches.length === 0 && (
             <KunNull message="未找到相关内容, 请尝试使用游戏的日文原名搜索或打开 NSFW" />
           )}
-        </motion.div>
+        </>
       )}
     </div>
   )

@@ -15,6 +15,7 @@ export const SearchCard = ({ patch }: Props) => {
       as={Link}
       href={`/${patch.uniqueId}`}
       className="w-full border border-default-100 dark:border-default-200"
+      target="_blank"
     >
       <CardBody className="p-4">
         <div className="flex flex-col gap-4 sm:flex-row">
