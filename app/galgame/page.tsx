@@ -40,7 +40,9 @@ export default async function Kun({ searchParams }: Props) {
     sortField,
     sortOrder,
     page: currentPage,
-    limit: 24
+    limit: 24,
+    yearString: JSON.stringify(['all']),
+    monthString: JSON.stringify(['all'])
   })
   if (typeof response === 'string') {
     return <ErrorComponent error={response} />

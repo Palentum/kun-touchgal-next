@@ -24,9 +24,51 @@ export const getGalgame = async (
     page,
     limit
   } = input
+  const years = JSON.parse(input.yearString) as string[]
+  const months = JSON.parse(input.monthString) as string[]
 
   const offset = (page - 1) * limit
 
+  // Releases date sort
+  let dateFilter = {}
+  if (!years.includes('all')) {
+    const dateConditions = []
+
+    if (years.includes('future')) {
+      dateConditions.push({ released: 'future' })
+    }
+
+    if (years.includes('unknown')) {
+      dateConditions.push({ released: 'unknown' })
+    }
+
+    const nonFutureYears = years.filter((year) => year !== 'future')
+    if (nonFutureYears.length > 0) {
+      if (!months.includes('all')) {
+        const yearMonthConditions = nonFutureYears.flatMap((year) =>
+          months.map((month) => ({
+            released: {
+              startsWith: `${year}-${month}`
+            }
+          }))
+        )
+        dateConditions.push(...yearMonthConditions)
+      } else {
+        const yearConditions = nonFutureYears.map((year) => ({
+          released: {
+            startsWith: year
+          }
+        }))
+        dateConditions.push(...yearConditions)
+      }
+    }
+
+    if (dateConditions.length > 0) {
+      dateFilter = { OR: dateConditions }
+    }
+  }
+
+  // Other fields sort
   const where = {
     ...(selectedType !== 'all' && { type: { has: selectedType } }),
     ...(selectedLanguage !== 'all' && { language: { has: selectedLanguage } }),
@@ -44,11 +86,17 @@ export const getGalgame = async (
       take: limit,
       skip: offset,
       orderBy,
-      where,
+      where: {
+        ...dateFilter,
+        ...where
+      },
       select: GalgameCardSelectField
     }),
     prisma.patch.count({
-      where
+      where: {
+        ...dateFilter,
+        ...where
+      }
     })
   ])
 

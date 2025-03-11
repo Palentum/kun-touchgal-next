@@ -38,6 +38,12 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
   const [sortOrder, setSortOrder] = useState<SortOrder>(
     (searchParams.get('sortOrder') as SortOrder) || 'desc'
   )
+  const [selectedYears, setSelectedYears] = useState<string[]>(
+    JSON.parse(searchParams.get('selectedYears') as string) || ['all']
+  )
+  const [selectedMonths, setSelectedMonths] = useState<string[]>(
+    JSON.parse(searchParams.get('selectedMonths') as string) || ['all']
+  )
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
 
   useEffect(() => {
@@ -51,6 +57,8 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
     params.set('platform', selectedPlatform)
     params.set('sortField', sortField)
     params.set('sortOrder', sortOrder)
+    params.set('selectedYears', JSON.stringify(selectedYears))
+    params.set('selectedMonths', JSON.stringify(selectedMonths))
     params.set('page', page.toString())
 
     const queryString = params.toString()
@@ -63,6 +71,8 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
     selectedPlatform,
     sortField,
     sortOrder,
+    selectedYears,
+    selectedMonths,
     page,
     isMounted,
     router
@@ -81,7 +91,9 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
       sortField,
       sortOrder,
       page,
-      limit: 24
+      limit: 24,
+      yearString: JSON.stringify(selectedYears),
+      monthString: JSON.stringify(selectedMonths)
     })
 
     setGalgames(galgames)
@@ -100,7 +112,9 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
     selectedType,
     selectedLanguage,
     selectedPlatform,
-    page
+    page,
+    selectedYears,
+    selectedMonths
   ])
 
   return (
@@ -121,6 +135,10 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
         setSelectedLanguage={setSelectedLanguage}
         selectedPlatform={selectedPlatform}
         setSelectedPlatform={setSelectedPlatform}
+        selectedYears={selectedYears}
+        setSelectedYears={setSelectedYears}
+        selectedMonths={selectedMonths}
+        setSelectedMonths={setSelectedMonths}
       />
 
       <div className="grid grid-cols-2 gap-2 mx-auto mb-8 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

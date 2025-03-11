@@ -137,7 +137,7 @@ model patch {
   vndb_id              String?  @unique @db.VarChar(107)
   banner               String   @default("") @db.VarChar(1007)
   introduction         String   @default("") @db.VarChar(100007)
-  released             String   @default("") @db.VarChar(107)
+  released             String   @default("unknown") @db.VarChar(107)
   content_limit        String   @default("") @db.VarChar(107)
   status               Int      @default(0)
   download             Int      @default(0)

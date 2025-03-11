@@ -9,7 +9,13 @@ import {
 import { Button } from '@nextui-org/button'
 import { Card, CardHeader } from '@nextui-org/card'
 import { Select, SelectItem } from '@nextui-org/select'
-import { ArrowDownAZ, ArrowUpAZ, ChevronDown, Filter } from 'lucide-react'
+import {
+  ArrowDownAZ,
+  ArrowUpAZ,
+  Calendar,
+  ChevronDown,
+  Filter
+} from 'lucide-react'
 import {
   ALL_SUPPORTED_TYPE,
   SUPPORTED_TYPE_MAP,
@@ -31,6 +37,10 @@ interface Props {
   setSelectedLanguage: (language: string) => void
   selectedPlatform: string
   setSelectedPlatform: (platform: string) => void
+  selectedYears: string[]
+  setSelectedYears: (years: string[]) => void
+  selectedMonths: string[]
+  setSelectedMonths: (months: string[]) => void
 }
 
 const sortFieldLabelMap: Record<string, string> = {
@@ -40,6 +50,38 @@ const sortFieldLabelMap: Record<string, string> = {
   download: '下载量',
   favorite: '收藏量'
 }
+
+const currentYear = new Date().getFullYear()
+const GALGAME_SORT_YEARS = [
+  'all',
+  'future',
+  'unknown',
+  ...Array.from({ length: currentYear - 1979 }, (_, i) =>
+    String(currentYear - i)
+  )
+]
+
+const GALGAME_SORT_YEARS_MAP: Record<string, string> = {
+  all: '全部年份',
+  future: '未发售',
+  unknown: '未知年份'
+}
+
+const GALGAME_SORT_MONTHS = [
+  'all',
+  '01',
+  '02',
+  '03',
+  '04',
+  '05',
+  '06',
+  '07',
+  '08',
+  '09',
+  '10',
+  '11',
+  '12'
+]
 
 export const FilterBar = ({
   selectedType,
@@ -51,7 +93,11 @@ export const FilterBar = ({
   selectedLanguage,
   setSelectedLanguage,
   selectedPlatform,
-  setSelectedPlatform
+  setSelectedPlatform,
+  selectedYears,
+  setSelectedYears,
+  selectedMonths,
+  setSelectedMonths
 }: Props) => {
   return (
     <Card className="w-full border border-default-100 bg-content1/50 backdrop-blur-lg">
@@ -124,6 +170,71 @@ export const FilterBar = ({
                 className="text-default-700"
               >
                 {SUPPORTED_PLATFORM_MAP[platform]}
+              </SelectItem>
+            ))}
+          </Select>
+
+          <Select
+            disallowEmptySelection
+            label="发售年份"
+            placeholder="选择年份"
+            selectedKeys={selectedYears}
+            disabledKeys={['future']}
+            onSelectionChange={(keys) => {
+              if (keys.anchorKey === 'all') {
+                setSelectedYears(['all'])
+                setSelectedMonths(['all'])
+              } else {
+                setSelectedYears(
+                  Array.from(keys as Set<string>).filter(
+                    (item) => item !== 'all'
+                  )
+                )
+              }
+            }}
+            startContent={<Calendar className="size-4 text-default-400" />}
+            selectionMode="multiple"
+            radius="lg"
+            size="sm"
+          >
+            {GALGAME_SORT_YEARS.map((year) => (
+              <SelectItem key={year} value={year} className="text-default-700">
+                {GALGAME_SORT_YEARS_MAP[year] ?? year}
+              </SelectItem>
+            ))}
+          </Select>
+
+          <Select
+            disallowEmptySelection
+            label="发售月份"
+            placeholder="选择月份"
+            selectedKeys={selectedMonths}
+            onSelectionChange={(keys) => {
+              if (keys.anchorKey === 'all') {
+                setSelectedMonths(['all'])
+              } else {
+                setSelectedMonths(
+                  Array.from(keys as Set<string>).filter(
+                    (item) => item !== 'all'
+                  )
+                )
+              }
+            }}
+            startContent={<Calendar className="size-4 text-default-400" />}
+            selectionMode="multiple"
+            radius="lg"
+            size="sm"
+            isDisabled={
+              selectedYears.includes('all') || selectedYears.includes('future')
+            }
+          >
+            {GALGAME_SORT_MONTHS.map((month) => (
+              <SelectItem
+                key={month}
+                value={month}
+                className="text-default-700"
+              >
+                {month === 'all' ? '全部月份' : month}
               </SelectItem>
             ))}
           </Select>
