@@ -33,7 +33,7 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
     searchParams.get('platform') || 'all'
   )
   const [sortField, setSortField] = useState<SortField>(
-    (searchParams.get('sortField') as SortField) || 'created'
+    (searchParams.get('sortField') as SortField) || 'resource_update_time'
   )
   const [sortOrder, setSortOrder] = useState<SortOrder>(
     (searchParams.get('sortOrder') as SortOrder) || 'desc'

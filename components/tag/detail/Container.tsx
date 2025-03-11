@@ -40,7 +40,7 @@ export const TagDetailContainer = ({
   const searchParams = useSearchParams()
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
   const [sortField, setSortField] = useState<SortField>(
-    (searchParams.get('sortField') as SortField) || 'created'
+    (searchParams.get('sortField') as SortField) || 'resource_update_time'
   )
 
   const [tag, setTag] = useState(initialTag)

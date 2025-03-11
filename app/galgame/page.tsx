@@ -26,7 +26,7 @@ interface Props {
 export default async function Kun({ searchParams }: Props) {
   const res = await searchParams
   const currentPage = res?.page ? res.page : 1
-  const sortField = res?.sortField ? res.sortField : 'created'
+  const sortField = res?.sortField ? res.sortField : 'resource_update_time'
   const sortOrder = res?.sortOrder ? res.sortOrder : 'desc'
 
   const selectedType = res?.type ? res.type : 'all'

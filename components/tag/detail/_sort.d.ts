@@ -1,1 +1,1 @@
-export type SortField = 'created' | 'view' | 'download'
+export type SortField = 'resource_update_time' | 'created' | 'view' | 'download'

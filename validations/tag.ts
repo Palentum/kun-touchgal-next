@@ -40,6 +40,7 @@ export const getPatchByTagSchema = z.object({
   page: z.coerce.number().min(1).max(9999999),
   limit: z.coerce.number().min(1).max(24),
   sortField: z.union([
+    z.literal('resource_update_time'),
     z.literal('created'),
     z.literal('view'),
     z.literal('download')

@@ -17,7 +17,8 @@ interface Props {
 }
 
 const sortFieldLabelMap: Record<string, string> = {
-  created: '创建时间',
+  resource_update_time: '资源更新时间',
+  created: '游戏创建时间',
   view: '浏览量',
   download: '下载量'
 }
@@ -47,8 +48,14 @@ export const FilterBar = ({ sortField, setSortField }: Props) => {
             selectionMode="single"
             className="min-w-[120px]"
           >
+            <DropdownItem
+              key="resource_update_time"
+              className="text-default-700"
+            >
+              资源更新时间
+            </DropdownItem>
             <DropdownItem key="created" className="text-default-700">
-              创建时间
+              游戏创建时间
             </DropdownItem>
             <DropdownItem key="view" className="text-default-700">
               浏览量
