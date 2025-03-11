@@ -14,6 +14,8 @@ import { useMounted } from '~/hooks/useMounted'
 import { UserDropdown } from './UserDropdown'
 import { KunSearch } from './Search'
 import { UserMessageBell } from './UserMessageBell'
+import { Tooltip } from '@nextui-org/tooltip'
+import { RandomGalgameButton } from '~/components/home/carousel/RandomGalgameButton'
 import type { UserState } from '~/store/userStore'
 import type { Message } from '~/types/api/message'
 
@@ -82,6 +84,10 @@ export const KunTopBarUser = () => {
 
           <KunSearch />
 
+          <Tooltip content="随机一部游戏">
+            <RandomGalgameButton isIconOnly variant="light" />
+          </Tooltip>
+
           <ThemeSwitcher />
 
           {user.name && (
@@ -97,7 +103,7 @@ export const KunTopBarUser = () => {
         </>
       ) : (
         <Skeleton className="rounded-lg">
-          <div className="w-32 h-10 bg-gray-300 rounded-lg" />
+          <div className="w-32 h-10 rounded-lg bg-default-300" />
         </Skeleton>
       )}
     </NavbarContent>

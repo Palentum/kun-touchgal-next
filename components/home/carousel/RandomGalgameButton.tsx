@@ -35,9 +35,13 @@ export const RandomGalgameButton = (props: KunButtonProps) => {
     <Button
       {...props}
       onPress={handleRandomJump}
-      startContent={<Dices size={18} />}
+      startContent={props.isIconOnly ? '' : <Dices size={18} />}
     >
-      随机一部游戏
+      {props.isIconOnly ? (
+        <Dices className="text-default-500 size-6" />
+      ) : (
+        '随机一部游戏'
+      )}
     </Button>
   )
 }

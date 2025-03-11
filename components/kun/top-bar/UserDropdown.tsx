@@ -155,7 +155,7 @@ export const UserDropdown = () => {
           </DropdownItem>
           <DropdownItem
             isReadOnly
-            textValue="萌萌点"
+            textValue="NSFW 切换"
             key="nsfw_toggle"
             startContent={<ArrowLeftRight className="size-4" />}
           >
