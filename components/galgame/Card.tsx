@@ -7,7 +7,6 @@ import { KunCardStats } from '~/components/kun/CardStats'
 import Link from 'next/link'
 import { KunPatchAttribute } from '~/components/kun/PatchAttribute'
 import { cn } from '~/utils/cn'
-import { kunMoyuMoe } from '~/config/moyu-moe'
 
 interface Props {
   patch: GalgameCard
@@ -20,7 +19,7 @@ export const GalgameCard = ({ patch }: Props) => {
     <Card
       isPressable
       as={Link}
-      href={`${kunMoyuMoe.domain.main}/${patch.uniqueId}`}
+      href={`/${patch.uniqueId}`}
       target="_blank"
       className="w-full border border-default-100 dark:border-default-200"
     >

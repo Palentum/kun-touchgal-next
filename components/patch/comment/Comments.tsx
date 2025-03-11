@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Card, CardBody } from '@nextui-org/card'
 import { Button } from '@nextui-org/button'
 import { KunUser } from '~/components/kun/floating-card/KunUser'
-import { MessageCircle } from 'lucide-react'
+import { MessageCircle, ArrowUpDown } from 'lucide-react'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 import { PublishComment } from './PublishComment'
@@ -18,13 +18,15 @@ import { cn } from '~/utils/cn'
 import type { PatchComment } from '~/types/api/patch'
 
 interface Props {
-  initialComments: PatchComment[]
   id: number
 }
+
+type SortOrder = 'asc' | 'desc'
 
 export const Comments = ({ id }: Props) => {
   const [comments, setComments] = useState<PatchComment[]>([])
   const [replyTo, setReplyTo] = useState<number | null>(null)
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
   const user = useUserStore((state) => state.user)
 
   useEffect(() => {
@@ -41,8 +43,25 @@ export const Comments = ({ id }: Props) => {
     fetchData()
   }, [])
 
+  const sortComments = (commentsToSort: PatchComment[]): PatchComment[] => {
+    const sortedComments = [...commentsToSort].sort((a, b) => {
+      const dateA = new Date(a.created).getTime()
+      const dateB = new Date(b.created).getTime()
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA
+    })
+
+    return sortedComments.map((comment) => ({
+      ...comment,
+      reply: comment.reply ? sortComments(comment.reply) : []
+    }))
+  }
+
+  const toggleSortOrder = () => {
+    setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+  }
+
   const setNewComment = async (newComment: PatchComment) => {
-    setComments([...comments, newComment])
+    setComments((prevComments) => [...prevComments, newComment])
     await new Promise((resolve) => {
       setTimeout(resolve, 500)
     })
@@ -117,6 +136,8 @@ export const Comments = ({ id }: Props) => {
     ))
   }
 
+  const sortedComments = sortComments(comments)
+
   return (
     <div className="space-y-4">
       <PublishComment
@@ -124,7 +145,19 @@ export const Comments = ({ id }: Props) => {
         receiverUsername={null}
         setNewComment={setNewComment}
       />
-      {renderComments(comments)}
+
+      {!!sortedComments.length && (
+        <Card>
+          <CardBody className="flex flex-row items-center justify-start gap-2">
+            <Button variant="flat" className="gap-2" onPress={toggleSortOrder}>
+              <ArrowUpDown className="size-4" />
+              {sortOrder === 'asc' ? '最早优先' : '最新优先'}
+            </Button>
+          </CardBody>
+        </Card>
+      )}
+
+      {renderComments(sortedComments)}
     </div>
   )
 }
