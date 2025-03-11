@@ -72,7 +72,6 @@ export const SearchPage = () => {
     }
 
     setLoading(true)
-    addToHistory(query)
     setShowHistory(false)
 
     const { galgames, total } = await kunFetchPost<{
@@ -107,6 +106,15 @@ export const SearchPage = () => {
     }
   }, [page])
 
+  const handleInputBlur = () => {
+    if (query.trim()) {
+      addToHistory(query)
+    }
+    setTimeout(() => {
+      setShowHistory(false)
+    }, 100)
+  }
+
   return (
     <div className="w-full my-4">
       <KunHeader name="搜索 Galgame" description="输入内容以自动搜索 Galgame" />
@@ -121,13 +129,8 @@ export const SearchPage = () => {
               setShowHistory(true)
             }}
             onFocus={() => setShowHistory(true)}
-            onBlur={async () => {
-              await new Promise((resolve) => {
-                setTimeout(resolve, 100)
-              })
-              setShowHistory(false)
-            }}
-            placeholder="使用空格分隔关键词，支持使用vndb id搜索"
+            onBlur={handleInputBlur}
+            placeholder="使用空格分隔关键词, 支持使用 VNDB ID 搜索"
             size="lg"
             radius="lg"
             startContent={<Search className="text-default-400" />}
@@ -141,7 +144,8 @@ export const SearchPage = () => {
         </div>
 
         <div className="text-sm text-default-500">
-          搜索默认搜索游戏标题和别名, 您可以选择性的添加游戏属性进行搜索, 您也可以
+          搜索默认搜索游戏标题和别名, 您可以选择性的添加游戏属性进行搜索,
+          您也可以
           <Link href="/tag" size="sm" underline="always">
             前往多标签搜索
           </Link>
