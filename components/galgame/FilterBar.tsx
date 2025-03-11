@@ -101,7 +101,7 @@ export const FilterBar = ({
 }: Props) => {
   return (
     <Card className="w-full border border-default-100 bg-content1/50 backdrop-blur-lg">
-      <CardHeader>
+      <CardHeader className="flex flex-col gap-4">
         <div className="flex flex-col w-full gap-4 sm:flex-row sm:items-center sm:justify-between">
           <Select
             label="类型筛选"
@@ -173,7 +173,9 @@ export const FilterBar = ({
               </SelectItem>
             ))}
           </Select>
+        </div>
 
+        <div className="flex flex-col w-full gap-4 sm:flex-row sm:items-center sm:justify-between">
           <Select
             disallowEmptySelection
             label="发售年份"
