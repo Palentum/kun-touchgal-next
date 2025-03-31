@@ -31,12 +31,17 @@ export const KunPagination = ({
     return params.toString()
   }
 
-  useEffect(() => {
-    const urlPage = Number(searchParams.get('page')) || 1
-    if (urlPage !== page) {
-      onPageChange(urlPage)
-    }
-  }, [searchParams])
+  const updateURL = (newPage: number) => {
+    router.push(`?${createQueryString('page', String(newPage))}`, {
+      scroll: false
+    })
+    requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'instant'
+      })
+    })
+  }
 
   useEffect(() => {
     setInputValue(String(page))
@@ -46,23 +51,14 @@ export const KunPagination = ({
     if (newPage >= 1 && newPage <= total) {
       setInputValue(String(newPage))
       onPageChange(newPage)
-
-      router.push(`?${createQueryString('page', String(newPage))}`, {
-        scroll: false
-      })
-      requestAnimationFrame(() => {
-        window.scrollTo({
-          top: 0,
-          behavior: 'instant'
-        })
-      })
+      updateURL(newPage)
     }
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       const newPage = parseInt(inputValue)
-      if (!isNaN(newPage)) {
+      if (!isNaN(newPage) && newPage >= 1 && newPage <= total) {
         handlePageChange(newPage)
         setIsEditing(false)
       }

@@ -84,7 +84,7 @@ export const SearchPage = () => {
       setTotal(0)
       setLoading(false)
     }
-  }, [selectedSuggestions])
+  }, [page, selectedSuggestions])
 
   return (
     <div className="relative w-full my-4">
@@ -132,10 +132,7 @@ export const SearchPage = () => {
               <KunPagination
                 total={Math.ceil(total / 12)}
                 page={page}
-                onPageChange={(newPage) => {
-                  setPage(newPage)
-                  handleSearch(newPage)
-                }}
+                onPageChange={setPage}
                 isLoading={loading}
               />
             </div>
