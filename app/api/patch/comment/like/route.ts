@@ -20,7 +20,7 @@ export const toggleCommentLike = async (
 
   const comment = await prisma.patch_comment.findUnique({
     where: { id: commentId },
-    include: { patch: { select: { id: true } } }
+    include: { patch: { select: { unique_id: true } } }
   })
   if (!comment) {
     return '未找到评论'
@@ -64,7 +64,7 @@ export const toggleCommentLike = async (
       content: `点赞了您的评论! -> ${comment.content.slice(0, 107)}`,
       sender_id: uid,
       recipient_id: comment.user_id,
-      link: `/patch/${comment.patch.id}/comment`
+      link: `/${comment.patch.unique_id}`
     })
 
     await prisma.user.update({

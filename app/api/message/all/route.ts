@@ -41,10 +41,10 @@ export const getMessage = async (
 
   const messages: Message[] = data.map((msg) => ({
     id: msg.id,
-    patchUniqueId: msg.patch_unique_id,
     type: msg.type,
     content: msg.content,
     status: msg.status,
+    link: msg.link,
     created: msg.created,
     sender: msg.sender
   }))

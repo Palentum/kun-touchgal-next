@@ -70,7 +70,7 @@ export const toggleResourceLike = async (
       content: `点赞了您在 ${resource.patch.name} 下发布的补丁资源`,
       sender_id: uid,
       recipient_id: resource.user_id,
-      link: `/patch/${resource.patch.id}/resource`
+      link: `/${resource.patch.unique_id}`
     })
 
     return !existingLike

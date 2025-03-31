@@ -66,7 +66,7 @@ export const togglePatchFavorite = async (
         content: patch.name,
         sender_id: uid,
         recipient_id: patch.user_id,
-        link: `/patch/${patch.id}/introduction`
+        link: `/${patch.unique_id}`
       })
     }
 

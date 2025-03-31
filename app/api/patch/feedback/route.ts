@@ -23,7 +23,7 @@ export const createFeedback = async (
     type: 'feedback',
     content: STATIC_CONTENT,
     sender_id: uid,
-    link: `/patch/${input.patchId}/resource`
+    link: patch?.unique_id ? `/${patch.unique_id}` : ''
   })
 
   return {}
