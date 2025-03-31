@@ -1,12 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Input } from '@nextui-org/input'
-import { Checkbox, Link } from '@nextui-org/react'
+import { Input, Button, Checkbox, Link } from '@nextui-org/react'
 import { KunLoading } from '~/components/kun/Loading'
 import { Search } from 'lucide-react'
-import { useDebounce } from 'use-debounce'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { KunHeader } from '~/components/kun/Header'
 import { KunNull } from '~/components/kun/Null'
@@ -14,8 +12,14 @@ import { GalgameCard } from '~/components/galgame/Card'
 import { useSearchStore } from '~/store/searchStore'
 import { SearchHistory } from './SearchHistory'
 import { KunPagination } from '~/components/kun/Pagination'
+import { SearchSuggestion } from './Suggestion'
 
 const MAX_HISTORY_ITEMS = 10
+
+interface SearchSuggestion {
+  type: 'keyword' | 'tag'
+  name: string
+}
 
 export const SearchPage = () => {
   const router = useRouter()
@@ -24,35 +28,18 @@ export const SearchPage = () => {
 
   const [page, setPage] = useState(currentPage)
   const [query, setQuery] = useState(searchParams.get('q') || '')
-  const [debouncedQuery] = useDebounce(query, 500)
   const [hasSearched, setHasSearched] = useState(false)
   const [patches, setPatches] = useState<GalgameCard[]>([])
   const [total, setTotal] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(false)
 
   const [showHistory, setShowHistory] = useState(false)
   const searchData = useSearchStore((state) => state.data)
   const setSearchData = useSearchStore((state) => state.setData)
 
-  useEffect(() => {
-    if (debouncedQuery) {
-      setPage(1)
-      handleSearch(1)
-    } else {
-      setPatches([])
-      setTotal(0)
-      setHasSearched(false)
-    }
-  }, [
-    debouncedQuery,
-    searchData.searchInAlias,
-    searchData.searchInIntroduction,
-    searchData.searchInTag
-  ])
-
   const addToHistory = (searchQuery: string) => {
-    if (!searchQuery.trim()) {
-      return
-    }
+    if (!searchQuery.trim()) return
 
     const newHistory = [
       searchQuery,
@@ -62,20 +49,18 @@ export const SearchPage = () => {
     setSearchData({ ...searchData, searchHistory: newHistory })
   }
 
-  const [loading, setLoading] = useState(false)
-  const handleSearch = async (currentPage = page) => {
-    if (!query.trim()) {
-      return
-    }
+  const handleSearch = async (currentPage = page, searchQuery = query) => {
+    if (!searchQuery.trim()) return
 
     setLoading(true)
     setShowHistory(false)
+    setShowSuggestions(false)
 
     const { galgames, total } = await kunFetchPost<{
       galgames: GalgameCard[]
       total: number
     }>('/search', {
-      query: query.split(' ').filter((term) => term.length > 0),
+      query: searchQuery.split(' ').filter((term) => term.length > 0),
       page: currentPage,
       limit: 12,
       searchOption: {
@@ -90,54 +75,73 @@ export const SearchPage = () => {
     setHasSearched(true)
 
     const params = new URLSearchParams()
-    params.set('q', query)
+    params.set('q', searchQuery)
     params.set('page', currentPage.toString())
     router.push(`/search?${params.toString()}`)
 
     setLoading(false)
+    addToHistory(searchQuery)
   }
 
-  useEffect(() => {
-    if (debouncedQuery) {
-      handleSearch()
-    }
-  }, [page])
-
   const handleInputBlur = () => {
-    if (query.trim()) {
-      addToHistory(query)
-    }
     setTimeout(() => {
       setShowHistory(false)
+      setShowSuggestions(false)
     }, 100)
   }
 
   return (
     <div className="w-full my-4">
-      <KunHeader name="搜索 Galgame" description="输入内容以自动搜索 Galgame" />
+      <KunHeader
+        name="搜索 Galgame"
+        description="输入内容并点击搜索按钮以搜索 Galgame"
+      />
 
       <div className="mb-8 space-y-4">
-        <div className="relative">
-          <Input
-            autoFocus
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value)
-              setShowHistory(true)
-            }}
-            onFocus={() => setShowHistory(true)}
-            onBlur={handleInputBlur}
-            placeholder="使用空格分隔关键词, 支持使用 VNDB ID 搜索"
-            size="lg"
-            radius="lg"
-            startContent={<Search className="text-default-400" />}
-          />
+        <div className="relative flex gap-2">
+          <div className="flex-1">
+            <Input
+              autoFocus
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value)
+                setShowSuggestions(true)
+                if (!e.target.value.trim()) {
+                  setShowHistory(true)
+                }
+              }}
+              onFocus={() => {
+                if (!query.trim()) {
+                  setShowHistory(true)
+                } else {
+                  setShowSuggestions(true)
+                }
+              }}
+              onBlur={handleInputBlur}
+              placeholder="使用空格分隔关键词, 支持使用 VNDB ID 搜索"
+              size="lg"
+              radius="lg"
+              startContent={<Search className="text-default-400" />}
+            />
 
-          <SearchHistory
-            showHistory={showHistory}
-            setShowHistory={setShowHistory}
-            setQuery={setQuery}
-          />
+            {showSuggestions && (
+              <SearchSuggestion
+                query={query}
+                setQuery={setQuery}
+                handleSearch={handleSearch}
+              />
+            )}
+
+            <SearchHistory
+              showHistory={showHistory}
+              setShowHistory={setShowHistory}
+              setQuery={setQuery}
+            />
+          </div>
+
+          <Button color="primary" size="lg" onPress={() => handleSearch(1)}>
+            搜索
+          </Button>
         </div>
 
         <div className="text-sm text-default-500">
@@ -147,6 +151,7 @@ export const SearchPage = () => {
             前往多标签搜索
           </Link>
         </div>
+
         <div className="flex flex-wrap gap-3">
           <Checkbox
             isSelected={searchData.searchInIntroduction}
@@ -190,7 +195,10 @@ export const SearchPage = () => {
               <KunPagination
                 total={Math.ceil(total / 12)}
                 page={page}
-                onPageChange={setPage}
+                onPageChange={(newPage) => {
+                  setPage(newPage)
+                  handleSearch(newPage)
+                }}
                 isLoading={loading}
               />
             </div>
