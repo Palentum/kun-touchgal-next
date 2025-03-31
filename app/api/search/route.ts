@@ -6,50 +6,73 @@ import { searchSchema } from '~/validations/search'
 import { GalgameCardSelectField } from '~/constants/api/select'
 import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 import { Prisma } from '@prisma/client'
+import type { SearchSuggestionType } from '~/types/api/search'
 
 export const searchGalgame = async (
   input: z.infer<typeof searchSchema>,
   nsfwEnable: Record<string, string | undefined>
 ) => {
-  const { query, page, limit, searchOption } = input
+  const { queryString, page, limit, searchOption } = input
   const offset = (page - 1) * limit
   const insensitive = Prisma.QueryMode.insensitive
 
+  const query = JSON.parse(queryString) as SearchSuggestionType[]
+
+  const queryArray = query
+    .filter((item) => item.type === 'keyword')
+    .map((item) => item.name)
+  const tagArray = query
+    .filter((item) => item.type === 'tag')
+    .map((item) => item.name)
+
+  const queryCondition = [
+    ...queryArray.map((q) => ({
+      OR: [
+        { name: { contains: q, mode: insensitive } },
+        { vndb_id: { contains: q, mode: insensitive } },
+        ...(searchOption.searchInIntroduction
+          ? [{ introduction: { contains: q, mode: insensitive } }]
+          : []),
+        ...(searchOption.searchInAlias
+          ? [
+              {
+                alias: {
+                  some: {
+                    name: { contains: q, mode: insensitive }
+                  }
+                }
+              }
+            ]
+          : []),
+        ...(searchOption.searchInTag
+          ? [
+              {
+                tag: {
+                  some: {
+                    tag: { name: { contains: q, mode: insensitive } }
+                  }
+                }
+              }
+            ]
+          : [])
+      ]
+    })),
+
+    nsfwEnable,
+
+    ...tagArray.map((q) => ({
+      tag: {
+        some: {
+          tag: {
+            OR: [{ name: q }, { alias: { has: q } }]
+          }
+        }
+      }
+    }))
+  ]
+
   const data = await prisma.patch.findMany({
-    where: {
-      AND: query.map((q) => ({
-        OR: [
-          { name: { contains: q, mode: insensitive } },
-          { vndb_id: { contains: q, mode: insensitive } },
-          ...(searchOption.searchInIntroduction
-            ? [{ introduction: { contains: q, mode: insensitive } }]
-            : []),
-          ...(searchOption.searchInAlias
-            ? [
-                {
-                  alias: {
-                    some: {
-                      name: { contains: q, mode: insensitive }
-                    }
-                  }
-                }
-              ]
-            : []),
-          ...(searchOption.searchInTag
-            ? [
-                {
-                  tag: {
-                    some: {
-                      tag: { name: { contains: q, mode: insensitive } }
-                    }
-                  }
-                }
-              ]
-            : [])
-        ]
-      })),
-      ...nsfwEnable
-    },
+    where: { AND: queryCondition },
     select: GalgameCardSelectField,
     orderBy: { created: 'desc' },
     take: limit,
@@ -57,40 +80,7 @@ export const searchGalgame = async (
   })
 
   const total = await prisma.patch.count({
-    where: {
-      AND: query.map((q) => ({
-        OR: [
-          { name: { contains: q, mode: insensitive } },
-          { vndb_id: { contains: q, mode: insensitive } },
-          ...(searchOption.searchInIntroduction
-            ? [{ introduction: { contains: q, mode: insensitive } }]
-            : []),
-          ...(searchOption.searchInAlias
-            ? [
-                {
-                  alias: {
-                    some: {
-                      name: { contains: q, mode: insensitive }
-                    }
-                  }
-                }
-              ]
-            : []),
-          ...(searchOption.searchInTag
-            ? [
-                {
-                  tag: {
-                    some: {
-                      tag: { name: { contains: q, mode: insensitive } }
-                    }
-                  }
-                }
-              ]
-            : [])
-        ]
-      })),
-      ...nsfwEnable
-    }
+    where: { AND: queryCondition }
   })
 
   const galgames: GalgameCard[] = data.map((gal) => ({

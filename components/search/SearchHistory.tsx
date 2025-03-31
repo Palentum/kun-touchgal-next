@@ -4,30 +4,34 @@ import { Button } from '@nextui-org/react'
 import { Clock, X } from 'lucide-react'
 import { useSearchStore } from '~/store/searchStore'
 import type { Dispatch, SetStateAction } from 'react'
+import type { SearchSuggestionType } from '~/types/api/search'
 
 interface Props {
   showHistory: boolean
   setShowHistory: Dispatch<SetStateAction<boolean>>
-  setQuery: Dispatch<SetStateAction<string>>
+  setSelectedSuggestions: Dispatch<SetStateAction<SearchSuggestionType[]>>
 }
 
 export const SearchHistory = ({
   showHistory,
   setShowHistory,
-  setQuery
+  setSelectedSuggestions
 }: Props) => {
   const searchData = useSearchStore((state) => state.data)
   const setSearchData = useSearchStore((state) => state.setData)
 
   const handleHistoryClick = (historyItem: string) => {
-    setQuery(historyItem)
     setShowHistory(false)
+    setSelectedSuggestions((prev) => {
+      const filtered = prev.filter((item) => item.name !== historyItem)
+      return [...filtered, { type: 'keyword', name: historyItem }]
+    })
   }
 
   return (
     <>
       {showHistory && searchData.searchHistory.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 border shadow-lg rounded-2xl bg-content1 border-default-200">
+        <div className="absolute z-50 w-full border shadow-lg top-16 rounded-2xl bg-content1 border-default-200">
           <div className="flex items-center justify-between p-2 border-b border-default-200">
             <span className="flex items-center gap-1 text-sm text-default-500">
               <Clock size={16} /> 搜索历史

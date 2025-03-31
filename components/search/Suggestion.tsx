@@ -7,20 +7,20 @@ import { Chip } from '@nextui-org/react'
 import { Key, Tag } from 'lucide-react'
 import { KunLoading } from '~/components/kun/Loading'
 import type { Dispatch, SetStateAction } from 'react'
-
-interface SearchSuggestion {
-  type: 'keyword' | 'tag'
-  name: string
-}
+import type { SearchSuggestionType } from '~/types/api/search'
 
 interface Props {
   query: string
   setQuery: Dispatch<SetStateAction<string>>
-  handleSearch: (currentPage?: number, searchQuery?: string) => Promise<void>
+  setSelectedSuggestions: Dispatch<SetStateAction<SearchSuggestionType[]>>
 }
 
-export const SearchSuggestion = ({ query, setQuery, handleSearch }: Props) => {
-  const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([])
+export const SearchSuggestion = ({
+  query,
+  setQuery,
+  setSelectedSuggestions
+}: Props) => {
+  const [suggestions, setSuggestions] = useState<SearchSuggestionType[]>([])
   const [isPending, startTransition] = useTransition()
 
   const fetchSuggestions = async (searchQuery: string) => {
@@ -30,9 +30,9 @@ export const SearchSuggestion = ({ query, setQuery, handleSearch }: Props) => {
     }
 
     startTransition(async () => {
-      const res = await kunFetchPost<KunResponse<SearchSuggestion[]>>(
+      const res = await kunFetchPost<KunResponse<SearchSuggestionType[]>>(
         '/search/tag',
-        { query: searchQuery.split(' ').filter((term) => term.length > 0) }
+        { query: searchQuery.split('|').filter((term) => term.length > 0) }
       )
 
       kunErrorHandler(res, (value) => {
@@ -49,20 +49,23 @@ export const SearchSuggestion = ({ query, setQuery, handleSearch }: Props) => {
     }
   }, [query])
 
-  const handleSuggestionQuery = (suggestion: SearchSuggestion) => {
-    setQuery(suggestion.name)
-    handleSearch(1, suggestion.name)
+  const handleClickSuggestion = (suggestion: SearchSuggestionType) => {
+    setQuery('')
+    setSelectedSuggestions((prev) => {
+      const filtered = prev.filter((item) => item.name !== suggestion.name)
+      return [...filtered, suggestion]
+    })
   }
 
   return (
-    <div className="absolute z-50 w-full p-3 mt-1 space-y-2 overflow-auto border shadow-lg max-h-96 rounded-2xl bg-content1 border-default-200">
+    <div className="absolute z-50 w-full p-3 space-y-2 overflow-auto border shadow-lg top-16 max-h-96 rounded-2xl bg-content1 border-default-200">
       <p className="text-default-500">
         点击关键词按您的输入搜索, 点击标签使用多标签搜索
       </p>
 
       <div
         className="p-1 cursor-pointer hover:bg-default-100 rounded-2xl"
-        onClick={() => handleSuggestionQuery({ type: 'keyword', name: query })}
+        onClick={() => handleClickSuggestion({ type: 'keyword', name: query })}
       >
         <div className="flex items-center gap-2">
           <Chip
@@ -83,7 +86,7 @@ export const SearchSuggestion = ({ query, setQuery, handleSearch }: Props) => {
           <div
             key={index}
             className="p-1 cursor-pointer hover:bg-default-100 rounded-2xl"
-            onClick={() => handleSuggestionQuery(suggestion)}
+            onClick={() => handleClickSuggestion(suggestion)}
           >
             <div className="flex items-center gap-2">
               <span>

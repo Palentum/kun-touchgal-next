@@ -1,10 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { Input, Button, Checkbox, Link } from '@nextui-org/react'
+import { useEffect, useState } from 'react'
+import { Button, Chip } from '@nextui-org/react'
 import { KunLoading } from '~/components/kun/Loading'
-import { Search } from 'lucide-react'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { KunHeader } from '~/components/kun/Header'
 import { KunNull } from '~/components/kun/Null'
@@ -13,26 +11,25 @@ import { useSearchStore } from '~/store/searchStore'
 import { SearchHistory } from './SearchHistory'
 import { KunPagination } from '~/components/kun/Pagination'
 import { SearchSuggestion } from './Suggestion'
+import { SearchOption } from './Option'
+import { useDebounce } from 'use-debounce'
+import type { SearchSuggestionType } from '~/types/api/search'
+import type { ChangeEvent, KeyboardEvent } from 'react'
 
 const MAX_HISTORY_ITEMS = 10
 
-interface SearchSuggestion {
-  type: 'keyword' | 'tag'
-  name: string
-}
-
 export const SearchPage = () => {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const currentPage = Number(searchParams.get('page') || '1')
-
-  const [page, setPage] = useState(currentPage)
-  const [query, setQuery] = useState(searchParams.get('q') || '')
+  const [page, setPage] = useState(1)
+  const [query, setQuery] = useState('')
+  const [debouncedQuery] = useDebounce(query, 500)
   const [hasSearched, setHasSearched] = useState(false)
   const [patches, setPatches] = useState<GalgameCard[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const [selectedSuggestions, setSelectedSuggestions] = useState<
+    SearchSuggestionType[]
+  >([])
 
   const [showHistory, setShowHistory] = useState(false)
   const searchData = useSearchStore((state) => state.data)
@@ -50,7 +47,9 @@ export const SearchPage = () => {
   }
 
   const handleSearch = async (currentPage = page, searchQuery = query) => {
-    if (!searchQuery.trim()) return
+    if (!selectedSuggestions.length) {
+      return
+    }
 
     setLoading(true)
     setShowHistory(false)
@@ -60,7 +59,7 @@ export const SearchPage = () => {
       galgames: GalgameCard[]
       total: number
     }>('/search', {
-      query: searchQuery.split(' ').filter((term) => term.length > 0),
+      queryString: JSON.stringify(selectedSuggestions),
       page: currentPage,
       limit: 12,
       searchOption: {
@@ -73,14 +72,27 @@ export const SearchPage = () => {
     setPatches(galgames)
     setTotal(total)
     setHasSearched(true)
-
-    const params = new URLSearchParams()
-    params.set('q', searchQuery)
-    params.set('page', currentPage.toString())
-    router.push(`/search?${params.toString()}`)
-
     setLoading(false)
     addToHistory(searchQuery)
+  }
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value)
+    if (!event.target.value.trim()) {
+      setShowSuggestions(false)
+      setShowHistory(true)
+    } else {
+      setShowSuggestions(true)
+      setShowHistory(false)
+    }
+  }
+
+  const handleInputFocus = () => {
+    if (!query.trim()) {
+      setShowHistory(true)
+    } else {
+      setShowSuggestions(true)
+    }
   }
 
   const handleInputBlur = () => {
@@ -90,94 +102,94 @@ export const SearchPage = () => {
     }, 100)
   }
 
+  const handleRemoveChip = (nameToRemove: string) => {
+    setSelectedSuggestions((prevSuggestions) =>
+      prevSuggestions.filter((suggestion) => suggestion.name !== nameToRemove)
+    )
+  }
+
+  const handleExecuteSearch = () => {
+    if (!query.trim()) {
+      return
+    }
+    setSelectedSuggestions((prev) => {
+      const filtered = prev.filter((item) => item.name !== query.trim())
+      return [...filtered, { type: 'keyword', name: query.trim() }]
+    })
+    setQuery('')
+  }
+
+  const handleKeyUp = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Backspace') {
+      if (!query.trim()) {
+        setSelectedSuggestions((prev) => prev.slice(0, -1))
+      }
+    } else if (event.key === 'Enter') {
+      handleExecuteSearch()
+    }
+  }
+
+  useEffect(() => {
+    if (selectedSuggestions.length) {
+      handleSearch()
+    } else {
+      setPatches([])
+      setHasSearched(false)
+      setTotal(0)
+      setLoading(false)
+    }
+  }, [selectedSuggestions])
+
   return (
     <div className="w-full my-4">
       <KunHeader
         name="搜索 Galgame"
-        description="输入内容并点击搜索按钮以搜索 Galgame"
+        description="输入内容并点击搜索按钮以搜索 Galgame, 搜索设置默认搜索游戏标题和别名"
+        headerEndContent={<SearchOption />}
       />
 
-      <div className="mb-8 space-y-4">
-        <div className="relative flex gap-2">
-          <div className="flex-1">
-            <Input
-              autoFocus
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value)
-                setShowSuggestions(true)
-                if (!e.target.value.trim()) {
-                  setShowHistory(true)
-                }
-              }}
-              onFocus={() => {
-                if (!query.trim()) {
-                  setShowHistory(true)
-                } else {
-                  setShowSuggestions(true)
-                }
-              }}
-              onBlur={handleInputBlur}
-              placeholder="使用空格分隔关键词, 支持使用 VNDB ID 搜索"
-              size="lg"
-              radius="lg"
-              startContent={<Search className="text-default-400" />}
-            />
+      <div className="relative flex gap-2 mb-6">
+        <div className="flex flex-wrap items-center w-full gap-2 px-3 bg-default-100 rounded-large">
+          {selectedSuggestions.map((suggestion, index) => (
+            <Chip
+              key={index}
+              variant="flat"
+              color={suggestion.type === 'keyword' ? 'primary' : 'secondary'}
+              onClose={() => handleRemoveChip(suggestion.name)}
+            >
+              {suggestion.name}
+            </Chip>
+          ))}
 
-            {showSuggestions && (
-              <SearchSuggestion
-                query={query}
-                setQuery={setQuery}
-                handleSearch={handleSearch}
-              />
-            )}
-
-            <SearchHistory
-              showHistory={showHistory}
-              setShowHistory={setShowHistory}
-              setQuery={setQuery}
-            />
-          </div>
-
-          <Button color="primary" size="lg" onPress={() => handleSearch(1)}>
-            搜索
-          </Button>
+          <input
+            autoFocus
+            className="placeholder-default-500 text-default-700 min-w-[120px] flex-grow bg-transparent outline-none"
+            value={query}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+            onKeyUp={(e) => handleKeyUp(e)}
+            placeholder="输入内容, 点击按钮或回车创建关键词, 支持使用 VNDB ID 搜索"
+          />
         </div>
 
-        <div className="text-sm text-default-500">
-          搜索默认搜索游戏标题和别名, 您可以选择性的添加游戏属性进行搜索,
-          您也可以
-          <Link href="/tag" size="sm" underline="always">
-            前往多标签搜索
-          </Link>
-        </div>
+        {showSuggestions && (
+          <SearchSuggestion
+            query={debouncedQuery}
+            setQuery={setQuery}
+            setSelectedSuggestions={setSelectedSuggestions}
+          />
+        )}
 
-        <div className="flex flex-wrap gap-3">
-          <Checkbox
-            isSelected={searchData.searchInIntroduction}
-            onValueChange={(checked) =>
-              setSearchData({ ...searchData, searchInIntroduction: checked })
-            }
-          >
-            包含简介
-          </Checkbox>
-          <Checkbox
-            isSelected={searchData.searchInAlias}
-            onValueChange={(checked) =>
-              setSearchData({ ...searchData, searchInAlias: checked })
-            }
-          >
-            包含别名
-          </Checkbox>
-          <Checkbox
-            isSelected={searchData.searchInTag}
-            onValueChange={(checked) =>
-              setSearchData({ ...searchData, searchInTag: checked })
-            }
-          >
-            包含标签
-          </Checkbox>
-        </div>
+        <SearchHistory
+          showHistory={showHistory}
+          setSelectedSuggestions={setSelectedSuggestions}
+          setShowHistory={setShowHistory}
+        />
+
+        <Button color="primary" size="lg" onPress={handleExecuteSearch}>
+          搜索
+        </Button>
       </div>
 
       {loading ? (
