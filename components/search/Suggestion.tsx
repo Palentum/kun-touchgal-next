@@ -58,7 +58,7 @@ export const SearchSuggestion = ({
   }
 
   return (
-    <div className="absolute z-50 w-full p-3 space-y-2 overflow-auto border shadow-lg top-16 max-h-96 rounded-2xl bg-content1 border-default-200">
+    <div className="absolute z-50 w-full p-3 space-y-2 overflow-auto border shadow-lg max-h-96 rounded-2xl bg-content1 border-default-200">
       <p className="text-default-500">
         点击关键词按您的输入搜索, 点击标签使用多标签搜索
       </p>

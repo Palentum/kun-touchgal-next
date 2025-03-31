@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Button, Chip } from '@nextui-org/react'
 import { KunLoading } from '~/components/kun/Loading'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { KunHeader } from '~/components/kun/Header'
@@ -13,8 +12,8 @@ import { KunPagination } from '~/components/kun/Pagination'
 import { SearchSuggestion } from './Suggestion'
 import { SearchOption } from './Option'
 import { useDebounce } from 'use-debounce'
+import { SearchInput } from './Input'
 import type { SearchSuggestionType } from '~/types/api/search'
-import type { ChangeEvent, KeyboardEvent } from 'react'
 
 const MAX_HISTORY_ITEMS = 10
 
@@ -76,59 +75,6 @@ export const SearchPage = () => {
     addToHistory(searchQuery)
   }
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value)
-    if (!event.target.value.trim()) {
-      setShowSuggestions(false)
-      setShowHistory(true)
-    } else {
-      setShowSuggestions(true)
-      setShowHistory(false)
-    }
-  }
-
-  const handleInputFocus = () => {
-    if (!query.trim()) {
-      setShowHistory(true)
-    } else {
-      setShowSuggestions(true)
-    }
-  }
-
-  const handleInputBlur = () => {
-    setTimeout(() => {
-      setShowHistory(false)
-      setShowSuggestions(false)
-    }, 100)
-  }
-
-  const handleRemoveChip = (nameToRemove: string) => {
-    setSelectedSuggestions((prevSuggestions) =>
-      prevSuggestions.filter((suggestion) => suggestion.name !== nameToRemove)
-    )
-  }
-
-  const handleExecuteSearch = () => {
-    if (!query.trim()) {
-      return
-    }
-    setSelectedSuggestions((prev) => {
-      const filtered = prev.filter((item) => item.name !== query.trim())
-      return [...filtered, { type: 'keyword', name: query.trim() }]
-    })
-    setQuery('')
-  }
-
-  const handleKeyUp = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Backspace') {
-      if (!query.trim()) {
-        setSelectedSuggestions((prev) => prev.slice(0, -1))
-      }
-    } else if (event.key === 'Enter') {
-      handleExecuteSearch()
-    }
-  }
-
   useEffect(() => {
     if (selectedSuggestions.length) {
       handleSearch()
@@ -141,56 +87,35 @@ export const SearchPage = () => {
   }, [selectedSuggestions])
 
   return (
-    <div className="w-full my-4">
+    <div className="relative w-full my-4">
       <KunHeader
         name="搜索 Galgame"
-        description="输入内容并点击搜索按钮以搜索 Galgame, 搜索设置默认搜索游戏标题和别名"
+        description="输入内容并点击搜索按钮以搜索 Galgame, 搜索设置默认搜索游戏标题和别名, 支持使用 VNDB ID 搜索"
         headerEndContent={<SearchOption />}
       />
 
-      <div className="relative flex gap-2 mb-6">
-        <div className="flex flex-wrap items-center w-full gap-2 px-3 bg-default-100 rounded-large">
-          {selectedSuggestions.map((suggestion, index) => (
-            <Chip
-              key={index}
-              variant="flat"
-              color={suggestion.type === 'keyword' ? 'primary' : 'secondary'}
-              onClose={() => handleRemoveChip(suggestion.name)}
-            >
-              {suggestion.name}
-            </Chip>
-          ))}
+      <SearchInput
+        query={query}
+        setQuery={setQuery}
+        setShowSuggestions={setShowSuggestions}
+        selectedSuggestions={selectedSuggestions}
+        setSelectedSuggestions={setSelectedSuggestions}
+        setShowHistory={setShowHistory}
+      />
 
-          <input
-            autoFocus
-            className="placeholder-default-500 text-default-700 min-w-[120px] flex-grow bg-transparent outline-none"
-            value={query}
-            onChange={handleInputChange}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-            onKeyUp={(e) => handleKeyUp(e)}
-            placeholder="输入内容, 点击按钮或回车创建关键词, 支持使用 VNDB ID 搜索"
-          />
-        </div>
-
-        {showSuggestions && (
-          <SearchSuggestion
-            query={debouncedQuery}
-            setQuery={setQuery}
-            setSelectedSuggestions={setSelectedSuggestions}
-          />
-        )}
-
-        <SearchHistory
-          showHistory={showHistory}
+      {showSuggestions && (
+        <SearchSuggestion
+          query={debouncedQuery}
+          setQuery={setQuery}
           setSelectedSuggestions={setSelectedSuggestions}
-          setShowHistory={setShowHistory}
         />
+      )}
 
-        <Button color="primary" size="lg" onPress={handleExecuteSearch}>
-          搜索
-        </Button>
-      </div>
+      <SearchHistory
+        showHistory={showHistory}
+        setSelectedSuggestions={setSelectedSuggestions}
+        setShowHistory={setShowHistory}
+      />
 
       {loading ? (
         <KunLoading hint="正在搜索中..." />

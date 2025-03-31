@@ -31,7 +31,7 @@ export const SearchHistory = ({
   return (
     <>
       {showHistory && searchData.searchHistory.length > 0 && (
-        <div className="absolute z-50 w-full border shadow-lg top-16 rounded-2xl bg-content1 border-default-200">
+        <div className="absolute z-50 w-full border shadow-lg rounded-2xl bg-content1 border-default-200">
           <div className="flex items-center justify-between p-2 border-b border-default-200">
             <span className="flex items-center gap-1 text-sm text-default-500">
               <Clock size={16} /> 搜索历史
