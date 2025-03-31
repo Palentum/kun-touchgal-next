@@ -27,7 +27,7 @@ export const FavoriteButton = ({ patchId, isFavorite }: Props) => {
     }
 
     setLoading(true)
-    const res = await kunFetchPut<KunResponse<boolean>>('/patch/like', {
+    const res = await kunFetchPut<KunResponse<boolean>>('/patch/favorite', {
       patchId
     })
 
