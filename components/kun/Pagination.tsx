@@ -44,7 +44,6 @@ export const KunPagination = ({
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= total) {
-      const currentScroll = window.scrollY
       setInputValue(String(newPage))
       onPageChange(newPage)
 
@@ -53,7 +52,7 @@ export const KunPagination = ({
       })
       requestAnimationFrame(() => {
         window.scrollTo({
-          top: currentScroll,
+          top: 0,
           behavior: 'instant'
         })
       })

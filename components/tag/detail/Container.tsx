@@ -69,9 +69,15 @@ export const TagDetailContainer = ({
     if (!isMounted) {
       return
     }
+    fetchPatches()
+  }, [page])
+
+  useEffect(() => {
+    if (!isMounted) {
+      return
+    }
 
     const params = new URLSearchParams()
-    params.set('page', page.toString())
     params.set('sortField', sortField)
 
     const queryString = params.toString()
@@ -79,7 +85,7 @@ export const TagDetailContainer = ({
     router.push(url)
 
     fetchPatches()
-  }, [page, sortField])
+  }, [sortField])
 
   return (
     <div className="w-full my-4 space-y-6">
