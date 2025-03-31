@@ -2,7 +2,6 @@
 
 import {
   Chip,
-  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -18,6 +17,7 @@ import { useMounted } from '~/hooks/useMounted'
 import { KunLoading } from '~/components/kun/Loading'
 import { RenderCell } from './RenderCell'
 import { useDebounce } from 'use-debounce'
+import { KunPagination } from '~/components/kun/Pagination'
 import type { AdminResource } from '~/types/api/admin'
 
 const columns = [
@@ -97,12 +97,11 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
           aria-label="补丁管理"
           bottomContent={
             <div className="flex justify-center w-full">
-              <Pagination
-                showControls
-                color="primary"
-                page={page}
+              <KunPagination
                 total={Math.ceil(total / 30)}
-                onChange={(page) => setPage(page)}
+                onPageChange={setPage}
+                isLoading={loading}
+                page={page}
               />
             </div>
           }

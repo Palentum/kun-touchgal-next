@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Pagination } from '@nextui-org/pagination'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { ResourceCard } from './ResourceCard'
 import { KunMasonryGrid } from '~/components/kun/MasonryGrid'
@@ -10,6 +9,7 @@ import { useMounted } from '~/hooks/useMounted'
 import { KunLoading } from '~/components/kun/Loading'
 import { KunHeader } from '../kun/Header'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { KunPagination } from '~/components/kun/Pagination'
 import type { SortDirection, SortOption } from './_sort'
 import type { PatchResource } from '~/types/api/resource'
 
@@ -87,13 +87,11 @@ export const CardContainer = ({ initialResources, initialTotal }: Props) => {
 
       {total > 50 && (
         <div className="flex justify-center">
-          <Pagination
+          <KunPagination
             total={Math.ceil(total / 50)}
             page={page}
-            onChange={handlePageChange}
-            showControls
-            color="primary"
-            size="lg"
+            onPageChange={setPage}
+            isLoading={loading}
           />
         </div>
       )}

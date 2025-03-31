@@ -1,6 +1,6 @@
 'use client'
 
-import { Pagination } from '@nextui-org/react'
+import { KunPagination } from '~/components/kun/Pagination'
 import { KunLoading } from '~/components/kun/Loading'
 import { GalgameCard } from '~/components/galgame/Card'
 
@@ -33,13 +33,11 @@ export const SearchResults = ({
 
       {total > 10 && (
         <div className="flex justify-center">
-          <Pagination
+          <KunPagination
             total={Math.ceil(total / 10)}
             page={page}
-            onChange={onPageChange}
-            showControls
-            color="primary"
-            size="lg"
+            onPageChange={onPageChange}
+            isLoading={loading}
           />
         </div>
       )}

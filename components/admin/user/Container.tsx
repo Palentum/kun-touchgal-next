@@ -2,7 +2,6 @@
 
 import {
   Chip,
-  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -18,6 +17,7 @@ import { kunFetchGet } from '~/utils/kunFetch'
 import { KunLoading } from '~/components/kun/Loading'
 import { useMounted } from '~/hooks/useMounted'
 import { useDebounce } from 'use-debounce'
+import { KunPagination } from '~/components/kun/Pagination'
 import type { AdminUser } from '~/types/api/admin'
 
 const columns = [
@@ -95,12 +95,11 @@ export const User = ({ initialUsers, initialTotal }: Props) => {
           aria-label="用户管理"
           bottomContent={
             <div className="flex justify-center w-full">
-              <Pagination
-                showControls
-                color="primary"
+              <KunPagination
                 page={page}
                 total={Math.ceil(total / 30)}
-                onChange={(page) => setPage(page)}
+                onPageChange={setPage}
+                isLoading={loading}
               />
             </div>
           }

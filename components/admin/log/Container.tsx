@@ -1,13 +1,13 @@
 'use client'
 
-import { Pagination } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { KunLoading } from '~/components/kun/Loading'
 import { useMounted } from '~/hooks/useMounted'
 import { LogCard } from './Card'
-import type { AdminLog } from '~/types/api/admin'
 import toast from 'react-hot-toast'
+import { KunPagination } from '~/components/kun/Pagination'
+import type { AdminLog } from '~/types/api/admin'
 
 interface Props {
   initialLogs: AdminLog[]
@@ -65,12 +65,11 @@ export const Log = ({ initialLogs, total }: Props) => {
       </div>
 
       <div className="flex justify-center">
-        <Pagination
+        <KunPagination
           total={Math.ceil(total / 30)}
           page={page}
-          onChange={setPage}
-          color="primary"
-          showControls
+          onPageChange={setPage}
+          isLoading={loading}
         />
       </div>
     </div>

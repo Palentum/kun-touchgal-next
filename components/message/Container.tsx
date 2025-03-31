@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { useMounted } from '~/hooks/useMounted'
-import { Pagination } from '@nextui-org/pagination'
 import { KunLoading } from '~/components/kun/Loading'
 import { MessageCard } from './MessageCard'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { KunNull } from '~/components/kun/Null'
 import { MESSAGE_TYPE } from '~/constants/message'
 import toast from 'react-hot-toast'
+import { KunPagination } from '~/components/kun/Pagination'
 import type { Message } from '~/types/api/message'
 
 interface Props {
@@ -70,13 +70,11 @@ export const MessageContainer = ({ initialMessages, total, type }: Props) => {
 
       {total > 30 && (
         <div className="flex justify-center">
-          <Pagination
+          <KunPagination
             total={Math.ceil(total / 30)}
             page={page}
-            onChange={(newPage: number) => setPage(newPage)}
-            showControls
-            color="primary"
-            size="lg"
+            onPageChange={setPage}
+            isLoading={loading}
           />
         </div>
       )}

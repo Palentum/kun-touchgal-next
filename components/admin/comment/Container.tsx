@@ -1,6 +1,6 @@
 'use client'
 
-import { Pagination, Input } from '@nextui-org/react'
+import {  Input } from '@nextui-org/react'
 import { Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { kunFetchGet } from '~/utils/kunFetch'
@@ -8,6 +8,7 @@ import { KunLoading } from '~/components/kun/Loading'
 import { useMounted } from '~/hooks/useMounted'
 import { CommentCard } from './Card'
 import { useDebounce } from 'use-debounce'
+import { KunPagination } from '~/components/kun/Pagination'
 import type { AdminComment } from '~/types/api/admin'
 
 interface Props {
@@ -79,12 +80,11 @@ export const Comment = ({ initialComments, initialTotal }: Props) => {
       </div>
 
       <div className="flex justify-center">
-        <Pagination
+        <KunPagination
           total={Math.ceil(total / 30)}
           page={page}
-          onChange={setPage}
-          color="primary"
-          showControls
+          onPageChange={setPage}
+          isLoading={loading}
         />
       </div>
     </div>

@@ -1,7 +1,7 @@
 'use client'
 
-import { Pagination } from '@nextui-org/react'
 import { TagList } from './TagList'
+import { KunPagination } from '~/components/kun/Pagination'
 import type { Tag as TagType } from '~/types/api/tag'
 
 interface DefaultTagListProps {
@@ -27,13 +27,11 @@ export const DefaultTagList = ({
 
       {total > 100 && (
         <div className="flex justify-center">
-          <Pagination
+          <KunPagination
             total={Math.ceil(total / 100)}
             page={page}
-            onChange={onPageChange}
-            showControls
-            color="primary"
-            size="lg"
+            onPageChange={onPageChange}
+            isLoading={loading}
           />
         </div>
       )}

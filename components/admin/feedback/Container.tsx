@@ -1,11 +1,11 @@
 'use client'
 
-import { Pagination } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { KunLoading } from '~/components/kun/Loading'
 import { useMounted } from '~/hooks/useMounted'
 import { FeedbackCard } from './FeedbackCard'
+import { KunPagination } from '~/components/kun/Pagination'
 import type { AdminFeedback } from '~/types/api/admin'
 
 interface Props {
@@ -58,12 +58,11 @@ export const Feedback = ({ initialFeedbacks, total }: Props) => {
       </div>
 
       <div className="flex justify-center">
-        <Pagination
+        <KunPagination
           total={Math.ceil(total / 30)}
           page={page}
-          onChange={setPage}
-          color="primary"
-          showControls
+          onPageChange={setPage}
+          isLoading={loading}
         />
       </div>
     </div>

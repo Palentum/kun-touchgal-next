@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Pagination } from '@nextui-org/pagination'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { Chip } from '@nextui-org/chip'
 import { Button } from '@nextui-org/button'
@@ -21,6 +20,7 @@ import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
 import { useUserStore } from '~/store/userStore'
 import { useSearchParams } from 'next/navigation'
 import { FilterBar } from './FilterBar'
+import { KunPagination } from '~/components/kun/Pagination'
 import type { SortField } from './_sort'
 
 interface Props {
@@ -158,17 +158,11 @@ export const TagDetailContainer = ({
 
           {total > 24 && (
             <div className="flex justify-center">
-              <Pagination
+              <KunPagination
                 total={Math.ceil(total / 24)}
                 page={page}
-                onChange={setPage}
-                showControls
-                size="lg"
-                radius="lg"
-                classNames={{
-                  wrapper: 'gap-2',
-                  item: 'w-10 h-10'
-                }}
+                onPageChange={setPage}
+                isLoading={loading}
               />
             </div>
           )}

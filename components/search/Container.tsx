@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Input } from '@nextui-org/input'
 import { Checkbox, Link } from '@nextui-org/react'
-import { Pagination } from '@nextui-org/pagination'
 import { KunLoading } from '~/components/kun/Loading'
 import { Search } from 'lucide-react'
 import { useDebounce } from 'use-debounce'
@@ -14,6 +13,7 @@ import { KunNull } from '~/components/kun/Null'
 import { GalgameCard } from '~/components/galgame/Card'
 import { useSearchStore } from '~/store/searchStore'
 import { SearchHistory } from './SearchHistory'
+import { KunPagination } from '~/components/kun/Pagination'
 
 const MAX_HISTORY_ITEMS = 10
 
@@ -187,17 +187,11 @@ export const SearchPage = () => {
 
           {total > 12 && (
             <div className="flex justify-center">
-              <Pagination
+              <KunPagination
                 total={Math.ceil(total / 12)}
                 page={page}
-                onChange={setPage}
-                showControls
-                size="lg"
-                radius="lg"
-                classNames={{
-                  wrapper: 'gap-2',
-                  item: 'w-10 h-10'
-                }}
+                onPageChange={setPage}
+                isLoading={loading}
               />
             </div>
           )}
