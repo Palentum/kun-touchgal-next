@@ -13,22 +13,32 @@ import { SearchSuggestion } from './Suggestion'
 import { SearchOption } from './Option'
 import { useDebounce } from 'use-debounce'
 import { SearchInput } from './Input'
+import { FilterBar } from '~/components/galgame/FilterBar'
 import type { SearchSuggestionType } from '~/types/api/search'
+import type { SortField, SortOrder } from '~/components/galgame/_sort'
 
 const MAX_HISTORY_ITEMS = 10
 
 export const SearchPage = () => {
-  const [page, setPage] = useState(1)
   const [query, setQuery] = useState('')
   const [debouncedQuery] = useDebounce(query, 500)
   const [hasSearched, setHasSearched] = useState(false)
   const [patches, setPatches] = useState<GalgameCard[]>([])
-  const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedSuggestions, setSelectedSuggestions] = useState<
     SearchSuggestionType[]
   >([])
+
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
+  const [selectedType, setSelectedType] = useState<string>('all')
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('all')
+  const [selectedPlatform, setSelectedPlatform] = useState<string>('all')
+  const [sortField, setSortField] = useState<SortField>('resource_update_time')
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
+  const [selectedYears, setSelectedYears] = useState<string[]>(['all'])
+  const [selectedMonths, setSelectedMonths] = useState<string[]>(['all'])
 
   const [showHistory, setShowHistory] = useState(false)
   const searchData = useSearchStore((state) => state.data)
@@ -59,13 +69,21 @@ export const SearchPage = () => {
       total: number
     }>('/search', {
       queryString: JSON.stringify(selectedSuggestions),
-      page: currentPage,
       limit: 12,
       searchOption: {
         searchInIntroduction: searchData.searchInIntroduction,
         searchInAlias: searchData.searchInAlias,
         searchInTag: searchData.searchInTag
-      }
+      },
+
+      page: currentPage,
+      selectedType,
+      selectedLanguage,
+      selectedPlatform,
+      sortField,
+      sortOrder,
+      selectedYears,
+      selectedMonths
     })
 
     setPatches(galgames)
@@ -84,10 +102,20 @@ export const SearchPage = () => {
       setTotal(0)
       setLoading(false)
     }
-  }, [page, selectedSuggestions])
+  }, [
+    page,
+    selectedType,
+    selectedLanguage,
+    selectedPlatform,
+    sortField,
+    sortOrder,
+    selectedYears,
+    selectedMonths,
+    selectedSuggestions
+  ])
 
   return (
-    <div className="relative w-full my-4">
+    <div className="relative w-full my-4 space-y-6">
       <KunHeader
         name="搜索 Galgame"
         description="输入内容并点击搜索按钮以搜索 Galgame, 搜索设置默认搜索游戏标题和别名, 支持使用 VNDB ID 搜索"
@@ -115,6 +143,23 @@ export const SearchPage = () => {
         showHistory={showHistory}
         setSelectedSuggestions={setSelectedSuggestions}
         setShowHistory={setShowHistory}
+      />
+
+      <FilterBar
+        selectedType={selectedType}
+        setSelectedType={setSelectedType}
+        sortField={sortField}
+        setSortField={setSortField}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+        selectedLanguage={selectedLanguage}
+        setSelectedLanguage={setSelectedLanguage}
+        selectedPlatform={selectedPlatform}
+        setSelectedPlatform={setSelectedPlatform}
+        selectedYears={selectedYears}
+        setSelectedYears={setSelectedYears}
+        selectedMonths={selectedMonths}
+        setSelectedMonths={setSelectedMonths}
       />
 
       {loading ? (

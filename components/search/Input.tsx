@@ -92,7 +92,7 @@ export const SearchInput = ({
   }
 
   return (
-    <div className="flex gap-2 p-3 mb-6 bg-default-100 rounded-large">
+    <div className="flex gap-2 p-3 bg-default-100 rounded-large">
       <div className="flex flex-wrap items-center w-full gap-2">
         {selectedSuggestions.map((suggestion, index) => (
           <Chip

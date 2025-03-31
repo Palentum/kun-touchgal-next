@@ -12,7 +12,19 @@ export const searchGalgame = async (
   input: z.infer<typeof searchSchema>,
   nsfwEnable: Record<string, string | undefined>
 ) => {
-  const { queryString, page, limit, searchOption } = input
+  const {
+    queryString,
+    limit,
+    searchOption,
+    page,
+    selectedType = 'all',
+    selectedLanguage = 'all',
+    selectedPlatform = 'all',
+    sortField,
+    sortOrder,
+    selectedYears = ['all'],
+    selectedMonths = ['all']
+  } = input
   const offset = (page - 1) * limit
   const insensitive = Prisma.QueryMode.insensitive
 
@@ -24,6 +36,57 @@ export const searchGalgame = async (
   const tagArray = query
     .filter((item) => item.type === 'tag')
     .map((item) => item.name)
+
+  let dateFilter = {}
+  if (!selectedYears.includes('all')) {
+    const dateConditions = []
+
+    if (selectedYears.includes('future')) {
+      dateConditions.push({ released: 'future' })
+    }
+
+    if (selectedYears.includes('unknown')) {
+      dateConditions.push({ released: 'unknown' })
+    }
+
+    const nonFutureYears = selectedYears.filter((year) => year !== 'future')
+    if (nonFutureYears.length > 0) {
+      if (!selectedMonths.includes('all')) {
+        const yearMonthConditions = nonFutureYears.flatMap((year) =>
+          selectedMonths.map((month) => ({
+            released: {
+              startsWith: `${year}-${month}`
+            }
+          }))
+        )
+        dateConditions.push(...yearMonthConditions)
+      } else {
+        const yearConditions = nonFutureYears.map((year) => ({
+          released: {
+            startsWith: year
+          }
+        }))
+        dateConditions.push(...yearConditions)
+      }
+    }
+
+    if (dateConditions.length > 0) {
+      dateFilter = { OR: dateConditions }
+    }
+  }
+
+  // Other fields sort
+  const where = {
+    ...(selectedType !== 'all' && { type: { has: selectedType } }),
+    ...(selectedLanguage !== 'all' && { language: { has: selectedLanguage } }),
+    ...(selectedPlatform !== 'all' && { platform: { has: selectedPlatform } }),
+    ...nsfwEnable
+  }
+
+  const orderBy =
+    sortField === 'favorite'
+      ? { favorite_by: { _count: sortOrder } }
+      : { [sortField]: sortOrder }
 
   const queryCondition = [
     ...queryArray.map((q) => ({
@@ -71,17 +134,18 @@ export const searchGalgame = async (
     }))
   ]
 
-  const data = await prisma.patch.findMany({
-    where: { AND: queryCondition },
-    select: GalgameCardSelectField,
-    orderBy: { created: 'desc' },
-    take: limit,
-    skip: offset
-  })
-
-  const total = await prisma.patch.count({
-    where: { AND: queryCondition }
-  })
+  const [data, total] = await Promise.all([
+    prisma.patch.findMany({
+      take: limit,
+      skip: offset,
+      orderBy,
+      where: { AND: queryCondition, ...dateFilter, ...where },
+      select: GalgameCardSelectField
+    }),
+    await prisma.patch.count({
+      where: { AND: queryCondition, ...dateFilter, ...where }
+    })
+  ])
 
   const galgames: GalgameCard[] = data.map((gal) => ({
     ...gal,
