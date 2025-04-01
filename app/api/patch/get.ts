@@ -39,14 +39,16 @@ export const getPatchById = async (
       },
       _count: {
         select: {
-          favorite_by: true,
+          favorite_folder: true,
           resource: true,
           comment: true
         }
       },
-      favorite_by: {
+      favorite_folder: {
         where: {
-          user_id: uid
+          folder: {
+            user_id: uid
+          }
         }
       }
     }
@@ -76,7 +78,7 @@ export const getPatchById = async (
     platform: patch.platform,
     tags: patch.tag.map((t) => t.tag.name),
     alias: patch.alias.map((a) => a.name),
-    isFavorite: patch.favorite_by.length > 0,
+    isFavorite: patch.favorite_folder.length > 0,
     contentLimit: patch.content_limit,
     user: {
       id: patch.user.id,

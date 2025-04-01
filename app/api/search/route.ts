@@ -85,7 +85,7 @@ export const searchGalgame = async (
 
   const orderBy =
     sortField === 'favorite'
-      ? { favorite_by: { _count: sortOrder } }
+      ? { favorite_folder: { _count: sortOrder } }
       : { [sortField]: sortOrder }
 
   const queryCondition = [

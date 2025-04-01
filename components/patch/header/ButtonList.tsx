@@ -1,7 +1,7 @@
 'use client'
 
 import { Chip, Tooltip, Button } from '@nextui-org/react'
-import { FavoriteButton } from './button/FavoriteButton'
+import { FavoriteButton } from './button/favorite/FavoriteButton'
 import { ShareButton } from './button/ShareButton'
 import { EditButton } from './button/EditButton'
 import { DeleteButton } from './button/DeleteButton'

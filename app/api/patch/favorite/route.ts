@@ -3,64 +3,41 @@ import { NextRequest, NextResponse } from 'next/server'
 import { kunParsePutBody } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
+import { togglePatchFavoriteSchema } from '~/validations/patch'
 import { createDedupMessage } from '~/app/api/utils/message'
 
-const patchIdSchema = z.object({
-  patchId: z.coerce
-    .number({ message: 'Galgame ID 必须为数字' })
-    .min(1)
-    .max(9999999)
-})
-
 export const togglePatchFavorite = async (
-  input: z.infer<typeof patchIdSchema>,
+  input: z.infer<typeof togglePatchFavoriteSchema>,
   uid: number
 ) => {
-  const { patchId } = input
-
   const patch = await prisma.patch.findUnique({
-    where: { id: patchId }
+    where: { id: input.patchId }
   })
   if (!patch) {
     return '未找到 Galgame'
   }
 
-  const existingFavorite = await prisma.user_patch_favorite_relation.findUnique(
-    {
-      where: {
-        user_id_patch_id: {
-          user_id: uid,
-          patch_id: patchId
-        }
+  const folder = await prisma.user_patch_favorite_folder.findUnique({
+    where: { id: input.folderId }
+  })
+  if (!folder) {
+    return '未找到收藏文件夹'
+  }
+  if (folder.user_id !== uid) {
+    return '这不是您的收藏夹'
+  }
+
+  const existing = await prisma.user_patch_favorite_folder_relation.findUnique({
+    where: {
+      folder_id_patch_id: {
+        folder_id: input.folderId,
+        patch_id: input.patchId
       }
     }
-  )
+  })
 
   return await prisma.$transaction(async (prisma) => {
-    if (existingFavorite) {
-      await prisma.user_patch_favorite_relation.delete({
-        where: {
-          user_id_patch_id: {
-            user_id: uid,
-            patch_id: patchId
-          }
-        }
-      })
-    } else {
-      await prisma.user_patch_favorite_relation.create({
-        data: {
-          user_id: uid,
-          patch_id: patchId
-        }
-      })
-    }
-
     if (patch.user_id !== uid) {
-      await prisma.user.update({
-        where: { id: patch.user_id },
-        data: { moemoepoint: { increment: existingFavorite ? -1 : 1 } }
-      })
-
       await createDedupMessage({
         type: 'favorite',
         content: patch.name,
@@ -70,12 +47,30 @@ export const togglePatchFavorite = async (
       })
     }
 
-    return !existingFavorite
+    if (existing) {
+      await prisma.user_patch_favorite_folder_relation.delete({
+        where: {
+          folder_id_patch_id: {
+            folder_id: input.folderId,
+            patch_id: input.patchId
+          }
+        }
+      })
+      return { added: false }
+    } else {
+      await prisma.user_patch_favorite_folder_relation.create({
+        data: {
+          folder_id: input.folderId,
+          patch_id: input.patchId
+        }
+      })
+      return { added: true }
+    }
   })
 }
 
 export const PUT = async (req: NextRequest) => {
-  const input = await kunParsePutBody(req, patchIdSchema)
+  const input = await kunParsePutBody(req, togglePatchFavoriteSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }

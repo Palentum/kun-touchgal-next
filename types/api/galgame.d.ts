@@ -11,7 +11,7 @@ interface GalgameCard {
   tags: string[]
   created: Date | string
   _count: {
-    favorite_by: number
+    favorite_folder: number
     resource: number
     comment: number
   }

@@ -17,6 +17,7 @@ export interface UserInfo {
     patch_resource: number
     patch_comment: number
     patch_favorite: number
+    send_message: number
   }
 }
 
@@ -77,4 +78,13 @@ export interface FloatingCardUser {
     patch: number
     patch_resource: number
   }
+}
+
+export interface UserFavoritePatchFolder {
+  id: number
+  name: string
+  description?: string
+  is_public: boolean
+  isAdd: boolean
+  _count: { patch: number }
 }

@@ -27,7 +27,7 @@ export const GalgameCardSelectField = {
   },
   _count: {
     select: {
-      favorite_by: true,
+      favorite_folder: true,
       resource: true,
       comment: true
     }

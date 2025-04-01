@@ -1,16 +1,17 @@
 import { Card, CardBody } from '@nextui-org/card'
-import { MessageCircle, Puzzle, Star } from 'lucide-react'
+import { MessageCircle, Puzzle, Star, MessageSquareMore } from 'lucide-react'
 import type { UserInfo } from '~/types/api/user'
 
 export const UserStats = ({ user }: { user: UserInfo }) => {
   const stats = [
-    { label: '评论', value: user._count.patch_comment, icon: MessageCircle },
-    { label: '收藏', value: user._count.patch_favorite, icon: Star },
     {
       label: '发布补丁',
       value: user._count.patch_resource,
       icon: Puzzle
-    }
+    },
+    { label: '评论', value: user._count.patch_comment, icon: MessageCircle },
+    { label: '消息', value: user._count.send_message, icon: MessageSquareMore },
+    { label: '收藏', value: user._count.patch_favorite, icon: Star }
   ]
 
   return (

@@ -137,3 +137,14 @@ export const createPatchCommentReportSchema = z.object({
     .min(2, { message: '举报原因最少 2 个字符' })
     .max(5000, { message: '举报原因最多 5000 个字符' })
 })
+
+export const togglePatchFavoriteSchema = z.object({
+  patchId: z.coerce
+    .number({ message: '游戏 ID 必须为数字' })
+    .min(1)
+    .max(9999999),
+  folderId: z.coerce
+    .number({ message: '收藏文件夹 ID 必须为数字' })
+    .min(1)
+    .max(9999999)
+})

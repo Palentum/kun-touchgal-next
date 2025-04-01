@@ -78,7 +78,7 @@ export const getGalgame = async (
 
   const orderBy =
     sortField === 'favorite'
-      ? { favorite_by: { _count: sortOrder } }
+      ? { favorite_folder: { _count: sortOrder } }
       : { [sortField]: sortOrder }
 
   const [data, total] = await Promise.all([

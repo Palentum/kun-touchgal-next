@@ -64,3 +64,9 @@ export const getUserInfoSchema = z.object({
 export const searchUserSchema = z.object({
   query: z.string().min(1).max(20, { message: '非法的用户名长度' })
 })
+
+export const createFavoriteFolderSchema = z.object({
+  name: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
+  isPublic: z.boolean().default(false)
+})

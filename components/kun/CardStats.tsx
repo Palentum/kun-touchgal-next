@@ -39,7 +39,7 @@ export const KunCardStats = ({
       <Tooltip isDisabled={disableTooltip} content="收藏数" placement="bottom">
         <div className="flex items-center gap-1">
           <Heart className="size-4" />
-          <span>{formatNumber(patch._count.favorite_by || 0)}</span>
+          <span>{formatNumber(patch._count.favorite_folder || 0)}</span>
         </div>
       </Tooltip>
 
