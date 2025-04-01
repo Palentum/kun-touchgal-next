@@ -1,6 +1,7 @@
 import { UserResource } from '~/components/user/resource/Container'
 import { kunGetActions } from './actions'
 import { ErrorComponent } from '~/components/error/ErrorComponent'
+import { Suspense } from 'react'
 
 export const revalidate = 3
 
@@ -21,10 +22,12 @@ export default async function Kun({ params }: Props) {
   }
 
   return (
-    <UserResource
-      resources={response.resources}
-      total={response.total}
-      uid={Number(id)}
-    />
+    <Suspense>
+      <UserResource
+        resources={response.resources}
+        total={response.total}
+        uid={Number(id)}
+      />
+    </Suspense>
   )
 }

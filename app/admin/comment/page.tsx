@@ -2,6 +2,7 @@ import { Comment } from '~/components/admin/comment/Container'
 import { kunMetadata } from './metadata'
 import { kunGetActions } from './actions'
 import { ErrorComponent } from '~/components/error/ErrorComponent'
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 
 export const revalidate = 3
@@ -18,9 +19,11 @@ export default async function Kun() {
   }
 
   return (
-    <Comment
-      initialComments={response.comments}
-      initialTotal={response.total}
-    />
+    <Suspense>
+      <Comment
+        initialComments={response.comments}
+        initialTotal={response.total}
+      />
+    </Suspense>
   )
 }

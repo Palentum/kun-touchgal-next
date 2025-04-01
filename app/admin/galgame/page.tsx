@@ -2,6 +2,7 @@ import { Galgame } from '~/components/admin/galgame/Container'
 import { kunMetadata } from './metadata'
 import { kunGetActions } from './actions'
 import { ErrorComponent } from '~/components/error/ErrorComponent'
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 
 export const revalidate = 3
@@ -18,9 +19,11 @@ export default async function Kun() {
   }
 
   return (
-    <Galgame
-      initialGalgames={response.galgames}
-      initialTotal={response.total}
-    />
+    <Suspense>
+      <Galgame
+        initialGalgames={response.galgames}
+        initialTotal={response.total}
+      />
+    </Suspense>
   )
 }
