@@ -130,6 +130,7 @@ export const SearchPage = () => {
         selectedSuggestions={selectedSuggestions}
         setSelectedSuggestions={setSelectedSuggestions}
         setShowHistory={setShowHistory}
+        addToHistory={addToHistory}
       />
 
       {showSuggestions && (

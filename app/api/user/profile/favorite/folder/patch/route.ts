@@ -8,8 +8,6 @@ import { getFavoriteFolderPatchSchema } from '~/validations/user'
 export const GET = async (req: NextRequest) => {
   const input = kunParseGetQuery(req, getFavoriteFolderPatchSchema)
   if (typeof input === 'string') {
-    console.log(input)
-
     return NextResponse.json(input)
   }
   const payload = await verifyHeaderCookie(req)

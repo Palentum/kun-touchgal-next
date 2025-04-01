@@ -17,6 +17,7 @@ interface Props {
   selectedSuggestions: SearchSuggestionType[]
   setSelectedSuggestions: Dispatch<SetStateAction<SearchSuggestionType[]>>
   setShowHistory: Dispatch<SetStateAction<boolean>>
+  addToHistory: (searchQuery: string) => void
 }
 
 export const SearchInput = ({
@@ -25,7 +26,8 @@ export const SearchInput = ({
   setShowSuggestions,
   selectedSuggestions,
   setSelectedSuggestions,
-  setShowHistory
+  setShowHistory,
+  addToHistory
 }: Props) => {
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
@@ -47,6 +49,9 @@ export const SearchInput = ({
   }
 
   const handleInputBlur = () => {
+    if (query.trim()) {
+      addToHistory(query)
+    }
     setTimeout(() => {
       setShowHistory(false)
       setShowSuggestions(false)
