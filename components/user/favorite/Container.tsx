@@ -1,70 +1,188 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { kunFetchGet } from '~/utils/kunFetch'
-import { KunPagination } from '~/components/kun/Pagination'
-import { useMounted } from '~/hooks/useMounted'
-import { KunNull } from '~/components/kun/Null'
-import { KunLoading } from '~/components/kun/Loading'
+import { useState, useTransition } from 'react'
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalContent,
+  useDisclosure
+} from '@nextui-org/react'
+import { Folder } from 'lucide-react'
+import type { UserFavoritePatchFolder } from '~/types/api/user'
+import { kunFetchDelete, kunFetchGet } from '~/utils/kunFetch'
+import { kunErrorHandler } from '~/utils/kunErrorHandler'
+import { CreateFolderModal } from './CreateFolderModal'
 import { UserGalgameCard } from './Card'
+import { KunLoading } from '~/components/kun/Loading'
+import { KunNull } from '~/components/kun/Null'
 
 interface Props {
-  favorites: GalgameCard[]
-  total: number
+  initialFolders: UserFavoritePatchFolder[]
   uid: number
 }
 
-export const UserFavorite = ({ favorites, total, uid }: Props) => {
-  const isMounted = useMounted()
-  const [patches, setPatches] = useState<GalgameCard[]>(favorites)
-  const [loading, setLoading] = useState(false)
-  const [page, setPage] = useState(1)
+export const UserFavorite = ({ initialFolders, uid }: Props) => {
+  const [folders, setFolders] =
+    useState<UserFavoritePatchFolder[]>(initialFolders)
+  const [selectedFolder, setSelectedFolder] =
+    useState<UserFavoritePatchFolder | null>(null)
+  const [patches, setPatches] = useState<GalgameCard[]>([])
+  const [isPending, startTransition] = useTransition()
 
-  const fetchData = async () => {
-    setLoading(true)
-    const { favorites } = await kunFetchGet<{
-      favorites: GalgameCard[]
-      total: number
-    }>('/user/profile/favorite', {
-      uid,
-      page,
-      limit: 20
+  const {
+    isOpen: isOpenFolder,
+    onOpen: onOpenFolder,
+    onClose: onCloseFolder
+  } = useDisclosure()
+  const fetchPatchesInFolder = async (folderId: number) => {
+    startTransition(async () => {
+      const res = await kunFetchGet<KunResponse<GalgameCard[]>>(
+        `/user/profile/favorite/folder/patch`,
+        { folderId }
+      )
+      kunErrorHandler(res, (value) => {
+        setPatches(value)
+      })
     })
-    setPatches(favorites)
-    setLoading(false)
   }
 
-  useEffect(() => {
-    if (!isMounted) {
-      return
-    }
-    fetchData()
-  }, [page])
+  const {
+    isOpen: isOpenDelete,
+    onOpen: onOpenDelete,
+    onClose: onCloseDelete
+  } = useDisclosure()
+  const handleDeleteFolder = async () => {
+    startTransition(async () => {
+      const res = await kunFetchDelete<KunResponse<{}>>(
+        `/user/profile/favorite/folder`,
+        { folderId: selectedFolder?.id ?? 0 }
+      )
+      kunErrorHandler(res, () => {
+        setFolders((prev) => prev.filter((p) => p.id !== selectedFolder?.id))
+      })
+    })
+  }
+
+  const handlePressFolderCard = (folder: UserFavoritePatchFolder) => {
+    setSelectedFolder(folder)
+    fetchPatchesInFolder(folder.id)
+    onOpenFolder()
+  }
 
   return (
-    <div className="space-y-4">
-      {loading ? (
-        <KunLoading hint="正在获取收藏数据..." />
-      ) : (
-        <>
-          {patches.map((galgame) => (
-            <UserGalgameCard key={galgame.id} galgame={galgame} />
-          ))}
-        </>
-      )}
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold">收藏夹</h2>
+        <CreateFolderModal
+          onCreateSuccess={(value) => setFolders([...folders, value])}
+        />
+      </div>
 
-      {!total && <KunNull message="这个孩子还没有收藏过 Galgame 哦" />}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {initialFolders.map((folder) => (
+          <Card
+            key={folder.id}
+            isPressable
+            onPress={() => handlePressFolderCard(folder)}
+            className={selectedFolder?.id === folder.id ? 'border-primary' : ''}
+          >
+            <CardHeader className="flex justify-between">
+              <div className="flex items-center gap-2">
+                <Folder className="w-5 h-5" />
+                <span className="font-semibold">{folder.name}</span>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <p className="text-small text-default-500">
+                {folder.description}
+              </p>
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-small">{folder._count.patch} 个补丁</span>
+                {folder.is_public && (
+                  <span className="text-small text-primary">公开</span>
+                )}
+              </div>
+            </CardBody>
+          </Card>
+        ))}
+      </div>
 
-      {total > 20 && (
-        <div className="flex justify-center">
-          <KunPagination
-            total={Math.ceil(total / 20)}
-            page={page}
-            onPageChange={setPage}
-            isLoading={loading}
-          />
-        </div>
-      )}
+      <Modal
+        size="5xl"
+        scrollBehavior="inside"
+        isOpen={isOpenFolder}
+        onClose={onCloseFolder}
+      >
+        <ModalContent>
+          {selectedFolder && (
+            <ModalHeader className="flex-col">
+              <div className="flex items-center justify-between">
+                <p>{selectedFolder.name}</p>
+              </div>
+
+              <p className="font-normal text-small text-default-500">
+                {selectedFolder.description}
+              </p>
+            </ModalHeader>
+          )}
+
+          <ModalBody>
+            <div>
+              {isPending ? (
+                <KunLoading hint="正在获取收藏数据..." />
+              ) : (
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {patches.map((galgame) => (
+                    <UserGalgameCard key={galgame.id} galgame={galgame} />
+                  ))}
+                </div>
+              )}
+
+              {!isPending && !patches.length && (
+                <KunNull message="收藏夹为空" />
+              )}
+            </div>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button color="danger" variant="light" onPress={onOpenDelete}>
+              删除
+            </Button>
+            <Button variant="flat" color="primary" onPress={onCloseDelete}>
+              编辑
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isOpenDelete} onClose={onCloseDelete} placement="center">
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">删除收藏夹</ModalHeader>
+          <ModalBody>
+            您确定要删除这个收藏夹吗, 这将会彻底删除收藏夹,
+            并移除所有收藏夹中收藏的游戏, 该操作不可撤销
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onPress={onCloseDelete}>
+              取消
+            </Button>
+            <Button
+              color="danger"
+              onPress={handleDeleteFolder}
+              disabled={isPending}
+              isLoading={isPending}
+            >
+              删除
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   )
 }
