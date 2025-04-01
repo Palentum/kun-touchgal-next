@@ -70,3 +70,10 @@ export const createFavoriteFolderSchema = z.object({
   description: z.string().max(500).optional(),
   isPublic: z.boolean().default(false)
 })
+
+export const updateFavoriteFolderSchema = z.object({
+  folderId: z.coerce.number().min(1).max(9999999),
+  name: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
+  isPublic: z.boolean().default(false)
+})

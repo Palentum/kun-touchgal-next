@@ -14,13 +14,13 @@ import {
   useDisclosure
 } from '@nextui-org/react'
 import { Folder } from 'lucide-react'
-import type { UserFavoritePatchFolder } from '~/types/api/user'
 import { kunFetchDelete, kunFetchGet } from '~/utils/kunFetch'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
-import { CreateFolderModal } from './CreateFolderModal'
+import { EditFolderModal } from './EditFolderModal'
 import { UserGalgameCard } from './Card'
 import { KunLoading } from '~/components/kun/Loading'
 import { KunNull } from '~/components/kun/Null'
+import type { UserFavoritePatchFolder } from '~/types/api/user'
 
 interface Props {
   initialFolders: UserFavoritePatchFolder[]
@@ -75,17 +75,31 @@ export const UserFavorite = ({ initialFolders, uid }: Props) => {
     onOpenFolder()
   }
 
+  const onRemoveFavorite = (patchId: number) => {
+    setPatches((prev) => prev.filter((p) => p.id !== patchId))
+  }
+
+  const onEditFolderSuccess = (updatedFolder: UserFavoritePatchFolder) => {
+    setSelectedFolder(updatedFolder)
+    setFolders((prev) =>
+      prev.map((folder) =>
+        folder.id === updatedFolder.id ? updatedFolder : folder
+      )
+    )
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">收藏夹</h2>
-        <CreateFolderModal
-          onCreateSuccess={(value) => setFolders([...folders, value])}
+        <EditFolderModal
+          action="create"
+          onActionSuccess={(value) => setFolders([...folders, value])}
         />
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {initialFolders.map((folder) => (
+        {folders.map((folder) => (
           <Card
             key={folder.id}
             isPressable
@@ -98,14 +112,16 @@ export const UserFavorite = ({ initialFolders, uid }: Props) => {
                 <span className="font-semibold">{folder.name}</span>
               </div>
             </CardHeader>
-            <CardBody>
-              <p className="text-small text-default-500">
+            <CardBody className="justify-between gap-2">
+              <p className="text-small text-default-500 line-clamp-2">
                 {folder.description}
               </p>
-              <div className="flex items-center justify-between mt-2">
+              <div className="flex items-center justify-between">
                 <span className="text-small">{folder._count.patch} 个补丁</span>
-                {folder.is_public && (
+                {folder.is_public ? (
                   <span className="text-small text-primary">公开</span>
+                ) : (
+                  <span className="text-small text-danger">私密</span>
                 )}
               </div>
             </CardBody>
@@ -119,8 +135,8 @@ export const UserFavorite = ({ initialFolders, uid }: Props) => {
         isOpen={isOpenFolder}
         onClose={onCloseFolder}
       >
-        <ModalContent>
-          {selectedFolder && (
+        {selectedFolder && (
+          <ModalContent>
             <ModalHeader className="flex-col">
               <div className="flex items-center justify-between">
                 <p>{selectedFolder.name}</p>
@@ -130,35 +146,43 @@ export const UserFavorite = ({ initialFolders, uid }: Props) => {
                 {selectedFolder.description}
               </p>
             </ModalHeader>
-          )}
 
-          <ModalBody>
-            <div>
-              {isPending ? (
-                <KunLoading hint="正在获取收藏数据..." />
-              ) : (
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {patches.map((galgame) => (
-                    <UserGalgameCard key={galgame.id} galgame={galgame} />
-                  ))}
-                </div>
-              )}
+            <ModalBody>
+              <div>
+                {isPending ? (
+                  <KunLoading hint="正在获取收藏数据..." />
+                ) : (
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {patches.map((galgame) => (
+                      <UserGalgameCard
+                        key={galgame.id}
+                        galgame={galgame}
+                        folderId={selectedFolder.id}
+                        onRemoveFavorite={onRemoveFavorite}
+                      />
+                    ))}
+                  </div>
+                )}
 
-              {!isPending && !patches.length && (
-                <KunNull message="收藏夹为空" />
-              )}
-            </div>
-          </ModalBody>
+                {!isPending && !patches.length && (
+                  <KunNull message="收藏夹为空" />
+                )}
+              </div>
+            </ModalBody>
 
-          <ModalFooter>
-            <Button color="danger" variant="light" onPress={onOpenDelete}>
-              删除
-            </Button>
-            <Button variant="flat" color="primary" onPress={onCloseDelete}>
-              编辑
-            </Button>
-          </ModalFooter>
-        </ModalContent>
+            <ModalFooter>
+              <Button color="danger" variant="light" onPress={onOpenDelete}>
+                删除
+              </Button>
+              <EditFolderModal
+                action="update"
+                folderId={selectedFolder.id}
+                folder={selectedFolder}
+                onActionSuccess={onEditFolderSuccess}
+              />
+            </ModalFooter>
+          </ModalContent>
+        )}
       </Modal>
 
       <Modal isOpen={isOpenDelete} onClose={onCloseDelete} placement="center">

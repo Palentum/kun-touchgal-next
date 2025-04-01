@@ -1,14 +1,55 @@
-import { Card, CardBody } from '@nextui-org/card'
+'use client'
+
+import { useTransition } from 'react'
+import {
+  Card,
+  CardBody,
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalContent,
+  useDisclosure
+} from '@nextui-org/react'
 import { Image } from '@nextui-org/image'
 import Link from 'next/link'
 import { KunCardStats } from '~/components/kun/CardStats'
-import { Button } from '@nextui-org/react'
+import { kunErrorHandler } from '~/utils/kunErrorHandler'
+import { kunFetchPut } from '~/utils/kunFetch'
+import toast from 'react-hot-toast'
 
 interface Props {
   galgame: GalgameCard
+  folderId: number
+  onRemoveFavorite: (patchId: number) => void
 }
 
-export const UserGalgameCard = ({ galgame }: Props) => {
+export const UserGalgameCard = ({
+  galgame,
+  folderId,
+  onRemoveFavorite
+}: Props) => {
+  const [isPending, startTransition] = useTransition()
+
+  const {
+    isOpen: isOpenDelete,
+    onOpen: onOpenDelete,
+    onClose: onCloseDelete
+  } = useDisclosure()
+  const handleRemoveFavorite = () => {
+    startTransition(async () => {
+      const res = await kunFetchPut<KunResponse<{ added: boolean }>>(
+        `/patch/favorite`,
+        { patchId: galgame.id, folderId }
+      )
+      kunErrorHandler(res, () => {
+        toast.success('取消收藏成功')
+        onRemoveFavorite(galgame.id)
+      })
+    })
+  }
+
   return (
     <Card
       isPressable
@@ -35,10 +76,43 @@ export const UserGalgameCard = ({ galgame }: Props) => {
             <KunCardStats patch={galgame} isMobile={true} />
 
             <div className="flex justify-end">
-              <Button size="sm" variant="flat" color="danger">
+              <Button
+                size="sm"
+                variant="flat"
+                color="danger"
+                onPress={onOpenDelete}
+                isDisabled={isPending}
+                isLoading={isPending}
+              >
                 从收藏夹移除
               </Button>
             </div>
+
+            <Modal
+              isOpen={isOpenDelete}
+              onClose={onCloseDelete}
+              placement="center"
+            >
+              <ModalContent>
+                <ModalHeader className="flex flex-col gap-1">
+                  移除游戏
+                </ModalHeader>
+                <ModalBody>您确定要从收藏夹移除这个游戏吗</ModalBody>
+                <ModalFooter>
+                  <Button variant="light" onPress={onCloseDelete}>
+                    取消
+                  </Button>
+                  <Button
+                    color="danger"
+                    onPress={handleRemoveFavorite}
+                    disabled={isPending}
+                    isLoading={isPending}
+                  >
+                    移除
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
           </div>
         </div>
       </CardBody>

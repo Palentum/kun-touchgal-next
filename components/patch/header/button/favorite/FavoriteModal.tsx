@@ -6,7 +6,7 @@ import { Folder } from 'lucide-react'
 import { kunFetchGet, kunFetchPut } from '~/utils/kunFetch'
 import toast from 'react-hot-toast'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
-import { CreateFolderModal } from '~/components/user/favorite/CreateFolderModal'
+import { EditFolderModal } from '~/components/user/favorite/EditFolderModal'
 import type { UserFavoritePatchFolder } from '~/types/api/user'
 
 interface Props {
@@ -58,8 +58,9 @@ export const FavoriteModal = ({ patchId, isOpen, onClose }: Props) => {
               </p>
             </h2>
 
-            <CreateFolderModal
-              onCreateSuccess={(value) => setFolders([...folders, value])}
+            <EditFolderModal
+              action="create"
+              onActionSuccess={(value) => setFolders([...folders, value])}
             />
 
             {folders.map((folder) => (

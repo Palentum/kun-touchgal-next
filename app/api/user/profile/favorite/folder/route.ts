@@ -1,13 +1,18 @@
 import { z } from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
-import { createFavoriteFolderSchema } from '~/validations/user'
+import {
+  createFavoriteFolderSchema,
+  updateFavoriteFolderSchema
+} from '~/validations/user'
 import {
   kunParseGetQuery,
   kunParsePostBody,
-  kunParseDeleteQuery
+  kunParseDeleteQuery,
+  kunParsePutBody
 } from '~/app/api/utils/parseQuery'
 import { getFolders } from './get'
+import { updateFolder } from './update'
 import { createFolder } from './create'
 import { deleteFolder } from './delete'
 
@@ -45,6 +50,20 @@ export const POST = async (req: NextRequest) => {
 
   const res = await createFolder(input, payload.uid)
   return NextResponse.json(res)
+}
+
+export const PUT = async (req: NextRequest) => {
+  const input = await kunParsePutBody(req, updateFavoriteFolderSchema)
+  if (typeof input === 'string') {
+    return NextResponse.json(input)
+  }
+  const payload = await verifyHeaderCookie(req)
+  if (!payload) {
+    return NextResponse.json('用户未登录')
+  }
+
+  const response = await updateFolder(input, payload.uid)
+  return NextResponse.json(response)
 }
 
 export const DELETE = async (req: NextRequest) => {
