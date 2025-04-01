@@ -8,10 +8,14 @@ const patchIdSchema = z.object({
 
 export const getFolders = async (
   input: z.infer<typeof patchIdSchema>,
-  uid: number
+  pageUid: number,
+  currentUserUid: number
 ) => {
   const folders = await prisma.user_patch_favorite_folder.findMany({
-    where: { user_id: uid },
+    where: {
+      user_id: pageUid,
+      is_public: pageUid !== currentUserUid ? true : undefined
+    },
     include: {
       patch: {
         where: {

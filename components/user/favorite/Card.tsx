@@ -44,6 +44,7 @@ export const UserGalgameCard = ({
         { patchId: galgame.id, folderId }
       )
       kunErrorHandler(res, () => {
+        onCloseDelete()
         toast.success('取消收藏成功')
         onRemoveFavorite(galgame.id)
       })
@@ -51,13 +52,7 @@ export const UserGalgameCard = ({
   }
 
   return (
-    <Card
-      isPressable
-      as={Link}
-      href={`/${galgame.uniqueId}`}
-      className="w-full"
-      target="_blank"
-    >
+    <Card className="w-full">
       <CardBody className="p-4">
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="relative w-full sm:h-auto sm:w-40">
@@ -69,9 +64,13 @@ export const UserGalgameCard = ({
             />
           </div>
           <div className="flex-1 space-y-3">
-            <h2 className="text-lg font-semibold transition-colors line-clamp-2 hover:text-primary-500">
+            <Link
+              target="_blank"
+              href={`/${galgame.uniqueId}`}
+              className="text-lg font-semibold transition-colors line-clamp-2 hover:text-primary-500"
+            >
               {galgame.name}
-            </h2>
+            </Link>
 
             <KunCardStats patch={galgame} isMobile={true} />
 

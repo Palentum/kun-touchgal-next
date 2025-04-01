@@ -11,10 +11,16 @@ interface Props {
 export default async function Kun({ params }: Props) {
   const { id } = await params
 
-  const response = await kunGetActions()
+  const response = await kunGetActions(Number(id))
   if (typeof response === 'string') {
     return <ErrorComponent error={response} />
   }
 
-  return <UserFavorite initialFolders={response} uid={Number(id)} />
+  return (
+    <UserFavorite
+      initialFolders={response.folders}
+      pageUid={Number(id)}
+      currentUserUid={response.currentUserUid}
+    />
+  )
 }

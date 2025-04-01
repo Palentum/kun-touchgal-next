@@ -20,14 +20,21 @@ import { EditFolderModal } from './EditFolderModal'
 import { UserGalgameCard } from './Card'
 import { KunLoading } from '~/components/kun/Loading'
 import { KunNull } from '~/components/kun/Null'
+import toast from 'react-hot-toast'
+import { useUserStore } from '~/store/userStore'
 import type { UserFavoritePatchFolder } from '~/types/api/user'
 
 interface Props {
   initialFolders: UserFavoritePatchFolder[]
-  uid: number
+  pageUid: number
+  currentUserUid: number
 }
 
-export const UserFavorite = ({ initialFolders, uid }: Props) => {
+export const UserFavorite = ({
+  initialFolders,
+  pageUid,
+  currentUserUid
+}: Props) => {
   const [folders, setFolders] =
     useState<UserFavoritePatchFolder[]>(initialFolders)
   const [selectedFolder, setSelectedFolder] =
@@ -65,6 +72,9 @@ export const UserFavorite = ({ initialFolders, uid }: Props) => {
       )
       kunErrorHandler(res, () => {
         setFolders((prev) => prev.filter((p) => p.id !== selectedFolder?.id))
+        onCloseDelete()
+        onCloseFolder()
+        toast.success('删除收藏夹成功')
       })
     })
   }
@@ -92,10 +102,12 @@ export const UserFavorite = ({ initialFolders, uid }: Props) => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">收藏夹</h2>
-        <EditFolderModal
-          action="create"
-          onActionSuccess={(value) => setFolders([...folders, value])}
-        />
+        {currentUserUid === pageUid && (
+          <EditFolderModal
+            action="create"
+            onActionSuccess={(value) => setFolders([...folders, value])}
+          />
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -108,7 +120,7 @@ export const UserFavorite = ({ initialFolders, uid }: Props) => {
           >
             <CardHeader className="flex justify-between">
               <div className="flex items-center gap-2">
-                <Folder className="w-5 h-5" />
+                <Folder className="w-4 h-4" />
                 <span className="font-semibold">{folder.name}</span>
               </div>
             </CardHeader>
@@ -170,17 +182,19 @@ export const UserFavorite = ({ initialFolders, uid }: Props) => {
               </div>
             </ModalBody>
 
-            <ModalFooter>
-              <Button color="danger" variant="light" onPress={onOpenDelete}>
-                删除
-              </Button>
-              <EditFolderModal
-                action="update"
-                folderId={selectedFolder.id}
-                folder={selectedFolder}
-                onActionSuccess={onEditFolderSuccess}
-              />
-            </ModalFooter>
+            {currentUserUid === pageUid && (
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onOpenDelete}>
+                  删除
+                </Button>
+                <EditFolderModal
+                  action="update"
+                  folderId={selectedFolder.id}
+                  folder={selectedFolder}
+                  onActionSuccess={onEditFolderSuccess}
+                />
+              </ModalFooter>
+            )}
           </ModalContent>
         )}
       </Modal>

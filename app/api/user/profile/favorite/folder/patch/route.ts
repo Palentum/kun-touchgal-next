@@ -26,12 +26,12 @@ const getPatchByFolder = async (folderId: number, uid?: number) => {
   if (!folder) {
     return '未找到该文件夹'
   }
+  if (!folder.is_public && folder.user_id !== uid) {
+    return '您无权查看该私密文件夹'
+  }
 
   const data = await prisma.user_patch_favorite_folder.findMany({
-    where: {
-      id: folderId,
-      is_public: folder.user_id === uid
-    },
+    where: { id: folderId },
     include: {
       patch: {
         include: {

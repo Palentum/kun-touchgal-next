@@ -72,6 +72,7 @@ export const FavoriteModal = ({ patchId, isOpen, onClose }: Props) => {
                 className="justify-between"
                 onPress={() => handleAddToFolder(folder.id)}
                 isLoading={isPending}
+                isDisabled={isPending}
               >
                 <span>{folder.name}</span>
                 <Chip size="sm">
