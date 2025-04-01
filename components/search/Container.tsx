@@ -111,7 +111,8 @@ export const SearchPage = () => {
     sortOrder,
     selectedYears,
     selectedMonths,
-    selectedSuggestions
+    selectedSuggestions,
+    searchData
   ])
 
   return (
@@ -165,7 +166,7 @@ export const SearchPage = () => {
       {loading ? (
         <KunLoading hint="正在搜索中..." />
       ) : (
-        <>
+        <div>
           <div className="grid grid-cols-2 gap-2 mx-auto mb-8 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {patches.map((pa) => (
               <GalgameCard key={pa.id} patch={pa} />
@@ -186,7 +187,7 @@ export const SearchPage = () => {
           {hasSearched && patches.length === 0 && (
             <KunNull message="未找到相关内容, 请尝试使用游戏的日文原名搜索或打开 NSFW" />
           )}
-        </>
+        </div>
       )}
     </div>
   )
