@@ -18,6 +18,13 @@ try {
   console.log('Environment variables are valid.')
   console.log('Executing the commands...')
 
+  if (process.env.KUN_VISUAL_NOVEL_TEST_SITE_LABEL) {
+    console.log('DANGEROUS❗❗❗❗❗❗❗❗❗❗❗❗❗❗❗')
+    console.log(
+      'You website is running on a test environment now, it will be disable any search engine indexing!'
+    )
+  }
+
   execSync(
     'git pull && pnpm prisma:push && pnpm build && pnpm stop && pnpm start',
     { stdio: 'inherit' }

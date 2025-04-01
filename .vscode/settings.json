@@ -71,6 +71,7 @@
     "nocache",
     "nocheck",
     "noimageindex",
+    "noindex",
     "nord",
     "nprogress",
     "nslookup",

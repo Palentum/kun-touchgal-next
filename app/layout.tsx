@@ -3,14 +3,14 @@ import { Providers } from './providers'
 import { KunTopBar } from '~/components/kun/top-bar/TopBar'
 import { KunFooter } from '~/components/kun/Footer'
 import { KunNavigationBreadcrumb } from '~/components/kun/NavigationBreadcrumb'
-import { kunMetadata, kunViewport } from './metadata'
+import { generateKunMetadata, kunViewport } from './metadata'
 import { KunBackToTop } from '~/components/kun/BackToTop'
 import type { Metadata, Viewport } from 'next'
 import '~/styles/index.scss'
 import './actions'
 
 export const viewport: Viewport = kunViewport
-export const metadata: Metadata = kunMetadata
+export const metadata: Metadata = generateKunMetadata()
 
 export default function RootLayout({
   children
@@ -19,6 +19,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-Hans" suppressHydrationWarning>
+      {process.env.KUN_VISUAL_NOVEL_TEST_SITE_LABEL && (
+        <head>
+          <meta name="robots" content="noindex,nofollow" />
+          <meta name="googlebot" content="noindex,nofollow" />
+        </head>
+      )}
+
       <body>
         <Providers>
           <div className="relative flex flex-col items-center justify-center min-h-screen bg-radial">
