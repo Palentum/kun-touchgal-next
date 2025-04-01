@@ -14,17 +14,17 @@ export const searchTag = async (input: z.infer<typeof searchTagSchema>) => {
         { alias: { has: q } }
       ])
     },
-    select: { name: true },
+    select: {
+      id: true,
+      name: true,
+      count: true,
+      alias: true
+    },
     orderBy: { count: 'desc' },
     take: 100
   })
 
-  const response = tags.map((tag) => ({
-    type: 'tag',
-    name: tag.name
-  }))
-
-  return response
+  return tags
 }
 
 export const POST = async (req: NextRequest) => {
