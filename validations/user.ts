@@ -77,3 +77,9 @@ export const updateFavoriteFolderSchema = z.object({
   description: z.string().max(500).optional(),
   isPublic: z.boolean().default(false)
 })
+
+export const getFavoriteFolderPatchSchema = z.object({
+  folderId: z.coerce.number().min(1).max(9999999),
+  page: z.coerce.number().min(1).max(9999999),
+  limit: z.coerce.number().min(1).max(100)
+})

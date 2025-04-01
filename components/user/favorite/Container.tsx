@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useEffect, useTransition } from 'react'
 import {
   Card,
   CardHeader,
@@ -21,7 +21,7 @@ import { UserGalgameCard } from './Card'
 import { KunLoading } from '~/components/kun/Loading'
 import { KunNull } from '~/components/kun/Null'
 import toast from 'react-hot-toast'
-import { useUserStore } from '~/store/userStore'
+import { KunPagination } from '~/components/kun/Pagination'
 import type { UserFavoritePatchFolder } from '~/types/api/user'
 
 interface Props {
@@ -41,6 +41,8 @@ export const UserFavorite = ({
     useState<UserFavoritePatchFolder | null>(null)
   const [patches, setPatches] = useState<GalgameCard[]>([])
   const [isPending, startTransition] = useTransition()
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
 
   const {
     isOpen: isOpenFolder,
@@ -49,15 +51,21 @@ export const UserFavorite = ({
   } = useDisclosure()
   const fetchPatchesInFolder = async (folderId: number) => {
     startTransition(async () => {
-      const res = await kunFetchGet<KunResponse<GalgameCard[]>>(
-        `/user/profile/favorite/folder/patch`,
-        { folderId }
-      )
+      const res = await kunFetchGet<
+        KunResponse<{ patches: GalgameCard[]; total: number }>
+      >(`/user/profile/favorite/folder/patch`, { folderId, page, limit: 48 })
       kunErrorHandler(res, (value) => {
-        setPatches(value)
+        setPatches(value.patches)
+        setTotal(value.total)
       })
     })
   }
+
+  useEffect(() => {
+    if (selectedFolder) {
+      fetchPatchesInFolder(selectedFolder.id)
+    }
+  }, [page])
 
   const {
     isOpen: isOpenDelete,
@@ -160,7 +168,7 @@ export const UserFavorite = ({
             </ModalHeader>
 
             <ModalBody>
-              <div>
+              <div className="space-y-3">
                 {isPending ? (
                   <KunLoading hint="正在获取收藏数据..." />
                 ) : (
@@ -178,6 +186,17 @@ export const UserFavorite = ({
 
                 {!isPending && !patches.length && (
                   <KunNull message="收藏夹为空" />
+                )}
+
+                {!isPending && (
+                  <div className="flex justify-center">
+                    <KunPagination
+                      total={Math.ceil(total / 48)}
+                      page={page}
+                      onPageChange={setPage}
+                      isLoading={isPending}
+                    />
+                  </div>
                 )}
               </div>
             </ModalBody>

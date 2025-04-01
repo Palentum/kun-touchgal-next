@@ -61,7 +61,7 @@ export const Container = ({ initialTags, initialTotal }: Props) => {
     }
 
     setSearching(true)
-    const response = await kunFetchPost<TagType[]>('/tag/search', {
+    const response = await kunFetchPost<TagType[]>('/search/tag', {
       query: query.split(' ').filter((term) => term.length > 0)
     })
     setTags(response)

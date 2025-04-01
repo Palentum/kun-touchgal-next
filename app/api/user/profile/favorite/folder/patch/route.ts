@@ -3,25 +3,27 @@ import { NextRequest, NextResponse } from 'next/server'
 import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { prisma } from '~/prisma/index'
-
-const folderIdSchema = z.object({
-  folderId: z.coerce.number().min(1).max(9999999)
-})
+import { getFavoriteFolderPatchSchema } from '~/validations/user'
 
 export const GET = async (req: NextRequest) => {
-  const input = kunParseGetQuery(req, folderIdSchema)
+  const input = kunParseGetQuery(req, getFavoriteFolderPatchSchema)
   if (typeof input === 'string') {
+    console.log(input)
+
     return NextResponse.json(input)
   }
   const payload = await verifyHeaderCookie(req)
 
-  const res = await getPatchByFolder(input.folderId, payload?.uid ?? 0)
+  const res = await getPatchByFolder(input, payload?.uid ?? 0)
   return NextResponse.json(res)
 }
 
-const getPatchByFolder = async (folderId: number, uid?: number) => {
+const getPatchByFolder = async (
+  input: z.infer<typeof getFavoriteFolderPatchSchema>,
+  uid?: number
+) => {
   const folder = await prisma.user_patch_favorite_folder.findUnique({
-    where: { id: folderId }
+    where: { id: input.folderId }
   })
   if (!folder) {
     return '未找到该文件夹'
@@ -30,36 +32,41 @@ const getPatchByFolder = async (folderId: number, uid?: number) => {
     return '您无权查看该私密文件夹'
   }
 
-  const data = await prisma.user_patch_favorite_folder.findMany({
-    where: { id: folderId },
+  const { page, limit } = input
+  const offset = (page - 1) * limit
+
+  const total = await prisma.user_patch_favorite_folder_relation.count({
+    where: { folder_id: input.folderId }
+  })
+
+  const relations = await prisma.user_patch_favorite_folder_relation.findMany({
+    where: { folder_id: input.folderId },
     include: {
       patch: {
         include: {
-          patch: {
-            include: {
+          tag: {
+            select: {
               tag: {
-                select: {
-                  tag: {
-                    select: { name: true }
-                  }
-                }
-              },
-              _count: {
-                select: {
-                  favorite_folder: true,
-                  resource: true,
-                  comment: true
-                }
+                select: { name: true }
               }
+            }
+          },
+          _count: {
+            select: {
+              favorite_folder: true,
+              resource: true,
+              comment: true
             }
           }
         }
       }
-    }
+    },
+    skip: offset,
+    take: limit,
+    orderBy: { created: 'desc' }
   })
 
-  const patches = data.map((p) => p.patch).flat()
-  const response: GalgameCard[] = patches.map((relation) => ({
+  const patches: GalgameCard[] = relations.map((relation) => ({
     id: relation.patch.id,
     uniqueId: relation.patch.unique_id,
     name: relation.patch.name,
@@ -73,5 +80,6 @@ const getPatchByFolder = async (folderId: number, uid?: number) => {
     created: relation.patch.created,
     _count: relation.patch._count
   }))
-  return response
+
+  return { patches, total }
 }
