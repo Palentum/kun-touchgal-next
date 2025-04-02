@@ -7,7 +7,7 @@ import { searchTagSchema } from '~/validations/search'
 export const searchTag = async (input: z.infer<typeof searchTagSchema>) => {
   const { query } = input
 
-  const tags = await prisma.patch_tag.findMany({
+  const data = await prisma.patch_tag.findMany({
     where: {
       OR: query.flatMap((q) => [
         { name: { contains: q, mode: 'insensitive' } },
@@ -23,6 +23,11 @@ export const searchTag = async (input: z.infer<typeof searchTagSchema>) => {
     orderBy: { count: 'desc' },
     take: 100
   })
+
+  const tags = data.map((t) => ({
+    type: 'tag',
+    ...t
+  }))
 
   return tags
 }

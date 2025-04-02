@@ -31,13 +31,6 @@ export const SearchInput = ({
 }: Props) => {
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
-    if (!event.target.value.trim()) {
-      setShowSuggestions(false)
-      setShowHistory(true)
-    } else {
-      setShowSuggestions(true)
-      setShowHistory(false)
-    }
   }
 
   const handleInputFocus = () => {
@@ -49,10 +42,10 @@ export const SearchInput = ({
   }
 
   const handleInputBlur = () => {
-    if (query.trim()) {
-      addToHistory(query)
-    }
     setTimeout(() => {
+      if (query.trim()) {
+        addToHistory(query)
+      }
       setShowHistory(false)
       setShowSuggestions(false)
     }, 100)
@@ -77,6 +70,10 @@ export const SearchInput = ({
 
   const [canDeleteTag, setCanDeleteTag] = useState(false)
   const handleKeyUp = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (selectedSuggestions.length || !query.length) {
+      setCanDeleteTag(false)
+    }
+
     if (
       event.key === 'Backspace' &&
       selectedSuggestions.length &&
@@ -89,10 +86,6 @@ export const SearchInput = ({
       }
     } else if (event.key === 'Enter') {
       handleExecuteSearch()
-    }
-
-    if (!selectedSuggestions.length) {
-      setCanDeleteTag(false)
     }
   }
 

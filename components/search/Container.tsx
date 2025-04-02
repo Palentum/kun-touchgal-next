@@ -45,8 +45,9 @@ export const SearchPage = () => {
   const setSearchData = useSearchStore((state) => state.setData)
 
   const addToHistory = (searchQuery: string) => {
-    if (!searchQuery.trim()) return
-
+    if (!searchQuery.trim()) {
+      return
+    }
     const newHistory = [
       searchQuery,
       ...searchData.searchHistory.filter((item) => item !== searchQuery)
@@ -55,7 +56,10 @@ export const SearchPage = () => {
     setSearchData({ ...searchData, searchHistory: newHistory })
   }
 
-  const handleSearch = async (currentPage = page, searchQuery = query) => {
+  const handleSearch = async (
+    currentPage = page,
+    searchQuery = debouncedQuery
+  ) => {
     if (!selectedSuggestions.length) {
       return
     }
@@ -94,7 +98,7 @@ export const SearchPage = () => {
   }
 
   useEffect(() => {
-    if (selectedSuggestions.length) {
+    if (selectedSuggestions.length && !debouncedQuery.length) {
       handleSearch()
     } else {
       setPatches([])
@@ -112,8 +116,19 @@ export const SearchPage = () => {
     selectedYears,
     selectedMonths,
     selectedSuggestions,
-    searchData
+    searchData,
+    debouncedQuery
   ])
+
+  useEffect(() => {
+    if (!debouncedQuery.trim()) {
+      setShowSuggestions(false)
+      setShowHistory(true)
+    } else {
+      setShowHistory(false)
+      setShowSuggestions(true)
+    }
+  }, [debouncedQuery])
 
   return (
     <div className="relative w-full my-4 space-y-6">
