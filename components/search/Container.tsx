@@ -56,10 +56,7 @@ export const SearchPage = () => {
     setSearchData({ ...searchData, searchHistory: newHistory })
   }
 
-  const handleSearch = async (
-    currentPage = page,
-    searchQuery = debouncedQuery
-  ) => {
+  const handleSearch = async (currentPage = page) => {
     if (!selectedSuggestions.length) {
       return
     }
@@ -94,11 +91,17 @@ export const SearchPage = () => {
     setTotal(total)
     setHasSearched(true)
     setLoading(false)
-    addToHistory(searchQuery)
+
+    const hasTag = selectedSuggestions.some((s) => s.type === 'tag')
+    if (!hasTag) {
+      addToHistory(
+        selectedSuggestions.find((s) => s.type === 'keyword')?.name ?? ''
+      )
+    }
   }
 
   useEffect(() => {
-    if (selectedSuggestions.length && !debouncedQuery.length) {
+    if (selectedSuggestions.length) {
       handleSearch()
     } else {
       setPatches([])
@@ -116,8 +119,9 @@ export const SearchPage = () => {
     selectedYears,
     selectedMonths,
     selectedSuggestions,
-    searchData,
-    debouncedQuery
+    searchData.searchInAlias,
+    searchData.searchInIntroduction,
+    searchData.searchInTag
   ])
 
   useEffect(() => {
@@ -145,7 +149,6 @@ export const SearchPage = () => {
         selectedSuggestions={selectedSuggestions}
         setSelectedSuggestions={setSelectedSuggestions}
         setShowHistory={setShowHistory}
-        addToHistory={addToHistory}
       />
 
       {showSuggestions && (
