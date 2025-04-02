@@ -124,16 +124,6 @@ export const SearchPage = () => {
     searchData.searchInTag
   ])
 
-  useEffect(() => {
-    if (!debouncedQuery.trim()) {
-      setShowSuggestions(false)
-      setShowHistory(true)
-    } else {
-      setShowHistory(false)
-      setShowSuggestions(true)
-    }
-  }, [debouncedQuery])
-
   return (
     <div className="relative w-full my-4 space-y-6">
       <KunHeader

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Button, Chip } from '@nextui-org/react'
+import { cn } from '~/utils/cn'
 import type { SearchSuggestionType } from '~/types/api/search'
 import type {
   ChangeEvent,
@@ -27,11 +28,22 @@ export const SearchInput = ({
   setSelectedSuggestions,
   setShowHistory
 }: Props) => {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [isFocused, setIsFocused] = useState(false)
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
+    if (!event.target.value.trim()) {
+      setShowSuggestions(false)
+      setShowHistory(true)
+    } else {
+      setShowSuggestions(true)
+      setShowHistory(false)
+    }
   }
 
   const handleInputFocus = () => {
+    setIsFocused(true)
     if (!query.trim()) {
       setShowHistory(true)
     } else {
@@ -40,6 +52,7 @@ export const SearchInput = ({
   }
 
   const handleInputBlur = () => {
+    setIsFocused(false)
     setTimeout(() => {
       setShowHistory(false)
       setShowSuggestions(false)
@@ -50,6 +63,7 @@ export const SearchInput = ({
     setSelectedSuggestions((prevSuggestions) =>
       prevSuggestions.filter((suggestion) => suggestion.name !== nameToRemove)
     )
+    inputRef.current?.focus()
   }
 
   const handleExecuteSearch = () => {
@@ -85,7 +99,12 @@ export const SearchInput = ({
   }
 
   return (
-    <div className="flex gap-2 p-3 bg-default-100 rounded-large">
+    <div
+      className={cn(
+        'flex gap-2 p-3 bg-default-100 rounded-large transition-all duration-200',
+        isFocused ? 'ring-2 ring-primary ring-offset-2' : ''
+      )}
+    >
       <div className="flex flex-wrap items-center w-full gap-2">
         {selectedSuggestions.map((suggestion, index) => (
           <Chip
@@ -99,6 +118,7 @@ export const SearchInput = ({
         ))}
 
         <input
+          ref={inputRef}
           autoFocus
           className="placeholder-default-500 text-default-700 min-w-[120px] flex-grow bg-transparent outline-none"
           value={query}
