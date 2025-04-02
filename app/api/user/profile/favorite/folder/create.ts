@@ -8,7 +8,9 @@ export const createFolder = async (
   input: z.infer<typeof createFavoriteFolderSchema>,
   uid: number
 ) => {
-  const folderCount = await prisma.user_patch_favorite_folder.count()
+  const folderCount = await prisma.user_patch_favorite_folder.count({
+    where: { user_id: uid }
+  })
   if (folderCount > USER_FAVORITE_PATCH_FOLDER_LIMIT) {
     return `您最多创建 ${USER_FAVORITE_PATCH_FOLDER_LIMIT} 个收藏文件夹`
   }
