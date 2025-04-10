@@ -15,6 +15,7 @@ import { trailing } from '@milkdown/plugin-trailing'
 import { upload, uploadConfig } from '@milkdown/plugin-upload'
 import { automd } from '@milkdown/plugin-automd'
 import { replaceAll } from '@milkdown/utils'
+import { usePluginViewFactory } from '@prosemirror-adapter/react'
 
 import { remarkDirective } from './plugins/components/remarkDirective'
 import { KunMilkdownPluginsMenu } from './plugins/Menu'
@@ -35,10 +36,9 @@ import {
   kunLinkNode
 } from './plugins/components/link/linkPlugin'
 import {
-  mentionsPlugin,
-  mentionsPluginOptions
-} from './plugins/components/mention/mentionPlugin'
-import { MentionsListDropdown } from './plugins/components/mention/MentionsListDropdown'
+  MentionsListDropdown,
+  slash
+} from './plugins/components/mention/MentionsListDropdown'
 import {
   stopLinkCommand,
   linkCustomKeymap
@@ -89,7 +89,7 @@ export const EditorProvider = ({
     (state) => state.data.refreshContentStatus
   )
 
-  const mentions = mentionsPlugin()
+  const pluginViewFactory = usePluginViewFactory()
 
   const editor = useEditor((root) =>
     Editor.make()
@@ -103,10 +103,11 @@ export const EditorProvider = ({
           saveMarkdown(markdown)
         })
 
-        ctx.update(mentionsPluginOptions.key, (prev) => ({
-          ...prev,
-          view: MentionsListDropdown
-        }))
+        ctx.set(slash.key, {
+          view: pluginViewFactory({
+            component: MentionsListDropdown
+          })
+        })
 
         ctx.update(uploadConfig.key, (prev) => ({
           ...prev,
@@ -170,17 +171,20 @@ export const EditorProvider = ({
         [
           stopLinkCommand,
           linkCustomKeymap,
-          mentions,
           placeholderCtx,
-          placeholderPlugin
+          placeholderPlugin,
+          slash
         ].flat()
       )
   )
 
-  useEffect(
-    () => editor.get()?.action(replaceAll(valueMarkdown, true)),
-    [refreshContentStatus]
-  )
+  useEffect(() => {
+    if (editor.get()) {
+      requestAnimationFrame(() => {
+        editor.get()?.action(replaceAll(valueMarkdown, true))
+      })
+    }
+  }, [refreshContentStatus])
 
   return (
     <div className="w-full min-h-64" onClick={(e) => e.stopPropagation()}>
