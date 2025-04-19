@@ -88,6 +88,11 @@ export const FileUploadContainer = ({ onSuccess, handleRemoveFile }: Props) => {
     handleRemoveFile()
   }
 
+  const handleCaptureClose = () => {
+    onClose()
+    removeFile()
+  }
+
   return (
     <div className="space-y-2">
       <h3 className="text-lg font-medium">上传资源</h3>
@@ -98,7 +103,7 @@ export const FileUploadContainer = ({ onSuccess, handleRemoveFile }: Props) => {
 
       <KunCaptchaModal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={handleCaptureClose}
         onSuccess={handleCaptchaSuccess}
       />
 
