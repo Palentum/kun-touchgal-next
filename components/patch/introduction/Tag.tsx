@@ -23,7 +23,7 @@ export const PatchTag = ({ patchId, initialTags }: Props) => {
         游戏标签
       </h2>
 
-      <div className="space-x-2 space-y-2">
+      <div className="flex flex-wrap gap-2">
         {selectedTags.map((tag) => (
           <Tooltip key={tag.id} content={`${tag.count} 个 Galgame 使用此标签`}>
             <Link href={`/tag/${tag.id}`}>
