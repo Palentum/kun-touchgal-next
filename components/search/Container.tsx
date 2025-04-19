@@ -106,6 +106,7 @@ export const SearchPage = () => {
     } else {
       setPatches([])
       setHasSearched(false)
+      setPage(1)
       setTotal(0)
       setLoading(false)
     }
