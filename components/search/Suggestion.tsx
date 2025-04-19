@@ -22,6 +22,7 @@ export const SearchSuggestion = ({
 }: Props) => {
   const [suggestions, setSuggestions] = useState<SearchSuggestionType[]>([])
   const [isPending, startTransition] = useTransition()
+  const queryArraySplitByBlank = query.split(' ')
 
   const fetchSuggestions = async (searchQuery: string) => {
     if (!searchQuery.trim()) {
@@ -49,12 +50,23 @@ export const SearchSuggestion = ({
     }
   }, [query])
 
-  const handleClickSuggestion = (suggestion: SearchSuggestionType) => {
+  const handleClickSuggestion = (suggestions: SearchSuggestionType[]) => {
     setQuery('')
     setSelectedSuggestions((prev) => {
-      const filtered = prev.filter((item) => item.name !== suggestion.name)
-      return [...filtered, suggestion]
+      const namesToRemove = new Set(suggestions.map((s) => s.name))
+      const filtered = prev.filter((item) => !namesToRemove.has(item.name))
+      return [...filtered, ...suggestions]
     })
+  }
+
+  const handleSelectMultiQueryKeywords = () => {
+    const suggestions: SearchSuggestionType[] = queryArraySplitByBlank.map(
+      (q) => ({
+        type: 'keyword',
+        name: q
+      })
+    )
+    handleClickSuggestion(suggestions)
   }
 
   return (
@@ -63,9 +75,11 @@ export const SearchSuggestion = ({
         点击关键词按您的输入搜索, 点击标签使用多标签搜索
       </p>
 
-      <div
+      {/* <div
         className="p-1 cursor-pointer hover:bg-default-100 rounded-2xl"
-        onClick={() => handleClickSuggestion({ type: 'keyword', name: query })}
+        onClick={() =>
+          handleClickSuggestion([{ type: 'keyword', name: query }])
+        }
       >
         <div className="flex items-center gap-2">
           <Chip
@@ -75,9 +89,33 @@ export const SearchSuggestion = ({
           >
             关键词
           </Chip>
-          <span>{query}</span>
+          <Chip color="primary" variant="flat">
+            {query}
+          </Chip>
         </div>
-      </div>
+      </div> */}
+
+      {queryArraySplitByBlank.length > 1 && (
+        <div
+          className="p-1 cursor-pointer hover:bg-default-100 rounded-2xl"
+          onClick={handleSelectMultiQueryKeywords}
+        >
+          <div className="flex items-center gap-2">
+            <Chip
+              color="primary"
+              variant="flat"
+              startContent={<Key className="w-4 h-4" />}
+            >
+              关键词
+            </Chip>
+            {queryArraySplitByBlank.map((q, index) => (
+              <Chip key={index} color="primary" variant="flat">
+                {q}
+              </Chip>
+            ))}
+          </div>
+        </div>
+      )}
 
       {isPending ? (
         <KunLoading hint="正在获取标签..." />
@@ -86,7 +124,7 @@ export const SearchSuggestion = ({
           <div
             key={index}
             className="p-1 cursor-pointer hover:bg-default-100 rounded-2xl"
-            onClick={() => handleClickSuggestion(suggestion)}
+            onClick={() => handleClickSuggestion([suggestion])}
           >
             <div className="flex items-center gap-2">
               <span>

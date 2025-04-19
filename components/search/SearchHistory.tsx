@@ -22,9 +22,17 @@ export const SearchHistory = ({
 
   const handleHistoryClick = (historyItem: string) => {
     setShowHistory(false)
+    const queryArraySplitByBlank = historyItem.split(' ')
+    const suggestions: SearchSuggestionType[] = queryArraySplitByBlank.map(
+      (q) => ({
+        type: 'keyword',
+        name: q
+      })
+    )
     setSelectedSuggestions((prev) => {
-      const filtered = prev.filter((item) => item.name !== historyItem)
-      return [...filtered, { type: 'keyword', name: historyItem }]
+      const namesToRemove = new Set(suggestions.map((s) => s.name))
+      const filtered = prev.filter((item) => !namesToRemove.has(item.name))
+      return [...filtered, ...suggestions]
     })
   }
 
