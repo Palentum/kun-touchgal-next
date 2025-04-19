@@ -95,27 +95,25 @@ export const SearchSuggestion = ({
         </div>
       </div> */}
 
-      {queryArraySplitByBlank.length > 1 && (
-        <div
-          className="p-1 cursor-pointer hover:bg-default-100 rounded-2xl"
-          onClick={handleSelectMultiQueryKeywords}
-        >
-          <div className="flex items-center gap-2">
-            <Chip
-              color="primary"
-              variant="flat"
-              startContent={<Key className="w-4 h-4" />}
-            >
-              关键词
+      <div
+        className="p-1 cursor-pointer hover:bg-default-100 rounded-2xl"
+        onClick={handleSelectMultiQueryKeywords}
+      >
+        <div className="flex items-center gap-2">
+          <Chip
+            color="primary"
+            variant="flat"
+            startContent={<Key className="w-4 h-4" />}
+          >
+            关键词
+          </Chip>
+          {queryArraySplitByBlank.map((q, index) => (
+            <Chip key={index} color="primary" variant="flat">
+              {q}
             </Chip>
-            {queryArraySplitByBlank.map((q, index) => (
-              <Chip key={index} color="primary" variant="flat">
-                {q}
-              </Chip>
-            ))}
-          </div>
+          ))}
         </div>
-      )}
+      </div>
 
       {isPending ? (
         <KunLoading hint="正在获取标签..." />

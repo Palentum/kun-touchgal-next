@@ -92,7 +92,7 @@ export const searchGalgame = async (
     ...queryArray.map((q) => ({
       OR: [
         { name: { contains: q, mode: insensitive } },
-        { vndb_id: { contains: q, mode: insensitive } },
+        { vndb_id: q },
         ...(searchOption.searchInIntroduction
           ? [{ introduction: { contains: q, mode: insensitive } }]
           : []),
