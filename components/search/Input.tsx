@@ -70,9 +70,17 @@ export const SearchInput = ({
     if (!query.trim()) {
       return
     }
+    const queryArraySplitByBlank = query.trim().split(' ')
+    const suggestions: SearchSuggestionType[] = queryArraySplitByBlank.map(
+      (q) => ({
+        type: 'keyword',
+        name: q
+      })
+    )
     setSelectedSuggestions((prev) => {
-      const filtered = prev.filter((item) => item.name !== query.trim())
-      return [...filtered, { type: 'keyword', name: query.trim() }]
+      const namesToRemove = new Set(suggestions.map((s) => s.name))
+      const filtered = prev.filter((item) => !namesToRemove.has(item.name))
+      return [...filtered, ...suggestions]
     })
     setQuery('')
   }
