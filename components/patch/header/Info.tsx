@@ -18,9 +18,13 @@ import type { Patch } from '~/types/api/patch'
 
 interface PatchHeaderInfoProps {
   patch: Patch
+  handleClickDownloadNav: () => void
 }
 
-export const PatchHeaderInfo = ({ patch }: PatchHeaderInfoProps) => {
+export const PatchHeaderInfo = ({
+  patch,
+  handleClickDownloadNav
+}: PatchHeaderInfoProps) => {
   return (
     <Card className="border shadow-xl">
       <CardBody className="p-0">
@@ -58,7 +62,10 @@ export const PatchHeaderInfo = ({ patch }: PatchHeaderInfoProps) => {
               <Tags patch={patch} />
             </div>
 
-            <PatchHeaderActions patch={patch} />
+            <PatchHeaderActions
+              patch={patch}
+              handleClickDownloadNav={handleClickDownloadNav}
+            />
 
             <Divider />
 
@@ -67,9 +74,6 @@ export const PatchHeaderInfo = ({ patch }: PatchHeaderInfoProps) => {
                 user={patch.user}
                 userProps={{
                   name: `${patch.user.name} - ${formatDistanceToNow(patch.created)}`,
-                  description: (
-                    <KunCardStats patch={patch} disableTooltip={false} />
-                  ),
                   avatarProps: {
                     showFallback: true,
                     name: patch.user.name.charAt(0).toUpperCase(),

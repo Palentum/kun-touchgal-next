@@ -34,7 +34,10 @@ export const PatchHeaderContainer = ({ patch, intro }: PatchHeaderProps) => {
     <div className="relative w-full mx-auto max-w-7xl">
       <KunAutoImageViewer />
 
-      <PatchHeaderInfo patch={patch} />
+      <PatchHeaderInfo
+        patch={patch}
+        handleClickDownloadNav={() => setSelected('resources')}
+      />
 
       <PatchHeaderTabs
         id={patch.id}

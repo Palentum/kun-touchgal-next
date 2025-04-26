@@ -23,9 +23,13 @@ import type { Patch } from '~/types/api/patch'
 
 interface PatchHeaderActionsProps {
   patch: Patch
+  handleClickDownloadNav: () => void
 }
 
-export const PatchHeaderActions = ({ patch }: PatchHeaderActionsProps) => {
+export const PatchHeaderActions = ({
+  patch,
+  handleClickDownloadNav
+}: PatchHeaderActionsProps) => {
   const router = useRouter()
   const { user } = useUserStore((state) => state)
 
@@ -70,7 +74,7 @@ export const PatchHeaderActions = ({ patch }: PatchHeaderActionsProps) => {
             color="primary"
             variant="shadow"
             startContent={<Download className="size-4" />}
-            onPress={() => router.push(`/patch/${patch.id}/resource`)}
+            onPress={handleClickDownloadNav}
             size="sm"
           >
             下载
