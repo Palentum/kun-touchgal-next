@@ -28,15 +28,18 @@ export const FavoriteButton = ({ patchId, isFavorite }: Props) => {
 
   return (
     <>
-      <Tooltip key="favorite" color="default" content="添加到收藏夹">
+      <Tooltip key="favorite" content={isFavorite ? '取消收藏' : '收藏'}>
         <Button
           isIconOnly
-          variant="bordered"
+          size="sm"
+          color={isFavorite ? 'danger' : 'default'}
+          variant={isFavorite ? 'flat' : 'bordered'}
           onPress={toggleLike}
+          aria-label={isFavorite ? '取消收藏' : '收藏'}
           className="min-w-0 px-2"
         >
           <Heart
-            fill={isFavorite ? '#f31260' : '#00000000'}
+            fill={isFavorite ? '#f31260' : 'none'}
             className={cn('size-4', isFavorite ? 'text-danger-500' : '')}
           />
         </Button>

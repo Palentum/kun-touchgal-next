@@ -50,6 +50,7 @@ export const FeedbackButton = ({ patch }: Props) => {
           isIconOnly
           aria-label="游戏反馈"
           onPress={onOpen}
+          size="sm"
         >
           <MessageCircleQuestion className="size-4" />
         </Button>
