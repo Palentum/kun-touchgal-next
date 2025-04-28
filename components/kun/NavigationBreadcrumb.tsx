@@ -36,7 +36,8 @@ export const KunNavigationBreadcrumb = () => {
     '/',
     '/edit/create',
     '/edit/rewrite',
-    '/redirect'
+    '/redirect',
+    '/friend-link'
   ]
 
   return (
