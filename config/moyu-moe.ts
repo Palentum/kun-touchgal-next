@@ -13,6 +13,7 @@ const KUN_SITE_ARCHIVE = 'https://archive.touchgal.co/'
 const KUN_SITE_FORUM = 'https://bbs.touchgal.co/'
 const KUN_SITE_NAV = 'https://gal.red'
 const KUN_SITE_TELEGRAM_GROUP = 'https://s.miku.cyou/2'
+const KUN_SITE_DISCORD_GROUP = 'https://discord.gg/55zuwkrJ'
 const KUN_SITE_LIST = [
   { name: KUN_SITE_NAME, url: 'https://www.touchgal.net' },
   { name: KUN_SITE_NAME, url: 'https://www.touchgal.moe' },
@@ -70,6 +71,7 @@ export const kunMoyuMoe: KunSiteConfig = {
     storage: KUN_SITE_URL,
     kungal: KUN_SITE_URL,
     telegram_group: KUN_SITE_TELEGRAM_GROUP,
+    discord_group: KUN_SITE_DISCORD_GROUP,
     archive: KUN_SITE_ARCHIVE,
     forum: KUN_SITE_FORUM,
     nav: KUN_SITE_NAV

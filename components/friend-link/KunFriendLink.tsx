@@ -68,7 +68,7 @@ export const KunFriendLink = () => {
             <Link
               isExternal
               showAnchorIcon
-              href={kunMoyuMoe.domain.telegram_group}
+              href={kunMoyuMoe.domain.discord_group}
               rel="noopener noreferrer"
             >
               Discord 服务器
