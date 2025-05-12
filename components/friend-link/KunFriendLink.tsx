@@ -71,7 +71,7 @@ export const KunFriendLink = () => {
               href={kunMoyuMoe.domain.telegram_group}
               rel="noopener noreferrer"
             >
-              Telegram 群组
+              Discord 服务器
             </Link>
             联系我们
           </p>

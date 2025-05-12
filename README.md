@@ -6,9 +6,9 @@ TouchGal 是一个一站式 Galgame 文化社区。提供Galgame 论坛、Galgam
 
 ## 错误反馈
 
-如果要反馈错误, 请您加入 TouchGal 的官方 Telegram 群组
+如果要反馈错误, 请您加入 TouchGal 的官方 Discord 服务器
 
-https://t.me/+yPQQaPhgLbc5MGIx
+https://discord.gg/55zuwkrJ
 
 ## 开发联系
 

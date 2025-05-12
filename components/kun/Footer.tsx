@@ -53,7 +53,7 @@ export const KunFooter = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Telegram
+              Discord
             </Link>
           </div>
         </div>
