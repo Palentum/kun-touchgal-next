@@ -8,7 +8,7 @@ export const extractMentionUserIds = (text: string) => {
 }
 
 export const createMentionMessage = async (
-  patchId: number,
+  uniqueId: string,
   patchName: string,
   senderUid: number,
   senderUsername: string,
@@ -23,7 +23,7 @@ export const createMentionMessage = async (
           content: `${senderUsername} 在 ${patchName} 的评论区 @ 了您\n(*・ω・)✄╰ひ╯ ${markdownToText(text).slice(0, 50)}`,
           sender_id: senderUid,
           recipient_id: mentionUid,
-          link: `/${patchId}`
+          link: `/${uniqueId}`
         }
       }
     )

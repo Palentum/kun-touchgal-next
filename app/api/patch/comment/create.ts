@@ -42,13 +42,13 @@ export const createPatchComment = async (
         content: `评论了您的评论! -> ${parentComment!.content.slice(0, 107)}`,
         sender_id: uid,
         recipient_id: parentComment!.user_id,
-        link: `/${input.patchId}`
+        link: `/${data.patch.unique_id}`
       })
     }
   }
 
   await createMentionMessage(
-    input.patchId,
+    data.patch.unique_id,
     data.patch.name,
     uid,
     data.user.name,
