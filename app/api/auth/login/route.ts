@@ -44,7 +44,10 @@ export const login = async (
   }
 
   if (user.enable_2fa) {
-    const tempToken = generateKunStatelessToken({ require2FA: true }, 10 * 60)
+    const tempToken = generateKunStatelessToken(
+      { id: user.id, require2FA: true },
+      10 * 60
+    )
     const cookie = await cookies()
     cookie.set('kun-galgame-patch-moe-2fa-token', tempToken, {
       httpOnly: true,

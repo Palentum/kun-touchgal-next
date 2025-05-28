@@ -3,6 +3,7 @@ import { delKv, getKv, setKv } from '~/lib/redis'
 
 export interface KunGalgameStatelessPayload {
   require2FA: boolean
+  id: number
 }
 
 export interface KunGalgamePayload {

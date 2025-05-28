@@ -6,7 +6,6 @@ import { generateKunToken } from '~/app/api/utils/jwt'
 import { prisma } from '~/prisma/index'
 import { getRedirectConfig } from '~/app/api/admin/setting/redirect/getRedirectConfig'
 import { Totp } from 'time2fa'
-import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { parseCookies } from '~/utils/cookies'
 import { verify2FA } from '~/app/api/utils/verify2FA'
 import { verifyLogin2FASchema } from '~/validations/auth'
@@ -17,13 +16,12 @@ export const verifyLogin2FA = async (
   tempToken: string,
   uid: number
 ) => {
-  const { passcode, isBackupCode } = input
+  const { token, isBackupCode } = input
   const payload = verify2FA(tempToken)
   if (!payload) {
     return '2FA 临时令牌已过期, 时效为 10 分钟'
   }
 
-  // Get user
   const user = await prisma.user.findUnique({
     where: { id: uid }
   })
@@ -35,9 +33,8 @@ export const verifyLogin2FA = async (
   let isValid = false
 
   if (isBackupCode) {
-    if (user.two_factor_backup.includes(passcode)) {
+    if (user.two_factor_backup.includes(token)) {
       isValid = true
-
       await prisma.user.update({
         where: { id: uid },
         data: {
@@ -49,7 +46,7 @@ export const verifyLogin2FA = async (
     }
   } else {
     isValid = Totp.validate({
-      passcode: passcode,
+      passcode: token,
       secret: user.two_factor_secret
     })
   }
@@ -61,8 +58,13 @@ export const verifyLogin2FA = async (
   const cookie = await cookies()
   cookie.delete('kun-galgame-patch-moe-temp-token')
 
-  const token = await generateKunToken(user.id, user.name, user.role, '30d')
-  cookie.set('kun-galgame-patch-moe-token', token, {
+  const accessToken = await generateKunToken(
+    user.id,
+    user.name,
+    user.role,
+    '30d'
+  )
+  cookie.set('kun-galgame-patch-moe-token', accessToken, {
     httpOnly: true,
     sameSite: 'strict',
     maxAge: 30 * 24 * 60 * 60 * 1000
@@ -91,18 +93,17 @@ export const POST = async (req: NextRequest) => {
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }
-  const payload = await verifyHeaderCookie(req)
-  if (!payload) {
-    return NextResponse.json('用户未登录')
-  }
-
   const tempToken = parseCookies(req.headers.get('cookie') ?? '')[
     'kun-galgame-patch-moe-2fa-token'
   ]
   if (!tempToken) {
     return NextResponse.json('未找到临时令牌')
   }
+  const payload = verify2FA(tempToken)
+  if (!payload) {
+    return NextResponse.json('2FA 临时令牌已过期, 时效为 10 分钟')
+  }
 
-  const response = await verifyLogin2FA(input, tempToken, payload.uid)
+  const response = await verifyLogin2FA(input, tempToken, payload.id)
   return NextResponse.json(response)
 }

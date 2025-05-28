@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import type { KunGalgameStatelessPayload } from '~/app/api/utils/jwt'
 
-export const verify2FA = async (token: string) => {
+export const verify2FA = (token: string) => {
   try {
     const payload = jwt.verify(
       token,

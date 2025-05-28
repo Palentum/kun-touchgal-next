@@ -11,13 +11,17 @@ const get2FAStatus = async (uid?: number) => {
     where: { id: uid },
     select: {
       enable_2fa: true,
-      two_factor_secret: true
+      two_factor_secret: true,
+      two_factor_backup: true
     }
   })
 
   return {
     enabled: user?.enable_2fa || false,
-    hasSecret: !!user?.two_factor_secret
+    hasSecret: !!user?.two_factor_secret,
+    backupCodeLength: user?.two_factor_backup
+      ? user.two_factor_backup.length
+      : 0
   }
 }
 
