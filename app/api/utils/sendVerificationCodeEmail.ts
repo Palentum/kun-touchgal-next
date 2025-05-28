@@ -2,7 +2,7 @@ import { createTransport } from 'nodemailer'
 import SMPTransport from 'nodemailer-smtp-transport'
 import { getRemoteIp } from './getRemoteIp'
 import { getKv, setKv } from '~/lib/redis'
-import { generateRandomCode } from './generateRandomCode'
+import { generateRandomString } from '~/utils/random'
 import { kunMoyuMoe } from '~/config/moyu-moe'
 import { createKunVerificationEmailTemplate } from '~/constants/email/verify-templates'
 
@@ -19,7 +19,7 @@ export const sendVerificationCodeEmail = async (
     return '您发送邮件的频率太快了, 请 60 秒后重试'
   }
 
-  const code = generateRandomCode(7)
+  const code = generateRandomString(7)
   await setKv(email, code, 10 * 60)
   await setKv(`limit:email:${email}`, code, 60)
   await setKv(`limit:ip:${ip}`, code, 60)

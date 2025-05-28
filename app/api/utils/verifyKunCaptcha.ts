@@ -1,5 +1,5 @@
 import { delKv, getKv, setKv } from '~/lib/redis'
-import { generateRandomCode } from '~/app/api/utils/generateRandomCode'
+import { generateRandomString } from '~/utils/random'
 
 export const verifyKunCaptcha = async (
   sessionId: string,
@@ -22,7 +22,7 @@ export const verifyKunCaptcha = async (
     return '您选择的白毛女孩子不正确, 请重试'
   }
 
-  const randomCode = generateRandomCode(10)
+  const randomCode = generateRandomString(10)
   await setKv(`captcha:verify:${randomCode}`, 'captcha', 60 * 60)
 
   return { code: randomCode }

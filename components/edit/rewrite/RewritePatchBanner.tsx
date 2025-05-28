@@ -66,10 +66,7 @@ export const RewritePatchBanner = ({ patchId, onClose }: Props) => {
           removeImage={removeBanner}
         />
 
-        <p>
-          更改图片后, 由于缓存的原因, 更改不会立即生效。您可以尝试使用 Ctrl + F5
-          刷新页面, 或者等待一段时间后重新访问本页面
-        </p>
+        <p>更改图片后立即生效, 使用 Ctrl + F5 刷新页面即可</p>
       </ModalBody>
 
       <ModalFooter>
