@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useTransition } from 'react'
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,9 +19,9 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export const LoginForm = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [isPending, startTransition] = useTransition()
   const { setUser } = useUserStore((state) => state)
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
 
   const { control, watch, reset } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -32,20 +32,26 @@ export const LoginForm = () => {
   })
 
   const handleCaptchaSuccess = async (code: string) => {
-    onClose()
+    startTransition(async () => {
+      onClose()
+      const res = await kunFetchPost<
+        KunResponse<(UserState | KunUser) & { require2FA: boolean }>
+      >('/auth/login', {
+        ...watch(),
+        captcha: code
+      })
 
-    setLoading(true)
-    const res = await kunFetchPost<KunResponse<UserState>>('/auth/login', {
-      ...watch(),
-      captcha: code
-    })
-    setLoading(false)
-
-    kunErrorHandler(res, (value) => {
-      setUser(value)
-      reset()
-      toast.success('登录成功!')
-      router.push(`/user/${value.uid}/resource`)
+      kunErrorHandler(res, (value) => {
+        if (value.require2FA) {
+          router.push('/login/2fa')
+        } else {
+          const state = value as UserState
+          setUser(state)
+          reset()
+          toast.success('登录成功!')
+          router.push(`/user/${state.uid}/resource`)
+        }
+      })
     })
   }
 
@@ -88,8 +94,8 @@ export const LoginForm = () => {
       <Button
         color="primary"
         className="w-full"
-        isDisabled={loading}
-        isLoading={loading}
+        isDisabled={isPending}
+        isLoading={isPending}
         onPress={onOpen}
       >
         登录

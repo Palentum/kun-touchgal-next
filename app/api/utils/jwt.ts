@@ -1,6 +1,10 @@
 import jwt from 'jsonwebtoken'
 import { delKv, getKv, setKv } from '~/lib/redis'
 
+export interface KunGalgameStatelessPayload {
+  require2FA: boolean
+}
+
 export interface KunGalgamePayload {
   iss: string
   aud: string
@@ -28,6 +32,16 @@ export const generateKunToken = async (
   })
   await setKv(`access:token:${payload.uid}`, token, 30 * 24 * 60 * 60)
 
+  return token
+}
+
+export const generateKunStatelessToken = (
+  payload: Record<string, string | number | boolean>,
+  expire: number
+) => {
+  const token = jwt.sign(payload, process.env.JWT_SECRET!, {
+    expiresIn: expire
+  })
   return token
 }
 

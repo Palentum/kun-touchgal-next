@@ -1,0 +1,108 @@
+import { z } from 'zod'
+import { cookies } from 'next/headers'
+import { NextRequest, NextResponse } from 'next/server'
+import { kunParsePostBody } from '~/app/api/utils/parseQuery'
+import { generateKunToken } from '~/app/api/utils/jwt'
+import { prisma } from '~/prisma/index'
+import { getRedirectConfig } from '~/app/api/admin/setting/redirect/getRedirectConfig'
+import { Totp } from 'time2fa'
+import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
+import { parseCookies } from '~/utils/cookies'
+import { verify2FA } from '~/app/api/utils/verify2FA'
+import { verifyLogin2FASchema } from '~/validations/auth'
+import type { UserState } from '~/store/userStore'
+
+export const verifyLogin2FA = async (
+  input: z.infer<typeof verifyLogin2FASchema>,
+  tempToken: string,
+  uid: number
+) => {
+  const { passcode, isBackupCode } = input
+  const payload = verify2FA(tempToken)
+  if (!payload) {
+    return '2FA 临时令牌已过期, 时效为 10 分钟'
+  }
+
+  // Get user
+  const user = await prisma.user.findUnique({
+    where: { id: uid }
+  })
+
+  if (!user || !user.enable_2fa) {
+    return '用户未启用 2FA'
+  }
+
+  let isValid = false
+
+  if (isBackupCode) {
+    if (user.two_factor_backup.includes(passcode)) {
+      isValid = true
+
+      await prisma.user.update({
+        where: { id: uid },
+        data: {
+          two_factor_backup: {
+            set: user.two_factor_backup.filter((code) => code !== token)
+          }
+        }
+      })
+    }
+  } else {
+    isValid = Totp.validate({
+      passcode: passcode,
+      secret: user.two_factor_secret
+    })
+  }
+
+  if (!isValid) {
+    return '验证码无效'
+  }
+
+  const cookie = await cookies()
+  cookie.delete('kun-galgame-patch-moe-temp-token')
+
+  const token = await generateKunToken(user.id, user.name, user.role, '30d')
+  cookie.set('kun-galgame-patch-moe-token', token, {
+    httpOnly: true,
+    sameSite: 'strict',
+    maxAge: 30 * 24 * 60 * 60 * 1000
+  })
+
+  const redirectConfig = await getRedirectConfig()
+  const responseData: UserState = {
+    uid: user.id,
+    name: user.name,
+    avatar: user.avatar,
+    bio: user.bio,
+    moemoepoint: user.moemoepoint,
+    role: user.role,
+    dailyCheckIn: user.daily_check_in,
+    dailyImageLimit: user.daily_image_count,
+    dailyUploadLimit: user.daily_upload_size,
+    enableEmailNotice: user.enable_email_notice,
+    ...redirectConfig
+  }
+
+  return responseData
+}
+
+export const POST = async (req: NextRequest) => {
+  const input = await kunParsePostBody(req, verifyLogin2FASchema)
+  if (typeof input === 'string') {
+    return NextResponse.json(input)
+  }
+  const payload = await verifyHeaderCookie(req)
+  if (!payload) {
+    return NextResponse.json('用户未登录')
+  }
+
+  const tempToken = parseCookies(req.headers.get('cookie') ?? '')[
+    'kun-galgame-patch-moe-2fa-token'
+  ]
+  if (!tempToken) {
+    return NextResponse.json('未找到临时令牌')
+  }
+
+  const response = await verifyLogin2FA(input, tempToken, payload.uid)
+  return NextResponse.json(response)
+}

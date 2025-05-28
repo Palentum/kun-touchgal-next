@@ -27,6 +27,10 @@ model user {
   daily_upload_size   Float   @default(0)
   last_login_time     String  @default("")
 
+  enable_2fa        Boolean  @default(false)
+  two_factor_secret String   @default("")
+  two_factor_backup String[] @default([])
+
   admin_log admin_log[]
   patch_tag patch_tag[]
 

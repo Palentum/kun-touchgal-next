@@ -78,3 +78,24 @@ export const captchaSchema = z.object({
     .min(1, { message: '验证图片中最少有一只白毛小只可爱软萌妹子' })
     .max(3, { message: '验证图片中最多有三只白毛小只可爱软萌妹子' })
 })
+
+export const verifyLogin2FASchema = z.object({
+  passcode: z
+    .string()
+    .min(6, { message: '2FA 验证码必须为 6 位数字' })
+    .max(6, { message: '2FA 验证码必须为 6 位数字' }),
+  seedPhrase: z
+    .array(
+      z
+        .string()
+        .trim()
+        .min(6, {
+          message: '2FA 备份密钥 (助记词) 格式错误, 单个组应为 6 个数字'
+        })
+        .max(6, {
+          message: '2FA 备份密钥 (助记词) 格式错误 单个组应为 6 个数字'
+        })
+    )
+    .max(10),
+  isBackupCode: z.boolean().optional().default(false)
+})

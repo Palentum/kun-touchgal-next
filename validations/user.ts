@@ -83,3 +83,17 @@ export const getFavoriteFolderPatchSchema = z.object({
   page: z.coerce.number().min(1).max(9999999),
   limit: z.coerce.number().min(1).max(100)
 })
+
+export const saveUser2FASecretSchema = z.object({
+  secret: z
+    .string()
+    .min(16, { message: '2FA 密钥格式错误, 应为 16 个字符' })
+    .max(16, { message: '2FA 密钥格式错误, 应为 16 个字符' })
+})
+
+export const enableUser2FASchema = z.object({
+  token: z
+    .string()
+    .min(6, { message: '2FA 验证码必须为 6 位数字' })
+    .max(6, { message: '2FA 验证码必须为 6 位数字' })
+})
