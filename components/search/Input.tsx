@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { Button, Chip } from '@nextui-org/react'
+import { Button, Chip, Tooltip } from '@nextui-org/react'
 import { cn } from '~/utils/cn'
 import type { SearchSuggestionType } from '~/types/api/search'
 import type {
@@ -10,6 +10,7 @@ import type {
   KeyboardEvent,
   SetStateAction
 } from 'react'
+import { X } from 'lucide-react'
 
 interface Props {
   query: string
@@ -106,6 +107,12 @@ export const SearchInput = ({
     }
   }
 
+  const isShowClearButton = !!(query.length || selectedSuggestions.length)
+  const handleClearInput = () => {
+    setQuery('')
+    setSelectedSuggestions([])
+  }
+
   return (
     <div
       className={cn(
@@ -136,6 +143,19 @@ export const SearchInput = ({
           onKeyUp={(e) => handleKeyUp(e)}
           placeholder="输入内容, 点击按钮或回车创建关键词"
         />
+
+        {isShowClearButton && (
+          <Tooltip content="清除搜索内容">
+            <Button
+              isIconOnly
+              key="delete_button"
+              variant="light"
+              onPress={handleClearInput}
+            >
+              <X />
+            </Button>
+          </Tooltip>
+        )}
 
         <Button color="primary" onPress={handleExecuteSearch}>
           搜索
