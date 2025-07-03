@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { patchResourceUpdateSchema } from '~/validations/patch'
+import { uploadPatchResource, deletePatchResource } from './_helper'
 import type { PatchResource } from '~/types/api/patch'
 
 export const updatePatchResource = async (
@@ -21,10 +22,40 @@ export const updatePatchResource = async (
     return '您没有权限更改该资源'
   }
 
+  const currentPatch = await prisma.patch.findUnique({
+    where: { id: patchId },
+    select: {
+      name: true,
+      type: true,
+      language: true,
+      platform: true
+    }
+  })
+  if (!currentPatch) {
+    return '未找到该资源对应的 Galgame 信息, 请确认 Galgame 存在'
+  }
+
+  let newContent: string
+  if (resource.storage === 'user' || resource.content === content) {
+    newContent = content
+  } else {
+    await deletePatchResource(
+      resource.content,
+      resource.patch_id,
+      resource.hash
+    )
+    const result = await uploadPatchResource(patchId, resourceData.hash)
+    if (typeof result === 'string') {
+      return result
+    }
+    newContent = result.downloadLink
+  }
+
   return await prisma.$transaction(async (prisma) => {
     const newResource = await prisma.patch_resource.update({
       where: { id: resourceId, user_id: resourceUserUid },
       data: {
+        content: newContent,
         ...resourceData
       },
       include: {
@@ -73,7 +104,7 @@ export const updatePatchResource = async (
       })
     }
 
-    const resource: PatchResource = {
+    const resourceResponse: PatchResource = {
       id: newResource.id,
       name: newResource.name,
       section: newResource.section,
@@ -102,6 +133,6 @@ export const updatePatchResource = async (
       }
     }
 
-    return resource
+    return resourceResponse
   })
 }

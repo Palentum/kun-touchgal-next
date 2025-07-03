@@ -46,7 +46,7 @@ export const FeedbackCard = ({ feedback }: Props) => {
                   size="sm"
                   color="primary"
                   variant="flat"
-                  href={`/${feedback.patchUniqueId}`}
+                  href={feedback.link}
                 >
                   前往游戏
                 </Button>

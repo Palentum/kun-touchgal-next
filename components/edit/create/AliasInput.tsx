@@ -15,7 +15,7 @@ export const AliasInput = ({ errors }: Props) => {
   const [newAlias, setNewAlias] = useState<string>('')
 
   const addAlias = () => {
-    const alias = newAlias.trim().toLowerCase()
+    const alias = newAlias.trim()
     if (data.alias.includes(alias)) {
       toast.error('请不要使用重复的别名')
       return

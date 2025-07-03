@@ -47,6 +47,7 @@ export const PublishResource = ({
   onSuccess
 }: CreateResourceProps) => {
   const [creating, setCreating] = useState(false)
+  const [uploadingResource, setUploadingResource] = useState(false)
   const user = useUserStore((state) => state.user)
 
   const {
@@ -147,6 +148,7 @@ export const PublishResource = ({
             <FileUploadContainer
               onSuccess={handleUploadSuccess}
               handleRemoveFile={() => reset()}
+              setUploadingResource={setUploadingResource}
             />
           )}
 

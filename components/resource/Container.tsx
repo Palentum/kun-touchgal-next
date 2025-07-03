@@ -3,12 +3,11 @@
 import { useEffect, useState } from 'react'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { ResourceCard } from './ResourceCard'
-import { KunMasonryGrid } from '~/components/kun/MasonryGrid'
 import { FilterBar } from './FilterBar'
 import { useMounted } from '~/hooks/useMounted'
 import { KunLoading } from '~/components/kun/Loading'
 import { KunHeader } from '../kun/Header'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { KunPagination } from '~/components/kun/Pagination'
 import type { SortDirection, SortOption } from './_sort'
 import type { PatchResource } from '~/types/api/resource'
@@ -25,7 +24,6 @@ export const CardContainer = ({ initialResources, initialTotal }: Props) => {
   const [sortField, setSortField] = useState<SortOption>('created')
   const [sortOrder, setSortOrder] = useState<SortDirection>('desc')
   const isMounted = useMounted()
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
 
@@ -54,13 +52,6 @@ export const CardContainer = ({ initialResources, initialTotal }: Props) => {
     fetchData()
   }, [sortField, sortOrder, page])
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage)
-    const params = new URLSearchParams(window.location.search)
-    params.set('page', newPage.toString())
-    router.push(`?${params.toString()}`)
-  }
-
   return (
     <div className="container mx-auto my-4 space-y-6">
       <KunHeader
@@ -74,15 +65,14 @@ export const CardContainer = ({ initialResources, initialTotal }: Props) => {
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
       />
-
       {loading ? (
-        <KunLoading hint="正在获取 Galgame 补丁资源数据..." />
+        <KunLoading hint="正在获取补丁资源数据..." />
       ) : (
-        <KunMasonryGrid columnWidth={256} gap={24}>
+        <div className="grid grid-cols-1 gap-3 sm:gap-6 md:grid-cols-2">
           {resources.map((resource) => (
             <ResourceCard key={resource.id} resource={resource} />
           ))}
-        </KunMasonryGrid>
+        </div>
       )}
 
       {total > 50 && (

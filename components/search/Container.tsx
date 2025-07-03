@@ -14,6 +14,7 @@ import { SearchOption } from './Option'
 import { useDebounce } from 'use-debounce'
 import { SearchInput } from './Input'
 import { FilterBar } from '~/components/galgame/FilterBar'
+import { useSettingStore } from '~/store/settingStore'
 import type { SearchSuggestionType } from '~/types/api/search'
 import type { SortField, SortOrder } from '~/components/galgame/_sort'
 
@@ -43,6 +44,10 @@ export const SearchPage = () => {
   const [showHistory, setShowHistory] = useState(false)
   const searchData = useSearchStore((state) => state.data)
   const setSearchData = useSearchStore((state) => state.setData)
+
+  const settings = useSettingStore((state) => state.data)
+  const isNSFWEnabled =
+    settings.kunNsfwEnable === 'nsfw' || settings.kunNsfwEnable === 'all'
 
   const addToHistory = (searchQuery: string) => {
     if (!searchQuery.trim()) {
@@ -195,7 +200,13 @@ export const SearchPage = () => {
           )}
 
           {hasSearched && patches.length === 0 && (
-            <KunNull message="未找到相关内容, 请尝试使用游戏的日文原名搜索或打开 NSFW" />
+            <KunNull
+              message={
+                isNSFWEnabled
+                  ? '您已启用显示 NSFW 内容, 但未找到相关内容, 请尝试使用游戏的日文原名搜索'
+                  : '未找到相关内容, 请尝试使用游戏的日文原名搜索或打开 NSFW'
+              }
+            />
           )}
         </div>
       )}

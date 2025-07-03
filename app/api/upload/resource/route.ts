@@ -30,11 +30,6 @@ const checkRequestValid = async (req: NextRequest) => {
     return `不支持的文件类型: ${fileExtension}`
   }
 
-  const res = await checkKunCaptchaExist(String(captcha))
-  if (!res) {
-    return '人机验证无效, 请完成人机验证'
-  }
-
   const buffer = Buffer.from(await file.arrayBuffer())
   const fileSizeInMB = buffer.length / (1024 * 1024)
 
@@ -51,6 +46,12 @@ const checkRequestValid = async (req: NextRequest) => {
   }
   if (user.role < 2) {
     return '您的权限不足, 创作者或者管理员才可以上传文件到对象存储'
+  }
+  if (user.role === 2) {
+    const res = await checkKunCaptchaExist(String(captcha))
+    if (!res) {
+      return '人机验证无效, 请完成人机验证'
+    }
   }
   if (user.daily_upload_size >= 5120) {
     return '您今日的上传大小已达到 5GB 限额'

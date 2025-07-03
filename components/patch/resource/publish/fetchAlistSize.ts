@@ -68,13 +68,15 @@ export const fetchListData = async (link: string) => {
       throw new Error(`Failed to fetch list: ${response.statusText}`)
     }
     const data: AlistListData = await response.json()
+
     if (data.code === 0 && data.data.objects && data.data.objects.length > 0) {
-      const largestObject = data.data.objects.reduce(
-        (max, obj) => (obj.size > max.size ? obj : max),
-        { size: 0 }
+      const totalSize = data.data.objects.reduce(
+        (sum, obj) => sum + obj.size,
+        0
       )
-      return largestObject.size
+      return totalSize
     }
+
     return null
   } catch (error) {
     console.error(`Error fetching list data for key: ${key}`, error)

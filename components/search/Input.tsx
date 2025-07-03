@@ -111,6 +111,8 @@ export const SearchInput = ({
   const handleClearInput = () => {
     setQuery('')
     setSelectedSuggestions([])
+    setIsFocused(true)
+    inputRef.current?.focus()
   }
 
   return (

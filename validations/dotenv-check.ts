@@ -41,7 +41,14 @@ export const envSchema = z.object({
   NEXT_PUBLIC_KUN_VISUAL_NOVEL_S3_STORAGE_URL: z.string(),
 
   KUN_VISUAL_NOVEL_IMAGE_BED_HOST: z.string(),
-  KUN_VISUAL_NOVEL_IMAGE_BED_URL: z.string()
+  KUN_VISUAL_NOVEL_IMAGE_BED_URL: z.string(),
+
+  KUN_CF_CACHE_ZONE_ID: z.string(),
+  KUN_CF_CACHE_PURGE_API_TOKEN: z.string(),
+
+  KUN_VISUAL_NOVEL_INDEX_NOW_KEY: z.string(),
+
+  KUN_VISUAL_NOVEL_TEST_SITE_LABEL: z.string().optional()
 })
 
 export const env = envSchema.safeParse(process.env)

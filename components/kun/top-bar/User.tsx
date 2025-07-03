@@ -84,7 +84,12 @@ export const KunTopBarUser = () => {
 
           <KunSearch />
 
-          <Tooltip content="随机一部游戏">
+          <Tooltip
+            disableAnimation
+            showArrow
+            closeDelay={0}
+            content="随机一部游戏"
+          >
             <RandomGalgameButton isIconOnly variant="light" />
           </Tooltip>
 

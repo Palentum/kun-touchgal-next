@@ -1,4 +1,5 @@
 import { Button } from '@nextui-org/button'
+import { Tooltip } from '@nextui-org/tooltip'
 import { Link } from '@nextui-org/link'
 import { Card, CardBody } from '@nextui-org/card'
 import { Chip } from '@nextui-org/chip'
@@ -39,16 +40,18 @@ export const HomeHero = () => {
                 <RandomGalgameButton color="primary" variant="solid">
                   随机一部游戏
                 </RandomGalgameButton>
-                <Button
-                  isIconOnly
-                  isExternal
-                  as={Link}
-                  href={kunMoyuMoe.domain.discord_group}
-                  variant="flat"
-                  color="secondary"
-                >
-                  <Discord />
-                </Button>
+                <Tooltip showArrow content="Discord 服务器">
+                  <Button
+                    isIconOnly
+                    isExternal
+                    as={Link}
+                    href={kunMoyuMoe.domain.discord_group}
+                    variant="flat"
+                    color="secondary"
+                  >
+                    <Discord />
+                  </Button>
+                </Tooltip>
               </div>
             </CardBody>
           </Card>

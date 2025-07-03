@@ -25,9 +25,10 @@ const KunPlyr = dynamic(
 interface Props {
   intro: PatchIntroduction
   patchId: number
+  uid?: number
 }
 
-export const IntroductionTab = ({ intro, patchId }: Props) => {
+export const IntroductionTab = ({ intro, patchId, uid }: Props) => {
   const contentRef = useRef<HTMLDivElement>(null)
   const isMounted = useMounted()
 
@@ -98,7 +99,7 @@ export const IntroductionTab = ({ intro, patchId }: Props) => {
           <h3 className="mb-4 text-xl font-medium">游戏制作商</h3>
         </div> */}
 
-        <PatchTag patchId={patchId} initialTags={intro.tag} />
+        {uid && <PatchTag patchId={patchId} initialTags={intro.tag} />}
 
         <Info intro={intro} />
       </CardBody>

@@ -69,7 +69,7 @@ export const PatchHeaderActions = ({
   return (
     <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
       <div className="flex flex-wrap gap-2">
-        <Tooltip content="下载游戏补丁">
+        <Tooltip content="下载游戏">
           <Button
             color="primary"
             variant="shadow"

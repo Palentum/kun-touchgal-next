@@ -4,6 +4,8 @@ import { prisma } from '~/prisma/index'
 import { uploadPatchBanner } from './_upload'
 import { patchCreateSchema } from '~/validations/edit'
 import { handleBatchPatchTags } from './batchTag'
+import { kunMoyuMoe } from '~/config/moyu-moe'
+import { postToIndexNow } from './_postToIndexNow'
 
 export const createGalgame = async (
   input: Omit<z.infer<typeof patchCreateSchema>, 'alias' | 'tag'> & {
@@ -84,6 +86,11 @@ export const createGalgame = async (
 
   if (tag.length) {
     await handleBatchPatchTags(res.patchId, tag, uid)
+  }
+
+  if (contentLimit === 'sfw') {
+    const newPatchUrl = `${kunMoyuMoe.domain.main}/${galgameUniqueId}`
+    await postToIndexNow(newPatchUrl)
   }
 
   return { uniqueId: galgameUniqueId }

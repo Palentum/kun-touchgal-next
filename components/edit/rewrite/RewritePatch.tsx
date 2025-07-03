@@ -25,7 +25,7 @@ export const RewritePatch = () => {
   >({})
 
   const addAlias = (newAlias: string) => {
-    const alias = newAlias.trim().toLowerCase()
+    const alias = newAlias.trim()
     if (data.alias.includes(alias)) {
       toast.error('请不要使用重复的别名')
       return

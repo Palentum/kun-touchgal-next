@@ -46,7 +46,7 @@ export const ReportCard = ({ report }: Props) => {
                   size="sm"
                   color="primary"
                   variant="flat"
-                  href={`/${report.patchUniqueId}`}
+                  href={report.link}
                 >
                   前往游戏
                 </Button>

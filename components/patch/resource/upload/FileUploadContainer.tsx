@@ -2,11 +2,12 @@
 
 import axios from 'axios'
 import toast from 'react-hot-toast'
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { FileDropZone } from './FileDropZone'
 import { FileUploadCard } from './FileUploadCard'
 import { KunCaptchaModal } from '~/components/kun/auth/CaptchaModal'
 import { useDisclosure } from '@nextui-org/modal'
+import { useUserStore } from '~/store/userStore'
 import type { KunUploadFileResponse } from '~/types/api/upload'
 import type { FileStatus } from '../share'
 
@@ -18,22 +19,35 @@ interface Props {
     size: string
   ) => void
   handleRemoveFile: () => void
+  setUploadingResource: Dispatch<SetStateAction<boolean>>
 }
 
-export const FileUploadContainer = ({ onSuccess, handleRemoveFile }: Props) => {
+export const FileUploadContainer = ({
+  onSuccess,
+  handleRemoveFile,
+  setUploadingResource
+}: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const currentUserRole = useUserStore((state) => state.user.role)
   const [fileData, setFileData] = useState<FileStatus | null>(null)
 
-  const handleCaptchaSuccess = async (code: string) => {
+  const handleCaptchaSuccess = async (
+    code: string,
+    fileToUpload?: File | null
+  ) => {
     onClose()
 
-    if (!fileData || !fileData.file) {
+    const fileForUpload = fileToUpload || fileData?.file
+
+    if (!fileForUpload) {
       toast.error('未找到资源文件, 请重试')
       return
     }
 
+    setUploadingResource(true)
+
     const formData = new FormData()
-    formData.append('file', fileData.file)
+    formData.append('file', fileForUpload)
     formData.append('captcha', code)
 
     const res = await axios.post<KunUploadFileResponse | string>(
@@ -64,6 +78,8 @@ export const FileUploadContainer = ({ onSuccess, handleRemoveFile }: Props) => {
       `${process.env.NEXT_PUBLIC_KUN_VISUAL_NOVEL_S3_STORAGE_URL}/${fileHash}`,
       fileSize
     )
+
+    setUploadingResource(false)
   }
 
   const handleFileUpload = async (file: File) => {
@@ -80,7 +96,12 @@ export const FileUploadContainer = ({ onSuccess, handleRemoveFile }: Props) => {
     }
 
     setFileData({ file, progress: 0 })
-    onOpen()
+
+    if (currentUserRole < 3) {
+      onOpen()
+    } else {
+      await handleCaptchaSuccess('', file)
+    }
   }
 
   const removeFile = () => {
