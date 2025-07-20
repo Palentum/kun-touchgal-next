@@ -7,6 +7,7 @@ import type { Dispatch, SetStateAction } from 'react'
 
 interface PatchHeaderProps {
   id: number
+  vndbId: string
   uid?: number
   intro: PatchIntroduction
   selected: string
@@ -15,6 +16,7 @@ interface PatchHeaderProps {
 
 export const PatchHeaderTabs = ({
   id,
+  vndbId,
   uid,
   intro,
   selected,
@@ -38,7 +40,7 @@ export const PatchHeaderTabs = ({
       </Tab>
 
       <Tab key="resources" title="资源链接" className="p-0">
-        <ResourceTab id={id} />
+        <ResourceTab id={id} vndbId={vndbId} />
       </Tab>
 
       <Tab key="comments" title="游戏评论" className="p-0">

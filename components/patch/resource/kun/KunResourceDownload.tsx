@@ -1,26 +1,26 @@
 'use client'
 
 import DOMPurify from 'isomorphic-dompurify'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { Button } from '@nextui-org/react'
-import { KunUser } from '~/components/kun/floating-card/KunUser'
+import { useState, useEffect, useRef, useLayoutEffect } from 'react'
+import { User, Button } from '@nextui-org/react'
 import { Download, ChevronDown, ChevronUp } from 'lucide-react'
 import { formatDistanceToNow } from '~/utils/formatDistanceToNow'
-import { ResourceLikeButton } from './ResourceLike'
-import { ResourceDownloadCard } from './DownloadCard'
-import { markdownToHtml } from './kun/markdownToHtml'
-import type { PatchResource } from '~/types/api/patch'
+import { KunResourceDownloadCard } from './KunDownloadCard'
+import { markdownToHtml } from './markdownToHtml'
+import Link from 'next/link'
+import type { KunPatchResourceResponse } from '~/types/api/kun/moyu-moe'
 
 interface Props {
-  resource: PatchResource
+  resource: KunPatchResourceResponse
 }
 
+const KUN_PATCH_WEBSITE_ENDPOINT = `https://www.moyu.moe`
 const COLLAPSED_HEIGHT_PX = 96
 
-export const ResourceDownload = ({ resource }: Props) => {
+export const KunResourceDownload = ({ resource }: Props) => {
   const [showLinks, setShowLinks] = useState<Record<number, boolean>>({})
-
   const [note, setNote] = useState('')
+
   const [isNoteExpanded, setIsNoteExpanded] = useState(false)
   const [isNoteOverflowing, setIsNoteOverflowing] = useState(false)
   const noteContentRef = useRef<HTMLDivElement>(null)
@@ -55,6 +55,10 @@ export const ResourceDownload = ({ resource }: Props) => {
 
   return (
     <div className="space-y-2">
+      {resource.name && !resource.note && (
+        <p className="mt-2 whitespace-pre-wrap">{resource.name}</p>
+      )}
+
       {resource.note ? (
         <div className="w-full">
           <div className="flex flex-col">
@@ -62,7 +66,7 @@ export const ResourceDownload = ({ resource }: Props) => {
               {resource.name ? resource.name : '资源备注'}
             </h3>
             <p className="text-sm text-default-5000">
-              该补丁资源创建于 {formatDistanceToNow(resource.created)}
+              该补丁资源最后更新于 {formatDistanceToNow(resource.update_time)}
             </p>
           </div>
 
@@ -112,25 +116,27 @@ export const ResourceDownload = ({ resource }: Props) => {
       )}
 
       <div className="flex justify-between">
-        <KunUser
-          user={resource.user}
-          userProps={{
-            name: resource.user.name,
-            description: `${formatDistanceToNow(resource.created)} • 已发布资源 ${resource.user.patchCount} 个`,
-            avatarProps: {
+        <Link
+          target="_blank"
+          href={`${KUN_PATCH_WEBSITE_ENDPOINT}/user/${resource.user.id}/resource`}
+        >
+          <User
+            name={resource.user.name}
+            description={resource.user.name}
+            avatarProps={{
               showFallback: true,
               src: resource.user.avatar,
               name: resource.user.name.charAt(0).toUpperCase()
-            }
-          }}
-        />
+            }}
+          />
+        </Link>
 
         <div className="flex gap-2">
-          <ResourceLikeButton resource={resource} />
           <Button
             color="primary"
+            variant="flat"
             isIconOnly
-            aria-label={`下载 Galgame 资源`}
+            aria-label={`下载 Galgame 补丁资源`}
             onPress={() => toggleLinks(resource.id)}
           >
             <Download className="size-4" />
@@ -138,7 +144,9 @@ export const ResourceDownload = ({ resource }: Props) => {
         </div>
       </div>
 
-      {showLinks[resource.id] && <ResourceDownloadCard resource={resource} />}
+      {showLinks[resource.id] && (
+        <KunResourceDownloadCard resource={resource} />
+      )}
     </div>
   )
 }

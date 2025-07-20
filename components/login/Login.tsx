@@ -55,8 +55,15 @@ export const LoginForm = () => {
     })
   }
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!isPending) {
+      onOpen()
+    }
+  }
+
   return (
-    <form className="w-72">
+    <form className="w-72" onSubmit={handleSubmit}>
       <Controller
         name="name"
         control={control}
@@ -94,6 +101,7 @@ export const LoginForm = () => {
       <Button
         color="primary"
         className="w-full"
+        type="submit"
         isDisabled={isPending}
         isLoading={isPending}
         onPress={onOpen}

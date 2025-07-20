@@ -51,6 +51,7 @@ export const PatchHeaderContainer = ({
 
           <PatchHeaderTabs
             id={patch.id}
+            vndbId={patch.vndbId || ''}
             intro={intro}
             uid={uid}
             selected={selected}

@@ -23,7 +23,7 @@ export const KunExternalLink = ({
   const userConfig = useUserStore((state) => state.user)
 
   const urlHref = () => {
-    const isExcludedDomain = userConfig.excludedDomains.some((domain) =>
+    const isExcludedDomain = userConfig.excludedDomains?.some((domain) =>
       link.includes(domain)
     )
     if (isExcludedDomain) {

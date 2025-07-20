@@ -8,7 +8,13 @@ module.exports = {
       autorestart: true,
       watch: false,
       max_memory_restart: '2G',
-      script: './.next/standalone/server.js'
+      script: './.next/standalone/server.js',
+      // https://nextjs.org/docs/pages/api-reference/config/next-config-js/output
+      env: {
+        NODE_ENV: 'production',
+        HOSTNAME: '127.0.0.1',
+        PORT: 3000
+      }
     }
   ]
 }
