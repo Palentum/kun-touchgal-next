@@ -55,10 +55,5 @@ export const Codemirror: FC<CodemirrorProps> = ({
     }
   }, [markdown, onChange])
 
-  return (
-    <div
-      className="flex-1 overflow-y-scroll overscroll-none scrollbar-hide"
-      ref={divRef}
-    />
-  )
+  return <div className="flex-1" ref={divRef} />
 }

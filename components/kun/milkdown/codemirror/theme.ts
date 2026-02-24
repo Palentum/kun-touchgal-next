@@ -48,6 +48,7 @@ export const kunCMTheme = () => {
       padding: '1rem 0.5rem',
       maxWidth: '100%',
       scrollbarWidth: 'none',
+      overflow: 'visible !important',
       '&>.div': {
         maxWidth: '100%'
       }
