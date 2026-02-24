@@ -49,13 +49,15 @@ export const SearchPage = () => {
   const isNSFWEnabled =
     settings.kunNsfwEnable === 'nsfw' || settings.kunNsfwEnable === 'all'
 
-  const addToHistory = (searchQuery: string) => {
-    if (!searchQuery.trim()) {
+  const addToHistory = (searchQueries: string[]) => {
+    const validQueries = searchQueries.filter((q) => q.trim())
+    if (validQueries.length === 0) {
       return
     }
+
     const newHistory = [
-      searchQuery,
-      ...searchData.searchHistory.filter((item) => item !== searchQuery)
+      ...validQueries,
+      ...searchData.searchHistory.filter((item) => !validQueries.includes(item))
     ].slice(0, MAX_HISTORY_ITEMS)
 
     setSearchData({ ...searchData, searchHistory: newHistory })
@@ -100,7 +102,9 @@ export const SearchPage = () => {
     const hasTag = selectedSuggestions.some((s) => s.type === 'tag')
     if (!hasTag) {
       addToHistory(
-        selectedSuggestions.find((s) => s.type === 'keyword')?.name ?? ''
+        selectedSuggestions
+          .filter((s) => s.type === 'keyword')
+          .map((s) => s.name)
       )
     }
   }
