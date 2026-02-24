@@ -65,6 +65,9 @@ export const POST = async (req: NextRequest) => {
     })
   } catch (error) {
     console.error(error)
-    return NextResponse.json('VNDB Release 页面获取失败')
+    // TODO
+    return NextResponse.json(
+      `VNDB Release 页面获取失败 - ${JSON.stringify(error)}`
+    )
   }
 }
