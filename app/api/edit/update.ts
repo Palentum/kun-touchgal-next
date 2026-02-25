@@ -3,6 +3,7 @@ import { prisma } from '~/prisma/index'
 import { patchUpdateSchema } from '~/validations/edit'
 import { handleBatchPatchTags } from './batchTag'
 import { ensurePatchCompanyFromDlsite } from './dlsite'
+import { ensurePatchCompaniesFromVNDB } from './fetchCompanies'
 
 export const updateGalgame = async (
   input: z.infer<typeof patchUpdateSchema>,
@@ -76,6 +77,12 @@ export const updateGalgame = async (
 
   if (input.tag.length) {
     await handleBatchPatchTags(input.id, input.tag, uid)
+  }
+
+  if (vndbId) {
+    try {
+      await ensurePatchCompaniesFromVNDB(id, vndbId, uid)
+    } catch (error) {}
   }
 
   if (normalizedDlsiteCode) {

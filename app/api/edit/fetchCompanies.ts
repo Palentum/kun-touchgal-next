@@ -117,6 +117,21 @@ export const ensurePatchCompaniesFromVNDB = async (
     const companyIds = allCompanies.map((c) => c.id)
 
     if (companyIds.length) {
+      const existingRelations = await prisma.patch_company_relation.findMany({
+        where: {
+          patch_id: patchId,
+          company_id: { in: companyIds }
+        },
+        select: { company_id: true }
+      })
+      const existingCompanyIds = new Set(
+        existingRelations.map((r) => r.company_id)
+      )
+
+      const newCompanyIds = companyIds.filter(
+        (cid) => !existingCompanyIds.has(cid)
+      )
+
       await prisma.patch_company_relation.createMany({
         data: companyNames
           .map((n) => nameToId.get(n))
@@ -125,10 +140,12 @@ export const ensurePatchCompaniesFromVNDB = async (
         skipDuplicates: true
       })
 
-      await prisma.patch_company.updateMany({
-        where: { id: { in: companyIds } },
-        data: { count: { increment: 1 } }
-      })
+      if (newCompanyIds.length) {
+        await prisma.patch_company.updateMany({
+          where: { id: { in: newCompanyIds } },
+          data: { count: { increment: 1 } }
+        })
+      }
     }
 
     return { ensured: toCreate.length, related: companyIds.length }
