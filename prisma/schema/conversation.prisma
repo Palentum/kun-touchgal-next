@@ -28,9 +28,10 @@ model user_private_message {
   sender_id Int
   sender    user @relation("pm_sender", fields: [sender_id], references: [id], onDelete: Cascade)
 
-  content String @db.VarChar(2000)
-  // 0 - unread, 1 - read
-  status  Int    @default(0)
+  content    String    @db.VarChar(2000)
+  status     Int       @default(0)
+  is_deleted Boolean   @default(false)
+  edited_at  DateTime?
 
   created DateTime @default(now())
   updated DateTime @updatedAt

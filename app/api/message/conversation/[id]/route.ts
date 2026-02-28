@@ -4,7 +4,9 @@ import { kunParseGetQuery, kunParsePostBody } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import {
   getConversationMessagesSchema,
-  sendPrivateMessageSchema
+  sendPrivateMessageSchema,
+  updatePrivateMessageSchema,
+  deletePrivateMessageSchema
 } from '~/validations/conversation'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import type { PrivateMessage } from '~/types/api/conversation'
@@ -66,6 +68,8 @@ export const getConversationMessages = async (
     id: msg.id,
     content: msg.content,
     status: msg.status,
+    isDeleted: msg.is_deleted,
+    editedAt: msg.edited_at,
     created: msg.created,
     sender: msg.sender
   }))
@@ -113,6 +117,81 @@ export const sendMessage = async (
     content: message.content,
     created: message.created
   }
+}
+
+export const updateMessage = async (
+  conversationId: number,
+  input: z.infer<typeof updatePrivateMessageSchema>,
+  uid: number
+) => {
+  const conversation = await verifyConversationAccess(conversationId, uid)
+  if (!conversation) {
+    return '会话不存在或无权访问'
+  }
+
+  const { messageId, content } = input
+
+  const message = await prisma.user_private_message.findUnique({
+    where: { id: messageId }
+  })
+
+  if (!message) {
+    return '消息不存在'
+  }
+
+  if (message.sender_id !== uid) {
+    return '只能编辑自己的消息'
+  }
+
+  if (message.is_deleted) {
+    return '无法编辑已删除的消息'
+  }
+
+  const updated = await prisma.user_private_message.update({
+    where: { id: messageId },
+    data: {
+      content,
+      edited_at: new Date()
+    }
+  })
+
+  return {
+    id: updated.id,
+    content: updated.content,
+    editedAt: updated.edited_at
+  }
+}
+
+export const deleteMessage = async (
+  conversationId: number,
+  input: z.infer<typeof deletePrivateMessageSchema>,
+  uid: number
+) => {
+  const conversation = await verifyConversationAccess(conversationId, uid)
+  if (!conversation) {
+    return '会话不存在或无权访问'
+  }
+
+  const { messageId } = input
+
+  const message = await prisma.user_private_message.findUnique({
+    where: { id: messageId }
+  })
+
+  if (!message) {
+    return '消息不存在'
+  }
+
+  if (message.sender_id !== uid) {
+    return '只能删除自己的消息'
+  }
+
+  await prisma.user_private_message.update({
+    where: { id: messageId },
+    data: { is_deleted: true }
+  })
+
+  return {}
 }
 
 export const GET = async (
@@ -164,5 +243,53 @@ export const POST = async (
   }
 
   const response = await sendMessage(conversationId, input, payload.uid)
+  return NextResponse.json(response)
+}
+
+export const PUT = async (
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) => {
+  const { id } = await params
+  const conversationId = parseInt(id, 10)
+  if (isNaN(conversationId)) {
+    return NextResponse.json('无效的会话 ID')
+  }
+
+  const input = await kunParsePostBody(req, updatePrivateMessageSchema)
+  if (typeof input === 'string') {
+    return NextResponse.json(input)
+  }
+
+  const payload = await verifyHeaderCookie(req)
+  if (!payload) {
+    return NextResponse.json('用户未登录')
+  }
+
+  const response = await updateMessage(conversationId, input, payload.uid)
+  return NextResponse.json(response)
+}
+
+export const DELETE = async (
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) => {
+  const { id } = await params
+  const conversationId = parseInt(id, 10)
+  if (isNaN(conversationId)) {
+    return NextResponse.json('无效的会话 ID')
+  }
+
+  const input = kunParseGetQuery(req, deletePrivateMessageSchema)
+  if (typeof input === 'string') {
+    return NextResponse.json(input)
+  }
+
+  const payload = await verifyHeaderCookie(req)
+  if (!payload) {
+    return NextResponse.json('用户未登录')
+  }
+
+  const response = await deleteMessage(conversationId, input, payload.uid)
   return NextResponse.json(response)
 }

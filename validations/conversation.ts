@@ -20,3 +20,15 @@ export const sendPrivateMessageSchema = z.object({
     .min(1, { message: '消息内容不能为空' })
     .max(2000, { message: '消息内容最多 2000 个字符' })
 })
+
+export const updatePrivateMessageSchema = z.object({
+  messageId: z.coerce.number().min(1).max(9999999),
+  content: z
+    .string()
+    .min(1, { message: '消息内容不能为空' })
+    .max(2000, { message: '消息内容最多 2000 个字符' })
+})
+
+export const deletePrivateMessageSchema = z.object({
+  messageId: z.coerce.number().min(1).max(9999999)
+})

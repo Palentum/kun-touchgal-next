@@ -140,6 +140,8 @@ export const ChatContainer = ({
                   key={msg.id}
                   message={msg}
                   isOwn={msg.sender.id === user.uid}
+                  conversationId={conversationId}
+                  onMessageUpdated={() => fetchMessages(page)}
                 />
               ))}
               <div ref={messagesEndRef} />

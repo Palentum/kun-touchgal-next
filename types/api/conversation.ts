@@ -10,6 +10,8 @@ export interface PrivateMessage {
   id: number
   content: string
   status: number
+  isDeleted: boolean
+  editedAt: string | Date | null
   created: string | Date
   sender: KunUser
 }

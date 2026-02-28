@@ -41,10 +41,22 @@ export const ChatInput = ({ conversationId, onMessageSent }: Props) => {
     setSending(false)
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.ctrlKey) {
-      e.preventDefault()
-      handleSend()
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      if (e.ctrlKey) {
+        e.preventDefault()
+        const target = e.target as HTMLTextAreaElement
+        const start = target.selectionStart
+        const end = target.selectionEnd
+        const newContent = content.slice(0, start) + '\n' + content.slice(end)
+        setContent(newContent)
+        setTimeout(() => {
+          target.selectionStart = target.selectionEnd = start + 1
+        }, 0)
+      } else {
+        e.preventDefault()
+        handleSend()
+      }
     }
   }
 
