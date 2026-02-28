@@ -148,7 +148,7 @@ export const Comments = ({ id }: Props) => {
               {comment.reply.length > 0 && (
                 <>
                   <Divider />
-                  <div className="space-y-3 pl-4 border-l-2 border-default-200">
+                  <div className="space-y-4 pl-4">
                     {comment.reply.map((reply) => (
                       <div
                         key={reply.id}
