@@ -11,14 +11,10 @@ import {
   patchRatingCreateSchema,
   patchRatingUpdateSchema
 } from '~/validations/patch'
-import { getPatchRating } from './get'
+import { getPatchRating, getPatchRatingSchema } from './get'
 import { createPatchRating } from './create'
 import { updatePatchRating } from './update'
 import { deletePatchRating } from './delete'
-
-const patchIdSchema = z.object({
-  patchId: z.coerce.number().min(1).max(9999999)
-})
 
 const ratingIdSchema = z.object({
   ratingId: z.coerce
@@ -28,7 +24,7 @@ const ratingIdSchema = z.object({
 })
 
 export const GET = async (req: NextRequest) => {
-  const input = kunParseGetQuery(req, patchIdSchema)
+  const input = kunParseGetQuery(req, getPatchRatingSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }

@@ -2,37 +2,47 @@ import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import type { KunPatchRating } from '~/types/api/galgame'
 
-const patchIdSchema = z.object({
-  patchId: z.coerce.number().min(1).max(9999999)
+export const getPatchRatingSchema = z.object({
+  patchId: z.coerce.number().min(1).max(9999999),
+  page: z.coerce.number().min(1).max(9999999),
+  limit: z.coerce.number().min(1).max(50)
 })
 
 export const getPatchRating = async (
-  input: z.infer<typeof patchIdSchema>,
+  input: z.infer<typeof getPatchRatingSchema>,
   uid: number
 ) => {
-  const { patchId } = input
+  const { patchId, page, limit } = input
 
-  const data = await prisma.patch_rating.findMany({
-    where: { patch_id: patchId },
-    include: {
-      patch: { select: { unique_id: true } },
-      user: {
-        select: {
-          id: true,
-          name: true,
-          avatar: true
-        }
-      },
-      _count: {
-        select: { like: true }
-      },
-      like: {
-        where: {
-          user_id: uid
+  const [data, total] = await Promise.all([
+    prisma.patch_rating.findMany({
+      where: { patch_id: patchId },
+      orderBy: { created: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit,
+      include: {
+        patch: { select: { unique_id: true } },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true
+          }
+        },
+        _count: {
+          select: { like: true }
+        },
+        like: {
+          where: {
+            user_id: uid
+          }
         }
       }
-    }
-  })
+    }),
+    prisma.patch_rating.count({
+      where: { patch_id: patchId }
+    })
+  ])
 
   const ratings: KunPatchRating[] = data.map((rating) => ({
     id: rating.id,
@@ -55,5 +65,5 @@ export const getPatchRating = async (
     }
   }))
 
-  return ratings
+  return { ratings, total }
 }

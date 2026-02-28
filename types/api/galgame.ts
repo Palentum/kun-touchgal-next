@@ -27,3 +27,8 @@ export interface KunPatchRatingInput {
 export interface KunPatchRatingUpdateInput extends KunPatchRatingInput {
   ratingId: number
 }
+
+export interface KunPatchRatingResponse {
+  ratings: KunPatchRating[]
+  total: number
+}

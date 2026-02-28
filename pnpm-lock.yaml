@@ -191,6 +191,9 @@ importers:
       react-image-crop:
         specifier: ^11.0.10
         version: 11.0.10(react@19.1.4)
+      react-masonry-css:
+        specifier: ^1.0.16
+        version: 1.0.16(react@19.1.4)
       recharts:
         specifier: ^3.2.1
         version: 3.2.1(@types/react@19.1.8)(react-dom@19.1.4(react@19.1.4))(react-is@16.13.1)(react@19.1.4)(redux@5.0.1)
@@ -6148,6 +6151,11 @@ packages:
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
+
+  react-masonry-css@1.0.16:
+    resolution: {integrity: sha512-KSW0hR2VQmltt/qAa3eXOctQDyOu7+ZBevtKgpNDSzT7k5LA/0XntNa9z9HKCdz3QlxmJHglTZ18e4sX4V8zZQ==}
+    peerDependencies:
+      react: '>=16.0.0'
 
   react-redux@9.2.0:
     resolution: {integrity: sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g==}
@@ -15147,6 +15155,10 @@ snapshots:
       react: 19.1.4
 
   react-is@16.13.1: {}
+
+  react-masonry-css@1.0.16(react@19.1.4):
+    dependencies:
+      react: 19.1.4
 
   react-redux@9.2.0(@types/react@19.1.8)(react@19.1.4)(redux@5.0.1):
     dependencies:
