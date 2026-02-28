@@ -6,7 +6,7 @@ import { Button } from '@heroui/button'
 import { Pagination } from '@heroui/pagination'
 import { Divider } from '@heroui/divider'
 import { KunUser } from '~/components/kun/floating-card/KunUser'
-import { MessageCircle } from 'lucide-react'
+import { MessageCircle, PenLine } from 'lucide-react'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { formatTimeDifference } from '~/utils/time'
 import { PublishComment } from './PublishComment'
@@ -32,6 +32,7 @@ export const Comments = ({ id }: Props) => {
     username: string
   } | null>(null)
   const [loading, setLoading] = useState(false)
+  const [showEditor, setShowEditor] = useState(false)
   const user = useUserStore((state) => state.user)
 
   const fetchComments = async (pageNum: number) => {
@@ -88,11 +89,28 @@ export const Comments = ({ id }: Props) => {
 
   return (
     <div className="space-y-4">
-      <PublishComment
-        patchId={id}
-        receiverUsername={null}
-        setNewComment={handleNewComment}
-      />
+      {showEditor ? (
+        <PublishComment
+          patchId={id}
+          receiverUsername={null}
+          setNewComment={(newComment) => {
+            handleNewComment(newComment)
+            setShowEditor(false)
+          }}
+          onCancel={() => setShowEditor(false)}
+        />
+      ) : (
+        <div className="flex justify-end">
+          <Button
+            color="primary"
+            variant="flat"
+            startContent={<PenLine className="size-4" />}
+            onPress={() => setShowEditor(true)}
+          >
+            发布评论
+          </Button>
+        </div>
+      )}
 
       {loading && <KunNull message="加载中..." />}
 

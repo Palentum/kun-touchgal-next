@@ -12,6 +12,13 @@ export const CommentTab = ({ id }: Props) => {
         <h2 className="text-2xl font-medium">游戏评论</h2>
       </CardHeader>
       <CardBody className="p-4">
+        <div className="space-y-2 text-default-600">
+          <p className="mb-4">
+            您可以在这里发表关于本游戏评论, 或者反馈错误,
+            注意不要发布违反您当地法律法规的内容, 和谐交流。
+          </p>
+        </div>
+
         <Comments id={Number(id)} />
       </CardBody>
     </Card>

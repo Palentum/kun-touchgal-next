@@ -21,6 +21,7 @@ interface CreateCommentProps {
   parentId?: number | null
   setNewComment: (newComment: PatchComment) => void
   onSuccess?: () => void
+  onCancel?: () => void
 }
 
 export const PublishComment = ({
@@ -28,7 +29,8 @@ export const PublishComment = ({
   parentId = null,
   receiverUsername = null,
   setNewComment,
-  onSuccess
+  onSuccess,
+  onCancel
 }: CreateCommentProps) => {
   const [loading, setLoading] = useState(false)
   const { user } = useUserStore((state) => state)
@@ -93,15 +95,22 @@ export const PublishComment = ({
             评论支持 Markdown
           </Chip>
 
-          <Button
-            color="primary"
-            startContent={<Send className="size-4" />}
-            isDisabled={!content.trim() || loading}
-            isLoading={loading}
-            onPress={handlePublishComment}
-          >
-            发布评论
-          </Button>
+          <div className="flex gap-2">
+            {onCancel && (
+              <Button variant="flat" onPress={onCancel}>
+                取消
+              </Button>
+            )}
+            <Button
+              color="primary"
+              startContent={<Send className="size-4" />}
+              isDisabled={!content.trim() || loading}
+              isLoading={loading}
+              onPress={handlePublishComment}
+            >
+              发布评论
+            </Button>
+          </div>
         </div>
       </CardBody>
     </Card>
