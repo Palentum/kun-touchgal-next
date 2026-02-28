@@ -8,9 +8,9 @@ import Masonry from 'react-masonry-css'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { KunNull } from '~/components/kun/Null'
 import { RatingCard } from './RatingCard'
+import { RatingCardSkeleton } from './RatingCardSkeleton'
 import { RatingModal } from './RatingModal'
 import { useDisclosure } from '@heroui/react'
-import { KunLoading } from '~/components/kun/Loading'
 import { useUserStore } from '~/store/userStore'
 import type {
   KunPatchRating,
@@ -110,8 +110,9 @@ export const Ratings = ({ id }: Props) => {
   }
 
   const breakpointColumns = {
-    default: 2,
-    768: 1
+    default: 3,
+    1024: 2,
+    640: 1
   }
 
   return (
@@ -144,9 +145,21 @@ export const Ratings = ({ id }: Props) => {
         ))}
       </Masonry>
 
-      <div ref={loadMoreRef} className="w-full h-4" />
+      {loading && (
+        <Masonry
+          breakpointCols={breakpointColumns}
+          className="flex w-auto -ml-4"
+          columnClassName="pl-4 bg-clip-padding"
+        >
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={`skeleton-${index}`} className="mb-4">
+              <RatingCardSkeleton />
+            </div>
+          ))}
+        </Masonry>
+      )}
 
-      {loading && <KunLoading hint="正在加载游戏评分..." />}
+      <div ref={loadMoreRef} className="w-full h-4" />
 
       {!ratings.length && !loading && <KunNull message="这个游戏还没有评价" />}
 

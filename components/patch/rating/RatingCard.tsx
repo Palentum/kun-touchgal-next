@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardBody } from '@heroui/card'
-import { Alert, Button, Chip, Tooltip } from '@heroui/react'
+import { Card, CardBody, CardHeader } from '@heroui/card'
+import { Button, Chip, Tooltip, Divider } from '@heroui/react'
 import {
   Modal,
   ModalBody,
@@ -11,7 +11,7 @@ import {
   ModalHeader,
   useDisclosure
 } from '@heroui/modal'
-import { Pencil, Star, Trash2 } from 'lucide-react'
+import { Eye, EyeOff, Pencil, Star, Trash2 } from 'lucide-react'
 import { KunUser } from '~/components/kun/floating-card/KunUser'
 import { formatTimeDifference } from '~/utils/time'
 import { RatingLikeButton } from './RatingLike'
@@ -31,6 +31,30 @@ interface Props {
   patchId: number
   onRatingUpdated: (rating: KunPatchRating) => void
   onDeleted: (ratingId: number) => void
+}
+
+const getRecommendColor = (recommend: string) => {
+  switch (recommend) {
+    case 'strong_yes':
+      return 'success'
+    case 'yes':
+      return 'primary'
+    case 'neutral':
+      return 'default'
+    case 'no':
+      return 'warning'
+    case 'strong_no':
+      return 'danger'
+    default:
+      return 'default'
+  }
+}
+
+const getScoreColor = (score: number) => {
+  if (score >= 8) return 'text-success'
+  if (score >= 6) return 'text-primary'
+  if (score >= 4) return 'text-warning'
+  return 'text-danger'
 }
 
 export const RatingCard = ({
@@ -71,94 +95,107 @@ export const RatingCard = ({
   }
 
   return (
-    <Card>
-      <CardBody>
-        <div className="space-y-2">
-          <div className="flex items-start justify-between">
-            <KunUser
-              user={rating.user}
-              userProps={{
-                name: rating.user.name,
-                description: `发布于 ${formatTimeDifference(rating.created)}`,
-                avatarProps: {
-                  src: rating.user.avatar
-                }
-              }}
-            />
-          </div>
+    <Card className="w-full">
+      <CardHeader className="flex items-start justify-between gap-3 pb-0">
+        <KunUser
+          user={rating.user}
+          userProps={{
+            name: rating.user.name,
+            description: formatTimeDifference(rating.created),
+            avatarProps: {
+              src: rating.user.avatar,
+              size: 'sm'
+            }
+          }}
+        />
+        <div
+          className={`flex items-center gap-1 ${getScoreColor(rating.overall)}`}
+        >
+          <Star className="size-5" fill="currentColor" />
+          <span className="text-2xl font-bold">{rating.overall}</span>
+        </div>
+      </CardHeader>
 
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex flex-wrap gap-2 items-center">
-              <Chip color="primary" variant="flat">
-                {KUN_GALGAME_RATING_RECOMMEND_MAP[rating.recommend]}
-              </Chip>
-              <Chip color="secondary" variant="flat">
-                {KUN_GALGAME_RATING_PLAY_STATUS_MAP[rating.playStatus]}
-              </Chip>
-            </div>
+      <CardBody className="pt-3 space-y-3">
+        <div className="flex flex-wrap gap-2">
+          <Chip
+            color={getRecommendColor(rating.recommend)}
+            variant="flat"
+            size="sm"
+          >
+            {KUN_GALGAME_RATING_RECOMMEND_MAP[rating.recommend]}
+          </Chip>
+          <Chip color="secondary" variant="flat" size="sm">
+            {KUN_GALGAME_RATING_PLAY_STATUS_MAP[rating.playStatus]}
+          </Chip>
+        </div>
 
-            <span className="text-warning flex items-center gap-1 text-3xl font-bold">
-              <Star fill="#F5A524" class-name="text-2xl" />
-              {rating.overall}
-            </span>
-          </div>
-
-          {rating.spoilerLevel !== 'none' && (
-            <div className="flex items-center justify-center w-full">
-              <Alert
-                color="warning"
-                description="点击显示以显示这条含有剧透的评价"
-                endContent={
-                  <Button
-                    onPress={() => setIsShowSummary(!isShowSummary)}
-                    color="warning"
-                    variant="flat"
+        {rating.shortSummary && (
+          <>
+            {rating.spoilerLevel !== 'none' && !isShowSummary ? (
+              <div
+                className="relative p-3 rounded-lg bg-warning-50 dark:bg-warning-100/10 border border-warning-200 dark:border-warning-500/20 cursor-pointer hover:bg-warning-100 dark:hover:bg-warning-100/20 transition-colors"
+                onClick={() => setIsShowSummary(true)}
+              >
+                <div className="flex items-center gap-2 text-warning-600 dark:text-warning-500">
+                  <EyeOff className="size-4" />
+                  <span className="text-sm font-medium">
+                    {KUN_GALGAME_RATING_SPOILER_MAP[rating.spoilerLevel]}
+                  </span>
+                </div>
+                <p className="text-xs text-warning-500 dark:text-warning-400 mt-1">
+                  点击显示评价内容
+                </p>
+              </div>
+            ) : (
+              <div className="relative">
+                {rating.spoilerLevel !== 'none' && (
+                  <button
+                    onClick={() => setIsShowSummary(false)}
+                    className="absolute -top-1 -right-1 p-1 rounded-full bg-default-100 hover:bg-default-200 transition-colors"
                   >
-                    显示
-                  </Button>
-                }
-                title={KUN_GALGAME_RATING_SPOILER_MAP[rating.spoilerLevel]}
-                variant="faded"
-              />
+                    <Eye className="size-3 text-default-500" />
+                  </button>
+                )}
+                <p className="text-sm text-default-700 dark:text-default-300 whitespace-pre-wrap leading-relaxed">
+                  {rating.shortSummary}
+                </p>
+              </div>
+            )}
+          </>
+        )}
+
+        <Divider />
+
+        <div className="flex items-center justify-between">
+          <RatingLikeButton rating={rating} />
+
+          {canEdit && (
+            <div className="flex gap-1">
+              <Tooltip content="编辑">
+                <Button
+                  variant="light"
+                  isIconOnly
+                  size="sm"
+                  onPress={onOpen}
+                  className="text-default-500"
+                >
+                  <Pencil className="size-4" />
+                </Button>
+              </Tooltip>
+              <Tooltip content="删除">
+                <Button
+                  variant="light"
+                  isIconOnly
+                  size="sm"
+                  onPress={onOpenDelete}
+                  className="text-danger"
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </Tooltip>
             </div>
           )}
-
-          {rating.shortSummary && isShowSummary && (
-            <p className="text-default-700 whitespace-pre-wrap">
-              {rating.shortSummary}
-            </p>
-          )}
-
-          <div className="flex gap-2 mt-3">
-            <RatingLikeButton rating={rating} />
-
-            <div className="flex gap-2">
-              {canEdit && (
-                <>
-                  <Tooltip content="编辑">
-                    <Button
-                      variant="bordered"
-                      isIconOnly
-                      size="sm"
-                      onPress={onOpen}
-                    >
-                      <Pencil className="size-4" />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip content="删除">
-                    <Button
-                      variant="bordered"
-                      isIconOnly
-                      size="sm"
-                      onPress={onOpenDelete}
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  </Tooltip>
-                </>
-              )}
-            </div>
-          </div>
         </div>
       </CardBody>
 
@@ -179,13 +216,10 @@ export const RatingCard = ({
 
       <Modal isOpen={isOpenDelete} onClose={onCloseDelete} placement="center">
         <ModalContent>
-          <ModalHeader className="flex flex-col gap-1">
-            删除资源链接
-          </ModalHeader>
+          <ModalHeader className="flex flex-col gap-1">删除评价</ModalHeader>
           <ModalBody>
             <p>
-              您确定要删除这条资源链接吗,
-              这将会导致您发布资源链接获得的萌萌点被扣除, 该操作不可撤销
+              您确定要删除这条评价吗？这将会导致您发布评价获得的萌萌点被扣除，该操作不可撤销。
             </p>
           </ModalBody>
           <ModalFooter>
