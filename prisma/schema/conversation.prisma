@@ -1,0 +1,37 @@
+model user_conversation {
+  id Int @id @default(autoincrement())
+
+  user_a_id Int
+  user_b_id Int
+
+  user_a user @relation("conversation_user_a", fields: [user_a_id], references: [id], onDelete: Cascade)
+  user_b user @relation("conversation_user_b", fields: [user_b_id], references: [id], onDelete: Cascade)
+
+  last_message_id     Int?
+  last_message_time   DateTime @default(now())
+  user_a_unread_count Int      @default(0)
+  user_b_unread_count Int      @default(0)
+
+  messages user_private_message[]
+
+  created DateTime @default(now())
+  updated DateTime @updatedAt
+
+  @@unique([user_a_id, user_b_id])
+}
+
+model user_private_message {
+  id              Int               @id @default(autoincrement())
+  conversation_id Int
+  conversation    user_conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+
+  sender_id Int
+  sender    user @relation("pm_sender", fields: [sender_id], references: [id], onDelete: Cascade)
+
+  content String @db.VarChar(2000)
+  // 0 - unread, 1 - read
+  status  Int    @default(0)
+
+  created DateTime @default(now())
+  updated DateTime @updatedAt
+}

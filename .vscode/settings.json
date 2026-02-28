@@ -25,6 +25,7 @@
     "codemirror",
     "commonmark",
     "contenteditable",
+    "conv",
     "DATETIME",
     "Dedup",
     "Deepseek",

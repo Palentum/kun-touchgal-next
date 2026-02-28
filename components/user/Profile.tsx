@@ -9,6 +9,7 @@ import { Calendar, Link as LinkIcon } from 'lucide-react'
 import { UserFollow } from './follow/Follow'
 import { Stats } from './follow/Stats'
 import { SelfButton } from './SelfButton'
+import { StartChatButton } from './StartChatButton'
 import { USER_ROLE_MAP } from '~/constants/user'
 import type { UserInfo } from '~/types/api/user'
 
@@ -78,22 +79,15 @@ export const UserProfile = ({ user }: { user: UserInfo }) => {
               {user.id === user.requestUserUid ? (
                 <SelfButton user={user} />
               ) : (
-                <UserFollow
-                  uid={user.id}
-                  name={user.name}
-                  follow={user.isFollow}
-                />
+                <>
+                  <UserFollow
+                    uid={user.id}
+                    name={user.name}
+                    follow={user.isFollow}
+                  />
+                  <StartChatButton targetUserId={user.id} />
+                </>
               )}
-
-              {/* TODO: */}
-              {/* <Button
-                startContent={<Mail className="w-4 h-4" />}
-                color="default"
-                variant="flat"
-                fullWidth
-              >
-                Message
-              </Button> */}
             </div>
           </div>
         </CardBody>

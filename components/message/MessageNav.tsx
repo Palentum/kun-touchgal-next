@@ -3,13 +3,13 @@
 import { useEffect } from 'react'
 import { kunFetchPut } from '~/utils/kunFetch'
 import { Button } from '@heroui/react'
-import { AtSign, Bell, Globe, UserPlus } from 'lucide-react'
+import { AtSign, Bell, Globe, MessageSquare, UserPlus } from 'lucide-react'
 import { Card, CardBody } from '@heroui/card'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 
-const notificationTypes = [
+const notificationSubTypes = [
   { type: 'notice', label: '全部消息', icon: Bell, href: '/message/notice' },
   {
     type: 'follow',
@@ -28,7 +28,13 @@ const notificationTypes = [
 
 export const MessageNav = () => {
   const pathname = usePathname()
-  const lastSegment = pathname.split('/').filter(Boolean).pop()
+  const pathSegments = pathname.split('/').filter(Boolean)
+  const lastSegment = pathSegments[pathSegments.length - 1]
+
+  const isNotificationSection = notificationSubTypes.some(
+    (item) => item.type === lastSegment
+  )
+  const isChatSection = pathname.startsWith('/message/chat')
 
   useEffect(() => {
     const readAllMessage = async () => {
@@ -42,21 +48,51 @@ export const MessageNav = () => {
 
   return (
     <Card className="w-full lg:w-1/4">
-      <CardBody className="flex flex-row gap-2 lg:flex-col">
-        {notificationTypes.map(({ type, label, icon: Icon, href }) => (
-          <div key={label}>
-            <Button
-              color={lastSegment === type ? 'primary' : 'default'}
-              as={Link}
-              className="justify-start w-full"
-              variant={lastSegment === type ? 'solid' : 'light'}
-              startContent={<Icon className="size-4 shrink-0" />}
-              href={href}
-            >
-              <span>{label}</span>
-            </Button>
-          </div>
-        ))}
+      <CardBody className="flex flex-col gap-2">
+        <div className="flex flex-row gap-2 lg:flex-col">
+          <Button
+            color={isNotificationSection ? 'primary' : 'default'}
+            as={Link}
+            className="justify-start w-full"
+            variant={isNotificationSection ? 'solid' : 'light'}
+            startContent={<Bell className="size-4 shrink-0" />}
+            href="/message/notice"
+          >
+            <span>消息</span>
+          </Button>
+          <Button
+            color={isChatSection ? 'primary' : 'default'}
+            as={Link}
+            className="justify-start w-full"
+            variant={isChatSection ? 'solid' : 'light'}
+            startContent={<MessageSquare className="size-4 shrink-0" />}
+            href="/message/chat"
+          >
+            <span>私聊</span>
+          </Button>
+        </div>
+
+        {isNotificationSection && (
+          <>
+            <div className="border-t border-default-200 my-2" />
+            <div className="flex flex-row gap-2 lg:flex-col">
+              {notificationSubTypes.map(({ type, label, icon: Icon, href }) => (
+                <Button
+                  key={type}
+                  color={lastSegment === type ? 'secondary' : 'default'}
+                  as={Link}
+                  className="justify-start w-full"
+                  variant={lastSegment === type ? 'flat' : 'light'}
+                  size="sm"
+                  startContent={<Icon className="size-3.5 shrink-0" />}
+                  href={href}
+                >
+                  <span>{label}</span>
+                </Button>
+              ))}
+            </div>
+          </>
+        )}
       </CardBody>
     </Card>
   )

@@ -41,6 +41,10 @@ model user {
   send_message    user_message[]         @relation("user_send_message")
   receive_message user_message[]         @relation("user_receive_message")
 
+  conversation_a  user_conversation[]    @relation("conversation_user_a")
+  conversation_b  user_conversation[]    @relation("conversation_user_b")
+  private_message user_private_message[] @relation("pm_sender")
+
   created DateTime @default(now())
   updated DateTime @updatedAt
 }

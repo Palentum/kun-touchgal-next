@@ -1,0 +1,48 @@
+'use server'
+
+import { z } from 'zod'
+import { safeParseSchema } from '~/utils/actions/safeParseSchema'
+import {
+  getConversationsSchema,
+  getConversationMessagesSchema
+} from '~/validations/conversation'
+import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
+import { getConversations } from '~/app/api/message/conversation/route'
+import { getConversationMessages } from '~/app/api/message/conversation/[id]/route'
+
+export const kunGetConversationsAction = async (
+  params: z.infer<typeof getConversationsSchema>
+) => {
+  const input = safeParseSchema(getConversationsSchema, params)
+  if (typeof input === 'string') {
+    return input
+  }
+  const payload = await verifyHeaderCookie()
+  if (!payload) {
+    return '用户登录失效'
+  }
+
+  const response = await getConversations(input, payload.uid)
+  return response
+}
+
+export const kunGetConversationMessagesAction = async (
+  conversationId: number,
+  params: z.infer<typeof getConversationMessagesSchema>
+) => {
+  const input = safeParseSchema(getConversationMessagesSchema, params)
+  if (typeof input === 'string') {
+    return input
+  }
+  const payload = await verifyHeaderCookie()
+  if (!payload) {
+    return '用户登录失效'
+  }
+
+  const response = await getConversationMessages(
+    conversationId,
+    input,
+    payload.uid
+  )
+  return response
+}
