@@ -41,8 +41,8 @@ export const DLSiteInput = <T extends PatchFormDataShape>({
     }
 
     const normalized = rawCode.toUpperCase()
-    if (!/^RJ\d+$/.test(normalized)) {
-      toast.error('DLSite Code 需要以 RJ 开头')
+    if (!/^(RJ|VJ)\d+$/.test(normalized)) {
+      toast.error('DLSite Code 需要以 RJ 或 VJ 开头')
       return
     }
 
@@ -90,7 +90,7 @@ export const DLSiteInput = <T extends PatchFormDataShape>({
       <Input
         variant="underlined"
         labelPlacement="outside"
-        placeholder="请输入 DLSite Code, 例如 RJ01405813"
+        placeholder="请输入 DLSite Code, 例如 RJ01405813 或 VJ012345"
         value={data.dlsiteCode}
         onChange={(e) => setData({ ...data, dlsiteCode: e.target.value })}
         isInvalid={!!errors}

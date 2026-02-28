@@ -4,7 +4,7 @@ import { kunParsePostBody } from '~/app/api/utils/parseQuery'
 import { fetchDlsiteData } from '../dlsite'
 
 const dlsiteSchema = z.object({
-  code: z.string().regex(/^RJ\d+$/i, 'DLSite Code 格式不正确')
+  code: z.string().regex(/^(RJ|VJ)\d+$/i, 'DLSite Code 格式不正确')
 })
 
 export const POST = async (req: NextRequest) => {
