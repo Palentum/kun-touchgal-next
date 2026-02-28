@@ -55,6 +55,12 @@ export const patchCommentUpdateSchema = z.object({
     .max(10007, { message: '评论的内容最多为 10007 个字符' })
 })
 
+export const getPatchCommentSchema = z.object({
+  patchId: z.coerce.number().min(1).max(9999999),
+  page: z.coerce.number().min(1).max(9999999),
+  limit: z.coerce.number().min(1).max(50)
+})
+
 export const patchResourceCreateSchema = z.object({
   patchId: z.coerce.number().min(1).max(9999999),
   section: z

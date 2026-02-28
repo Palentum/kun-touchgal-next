@@ -110,4 +110,10 @@ export interface PatchComment {
   user: KunUser
   quotedContent?: string | null
   quotedUsername?: string | null
+  replyToUser?: KunUser | null
+}
+
+export interface PatchCommentResponse {
+  comments: PatchComment[]
+  total: number
 }

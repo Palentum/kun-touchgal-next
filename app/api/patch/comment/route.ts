@@ -1,4 +1,3 @@
-import { z } from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
 import {
   kunParseDeleteQuery,
@@ -9,16 +8,14 @@ import {
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import {
   patchCommentCreateSchema,
-  patchCommentUpdateSchema
+  patchCommentUpdateSchema,
+  getPatchCommentSchema
 } from '~/validations/patch'
 import { getPatchComment } from './get'
 import { createPatchComment } from './create'
 import { updateComment } from './update'
 import { deleteComment } from './delete'
-
-const patchIdSchema = z.object({
-  patchId: z.coerce.number().min(1).max(9999999)
-})
+import { z } from 'zod'
 
 const commentIdSchema = z.object({
   commentId: z.coerce
@@ -28,7 +25,7 @@ const commentIdSchema = z.object({
 })
 
 export const GET = async (req: NextRequest) => {
-  const input = kunParseGetQuery(req, patchIdSchema)
+  const input = kunParseGetQuery(req, getPatchCommentSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }
