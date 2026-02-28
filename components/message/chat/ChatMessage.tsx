@@ -25,11 +25,15 @@ import { kunFetchPut, kunFetchDelete } from '~/utils/kunFetch'
 import toast from 'react-hot-toast'
 import type { PrivateMessage } from '~/types/api/conversation'
 
+type MessageUpdateData =
+  | { action: 'delete' }
+  | { action: 'edit'; content: string; editedAt: string | Date }
+
 interface Props {
   message: PrivateMessage
   isOwn: boolean
   conversationId: number
-  onMessageUpdated: () => void
+  onMessageUpdated: (data: MessageUpdateData) => void
 }
 
 export const ChatMessage = ({
@@ -50,17 +54,23 @@ export const ChatMessage = ({
     }
 
     setIsSubmitting(true)
-    const response = await kunFetchPut<KunResponse<{}>>(
-      `/message/conversation/${conversationId}`,
-      { messageId: message.id, content: editContent.trim() }
-    )
+    const response = await kunFetchPut<
+      KunResponse<{ id: number; content: string; editedAt: string }>
+    >(`/message/conversation/${conversationId}`, {
+      messageId: message.id,
+      content: editContent.trim()
+    })
 
     if (typeof response === 'string') {
       toast.error(response)
     } else {
       toast.success('消息已编辑')
       onClose()
-      onMessageUpdated()
+      onMessageUpdated({
+        action: 'edit',
+        content: response.content,
+        editedAt: response.editedAt
+      })
     }
     setIsSubmitting(false)
   }
@@ -76,7 +86,7 @@ export const ChatMessage = ({
       toast.error(response)
     } else {
       toast.success('消息已删除')
-      onMessageUpdated()
+      onMessageUpdated({ action: 'delete' })
     }
     setIsSubmitting(false)
   }

@@ -9,7 +9,11 @@ import toast from 'react-hot-toast'
 
 interface Props {
   conversationId: number
-  onMessageSent: () => void
+  onMessageSent: (message: {
+    id: number
+    content: string
+    created: string
+  }) => void
 }
 
 export const ChatInput = ({ conversationId, onMessageSent }: Props) => {
@@ -36,7 +40,7 @@ export const ChatInput = ({ conversationId, onMessageSent }: Props) => {
       toast.error(response)
     } else {
       setContent('')
-      onMessageSent()
+      onMessageSent(response)
     }
     setSending(false)
   }

@@ -1,14 +1,11 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { Card, CardBody, CardHeader } from '@heroui/card'
 import { Button } from '@heroui/react'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { useMounted } from '~/hooks/useMounted'
-import { KunLoading } from '~/components/kun/Loading'
 import { KunNull } from '~/components/kun/Null'
-import { KunPagination } from '~/components/kun/Pagination'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { KunAvatar } from '~/components/kun/floating-card/KunAvatar'
@@ -17,11 +14,21 @@ import { useUserStore } from '~/store/userStore'
 import toast from 'react-hot-toast'
 import type { PrivateMessage } from '~/types/api/conversation'
 
+type MessageUpdateData =
+  | { action: 'delete' }
+  | { action: 'edit'; content: string; editedAt: string | Date }
+
 interface Props {
   conversationId: number
   initialMessages: PrivateMessage[]
   total: number
   otherUser: KunUser
+}
+
+const sortMessagesByTime = (msgs: PrivateMessage[]) => {
+  return [...msgs].sort(
+    (a, b) => new Date(a.created).getTime() - new Date(b.created).getTime()
+  )
 }
 
 export const ChatContainer = ({
@@ -30,20 +37,28 @@ export const ChatContainer = ({
   total,
   otherUser
 }: Props) => {
-  const [messages, setMessages] = useState<PrivateMessage[]>(initialMessages)
+  const [messages, setMessages] = useState<PrivateMessage[]>(
+    sortMessagesByTime(initialMessages)
+  )
   const [loading, setLoading] = useState(false)
+  const [hasMore, setHasMore] = useState(initialMessages.length < total)
   const [page, setPage] = useState(1)
-  const [totalMessages, setTotalMessages] = useState(total)
-  const isMounted = useMounted()
+  const [totalCount, setTotalCount] = useState(total)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const loadMoreRef = useRef<HTMLDivElement>(null)
   const user = useUserStore((state) => state.user)
+  const isInitialMount = useRef(true)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'instant' })
+  }, [])
 
-  const fetchMessages = async (newPage?: number) => {
+  const loadMoreMessages = useCallback(async () => {
+    if (loading || !hasMore) return
+
     setLoading(true)
+    const nextPage = page + 1
 
     const response = await kunFetchGet<
       KunResponse<{
@@ -52,24 +67,79 @@ export const ChatContainer = ({
         otherUser: KunUser
       }>
     >(`/message/conversation/${conversationId}`, {
-      page: newPage ?? page,
-      limit: 50
+      page: nextPage,
+      limit: 30
     })
 
     if (typeof response === 'string') {
       toast.error(response)
     } else {
-      setMessages(response.messages)
-      setTotalMessages(response.total)
+      const scrollContainer = scrollContainerRef.current
+      const previousScrollHeight = scrollContainer?.scrollHeight || 0
+
+      setMessages((prev) => {
+        const newMessages = [...response.messages, ...prev]
+        return sortMessagesByTime(newMessages)
+      })
+      setPage(nextPage)
+      setTotalCount(response.total)
+      setHasMore((page + 1) * 30 < response.total)
+
+      requestAnimationFrame(() => {
+        if (scrollContainer) {
+          const newScrollHeight = scrollContainer.scrollHeight
+          scrollContainer.scrollTop = newScrollHeight - previousScrollHeight
+        }
+      })
     }
 
     setLoading(false)
-  }
+  }, [loading, hasMore, page, conversationId])
 
-  const handleMessageSent = () => {
-    setPage(1)
-    fetchMessages(1)
-  }
+  const handleMessageSent = useCallback(
+    (newMessage: { id: number; content: string; created: string }) => {
+      const message: PrivateMessage = {
+        id: newMessage.id,
+        content: newMessage.content,
+        status: 0,
+        isDeleted: false,
+        editedAt: null,
+        created: newMessage.created,
+        sender: {
+          id: user.uid,
+          name: user.name,
+          avatar: user.avatar
+        }
+      }
+      setMessages((prev) => sortMessagesByTime([...prev, message]))
+      setTotalCount((prev) => prev + 1)
+      requestAnimationFrame(() => {
+        scrollToBottom()
+      })
+    },
+    [user, scrollToBottom]
+  )
+
+  const handleMessageUpdated = useCallback(
+    (messageId: number, data: MessageUpdateData) => {
+      if (data.action === 'delete') {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === messageId ? { ...msg, isDeleted: true } : msg
+          )
+        )
+      } else {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === messageId
+              ? { ...msg, content: data.content, editedAt: data.editedAt }
+              : msg
+          )
+        )
+      }
+    },
+    []
+  )
 
   useEffect(() => {
     const markAsRead = async () => {
@@ -79,19 +149,28 @@ export const ChatContainer = ({
   }, [conversationId])
 
   useEffect(() => {
-    if (!isMounted) {
-      return
-    }
-    fetchMessages()
-  }, [page])
-
-  useEffect(() => {
-    if (page === 1) {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
       scrollToBottom()
     }
-  }, [messages, page])
+  }, [scrollToBottom])
 
-  const reversedMessages = [...messages].reverse()
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          loadMoreMessages()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [hasMore, loading, loadMoreMessages])
 
   return (
     <Card className="h-[calc(100vh-200px)] min-h-[500px]">
@@ -117,31 +196,28 @@ export const ChatContainer = ({
       </CardHeader>
 
       <CardBody className="flex flex-col p-0">
-        <div className="flex-1 overflow-y-auto p-4">
-          {totalMessages > 50 && (
-            <div className="flex justify-center mb-4">
-              <KunPagination
-                total={Math.ceil(totalMessages / 50)}
-                page={page}
-                onPageChange={setPage}
-                isLoading={loading}
-              />
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4">
+          {hasMore && (
+            <div ref={loadMoreRef} className="flex justify-center py-2">
+              {loading && (
+                <Loader2 className="size-5 animate-spin text-default-400" />
+              )}
             </div>
           )}
 
-          {loading ? (
-            <KunLoading hint="正在获取消息..." />
-          ) : reversedMessages.length === 0 ? (
+          {messages.length === 0 ? (
             <KunNull message="暂无消息，发送第一条消息吧" />
           ) : (
             <>
-              {reversedMessages.map((msg) => (
+              {messages.map((msg) => (
                 <ChatMessage
                   key={msg.id}
                   message={msg}
                   isOwn={msg.sender.id === user.uid}
                   conversationId={conversationId}
-                  onMessageUpdated={() => fetchMessages(page)}
+                  onMessageUpdated={(data) =>
+                    handleMessageUpdated(msg.id, data)
+                  }
                 />
               ))}
               <div ref={messagesEndRef} />

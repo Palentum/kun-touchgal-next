@@ -23,7 +23,7 @@ export default async function Kun({ params }: Props) {
 
   const response = await kunGetConversationMessagesAction(id, {
     page: 1,
-    limit: 50
+    limit: 30
   })
 
   if (typeof response === 'string') {
