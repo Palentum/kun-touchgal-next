@@ -59,9 +59,78 @@ export const getConversations = async (
   return { conversations, total }
 }
 
+const MOEMOEPOINT_REQUIRED = 20
+const MOEMOEPOINT_COST = 10
+
+export const checkConversation = async (
+  input: z.infer<typeof createConversationSchema>,
+  uid: number,
+  role: number
+) => {
+  const { targetUserId } = input
+
+  if (targetUserId === uid) {
+    return { error: '不能和自己创建会话' }
+  }
+
+  const [currentUser, targetUser] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: uid },
+      select: { moemoepoint: true }
+    }),
+    prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: { id: true, name: true }
+    })
+  ])
+
+  if (!currentUser) {
+    return { error: '用户不存在' }
+  }
+  if (!targetUser) {
+    return { error: '目标用户不存在' }
+  }
+
+  const [userAId, userBId] =
+    uid < targetUserId ? [uid, targetUserId] : [targetUserId, uid]
+
+  const conversation = await prisma.user_conversation.findUnique({
+    where: {
+      user_a_id_user_b_id: { user_a_id: userAId, user_b_id: userBId }
+    }
+  })
+
+  if (conversation) {
+    return {
+      exists: true,
+      conversationId: conversation.id,
+      needsPayment: false,
+      targetUserName: targetUser.name
+    }
+  }
+
+  const isPrivileged = role > 2
+  const hasEnoughPoints = currentUser.moemoepoint >= MOEMOEPOINT_REQUIRED
+
+  if (!isPrivileged && !hasEnoughPoints) {
+    return {
+      error: `萌萌点不足，发起私聊需要至少 ${MOEMOEPOINT_REQUIRED} 萌萌点`
+    }
+  }
+
+  return {
+    exists: false,
+    needsPayment: !isPrivileged,
+    cost: MOEMOEPOINT_COST,
+    currentPoints: currentUser.moemoepoint,
+    targetUserName: targetUser.name
+  }
+}
+
 export const getOrCreateConversation = async (
   input: z.infer<typeof createConversationSchema>,
-  uid: number
+  uid: number,
+  role: number
 ) => {
   const { targetUserId } = input
 
@@ -69,9 +138,19 @@ export const getOrCreateConversation = async (
     return '不能和自己创建会话'
   }
 
-  const targetUser = await prisma.user.findUnique({
-    where: { id: targetUserId }
-  })
+  const [currentUser, targetUser] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: uid },
+      select: { moemoepoint: true }
+    }),
+    prisma.user.findUnique({
+      where: { id: targetUserId }
+    })
+  ])
+
+  if (!currentUser) {
+    return '用户不存在'
+  }
   if (!targetUser) {
     return '目标用户不存在'
   }
@@ -86,11 +165,33 @@ export const getOrCreateConversation = async (
   })
 
   const isNew = !conversation
+  const isPrivileged = role > 2
 
   if (!conversation) {
-    conversation = await prisma.user_conversation.create({
-      data: { user_a_id: userAId, user_b_id: userBId }
-    })
+    if (!isPrivileged) {
+      if (currentUser.moemoepoint < MOEMOEPOINT_REQUIRED) {
+        return `萌萌点不足，发起私聊需要至少 ${MOEMOEPOINT_REQUIRED} 萌萌点`
+      }
+
+      if (currentUser.moemoepoint < MOEMOEPOINT_COST) {
+        return `萌萌点不足，开启新私聊需要消耗 ${MOEMOEPOINT_COST} 萌萌点`
+      }
+
+      conversation = await prisma.$transaction(async (tx) => {
+        await tx.user.update({
+          where: { id: uid },
+          data: { moemoepoint: { decrement: MOEMOEPOINT_COST } }
+        })
+
+        return tx.user_conversation.create({
+          data: { user_a_id: userAId, user_b_id: userBId }
+        })
+      })
+    } else {
+      conversation = await prisma.user_conversation.create({
+        data: { user_a_id: userAId, user_b_id: userBId }
+      })
+    }
   }
 
   return { conversationId: conversation.id, isNew }
@@ -120,6 +221,6 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json('用户未登录')
   }
 
-  const response = await getOrCreateConversation(input, payload.uid)
+  const response = await getOrCreateConversation(input, payload.uid, payload.role)
   return NextResponse.json(response)
 }
