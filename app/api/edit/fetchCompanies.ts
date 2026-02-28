@@ -1,6 +1,5 @@
 import { prisma } from '~/prisma/index'
-
-const VNDB_API_BASE = 'https://api.vndb.org/kana'
+import { VNDB_API_BASE, VNDB_API_HEADERS } from '~/constants/vndb'
 
 type VndbExtLink = { url?: string | null }
 type VndbProducer = {
@@ -55,7 +54,7 @@ export const ensurePatchCompaniesFromVNDB = async (
   try {
     const res = await fetch(`${VNDB_API_BASE}/vn`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: VNDB_API_HEADERS,
       body: JSON.stringify({
         filters: ['id', '=', id],
         fields:
