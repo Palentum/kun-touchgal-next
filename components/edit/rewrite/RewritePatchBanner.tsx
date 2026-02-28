@@ -16,11 +16,13 @@ interface Props {
 
 export const RewritePatchBanner = ({ patchId, onClose }: Props) => {
   const [banner, setBanner] = useState<Blob | null>(null)
+  const [bannerOriginal, setBannerOriginal] = useState<Blob | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>('')
 
   const removeBanner = async () => {
     setPreviewUrl('')
     setBanner(null)
+    setBannerOriginal(null)
   }
 
   const [updating, setUpdating] = useState(false)
@@ -33,6 +35,9 @@ export const RewritePatchBanner = ({ patchId, onClose }: Props) => {
     const formData = new FormData()
     formData.append('patchId', patchId.toString())
     formData.append('image', banner)
+    if (bannerOriginal) {
+      formData.append('imageOriginal', bannerOriginal)
+    }
 
     setUpdating(true)
 
@@ -55,6 +60,11 @@ export const RewritePatchBanner = ({ patchId, onClose }: Props) => {
     setBanner(imageBlob)
   }
 
+  const onOriginalImageComplete = async (originalImage: string) => {
+    const imageBlob = dataURItoBlob(originalImage)
+    setBannerOriginal(imageBlob)
+  }
+
   return (
     <>
       <ModalBody>
@@ -63,6 +73,7 @@ export const RewritePatchBanner = ({ patchId, onClose }: Props) => {
           initialImage={previewUrl}
           description="您的预览图片将会被固定为 1920 × 1080 分辨率"
           onImageComplete={onImageComplete}
+          onOriginalImageComplete={onOriginalImageComplete}
           removeImage={removeBanner}
         />
 

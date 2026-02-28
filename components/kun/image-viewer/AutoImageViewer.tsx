@@ -20,6 +20,9 @@ export const KunAutoImageViewer = () => {
     }
 
     const checkImageDimensions = (img: HTMLImageElement) => {
+      if (img.dataset.noLightbox !== undefined) {
+        return
+      }
       if (img.width >= 200 && img.height >= 200) {
         setImages((prev) => {
           const exists = prev.some((image) => image.src === img.src)

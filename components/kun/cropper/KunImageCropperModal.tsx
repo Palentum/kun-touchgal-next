@@ -13,6 +13,7 @@ import {
 import { KunCropControls } from './KunCropControls'
 import { centerAspectCrop, createCroppedImage } from './utils'
 import type { KunAspect } from './types'
+// @ts-ignore
 import 'react-image-crop/dist/ReactCrop.css'
 
 interface Props {
@@ -21,6 +22,7 @@ interface Props {
   initialAspect?: KunAspect
   description?: string
   onCropComplete?: (croppedImage: string) => void
+  onOriginalImageComplete?: (originalImage: string) => void
   onOpenMosaic: () => void
   onClose: () => void
 }
@@ -31,6 +33,7 @@ export const KunImageCropperModal = ({
   initialAspect = { x: 16, y: 9 },
   description,
   onCropComplete,
+  onOriginalImageComplete,
   onOpenMosaic,
   onClose
 }: Props) => {
@@ -61,6 +64,7 @@ export const KunImageCropperModal = ({
         rotate
       )
       onCropComplete?.(croppedImage)
+      onOriginalImageComplete?.(imgSrc)
       onClose()
     }
   }

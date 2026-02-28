@@ -25,12 +25,18 @@ export const BannerImage = ({ errors }: Props) => {
 
   const removeBanner = async () => {
     await localforage.removeItem('kun-patch-banner')
+    await localforage.removeItem('kun-patch-banner-original')
     setInitialUrl('')
   }
 
   const onImageComplete = async (croppedImage: string) => {
     const imageBlob = dataURItoBlob(croppedImage)
     await localforage.setItem('kun-patch-banner', imageBlob)
+  }
+
+  const onOriginalImageComplete = async (originalImage: string) => {
+    const imageBlob = dataURItoBlob(originalImage)
+    await localforage.setItem('kun-patch-banner-original', imageBlob)
   }
 
   return (
@@ -43,6 +49,7 @@ export const BannerImage = ({ errors }: Props) => {
         initialImage={initialUrl}
         description="您的预览图片将会被固定为 1920 × 1080 分辨率"
         onImageComplete={onImageComplete}
+        onOriginalImageComplete={onOriginalImageComplete}
         removeImage={removeBanner}
       />
     </div>

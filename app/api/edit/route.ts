@@ -36,7 +36,7 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json('本页面仅管理员可访问')
   }
 
-  const { alias, banner, tag, ...rest } = input
+  const { alias, banner, bannerOriginal, tag, ...rest } = input
   const aliasResult = checkStringArrayValid('alias', alias)
   if (typeof aliasResult === 'string') {
     return NextResponse.json(aliasResult)
@@ -46,9 +46,18 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json(tagResult)
   }
   const bannerArrayBuffer = await new Response(banner)?.arrayBuffer()
+  const bannerOriginalArrayBuffer = bannerOriginal
+    ? await new Response(bannerOriginal)?.arrayBuffer()
+    : undefined
 
   const response = await createGalgame(
-    { alias: aliasResult, tag: tagResult, banner: bannerArrayBuffer, ...rest },
+    {
+      alias: aliasResult,
+      tag: tagResult,
+      banner: bannerArrayBuffer,
+      bannerOriginal: bannerOriginalArrayBuffer,
+      ...rest
+    },
     payload.uid
   )
   return NextResponse.json(response)

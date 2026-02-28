@@ -119,7 +119,8 @@ export const declinePullRequestSchema = z.object({
 
 export const updatePatchBannerSchema = z.object({
   patchId: z.coerce.number().min(1).max(9999999),
-  image: z.any()
+  image: z.any(),
+  imageOriginal: z.any().optional()
 })
 
 export const getPatchHistorySchema = z.object({

@@ -3,7 +3,11 @@ import sharp from 'sharp'
 import { uploadImageToS3 } from '~/lib/s3'
 import { checkBufferSize } from '~/app/api/utils/checkBufferSize'
 
-export const uploadPatchBanner = async (image: ArrayBuffer, id: number) => {
+export const uploadPatchBanner = async (
+  image: ArrayBuffer,
+  id: number,
+  originalImage?: ArrayBuffer
+) => {
   const banner = await sharp(image)
     .resize(1920, 1080, {
       fit: 'inside',
@@ -27,4 +31,11 @@ export const uploadPatchBanner = async (image: ArrayBuffer, id: number) => {
 
   await uploadImageToS3(`${bucketName}/banner.avif`, banner)
   await uploadImageToS3(`${bucketName}/banner-mini.avif`, miniBanner)
+
+  if (originalImage) {
+    const fullBanner = await sharp(originalImage)
+      .avif({ quality: 60 })
+      .toBuffer()
+    await uploadImageToS3(`${bucketName}/banner-full.avif`, fullBanner)
+  }
 }

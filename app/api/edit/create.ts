@@ -13,6 +13,7 @@ export const createGalgame = async (
   input: Omit<z.infer<typeof patchCreateSchema>, 'alias' | 'tag'> & {
     alias: string[]
     tag: string[]
+    bannerOriginal?: ArrayBuffer
   },
   uid: number
 ) => {
@@ -23,6 +24,7 @@ export const createGalgame = async (
     dlsiteCode,
     alias,
     banner,
+    bannerOriginal,
     tag,
     introduction,
     released,
@@ -30,6 +32,7 @@ export const createGalgame = async (
   } = input
 
   const bannerArrayBuffer = banner as ArrayBuffer
+  const bannerOriginalArrayBuffer = bannerOriginal as ArrayBuffer | undefined
   const galgameUniqueId = crypto.randomBytes(4).toString('hex')
 
   const normalizedDlsiteCode = dlsiteCode?.trim()
@@ -63,7 +66,11 @@ export const createGalgame = async (
 
       const newId = patch.id
 
-      const uploadResult = await uploadPatchBanner(bannerArrayBuffer, newId)
+      const uploadResult = await uploadPatchBanner(
+        bannerArrayBuffer,
+        newId,
+        bannerOriginalArrayBuffer
+      )
       if (typeof uploadResult === 'string') {
         return uploadResult
       }

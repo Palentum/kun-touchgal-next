@@ -12,6 +12,7 @@ interface Props {
   initialImage?: string
   description?: string
   onImageComplete?: (croppedImage: string) => void
+  onOriginalImageComplete?: (originalImage: string) => void
   removeImage?: () => void
 }
 
@@ -20,6 +21,7 @@ export const KunImageCropper = ({
   initialImage,
   description,
   onImageComplete,
+  onOriginalImageComplete,
   removeImage
 }: Props) => {
   const [imgSrc, setImgSrc] = useState(initialImage ?? '')
@@ -96,6 +98,7 @@ export const KunImageCropper = ({
         initialAspect={aspect}
         description={description}
         onCropComplete={handleCropComplete}
+        onOriginalImageComplete={onOriginalImageComplete}
         onOpenMosaic={onOpenMosaic}
         onClose={onCloseCropper}
       />

@@ -146,6 +146,7 @@
     "@prosemirror-adapter/react": "^0.4.1",
     "@tailwindcss/typography": "^0.5.16",
     "@types/canvas-confetti": "^1.9.0",
+    "@types/css-modules": "^1.0.5",
     "@types/html-to-text": "^9.0.4",
     "@types/js-cookie": "^3.0.6",
     "@types/jsdom": "^27.0.0",

@@ -9,6 +9,7 @@ const purgeCache = async (patchId: number) => {
   const imageBedUrl = process.env.KUN_VISUAL_NOVEL_IMAGE_BED_URL
   const patchBannerUrl = `${imageBedUrl}/patch/${patchId}/banner/banner.avif`
   const patchBannerMiniUrl = `${imageBedUrl}/patch/${patchId}/banner/banner-mini.avif`
+  const patchBannerFullUrl = `${imageBedUrl}/patch/${patchId}/banner/banner-full.avif`
 
   const res = await fetch(
     `https://api.cloudflare.com/client/v4/zones/${process.env.KUN_CF_CACHE_ZONE_ID}/purge_cache`,
@@ -19,7 +20,7 @@ const purgeCache = async (patchId: number) => {
         Authorization: `Bearer ${process.env.KUN_CF_CACHE_PURGE_API_TOKEN}`
       },
       body: JSON.stringify({
-        files: [patchBannerUrl, patchBannerMiniUrl]
+        files: [patchBannerUrl, patchBannerMiniUrl, patchBannerFullUrl]
       })
     }
   )
@@ -29,7 +30,8 @@ const purgeCache = async (patchId: number) => {
 
 export const updatePatchBanner = async (
   image: ArrayBuffer,
-  patchId: number
+  patchId: number,
+  originalImage?: ArrayBuffer
 ) => {
   const patch = await prisma.patch.findUnique({
     where: { id: patchId }
@@ -38,7 +40,7 @@ export const updatePatchBanner = async (
     return '这个 Galgame 不存在'
   }
 
-  const res = await uploadPatchBanner(image, patchId)
+  const res = await uploadPatchBanner(image, patchId, originalImage)
   if (typeof res === 'string') {
     return res
   }
@@ -62,7 +64,10 @@ export const POST = async (req: NextRequest) => {
   }
 
   const image = await new Response(input.image)?.arrayBuffer()
+  const originalImage = input.imageOriginal
+    ? await new Response(input.imageOriginal)?.arrayBuffer()
+    : undefined
 
-  const response = await updatePatchBanner(image, input.patchId)
+  const response = await updatePatchBanner(image, input.patchId, originalImage)
   return NextResponse.json(response)
 }

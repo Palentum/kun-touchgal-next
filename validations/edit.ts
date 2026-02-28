@@ -1,19 +1,17 @@
 import { z } from 'zod'
 
 const duplicateQueryField = (maxLength: number) =>
-  z.preprocess(
-    (value) => {
-      if (typeof value !== 'string') {
-        return undefined
-      }
-      const trimmed = value.trim()
-      return trimmed.length > 0 ? trimmed : undefined
-    },
-    z.string().max(maxLength).optional()
-  )
+  z.preprocess((value) => {
+    if (typeof value !== 'string') {
+      return undefined
+    }
+    const trimmed = value.trim()
+    return trimmed.length > 0 ? trimmed : undefined
+  }, z.string().max(maxLength).optional())
 
 export const patchCreateSchema = z.object({
   banner: z.any(),
+  bannerOriginal: z.any().optional(),
   name: z.string().trim().min(1, { message: '游戏名称是必填项' }),
   vndbId: z.string().max(10),
   vndbRelationId: z.string().max(10),

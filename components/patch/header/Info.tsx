@@ -12,8 +12,8 @@ import {
 } from '~/constants/galgame'
 import { PatchHeaderActions } from './Actions'
 import { Tags } from './Tags'
-import Image from 'next/image'
 import { EditBanner } from './EditBanner'
+import { BannerImage } from './BannerImage'
 import { PatchRatingSummaryBadge } from './RatingSummaryBadge'
 import type { Patch } from '~/types/api/patch'
 
@@ -31,15 +31,7 @@ export const PatchHeaderInfo = ({
       <CardBody className="p-0">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
           <div className="relative w-full h-full overflow-hidden md:col-span-1 aspect-video md:rounded-l-xl">
-            <Image
-              src={patch.banner}
-              alt={patch.name}
-              className="object-cover"
-              fill
-              sizes="(max-width: 768px) 100vw, 33vw"
-              priority
-              unoptimized
-            />
+            <BannerImage banner={patch.banner} name={patch.name} />
 
             <EditBanner patch={patch} />
           </div>
