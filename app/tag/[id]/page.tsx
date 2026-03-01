@@ -6,6 +6,7 @@ import { ErrorComponent } from '~/components/error/ErrorComponent'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 import { KunNull } from '~/components/kun/Null'
 import type { SortField } from '~/components/tag/detail/_sort'
+import type { Metadata } from 'next'
 
 export const revalidate = 3
 
@@ -14,7 +15,18 @@ interface Props {
   searchParams?: Promise<{ page?: number; sortField: SortField }>
 }
 
-export const generateMetadata = generateKunMetadataTemplate()
+export const generateMetadata = async ({
+  params
+}: Pick<Props, 'params'>): Promise<Metadata> => {
+  const { id } = await params
+  const tag = await kunGetTagByIdActions({ tagId: Number(id) })
+
+  if (typeof tag === 'string') {
+    return generateKunMetadataTemplate('标签详情')
+  }
+
+  return generateKunMetadataTemplate(tag.name)
+}
 
 export default async function Kun({ params, searchParams }: Props) {
   const { id } = await params
