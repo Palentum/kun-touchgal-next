@@ -115,17 +115,9 @@ export const createGalgame = async (
   }
 
   if (vndbId) {
-    console.log(
-      `[createGalgame] 开始获取 VNDB 会社信息: patchId=${res.patchId}, vndbId=${vndbId}`
-    )
-    const companyResult = await ensurePatchCompaniesFromVNDB(
-      res.patchId,
-      vndbId,
-      uid
-    )
-    console.log(
-      `[createGalgame] VNDB 会社获取完成: ensured=${companyResult.ensured}, related=${companyResult.related}`
-    )
+    try {
+      await ensurePatchCompaniesFromVNDB(res.patchId, vndbId, uid)
+    } catch {}
   }
 
   if (normalizedDlsiteCode) {
