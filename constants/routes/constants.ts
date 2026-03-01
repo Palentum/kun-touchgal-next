@@ -8,6 +8,8 @@ export interface KunBreadcrumbItem {
 export const keyLabelMap: Record<string, string> = {
   '/': '主页',
   '/doc': '帮助文档',
+  '/company': '游戏会社',
+  '/company/[id]': '会社详情',
   '/admin/comment': '评论管理',
   '/admin/creator': '创作者管理',
   '/admin/galgame': 'Galgame 管理',
