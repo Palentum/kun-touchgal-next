@@ -1,4 +1,4 @@
-export const VNDB_API_BASE = 'https://api.vndb.org/kana'
+export const VNDB_API_BASE = 'https://vndbapi.arnebiae.com/kana'
 export const VNDB_WEB_BASE = 'https://vndb.org'
 
 export const VNDB_USER_AGENT =
