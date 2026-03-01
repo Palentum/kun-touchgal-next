@@ -20,13 +20,35 @@ export const createReport = async (
     where: { id: uid }
   })
 
-  const STATIC_CONTENT = `用户: ${user?.name} 举报了游戏 ${patch?.name} 下的评论\n\n评论内容: ${comment?.content.slice(0, 200)}\n\n举报原因: ${input.content}`
+  const metadataLines: string[] = []
+  if (comment?.id) {
+    metadataLines.push(`举报评论ID: ${comment.id}`)
+  }
+  if (comment?.user_id) {
+    metadataLines.push(`被举报用户ID: ${comment.user_id}`)
+  }
+  const metadata = metadataLines.length ? `\n${metadataLines.join('\n')}` : ''
+  const STATIC_CONTENT = `用户: ${user?.name} 举报了游戏 ${patch?.name} 下的评论\n\n评论内容: ${comment?.content.slice(0, 200)}${metadata}\n\n举报原因: ${input.content}`
+  const reportLink = (() => {
+    if (!patch?.unique_id) {
+      return ''
+    }
+    const params = new URLSearchParams()
+    if (comment?.id) {
+      params.set('commentId', String(comment.id))
+    }
+    if (comment?.user_id) {
+      params.set('reportedUid', String(comment.user_id))
+    }
+    const query = params.toString()
+    return query ? `/${patch.unique_id}?${query}` : `/${patch.unique_id}`
+  })()
 
   await createMessage({
     type: 'report',
     content: STATIC_CONTENT,
     sender_id: uid,
-    link: patch?.unique_id ? `/${patch.unique_id}` : ''
+    link: reportLink
   })
 
   return {}

@@ -66,7 +66,10 @@ export type AdminComment = PatchComment
 
 export type AdminFeedback = Message
 
-export type AdminReport = Message
+export interface AdminReport extends Message {
+  reportedUserId?: number
+  reportedCommentId?: number
+}
 
 export interface AdminLog {
   id: number
