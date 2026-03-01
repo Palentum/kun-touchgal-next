@@ -80,9 +80,13 @@ export const updateGalgame = async (
   }
 
   if (vndbId) {
-    try {
-      await ensurePatchCompaniesFromVNDB(id, vndbId, uid)
-    } catch (error) {}
+    console.log(
+      `[updateGalgame] 开始获取 VNDB 会社信息: patchId=${id}, vndbId=${vndbId}`
+    )
+    const companyResult = await ensurePatchCompaniesFromVNDB(id, vndbId, uid)
+    console.log(
+      `[updateGalgame] VNDB 会社获取完成: ensured=${companyResult.ensured}, related=${companyResult.related}`
+    )
   }
 
   if (normalizedDlsiteCode) {
