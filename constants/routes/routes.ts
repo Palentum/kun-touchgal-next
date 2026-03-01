@@ -1,4 +1,10 @@
-import { isPatchPath, isTagPath, isUserPath, isDocPath } from './matcher'
+import {
+  isPatchPath,
+  isTagPath,
+  isUserPath,
+  isDocPath,
+  isCompanyPath
+} from './matcher'
 import { keyLabelMap } from './constants'
 import { kunMoyuMoe } from '~/config/moyu-moe'
 import type { KunBreadcrumbItem } from './constants'
@@ -136,6 +142,14 @@ export const createBreadcrumbItem = (
       href: '/doc'
     }
     return [allDocRoute, createDocBreadcrumb(params, defaultItem, pageTitle)]
+  }
+  if (isCompanyPath(pathname)) {
+    const allCompanyRoute: KunBreadcrumbItem = {
+      key: 'company',
+      label: '游戏会社',
+      href: '/company'
+    }
+    return [allCompanyRoute, defaultItem]
   }
 
   return [defaultItem]
