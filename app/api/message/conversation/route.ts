@@ -221,6 +221,10 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json('用户未登录')
   }
 
-  const response = await getOrCreateConversation(input, payload.uid, payload.role)
+  const response = await getOrCreateConversation(
+    input,
+    payload.uid,
+    payload.role
+  )
   return NextResponse.json(response)
 }

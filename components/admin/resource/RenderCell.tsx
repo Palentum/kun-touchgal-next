@@ -59,4 +59,3 @@ export const RenderCell = (resource: AdminResource, columnKey: string) => {
       )
   }
 }
-

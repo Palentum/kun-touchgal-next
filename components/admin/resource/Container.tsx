@@ -128,4 +128,3 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
     </div>
   )
 }
-

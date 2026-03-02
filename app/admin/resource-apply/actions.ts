@@ -27,4 +27,3 @@ export const kunGetActions = async (
   const response = await getPatchResourceApply(input, nsfwEnable)
   return response
 }
-

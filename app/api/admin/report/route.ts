@@ -13,7 +13,8 @@ const parseReportMeta = async (content: string, link: string) => {
   const parsedUserId = userMatch ? Number(userMatch[1]) : undefined
   let reportedCommentId =
     parsedCommentId && parsedCommentId > 0 ? parsedCommentId : undefined
-  let reportedUserId = parsedUserId && parsedUserId > 0 ? parsedUserId : undefined
+  let reportedUserId =
+    parsedUserId && parsedUserId > 0 ? parsedUserId : undefined
 
   if (reportedCommentId || reportedUserId) {
     return { reportedCommentId, reportedUserId }

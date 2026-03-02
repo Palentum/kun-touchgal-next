@@ -130,4 +130,3 @@ export const ResourceApprovalButton = ({ resource }: Props) => {
     </div>
   )
 }
-

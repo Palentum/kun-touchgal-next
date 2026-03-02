@@ -69,7 +69,8 @@ export const handleReport = async (
   }
 
   const targetCommentId =
-    input.commentId ?? (await resolveReportedCommentId(message.content, message.link))
+    input.commentId ??
+    (await resolveReportedCommentId(message.content, message.link))
   if (input.action === 'delete') {
     if (!targetCommentId) {
       return '无法定位被举报评论'
@@ -83,7 +84,10 @@ export const handleReport = async (
     }
   }
 
-  const SLICED_CONTENT = sliceUntilDelimiterFromEnd(message.content).slice(0, 200)
+  const SLICED_CONTENT = sliceUntilDelimiterFromEnd(message.content).slice(
+    0,
+    200
+  )
   const defaultReply = input.action === 'reject' ? '已驳回' : '已处理'
   const handleResult = input.content ? input.content : defaultReply
   const reportStatus = input.action === 'reject' ? 3 : 2

@@ -109,19 +109,25 @@ export const StartChatButton = ({ targetUserId }: Props) => {
               <div className="space-y-3">
                 <p>
                   您即将与{' '}
-                  <span className="font-bold">{checkResult.targetUserName}</span>{' '}
+                  <span className="font-bold">
+                    {checkResult.targetUserName}
+                  </span>{' '}
                   发起私聊。
                 </p>
                 <div className="p-3 rounded-lg bg-warning-50 dark:bg-warning-100/10 border border-warning-200 dark:border-warning-500/20">
                   <p className="text-warning-600 dark:text-warning-500 font-medium">
                     开启新会话将消耗{' '}
-                    <span className="text-lg font-bold">{checkResult.cost}</span>{' '}
+                    <span className="text-lg font-bold">
+                      {checkResult.cost}
+                    </span>{' '}
                     萌萌点
                   </p>
                 </div>
                 <p className="text-default-500 text-sm">
                   您当前的萌萌点：
-                  <span className="font-medium">{checkResult.currentPoints}</span>
+                  <span className="font-medium">
+                    {checkResult.currentPoints}
+                  </span>
                 </p>
               </div>
             ) : (

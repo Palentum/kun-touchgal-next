@@ -58,11 +58,7 @@ export const ReportCard = ({ report }: Props) => {
   }
 
   const statusColor: 'success' | 'danger' | 'warning' =
-    reportStatus === 0
-      ? 'danger'
-      : reportStatus === 3
-        ? 'warning'
-        : 'success'
+    reportStatus === 0 ? 'danger' : reportStatus === 3 ? 'warning' : 'success'
   const statusLabel =
     reportStatus === 0 ? '未处理' : reportStatus === 3 ? '已驳回' : '已处理'
 
