@@ -4,7 +4,76 @@ import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { adminPaginationSchema } from '~/validations/admin'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
-import type { Message } from '~/types/api/message'
+import type { AdminReport } from '~/types/api/admin'
+
+const parseReportMeta = async (content: string, link: string) => {
+  const commentMatch = content.match(/举报评论ID:\s*(\d+)/)
+  const userMatch = content.match(/被举报用户ID:\s*(\d+)/)
+  const parsedCommentId = commentMatch ? Number(commentMatch[1]) : undefined
+  const parsedUserId = userMatch ? Number(userMatch[1]) : undefined
+  let reportedCommentId =
+    parsedCommentId && parsedCommentId > 0 ? parsedCommentId : undefined
+  let reportedUserId = parsedUserId && parsedUserId > 0 ? parsedUserId : undefined
+
+  if (reportedCommentId || reportedUserId) {
+    return { reportedCommentId, reportedUserId }
+  }
+
+  let patchUniqueId = ''
+  try {
+    const url = new URL(link, 'https://touchgal.local')
+    const commentId = url.searchParams.get('commentId')
+    const reportedUid = url.searchParams.get('reportedUid')
+    patchUniqueId = url.pathname.replace(/^\//, '')
+    reportedCommentId =
+      commentId && Number(commentId) > 0 ? Number(commentId) : undefined
+    reportedUserId =
+      reportedUid && Number(reportedUid) > 0 ? Number(reportedUid) : undefined
+  } catch {
+    patchUniqueId = ''
+  }
+
+  if (reportedCommentId || reportedUserId) {
+    return { reportedCommentId, reportedUserId }
+  }
+
+  const commentPreviewMatch = content.match(
+    /评论内容:\s*([\s\S]*?)(?:\n举报评论ID:|\n\n举报原因:|$)/
+  )
+  const commentPreview = commentPreviewMatch?.[1]?.trim()
+  if (!patchUniqueId || !commentPreview) {
+    return { reportedCommentId: undefined, reportedUserId: undefined }
+  }
+
+  const patch = await prisma.patch.findUnique({
+    where: { unique_id: patchUniqueId },
+    select: { id: true }
+  })
+  if (!patch) {
+    return { reportedCommentId: undefined, reportedUserId: undefined }
+  }
+
+  const matchedComment = await prisma.patch_comment.findFirst({
+    where: {
+      patch_id: patch.id,
+      content: {
+        startsWith: commentPreview.slice(0, 200)
+      }
+    },
+    select: {
+      id: true,
+      user_id: true
+    }
+  })
+  if (!matchedComment) {
+    return { reportedCommentId: undefined, reportedUserId: undefined }
+  }
+
+  return {
+    reportedCommentId: matchedComment.id,
+    reportedUserId: matchedComment.user_id
+  }
+}
 
 export const getReport = async (
   input: z.infer<typeof adminPaginationSchema>
@@ -33,15 +102,22 @@ export const getReport = async (
     })
   ])
 
-  const reports: Message[] = data.map((msg) => ({
-    id: msg.id,
-    type: msg.type,
-    content: msg.content,
-    status: msg.status,
-    link: msg.link,
-    created: msg.created,
-    sender: msg.sender
-  }))
+  const reports: AdminReport[] = await Promise.all(
+    data.map(async (msg) => {
+      const meta = await parseReportMeta(msg.content, msg.link)
+      return {
+        id: msg.id,
+        type: msg.type,
+        content: msg.content,
+        status: msg.status,
+        link: msg.link,
+        created: msg.created,
+        sender: msg.sender,
+        reportedCommentId: meta.reportedCommentId,
+        reportedUserId: meta.reportedUserId
+      }
+    })
+  )
 
   return { reports, total }
 }
