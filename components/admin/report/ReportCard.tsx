@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import {
+  Avatar,
   Button,
   Card,
   CardBody,
@@ -23,14 +24,22 @@ import toast from 'react-hot-toast'
 
 interface Props {
   report: AdminReport
+  onHandled: () => void
 }
 
-export const ReportCard = ({ report }: Props) => {
+export const ReportCard = ({ report, onHandled }: Props) => {
   const [reportStatus, setReportStatus] = useState(report.status)
   const [handleContent, setHandleContent] = useState('')
   const [actionType, setActionType] = useState<'delete' | 'reject'>('delete')
   const [updating, setUpdating] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const displayedUid = report.reportedUser?.id ?? report.reportedUserId ?? 0
+  const displayedName = report.reportedUser?.name
+    ? report.reportedUser.name
+    : report.reportedUserId
+      ? `用户 #${report.reportedUserId}`
+      : '未知被举报用户'
+  const displayedAvatar = report.reportedUser?.avatar ?? ''
 
   const openActionModal = (action: 'delete' | 'reject') => {
     setActionType(action)
@@ -53,6 +62,7 @@ export const ReportCard = ({ report }: Props) => {
       onClose()
       setHandleContent('')
       toast.success(actionType === 'reject' ? '驳回举报成功!' : '处理举报成功!')
+      onHandled()
     }
     setUpdating(false)
   }
@@ -68,16 +78,27 @@ export const ReportCard = ({ report }: Props) => {
         <CardBody>
           <div className="flex items-start justify-between">
             <div className="flex gap-4">
-              <KunAvatar
-                uid={report.sender!.id}
-                avatarProps={{
-                  name: report.sender!.name,
-                  src: report.sender!.avatar
-                }}
-              />
+              {displayedUid ? (
+                <KunAvatar
+                  uid={displayedUid}
+                  avatarProps={{
+                    name: displayedName,
+                    src: displayedAvatar
+                  }}
+                />
+              ) : (
+                <Avatar
+                  name={displayedName.charAt(0).toUpperCase()}
+                  className="shrink-0"
+                  src={displayedAvatar}
+                />
+              )}
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="font-semibold">{report.sender?.name}</h2>
+                  <Chip size="sm" variant="flat">
+                    被举报人
+                  </Chip>
+                  <h2 className="font-semibold">{displayedName}</h2>
                   <span className="text-small text-default-500">
                     {formatDate(report.created, {
                       isPrecise: true,

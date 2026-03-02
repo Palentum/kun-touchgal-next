@@ -2,14 +2,14 @@
 
 import { z } from 'zod'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
-import { adminPaginationSchema } from '~/validations/admin'
+import { adminReportPaginationSchema } from '~/validations/admin'
 import { getReport } from '~/app/api/admin/report/route'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 
 export const kunGetActions = async (
-  params: z.infer<typeof adminPaginationSchema>
+  params: z.infer<typeof adminReportPaginationSchema>
 ) => {
-  const input = safeParseSchema(adminPaginationSchema, params)
+  const input = safeParseSchema(adminReportPaginationSchema, params)
   if (typeof input === 'string') {
     return input
   }
