@@ -1,0 +1,1 @@
+export const MAX_PENDING_REPORTS_TO_SCAN = 100

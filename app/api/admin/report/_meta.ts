@@ -1,4 +1,5 @@
 import { prisma } from '~/prisma/index'
+import { MAX_PENDING_REPORTS_TO_SCAN } from '~/config/admin'
 
 interface BaseReportMeta {
   reportedCommentId?: number
@@ -111,4 +112,46 @@ export const resolveReportMeta = async (content: string, link: string) => {
     reportedCommentId: matchedComment.id,
     reportedUserId: matchedComment.user_id
   }
+}
+
+export const findRelatedReportIds = async (
+  targetCommentId: number,
+  excludeMessageId: number
+): Promise<number[]> => {
+  const pendingReports = await prisma.user_message.findMany({
+    where: {
+      type: 'report',
+      status: 0,
+      sender_id: { not: null },
+      id: { not: excludeMessageId }
+    },
+    select: {
+      id: true,
+      content: true,
+      link: true
+    },
+    take: MAX_PENDING_REPORTS_TO_SCAN
+  })
+
+  const relatedIds: number[] = []
+
+  for (const report of pendingReports) {
+    const fastMeta = parseReportMetaFast(report.content, report.link)
+
+    if (fastMeta.reportedCommentId === targetCommentId) {
+      relatedIds.push(report.id)
+      continue
+    }
+
+    if (fastMeta.reportedCommentId) {
+      continue
+    }
+
+    const meta = await resolveReportMeta(report.content, report.link)
+    if (meta.reportedCommentId === targetCommentId) {
+      relatedIds.push(report.id)
+    }
+  }
+
+  return relatedIds
 }

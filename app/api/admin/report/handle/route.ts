@@ -5,7 +5,7 @@ import { prisma } from '~/prisma/index'
 import { adminHandleReportSchema } from '~/validations/admin'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { sliceUntilDelimiterFromEnd } from '~/app/api/utils/sliceUntilDelimiterFromEnd'
-import { parseReportMetaFast, resolveReportMeta } from '../_meta'
+import { findRelatedReportIds, resolveReportMeta } from '../_meta'
 
 export const handleReport = async (
   input: z.infer<typeof adminHandleReportSchema>
@@ -23,43 +23,10 @@ export const handleReport = async (
   const targetCommentId = input.commentId
     ? input.commentId
     : (await resolveReportMeta(message.content, message.link)).reportedCommentId
+
   const relatedReportIds =
     input.action === 'delete' && targetCommentId
-      ? (
-          await Promise.all(
-            (
-              await prisma.user_message.findMany({
-                where: {
-                  type: 'report',
-                  status: 0,
-                  sender_id: { not: null }
-                },
-                select: {
-                  id: true,
-                  content: true,
-                  link: true
-                }
-              })
-            ).map(async (report) => {
-              if (report.id === input.messageId) {
-                return undefined
-              }
-
-              const fastMeta = parseReportMetaFast(report.content, report.link)
-              if (fastMeta.reportedCommentId === targetCommentId) {
-                return report.id
-              }
-              if (fastMeta.reportedCommentId) {
-                return undefined
-              }
-
-              const meta = await resolveReportMeta(report.content, report.link)
-              return meta.reportedCommentId === targetCommentId
-                ? report.id
-                : undefined
-            })
-          )
-        ).filter((id): id is number => !!id)
+      ? await findRelatedReportIds(targetCommentId, input.messageId)
       : []
 
   const SLICED_CONTENT = sliceUntilDelimiterFromEnd(message.content).slice(
@@ -76,7 +43,9 @@ export const handleReport = async (
   const reportContent = `${reportResult}\n\n举报原因: ${SLICED_CONTENT}\n${reportReplyLabel}: ${handleResult}`
 
   return prisma.$transaction(async (prisma) => {
-    const messageIdsToHandle = [...new Set([input.messageId, ...relatedReportIds])]
+    const messageIdsToHandle = [
+      ...new Set([input.messageId, ...relatedReportIds])
+    ]
     if (input.action === 'delete' && targetCommentId) {
       await prisma.patch_comment.deleteMany({
         where: { id: targetCommentId }
