@@ -72,7 +72,7 @@ export const ensurePatchCompaniesFromVNDB = async (
     }
 
     const devs = (data?.results?.[0]?.developers ?? []).filter(
-      (d) => d && d.type === 'co'
+      (d) => d && (d.type === 'co' || d.type === 'ng' || d.type === 'in')
     ) as VndbProducer[]
 
     if (!devs.length) return { ensured: 0, related: 0 }
