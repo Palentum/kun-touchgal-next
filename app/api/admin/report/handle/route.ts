@@ -5,55 +5,7 @@ import { prisma } from '~/prisma/index'
 import { adminHandleReportSchema } from '~/validations/admin'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { sliceUntilDelimiterFromEnd } from '~/app/api/utils/sliceUntilDelimiterFromEnd'
-import { createMessage } from '~/app/api/utils/message'
-
-const resolveReportedCommentId = async (content: string, link: string) => {
-  const commentMatch = content.match(/举报评论ID:\s*(\d+)/)
-  if (commentMatch?.[1]) {
-    const commentId = Number(commentMatch[1])
-    return commentId > 0 ? commentId : undefined
-  }
-
-  let patchUniqueId = ''
-  try {
-    const url = new URL(link, 'https://touchgal.local')
-    patchUniqueId = url.pathname.replace(/^\//, '')
-    const commentId = url.searchParams.get('commentId')
-    if (commentId) {
-      const parsedCommentId = Number(commentId)
-      if (parsedCommentId > 0) {
-        return parsedCommentId
-      }
-    }
-  } catch {
-    patchUniqueId = ''
-  }
-
-  const commentPreviewMatch = content.match(
-    /评论内容:\s*([\s\S]*?)(?:\n举报评论ID:|\n\n举报原因:|$)/
-  )
-  const commentPreview = commentPreviewMatch?.[1]?.trim()
-  if (!patchUniqueId || !commentPreview) {
-    return undefined
-  }
-
-  const patch = await prisma.patch.findUnique({
-    where: { unique_id: patchUniqueId },
-    select: { id: true }
-  })
-  if (!patch) {
-    return undefined
-  }
-
-  const matchedComment = await prisma.patch_comment.findFirst({
-    where: {
-      patch_id: patch.id,
-      content: { startsWith: commentPreview.slice(0, 200) }
-    },
-    select: { id: true }
-  })
-  return matchedComment?.id
-}
+import { parseReportMetaFast, resolveReportMeta } from '../_meta'
 
 export const handleReport = async (
   input: z.infer<typeof adminHandleReportSchema>
@@ -64,25 +16,51 @@ export const handleReport = async (
   if (!message) {
     return '该举报不存在'
   }
-  if (message?.status) {
+  if (message.status !== 0) {
     return '该举报已被处理'
   }
 
-  const targetCommentId =
-    input.commentId ??
-    (await resolveReportedCommentId(message.content, message.link))
-  if (input.action === 'delete') {
-    if (!targetCommentId) {
-      return '无法定位被举报评论'
-    }
-    const comment = await prisma.patch_comment.findUnique({
-      where: { id: targetCommentId },
-      select: { id: true }
-    })
-    if (!comment) {
-      return '被举报评论不存在或已删除'
-    }
-  }
+  const targetCommentId = input.commentId
+    ? input.commentId
+    : (await resolveReportMeta(message.content, message.link)).reportedCommentId
+  const relatedReportIds =
+    input.action === 'delete' && targetCommentId
+      ? (
+          await Promise.all(
+            (
+              await prisma.user_message.findMany({
+                where: {
+                  type: 'report',
+                  status: 0,
+                  sender_id: { not: null }
+                },
+                select: {
+                  id: true,
+                  content: true,
+                  link: true
+                }
+              })
+            ).map(async (report) => {
+              if (report.id === input.messageId) {
+                return undefined
+              }
+
+              const fastMeta = parseReportMetaFast(report.content, report.link)
+              if (fastMeta.reportedCommentId === targetCommentId) {
+                return report.id
+              }
+              if (fastMeta.reportedCommentId) {
+                return undefined
+              }
+
+              const meta = await resolveReportMeta(report.content, report.link)
+              return meta.reportedCommentId === targetCommentId
+                ? report.id
+                : undefined
+            })
+          )
+        ).filter((id): id is number => !!id)
+      : []
 
   const SLICED_CONTENT = sliceUntilDelimiterFromEnd(message.content).slice(
     0,
@@ -98,24 +76,51 @@ export const handleReport = async (
   const reportContent = `${reportResult}\n\n举报原因: ${SLICED_CONTENT}\n${reportReplyLabel}: ${handleResult}`
 
   return prisma.$transaction(async (prisma) => {
+    const messageIdsToHandle = [...new Set([input.messageId, ...relatedReportIds])]
     if (input.action === 'delete' && targetCommentId) {
-      await prisma.patch_comment.delete({
+      await prisma.patch_comment.deleteMany({
         where: { id: targetCommentId }
       })
     }
 
-    await prisma.user_message.update({
-      where: { id: input.messageId },
+    const affectedReports = await prisma.user_message.findMany({
+      where: {
+        id: {
+          in: messageIdsToHandle
+        }
+      },
+      select: {
+        sender_id: true
+      }
+    })
+
+    await prisma.user_message.updateMany({
+      where: {
+        id: {
+          in: messageIdsToHandle
+        }
+      },
       // status: 0 - unread, 1 - read, 2 - approve, 3 - decline
       data: { status: { set: reportStatus } }
     })
 
-    await createMessage({
-      type: 'report',
-      content: reportContent,
-      recipient_id: message.sender_id ?? undefined,
-      link: '/'
-    })
+    const recipientIds = [
+      ...new Set(
+        affectedReports
+          .map((report) => report.sender_id)
+          .filter((id): id is number => !!id)
+      )
+    ]
+    if (recipientIds.length) {
+      await prisma.user_message.createMany({
+        data: recipientIds.map((recipientId) => ({
+          type: 'report',
+          content: reportContent,
+          recipient_id: recipientId,
+          link: '/'
+        }))
+      })
+    }
 
     return {}
   })

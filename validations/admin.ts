@@ -9,6 +9,10 @@ export const adminPaginationSchema = z.object({
     .optional()
 })
 
+export const adminReportPaginationSchema = adminPaginationSchema.extend({
+  tab: z.enum(['pending', 'handled']).default('pending')
+})
+
 export const adminUpdateUserSchema = z.object({
   uid: z.coerce.number().min(1).max(9999999),
   name: z
