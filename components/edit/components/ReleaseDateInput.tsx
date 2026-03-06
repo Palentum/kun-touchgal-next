@@ -8,10 +8,26 @@ interface Props {
 
 export const ReleaseDateInput = ({ date, setDate, errors }: Props) => {
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value
-      .replace(/[０-９]/g, (digit) =>
-        String.fromCharCode(digit.charCodeAt(0) - 0xfee0)
-      )
+    const raw = e.target.value
+    const normalizedRaw = raw.replace(/[０-９]/g, (digit) =>
+      String.fromCharCode(digit.charCodeAt(0) - 0xfee0)
+    )
+    const fullChineseDateMatch = normalizedRaw.match(
+      /^(\d{1,4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*[日号]?\s*$/
+    )
+    if (fullChineseDateMatch) {
+      const [, year, monthText, dayText] = fullChineseDateMatch
+      const month = Math.min(Math.max(Number(monthText), 1), 12)
+      const day = Math.min(Math.max(Number(dayText), 1), 31)
+      const formatted = `${year.slice(0, 4)}-${String(month).padStart(
+        2,
+        '0'
+      )}-${String(day).padStart(2, '0')}`
+      setDate(formatted)
+      return
+    }
+
+    let value = normalizedRaw
       .replace(/[年月./]/g, '-')
       .replace(/[日号]/g, '')
       .replace(/[^\d-]/g, '')
@@ -29,27 +45,16 @@ export const ReleaseDateInput = ({ date, setDate, errors }: Props) => {
 
       if (parts[1]) {
         parts[1] = parts[1].replace(/\D/g, '').slice(0, 2)
-        const monthNum = parseInt(parts[1], 10)
-        if (monthNum > 12) {
+        if (parts[1].length === 2 && Number(parts[1]) > 12) {
           parts[1] = '12'
-        } else if (monthNum > 0) {
-          parts[1] = `${monthNum}`
         }
       }
 
       if (parts[2]) {
         parts[2] = parts[2].replace(/\D/g, '').slice(0, 2)
-        const dayNum = parseInt(parts[2], 10)
-        if (dayNum > 31) {
+        if (parts[2].length === 2 && Number(parts[2]) > 31) {
           parts[2] = '31'
-        } else if (dayNum > 0) {
-          parts[2] = `${dayNum}`
         }
-      }
-
-      if (parts[1] && parts[2]) {
-        parts[1] = parts[1].padStart(2, '0')
-        parts[2] = parts[2].padStart(2, '0')
       }
 
       value = parts[0] || ''
