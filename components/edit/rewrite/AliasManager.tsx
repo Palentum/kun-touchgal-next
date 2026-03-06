@@ -3,11 +3,13 @@
 import { useState } from 'react'
 import { Button, Chip, Input } from '@heroui/react'
 import { Plus } from 'lucide-react'
+import { Reorder } from 'framer-motion'
 
 interface Props {
   aliasList: string[]
   onAddAlias: (newAlias: string) => void
   onRemoveAlias: (index: number) => void
+  onReorderAlias: (nextAlias: string[]) => void
   errors?: string
 }
 
@@ -15,9 +17,11 @@ export const AliasManager = ({
   aliasList,
   onAddAlias,
   onRemoveAlias,
+  onReorderAlias,
   errors
 }: Props) => {
   const [newAlias, setNewAlias] = useState<string>('')
+  const [draggingAlias, setDraggingAlias] = useState<string | null>(null)
 
   const handleAddAlias = () => {
     onAddAlias(newAlias.trim())
@@ -52,19 +56,38 @@ export const AliasManager = ({
       <p className="text-sm text-default-500">
         如果您觉得这太麻烦, 只留下游戏的日文原名也完全可以
       </p>
+      <p className="text-sm text-default-500">支持鼠标和触摸拖拽调整顺序</p>
 
-      <div className="flex flex-wrap gap-2 mt-2">
+      <Reorder.Group
+        axis="x"
+        as="div"
+        values={aliasList}
+        onReorder={onReorderAlias}
+        className="flex flex-wrap gap-2 mt-2"
+      >
         {aliasList.map((alias, index) => (
-          <Chip
-            key={index}
-            onClose={() => onRemoveAlias(index)}
-            variant="flat"
-            className="h-8"
+          <Reorder.Item
+            key={alias}
+            as="div"
+            value={alias}
+            onDragStart={() => setDraggingAlias(alias)}
+            onDragEnd={() => setDraggingAlias(null)}
+            whileDrag={{ scale: 1.05, zIndex: 10 }}
+            className="cursor-grab active:cursor-grabbing"
           >
-            {alias}
-          </Chip>
+            <Chip
+              onClose={() => onRemoveAlias(index)}
+              variant="flat"
+              className="h-8"
+              classNames={{
+                base: draggingAlias === alias ? 'opacity-70' : ''
+              }}
+            >
+              {alias}
+            </Chip>
+          </Reorder.Item>
         ))}
-      </div>
+      </Reorder.Group>
     </div>
   )
 }

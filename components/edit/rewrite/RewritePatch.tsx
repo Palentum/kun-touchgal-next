@@ -109,6 +109,12 @@ export const RewritePatch = () => {
                 alias: data.alias.filter((_, i) => i !== index)
               })
             }
+            onReorderAlias={(nextAlias) =>
+              setData({
+                ...data,
+                alias: nextAlias
+              })
+            }
             errors={errors.alias}
           />
 
