@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
+import { updatePatchResource as updatePatchResourceByRole } from '~/app/api/patch/resource/update'
 import { patchResourceUpdateSchema } from '~/validations/patch'
 
 export const updatePatchResource = async (
@@ -11,7 +12,7 @@ export const updatePatchResource = async (
     return '未找到该管理员'
   }
 
-  const { resourceId, patchId, content, ...resourceData } = input
+  const { resourceId } = input
   const resource = await prisma.patch_resource.findUnique({
     where: { id: resourceId }
   })
@@ -19,31 +20,20 @@ export const updatePatchResource = async (
     return '未找到该资源'
   }
 
-  return await prisma.$transaction(async (prisma) => {
-    await prisma.patch_resource.update({
-      where: { id: resourceId },
-      data: {
-        ...resourceData
-      },
-      include: {
-        user: {
-          include: {
-            _count: {
-              select: { patch_resource: true }
-            }
-          }
-        }
-      }
-    })
+  const updatedResource = await updatePatchResourceByRole(input, uid, 3)
+  if (typeof updatedResource === 'string') {
+    return updatedResource
+  }
 
+  return await prisma.$transaction(async (prisma) => {
     await prisma.admin_log.create({
       data: {
         type: 'update',
         user_id: uid,
-        content: `管理员 ${admin.name} 删除了一个补丁资源信息\n\n原补丁资源信息:\n${JSON.stringify(resource)}}`
+        content: `管理员 ${admin.name} 更新了一个补丁资源信息\n\n原补丁资源信息:\n${JSON.stringify(resource)}\n\n新补丁资源信息:\n${JSON.stringify(updatedResource)}`
       }
     })
 
-    return {}
+    return updatedResource
   })
 }

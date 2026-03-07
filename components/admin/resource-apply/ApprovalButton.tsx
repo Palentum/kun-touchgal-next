@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Edit2 } from 'lucide-react'
 import {
   Button,
   Modal,
@@ -12,16 +13,27 @@ import {
   useDisclosure
 } from '@heroui/react'
 import toast from 'react-hot-toast'
+import { EditResourceDialog } from '~/components/patch/resource/edit/EditResourceDialog'
 import { kunFetchPut } from '~/utils/kunFetch'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import type { AdminResource } from '~/types/api/admin'
+import type { PatchResource } from '~/types/api/patch'
 
 interface Props {
   resource: AdminResource
+  onResourceUpdated?: (resource: PatchResource) => void
 }
 
-export const ResourceApprovalButton = ({ resource }: Props) => {
+export const ResourceApprovalButton = ({
+  resource,
+  onResourceUpdated
+}: Props) => {
   const [approving, setApproving] = useState(false)
+  const {
+    isOpen: isOpenEdit,
+    onOpen: onOpenEdit,
+    onClose: onCloseEdit
+  } = useDisclosure()
   const {
     isOpen: isOpenApprove,
     onOpen: onOpenApprove,
@@ -71,12 +83,34 @@ export const ResourceApprovalButton = ({ resource }: Props) => {
 
   return (
     <div className="flex gap-2">
+      <Button size="sm" variant="flat" startContent={<Edit2 size={14} />} onPress={onOpenEdit}>
+        编辑
+      </Button>
       <Button size="sm" color="success" onPress={onOpenApprove}>
         同意发布
       </Button>
       <Button size="sm" color="danger" onPress={onOpenDecline}>
         拒绝发布
       </Button>
+
+      <Modal
+        size="3xl"
+        isOpen={isOpenEdit}
+        onClose={onCloseEdit}
+        scrollBehavior="outside"
+        isDismissable={false}
+        isKeyboardDismissDisabled={true}
+      >
+        <EditResourceDialog
+          onClose={onCloseEdit}
+          resource={resource}
+          onSuccess={(updatedResource) => {
+            onResourceUpdated?.(updatedResource)
+            onCloseEdit()
+          }}
+          type="admin"
+        />
+      </Modal>
 
       <Modal isOpen={isOpenApprove} onClose={onCloseApprove}>
         <ModalContent>

@@ -11,6 +11,7 @@ import { KunPagination } from '~/components/kun/Pagination'
 import { AdminResourceApplyCard } from './Card'
 import { ResourceApprovalButton } from './ApprovalButton'
 import type { AdminResource } from '~/types/api/admin'
+import type { PatchResource } from '~/types/api/patch'
 
 interface Props {
   initialResources: AdminResource[]
@@ -56,6 +57,19 @@ export const ResourceApply = ({ initialResources, initialTotal }: Props) => {
     setPage(1)
   }
 
+  const handleResourceUpdated = (updatedResource: PatchResource) => {
+    setResources((prev) =>
+      prev.map((resource) =>
+        resource.id === updatedResource.id
+          ? {
+              ...resource,
+              ...updatedResource
+            }
+          : resource
+      )
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -82,7 +96,12 @@ export const ResourceApply = ({ initialResources, initialTotal }: Props) => {
             <AdminResourceApplyCard
               key={resource.id}
               resource={resource}
-              actions={<ResourceApprovalButton resource={resource} />}
+              actions={
+                <ResourceApprovalButton
+                  resource={resource}
+                  onResourceUpdated={handleResourceUpdated}
+                />
+              }
             />
           ))}
         </div>
