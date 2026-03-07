@@ -7,8 +7,8 @@ import {
 } from '~/app/api/utils/parseQuery'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import {
-  adminPaginationSchema,
-  adminUpdateUserSchema
+  adminUpdateUserSchema,
+  adminUserPaginationSchema
 } from '~/validations/admin'
 import { getUserInfo } from './get'
 import { updateUser } from './update'
@@ -19,7 +19,7 @@ const userIdSchema = z.object({
 })
 
 export const GET = async (req: NextRequest) => {
-  const input = kunParseGetQuery(req, adminPaginationSchema)
+  const input = kunParseGetQuery(req, adminUserPaginationSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }

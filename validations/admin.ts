@@ -9,6 +9,12 @@ export const adminPaginationSchema = z.object({
     .optional()
 })
 
+export const adminUserSearchTypeSchema = z.enum(['name', 'email', 'id'])
+
+export const adminUserPaginationSchema = adminPaginationSchema.extend({
+  searchType: adminUserSearchTypeSchema.default('name')
+})
+
 export const adminReportPaginationSchema = adminPaginationSchema.extend({
   tab: z.enum(['pending', 'handled']).default('pending')
 })
