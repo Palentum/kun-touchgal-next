@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Button, Chip, Input } from '@heroui/react'
+import { Button, Input } from '@heroui/react'
 import { Plus } from 'lucide-react'
-import { Reorder } from 'framer-motion'
 import { useCreatePatchStore } from '~/store/editStore'
 import toast from 'react-hot-toast'
+import { SortableAliasChips } from '../components/SortableAliasChips'
 
 interface Props {
   errors: string | undefined
@@ -14,7 +14,6 @@ interface Props {
 export const AliasInput = ({ errors }: Props) => {
   const { data, setData } = useCreatePatchStore()
   const [newAlias, setNewAlias] = useState<string>('')
-  const [draggingAlias, setDraggingAlias] = useState<string | null>(null)
 
   const addAlias = () => {
     const alias = newAlias.trim()
@@ -69,36 +68,11 @@ export const AliasInput = ({ errors }: Props) => {
         游戏的第一个别名将会作为 SEO 信息加入 Galgame 详情页
       </p>
       <p className="text-sm text-default-500">支持鼠标和触摸拖拽调整顺序</p>
-      <Reorder.Group
-        axis="x"
-        as="div"
+      <SortableAliasChips
         values={data.alias}
         onReorder={(nextAlias) => setData({ ...data, alias: nextAlias })}
-        className="flex flex-wrap gap-2 mt-2"
-      >
-        {data.alias.map((alias, index) => (
-          <Reorder.Item
-            key={alias}
-            as="div"
-            value={alias}
-            onDragStart={() => setDraggingAlias(alias)}
-            onDragEnd={() => setDraggingAlias(null)}
-            whileDrag={{ scale: 1.05, zIndex: 10 }}
-            className="cursor-grab active:cursor-grabbing"
-          >
-            <Chip
-              onClose={() => removeAlias(index)}
-              variant="flat"
-              className="h-8"
-              classNames={{
-                base: draggingAlias === alias ? 'opacity-70' : ''
-              }}
-            >
-              {alias}
-            </Chip>
-          </Reorder.Item>
-        ))}
-      </Reorder.Group>
+        onRemove={removeAlias}
+      />
     </div>
   )
 }

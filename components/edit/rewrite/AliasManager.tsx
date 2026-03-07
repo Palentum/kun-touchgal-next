@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button, Chip, Input } from '@heroui/react'
+import { Button, Input } from '@heroui/react'
 import { Plus } from 'lucide-react'
-import { Reorder } from 'framer-motion'
+import { SortableAliasChips } from '../components/SortableAliasChips'
 
 interface Props {
   aliasList: string[]
@@ -21,7 +21,6 @@ export const AliasManager = ({
   errors
 }: Props) => {
   const [newAlias, setNewAlias] = useState<string>('')
-  const [draggingAlias, setDraggingAlias] = useState<string | null>(null)
 
   const handleAddAlias = () => {
     onAddAlias(newAlias.trim())
@@ -58,36 +57,11 @@ export const AliasManager = ({
       </p>
       <p className="text-sm text-default-500">支持鼠标和触摸拖拽调整顺序</p>
 
-      <Reorder.Group
-        axis="x"
-        as="div"
+      <SortableAliasChips
         values={aliasList}
         onReorder={onReorderAlias}
-        className="flex flex-wrap gap-2 mt-2"
-      >
-        {aliasList.map((alias, index) => (
-          <Reorder.Item
-            key={alias}
-            as="div"
-            value={alias}
-            onDragStart={() => setDraggingAlias(alias)}
-            onDragEnd={() => setDraggingAlias(null)}
-            whileDrag={{ scale: 1.05, zIndex: 10 }}
-            className="cursor-grab active:cursor-grabbing"
-          >
-            <Chip
-              onClose={() => onRemoveAlias(index)}
-              variant="flat"
-              className="h-8"
-              classNames={{
-                base: draggingAlias === alias ? 'opacity-70' : ''
-              }}
-            >
-              {alias}
-            </Chip>
-          </Reorder.Item>
-        ))}
-      </Reorder.Group>
+        onRemove={onRemoveAlias}
+      />
     </div>
   )
 }
