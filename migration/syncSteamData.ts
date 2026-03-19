@@ -4,7 +4,7 @@ import { fetchSteamAppData } from '~/lib/arnebiae/steam'
 import { lowQualitySteamTags } from '~/lib/steamDirtyTag'
 import type { SteamAppData } from '~/lib/arnebiae/steam'
 
-const CONCURRENCY = 10
+const CONCURRENCY = 2
 const SYSTEM_USER_ID = 1
 const dirtyTagSet = new Set(lowQualitySteamTags)
 
