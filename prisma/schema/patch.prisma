@@ -4,6 +4,7 @@ model patch {
   name                 String   @db.VarChar(1007)
   vndb_id              String?  @db.VarChar(107)
   vndb_relation_id     String?  @db.VarChar(107)
+  bangumi_id           Int?     @unique
   dlsite_code          String?  @unique @db.VarChar(107)
   banner               String   @default("") @db.VarChar(1007)
   introduction         String   @default("") @db.VarChar(100007)
