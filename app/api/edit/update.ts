@@ -6,6 +6,7 @@ import { ensurePatchCompanyFromDlsite } from './dlsite'
 import { ensurePatchCompaniesFromVNDB } from './fetchCompanies'
 import { ensurePatchTagsFromVNDB } from './fetchTags'
 import { ensurePatchTagsFromBangumi } from './fetchBangumiTags'
+import { ensurePatchDataFromSteam } from './fetchSteamTags'
 
 export const updateGalgame = async (
   input: z.infer<typeof patchUpdateSchema>,
@@ -42,6 +43,7 @@ export const updateGalgame = async (
     vndbId,
     vndbRelationId,
     bangumiId,
+    steamId,
     name,
     alias,
     introduction,
@@ -56,6 +58,7 @@ export const updateGalgame = async (
       vndb_id: vndbId ? vndbId : null,
       vndb_relation_id: vndbRelationId ? vndbRelationId : null,
       bangumi_id: bangumiId ? Number(bangumiId) : null,
+      steam_id: steamId ? Number(steamId) : null,
       dlsite_code: normalizedDlsiteCode ? normalizedDlsiteCode : null,
       introduction,
       content_limit: contentLimit,
@@ -95,6 +98,12 @@ export const updateGalgame = async (
   if (bangumiId) {
     try {
       await ensurePatchTagsFromBangumi(id, Number(bangumiId), uid)
+    } catch {}
+  }
+
+  if (steamId) {
+    try {
+      await ensurePatchDataFromSteam(id, Number(steamId), uid)
     } catch {}
   }
 

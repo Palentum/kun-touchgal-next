@@ -69,6 +69,7 @@ export const getPatchById = async (
     vndbId: patch.vndb_id,
     vndbRelationId: patch.vndb_relation_id,
     bangumiId: patch.bangumi_id,
+    steamId: patch.steam_id,
     dlsiteCode: patch.dlsite_code,
     name: patch.name,
     introduction: patch.introduction,

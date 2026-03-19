@@ -17,6 +17,7 @@ import { ReleaseDateInput } from '../components/ReleaseDateInput'
 import { VNDBInput } from '../create/VNDBInput'
 import { VNDBRelationInput } from '../create/VNDBRelationInput'
 import { BangumiInput } from '../create/BangumiInput'
+import { SteamInput } from '../create/SteamInput'
 import { DLSiteInput } from '../create/DLSiteInput'
 import type { RewritePatchData } from '~/store/rewriteStore'
 
@@ -85,6 +86,11 @@ export const RewritePatch = () => {
             data={data}
             setData={setData}
             errors={errors.bangumiId}
+          />
+          <SteamInput
+            data={data}
+            setData={setData}
+            errors={errors.steamId}
           />
           <DLSiteInput
             data={data}

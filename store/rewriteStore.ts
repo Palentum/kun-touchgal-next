@@ -5,6 +5,7 @@ export interface RewritePatchData {
   vndbId: string
   vndbRelationId: string
   bangumiId: string
+  steamId: string
   dlsiteCode: string
   name: string
   introduction: string
@@ -27,6 +28,7 @@ const initialState: RewritePatchData = {
   vndbId: '',
   vndbRelationId: '',
   bangumiId: '',
+  steamId: '',
   dlsiteCode: '',
   name: '',
   introduction: '',

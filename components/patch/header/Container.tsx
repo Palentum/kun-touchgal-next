@@ -29,6 +29,7 @@ export const PatchHeaderContainer = ({
       vndbId: patch.vndbId ?? '',
       vndbRelationId: patch.vndbRelationId ?? '',
       bangumiId: patch.bangumiId ? String(patch.bangumiId) : '',
+      steamId: patch.steamId ? String(patch.steamId) : '',
       dlsiteCode: patch.dlsiteCode ?? '',
       name: patch.name,
       introduction: patch.introduction,

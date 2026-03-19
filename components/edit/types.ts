@@ -3,6 +3,7 @@ export interface PatchFormDataShape {
   vndbId: string
   vndbRelationId: string
   bangumiId: string
+  steamId: string
   dlsiteCode: string
   alias: string[]
   tag: string[]

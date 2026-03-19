@@ -7,6 +7,7 @@ export interface Patch {
   vndbId: string | null
   vndbRelationId: string | null
   bangumiId: number | null
+  steamId: number | null
   dlsiteCode: string | null
   name: string
   banner: string
@@ -53,6 +54,7 @@ export interface PatchIntroduction {
   vndbId: string | null
   vndbRelationId?: string | null
   bangumiId?: number | null
+  steamId?: number | null
   dlsiteCode?: string | null
   introduction: string
   released: string

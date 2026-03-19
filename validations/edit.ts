@@ -16,6 +16,7 @@ export const patchCreateSchema = z.object({
   vndbId: z.string().max(10),
   vndbRelationId: z.string().max(10),
   bangumiId: z.string().max(10),
+  steamId: z.string().max(10),
   dlsiteCode: z.string().max(20),
   introduction: z
     .string()
@@ -38,6 +39,7 @@ export const patchUpdateSchema = z.object({
   vndbId: z.string().max(10),
   vndbRelationId: z.string().max(10),
   bangumiId: z.string().max(10),
+  steamId: z.string().max(10),
   dlsiteCode: z.string().max(20),
   introduction: z
     .string()

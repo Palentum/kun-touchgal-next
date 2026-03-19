@@ -84,6 +84,24 @@ export const Info = ({ intro }: Props) => {
             </span>
           </div>
         )}
+        {intro.steamId && (
+          <div className="flex items-center gap-2 text-sm text-default-500">
+            <Link className="size-4" />
+            <span>
+              Steam:{' '}
+              {
+                <LinkComp
+                  underline="hover"
+                  size="sm"
+                  isExternal
+                  href={`https://store.steampowered.com/app/${intro.steamId}`}
+                >
+                  {intro.steamId}
+                </LinkComp>
+              }
+            </span>
+          </div>
+        )}
         {intro.dlsiteCode && (
           <div className="flex items-center gap-2 text-sm text-default-500">
             <Link className="size-4" />

@@ -10,6 +10,7 @@ import { ensurePatchCompaniesFromVNDB } from './fetchCompanies'
 import { ensurePatchCompanyFromDlsite } from './dlsite'
 import { ensurePatchTagsFromVNDB } from './fetchTags'
 import { ensurePatchTagsFromBangumi } from './fetchBangumiTags'
+import { ensurePatchDataFromSteam } from './fetchSteamTags'
 
 export const createGalgame = async (
   input: Omit<z.infer<typeof patchCreateSchema>, 'alias' | 'tag'> & {
@@ -24,6 +25,7 @@ export const createGalgame = async (
     vndbId,
     vndbRelationId,
     bangumiId,
+    steamId,
     dlsiteCode,
     alias,
     banner,
@@ -59,6 +61,7 @@ export const createGalgame = async (
           vndb_id: vndbId ? vndbId : null,
           vndb_relation_id: vndbRelationId ? vndbRelationId : null,
           bangumi_id: bangumiId ? Number(bangumiId) : null,
+          steam_id: steamId ? Number(steamId) : null,
           dlsite_code: normalizedDlsiteCode ? normalizedDlsiteCode : null,
           introduction,
           user_id: uid,
@@ -141,6 +144,12 @@ export const createGalgame = async (
   if (bangumiId) {
     try {
       await ensurePatchTagsFromBangumi(res.patchId, Number(bangumiId), uid)
+    } catch {}
+  }
+
+  if (steamId) {
+    try {
+      await ensurePatchDataFromSteam(res.patchId, Number(steamId), uid)
     } catch {}
   }
 
