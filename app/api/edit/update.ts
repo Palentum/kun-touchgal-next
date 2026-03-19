@@ -4,6 +4,7 @@ import { patchUpdateSchema } from '~/validations/edit'
 import { handleBatchPatchTags } from './batchTag'
 import { ensurePatchCompanyFromDlsite } from './dlsite'
 import { ensurePatchCompaniesFromVNDB } from './fetchCompanies'
+import { ensurePatchTagsFromVNDB } from './fetchTags'
 
 export const updateGalgame = async (
   input: z.infer<typeof patchUpdateSchema>,
@@ -82,6 +83,9 @@ export const updateGalgame = async (
   if (vndbId) {
     try {
       await ensurePatchCompaniesFromVNDB(id, vndbId, uid)
+    } catch {}
+    try {
+      await ensurePatchTagsFromVNDB(id, vndbId, uid)
     } catch {}
   }
 

@@ -40,7 +40,8 @@ export const handleBatchPatchTags = async (
         await tx.patch_tag.createMany({
           data: tagsToCreate.map((name) => ({
             user_id: uid,
-            name
+            name,
+            source: 'self'
           }))
         })
       }

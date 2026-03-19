@@ -8,6 +8,7 @@ import { kunMoyuMoe } from '~/config/moyu-moe'
 import { postToIndexNow } from './_postToIndexNow'
 import { ensurePatchCompaniesFromVNDB } from './fetchCompanies'
 import { ensurePatchCompanyFromDlsite } from './dlsite'
+import { ensurePatchTagsFromVNDB } from './fetchTags'
 
 export const createGalgame = async (
   input: Omit<z.infer<typeof patchCreateSchema>, 'alias' | 'tag'> & {
@@ -126,6 +127,12 @@ export const createGalgame = async (
 
   if (tag.length) {
     await handleBatchPatchTags(res.patchId, tag, uid)
+  }
+
+  if (vndbId) {
+    try {
+      await ensurePatchTagsFromVNDB(res.patchId, vndbId, uid)
+    } catch {}
   }
 
   if (contentLimit === 'sfw') {
