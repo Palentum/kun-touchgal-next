@@ -4,18 +4,19 @@ import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { adminReportPaginationSchema } from '~/validations/admin'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
-import type { AdminReport } from '~/types/api/admin'
-import { resolveReportMeta } from './_meta'
+import type { AdminReport, AdminReportTargetType } from '~/types/api/admin'
+import { getReportTargetWhere, resolveReportMeta } from './_meta'
 
 export const getReport = async (
   input: z.infer<typeof adminReportPaginationSchema>
 ) => {
-  const { page, limit, tab } = input
+  const { page, limit, tab, targetType } = input
   const offset = (page - 1) * limit
   const where = {
     type: 'report',
     sender_id: { not: null },
-    ...(tab === 'pending' ? { status: 0 } : { status: { in: [2, 3] } })
+    ...(tab === 'pending' ? { status: 0 } : { status: { in: [2, 3] } }),
+    ...getReportTargetWhere(targetType)
   }
 
   const [data, total] = await Promise.all([
@@ -76,10 +77,12 @@ export const getReport = async (
     link: msg.link,
     created: msg.created,
     sender: msg.sender,
+    targetType: (meta.targetType ?? targetType) as AdminReportTargetType,
     reportedCommentId: meta.reportedCommentId,
+    reportedRatingId: meta.reportedRatingId,
     reportedUserId: meta.reportedUserId,
     reportedUser: meta.reportedUserId
-      ? reportedUserMap.get(meta.reportedUserId) ?? null
+      ? (reportedUserMap.get(meta.reportedUserId) ?? null)
       : null
   }))
 

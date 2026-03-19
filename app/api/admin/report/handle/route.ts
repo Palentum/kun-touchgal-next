@@ -6,6 +6,7 @@ import { adminHandleReportSchema } from '~/validations/admin'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { sliceUntilDelimiterFromEnd } from '~/app/api/utils/sliceUntilDelimiterFromEnd'
 import { findRelatedReportIds, resolveReportMeta } from '../_meta'
+import { recomputePatchRatingStat } from '~/app/api/patch/rating/stat'
 
 export const handleReport = async (
   input: z.infer<typeof adminHandleReportSchema>
@@ -20,13 +21,18 @@ export const handleReport = async (
     return '该举报已被处理'
   }
 
-  const targetCommentId = input.commentId
-    ? input.commentId
-    : (await resolveReportMeta(message.content, message.link)).reportedCommentId
+  const resolvedMeta = input.targetId
+    ? null
+    : await resolveReportMeta(message.content, message.link)
+  const targetId = input.targetId
+    ? input.targetId
+    : input.targetType === 'rating'
+      ? resolvedMeta?.reportedRatingId
+      : resolvedMeta?.reportedCommentId
 
   const relatedReportIds =
-    input.action === 'delete' && targetCommentId
-      ? await findRelatedReportIds(targetCommentId, input.messageId)
+    input.action === 'delete' && targetId
+      ? await findRelatedReportIds(input.targetType, targetId, input.messageId)
       : []
 
   const SLICED_CONTENT = sliceUntilDelimiterFromEnd(message.content).slice(
@@ -42,14 +48,30 @@ export const handleReport = async (
     input.action === 'reject' ? '举报驳回回复' : '举报处理回复'
   const reportContent = `${reportResult}\n\n举报原因: ${SLICED_CONTENT}\n${reportReplyLabel}: ${handleResult}`
 
-  return prisma.$transaction(async (prisma) => {
+  const ratingPatchId =
+    input.action === 'delete' && input.targetType === 'rating' && targetId
+      ? (
+          await prisma.patch_rating.findUnique({
+            where: { id: targetId },
+            select: { patch_id: true }
+          })
+        )?.patch_id
+      : undefined
+
+  const response = await prisma.$transaction(async (prisma) => {
     const messageIdsToHandle = [
       ...new Set([input.messageId, ...relatedReportIds])
     ]
-    if (input.action === 'delete' && targetCommentId) {
-      await prisma.patch_comment.deleteMany({
-        where: { id: targetCommentId }
-      })
+    if (input.action === 'delete' && targetId) {
+      if (input.targetType === 'comment') {
+        await prisma.patch_comment.deleteMany({
+          where: { id: targetId }
+        })
+      } else {
+        await prisma.patch_rating.deleteMany({
+          where: { id: targetId }
+        })
+      }
     }
 
     const affectedReports = await prisma.user_message.findMany({
@@ -93,6 +115,12 @@ export const handleReport = async (
 
     return {}
   })
+
+  if (ratingPatchId) {
+    await recomputePatchRatingStat(ratingPatchId)
+  }
+
+  return response
 }
 
 export const POST = async (req: NextRequest) => {

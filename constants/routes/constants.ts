@@ -21,6 +21,7 @@ export const keyLabelMap: Record<string, string> = {
   '/admin/resource-apply': '资源首次发布申请',
   '/admin/feedback': 'Gal 反馈管理',
   '/admin/report': '评论举报管理',
+  '/admin/rating-report': '评价举报管理',
   '/admin/email': '邮件群发',
   '/apply': '创作者申请',
   '/apply/pending': '正在申请中',

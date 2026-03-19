@@ -18,21 +18,24 @@ import {
 import { KunAvatar } from '~/components/kun/floating-card/KunAvatar'
 import { formatDate } from '~/utils/time'
 import { ReportHandler } from './ReportHandler'
-import type { AdminReport } from '~/types/api/admin'
+import type { AdminReport, AdminReportTargetType } from '~/types/api/admin'
 import { kunFetchPost } from '~/utils/kunFetch'
 import toast from 'react-hot-toast'
 
 interface Props {
   report: AdminReport
+  targetType: AdminReportTargetType
   onHandled: () => void
 }
 
-export const ReportCard = ({ report, onHandled }: Props) => {
+export const ReportCard = ({ report, targetType, onHandled }: Props) => {
   const [reportStatus, setReportStatus] = useState(report.status)
   const [handleContent, setHandleContent] = useState('')
   const [actionType, setActionType] = useState<'delete' | 'reject'>('delete')
   const [updating, setUpdating] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const targetId =
+    targetType === 'rating' ? report.reportedRatingId : report.reportedCommentId
   const displayedUid = report.reportedUser?.id ?? report.reportedUserId ?? 0
   const displayedName = report.reportedUser?.name
     ? report.reportedUser.name
@@ -52,7 +55,8 @@ export const ReportCard = ({ report, onHandled }: Props) => {
     const res = await kunFetchPost<KunResponse<{}>>('/admin/report/handle', {
       messageId: report.id,
       action: actionType,
-      commentId: report.reportedCommentId,
+      targetType,
+      targetId,
       content: handleContent.trim()
     })
     if (typeof res === 'string') {
