@@ -110,6 +110,30 @@ const processCompanies = async (
   }
 }
 
+const processAliases = async (patchId: number, data: SteamAppData) => {
+  const aliasValues = Object.values(data.aliases)
+    .map((v) => v?.trim())
+    .filter((v): v is string => !!v)
+  const uniqueAliases = [...new Set(aliasValues)]
+
+  if (!uniqueAliases.length) return
+
+  const existingAliases = await prisma.patch_alias.findMany({
+    where: { patch_id: patchId },
+    select: { name: true }
+  })
+  const existingNameSet = new Set(existingAliases.map((a) => a.name))
+
+  const toCreate = uniqueAliases.filter((name) => !existingNameSet.has(name))
+
+  if (toCreate.length) {
+    await prisma.patch_alias.createMany({
+      data: toCreate.map((name) => ({ name, patch_id: patchId })),
+      skipDuplicates: true
+    })
+  }
+}
+
 export const ensurePatchDataFromSteam = async (
   patchId: number,
   steamId: number,
@@ -126,6 +150,7 @@ export const ensurePatchDataFromSteam = async (
 
     const tagResult = await processTags(patchId, data, uid)
     await processCompanies(patchId, data, uid)
+    await processAliases(patchId, data)
 
     return tagResult
   } catch {
