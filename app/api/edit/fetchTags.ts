@@ -19,6 +19,15 @@ export const ensurePatchTagsFromVNDB = async (
   const id = (vndbId || '').trim()
   if (!id) return { ensured: 0, related: 0 }
 
+  const hasVndbTag = await prisma.patch_tag_relation.findFirst({
+    where: {
+      patch_id: patchId,
+      tag: { source: 'vndb' }
+    },
+    select: { id: true }
+  })
+  if (hasVndbTag) return { ensured: 0, related: 0 }
+
   try {
     const res = await fetch(`${VNDB_API_BASE}/vn`, {
       method: 'POST',
