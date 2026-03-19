@@ -32,7 +32,7 @@ export const useSearchStore = create<SearchStoreState>()(
       resetData: () => set({ data: initialState })
     }),
     {
-      name: 'kun-patch-search-store',
+      name: 'kun-patch-search-store-v2',
       storage: createJSONStorage(() => localStorage)
     }
   )
