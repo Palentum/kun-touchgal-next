@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { prisma } from '~/prisma/index'
-import { VNDB_API_BASE, VNDB_API_HEADERS } from '~/constants/vndb'
+import { VNDB_API_BASE, VNDB_API_HEADERS } from '~/lib/arnebiae/vndb'
 import { TAG_MAP } from '~/lib/tagMap'
 
 const BATCH_SIZE = 50
