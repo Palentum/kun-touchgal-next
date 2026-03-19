@@ -1,28 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { kunParsePostBody } from '~/app/api/utils/parseQuery'
-import { VNDB_API_BASE, VNDB_API_HEADERS } from '~/constants/vndb'
+import { fetchVndbRelease } from '~/lib/arnebiae/vndb'
 
 const relationSchema = z.object({
   relationId: z.string().regex(/^r\d+$/i, 'Relation ID 格式不正确')
 })
-
-interface VNDBReleaseVN {
-  id: string
-  title?: string
-}
-
-interface VNDBReleaseResult {
-  id: string
-  title: string
-  alttitle?: string
-  released?: string
-  vns?: VNDBReleaseVN[]
-}
-
-interface VNDBReleaseResponse {
-  results: VNDBReleaseResult[]
-}
 
 export const POST = async (req: NextRequest) => {
   const input = await kunParsePostBody(req, relationSchema)
@@ -33,20 +16,10 @@ export const POST = async (req: NextRequest) => {
   const relationId = input.relationId.toLowerCase()
 
   try {
-    const response = await fetch(`${VNDB_API_BASE}/release`, {
-      method: 'POST',
-      headers: VNDB_API_HEADERS,
-      body: JSON.stringify({
-        filters: ['id', '=', relationId],
-        fields: 'id, title, alttitle, released, vns.id'
-      })
-    })
-
-    if (!response.ok) {
-      return NextResponse.json('VNDB Release API 请求失败')
-    }
-
-    const data: VNDBReleaseResponse = await response.json()
+    const data = await fetchVndbRelease(
+      ['id', '=', relationId],
+      'id, title, alttitle, released, vns.id'
+    )
 
     if (!data.results.length) {
       return NextResponse.json('未找到对应的 VNDB Release')

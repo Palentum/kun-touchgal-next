@@ -1,15 +1,7 @@
 import { prisma } from '~/prisma/index'
-import { VNDB_API_BASE, VNDB_API_HEADERS } from '~/constants/vndb'
+import { fetchVndbVn } from '~/lib/arnebiae/vndb'
 import { TAG_MAP } from '~/lib/tagMap'
-
-interface VndbTag {
-  id: string
-  name: string
-  rating: number
-  spoiler: number
-  lie: boolean
-  category: string
-}
+import type { VndbTag } from '~/lib/arnebiae/vndb'
 
 export const ensurePatchTagsFromVNDB = async (
   patchId: number,
@@ -29,25 +21,12 @@ export const ensurePatchTagsFromVNDB = async (
   if (hasVndbTag) return { ensured: 0, related: 0 }
 
   try {
-    const res = await fetch(`${VNDB_API_BASE}/vn`, {
-      method: 'POST',
-      headers: VNDB_API_HEADERS,
-      body: JSON.stringify({
-        filters: ['id', '=', id],
-        fields: 'id,tags{id,name,rating,spoiler,lie,category}',
-        results: 1
-      })
-    })
+    const data = await fetchVndbVn<{ tags?: VndbTag[] | null }>(
+      ['id', '=', id],
+      'id,tags{id,name,rating,spoiler,lie,category}'
+    )
 
-    if (!res.ok) {
-      return { ensured: 0, related: 0 }
-    }
-
-    const data = (await res.json()) as {
-      results?: Array<{ tags?: VndbTag[] | null }>
-    }
-
-    const allTags = data?.results?.[0]?.tags ?? []
+    const allTags = data.results?.[0]?.tags ?? []
 
     const filteredTags = allTags.filter(
       (t) =>

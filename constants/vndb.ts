@@ -1,4 +1,6 @@
-export const VNDB_API_BASE = 'https://vndbapi.arnebiae.com/kana'
+import { VNDB_API_BASE as API_BASE } from '~/lib/arnebiae/vndb'
+
+export const VNDB_API_BASE = API_BASE
 export const VNDB_WEB_BASE = 'https://vndb.org'
 
 export const VNDB_USER_AGENT =

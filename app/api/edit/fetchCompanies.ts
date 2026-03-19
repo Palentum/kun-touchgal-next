@@ -1,17 +1,6 @@
 import { prisma } from '~/prisma/index'
-import { VNDB_API_BASE, VNDB_API_HEADERS } from '~/constants/vndb'
-
-type VndbExtLink = { url?: string | null }
-type VndbProducer = {
-  id?: string
-  name?: string
-  original?: string | null
-  aliases?: string[] | null
-  lang?: string | null
-  type?: string | null
-  description?: string | null
-  extlinks?: VndbExtLink[] | null
-}
+import { fetchVndbVn } from '~/lib/arnebiae/vndb'
+import type { VndbProducer } from '~/lib/arnebiae/vndb'
 
 const uniq = <T>(arr: T[]) => Array.from(new Set(arr))
 
@@ -52,26 +41,14 @@ export const ensurePatchCompaniesFromVNDB = async (
   if (!id) return { ensured: 0, related: 0 }
 
   try {
-    const res = await fetch(`${VNDB_API_BASE}/vn`, {
-      method: 'POST',
-      headers: VNDB_API_HEADERS,
-      body: JSON.stringify({
-        filters: ['id', '=', id],
-        fields:
-          'id,developers{id,name,original,aliases,lang,type,description,extlinks{url}}',
-        results: 1
-      })
-    })
+    const data = await fetchVndbVn<{
+      developers?: VndbProducer[] | null
+    }>(
+      ['id', '=', id],
+      'id,developers{id,name,original,aliases,lang,type,description,extlinks{url}}'
+    )
 
-    if (!res.ok) {
-      return { ensured: 0, related: 0 }
-    }
-
-    const data = (await res.json()) as {
-      results?: Array<{ developers?: VndbProducer[] | null }>
-    }
-
-    const devs = (data?.results?.[0]?.developers ?? []).filter(
+    const devs = (data.results?.[0]?.developers ?? []).filter(
       (d) => d && (d.type === 'co' || d.type === 'ng' || d.type === 'in')
     ) as VndbProducer[]
 

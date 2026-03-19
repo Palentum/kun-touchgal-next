@@ -1,29 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { kunParsePostBody } from '~/app/api/utils/parseQuery'
-import { VNDB_API_BASE, VNDB_API_HEADERS } from '~/constants/vndb'
+import { fetchVndbVn } from '~/lib/arnebiae/vndb'
+import type { VNDBDetailResult } from '~/lib/arnebiae/vndb'
 
 const detailsSchema = z.object({
   vndbId: z.string().regex(/^v\d+$/i, 'VNDB ID 格式不正确')
 })
 
-interface VNDBTitle {
-  lang: string
-  title: string
-}
-
-interface VNDBResult {
-  title: string
-  titles: VNDBTitle[]
-  aliases: string[]
-  released: string
-}
-
-interface VNDBResponse {
-  results: VNDBResult[]
-}
-
-const buildAllTitles = (response: VNDBResponse) => {
+const buildAllTitles = (response: { results: VNDBDetailResult[] }) => {
   return response.results.flatMap((vn) => {
     const jaTitle = vn.titles.find((t) => t.lang === 'ja')?.title
     const titlesArray = [
@@ -45,20 +30,10 @@ export const POST = async (req: NextRequest) => {
   const vndbId = input.vndbId.toLowerCase()
 
   try {
-    const vndbResponse = await fetch(`${VNDB_API_BASE}/vn`, {
-      method: 'POST',
-      headers: VNDB_API_HEADERS,
-      body: JSON.stringify({
-        filters: ['id', '=', vndbId],
-        fields: 'title, titles.lang, titles.title, aliases, released'
-      })
-    })
-
-    if (!vndbResponse.ok) {
-      return NextResponse.json('VNDB API 请求失败')
-    }
-
-    const vndbData: VNDBResponse = await vndbResponse.json()
+    const vndbData = await fetchVndbVn<VNDBDetailResult>(
+      ['id', '=', vndbId],
+      'title, titles.lang, titles.title, aliases, released'
+    )
     if (!vndbData.results.length) {
       return NextResponse.json('未找到对应的 VNDB 条目')
     }
