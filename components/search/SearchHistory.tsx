@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@heroui/react'
+import { Chip } from '@heroui/chip'
 import { Clock, X } from 'lucide-react'
 import { useSearchStore } from '~/store/searchStore'
 import type { Dispatch, SetStateAction } from 'react'
@@ -20,20 +21,9 @@ export const SearchHistory = ({
   const searchData = useSearchStore((state) => state.data)
   const setSearchData = useSearchStore((state) => state.setData)
 
-  const handleHistoryClick = (historyItem: string) => {
+  const handleHistoryClick = (historyItem: SearchSuggestionType[]) => {
     setShowHistory(false)
-    const queryArraySplitByBlank = historyItem.split(' ')
-    const suggestions: SearchSuggestionType[] = queryArraySplitByBlank.map(
-      (q) => ({
-        type: 'keyword',
-        name: q
-      })
-    )
-    setSelectedSuggestions((prev) => {
-      const namesToRemove = new Set(suggestions.map((s) => s.name))
-      const filtered = prev.filter((item) => !namesToRemove.has(item.name))
-      return [...filtered, ...suggestions]
-    })
+    setSelectedSuggestions(historyItem)
   }
 
   return (
@@ -64,8 +54,19 @@ export const SearchHistory = ({
                 className="flex items-center gap-2 p-2 cursor-pointer hover:bg-default-100 rounded-2xl"
                 onMouseDown={() => handleHistoryClick(item)}
               >
-                <Clock size={16} className="text-default-400" />
-                <span>{item}</span>
+                <Clock size={16} className="shrink-0 text-default-400" />
+                <div className="flex flex-wrap gap-1">
+                  {item.map((s, i) => (
+                    <Chip
+                      key={i}
+                      size="sm"
+                      variant="flat"
+                      color={s.type === 'tag' ? 'secondary' : 'default'}
+                    >
+                      {s.type === 'tag' ? `#${s.name}` : s.name}
+                    </Chip>
+                  ))}
+                </div>
               </div>
             ))}
           </div>

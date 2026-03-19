@@ -123,7 +123,9 @@ export const SearchInput = ({
     <div
       className={cn(
         'flex gap-2 p-3 bg-default-100 rounded-large transition-all duration-200',
-        isFocused ? 'ring-2 ring-primary ring-offset-2' : ''
+        isFocused
+          ? 'ring-2 ring-primary ring-offset-2 ring-offset-background'
+          : ''
       )}
     >
       <div className="flex flex-wrap items-center w-full gap-2">

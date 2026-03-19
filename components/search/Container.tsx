@@ -49,15 +49,25 @@ export const SearchPage = () => {
   const isNSFWEnabled =
     settings.kunNsfwEnable === 'nsfw' || settings.kunNsfwEnable === 'all'
 
-  const addToHistory = (searchQueries: string[]) => {
-    const validQueries = searchQueries.filter((q) => q.trim())
-    if (validQueries.length === 0) {
+  const addToHistory = (suggestions: SearchSuggestionType[]) => {
+    if (suggestions.length === 0) {
       return
     }
 
+    const entryKey = suggestions
+      .map((s) => `${s.type}:${s.name}`)
+      .sort()
+      .join('|')
+
     const newHistory = [
-      ...validQueries,
-      ...searchData.searchHistory.filter((item) => !validQueries.includes(item))
+      suggestions,
+      ...searchData.searchHistory.filter((item) => {
+        const itemKey = item
+          .map((s) => `${s.type}:${s.name}`)
+          .sort()
+          .join('|')
+        return itemKey !== entryKey
+      })
     ].slice(0, MAX_HISTORY_ITEMS)
 
     setSearchData({ ...searchData, searchHistory: newHistory })
@@ -99,14 +109,7 @@ export const SearchPage = () => {
     setHasSearched(true)
     setLoading(false)
 
-    const hasTag = selectedSuggestions.some((s) => s.type === 'tag')
-    if (!hasTag) {
-      addToHistory(
-        selectedSuggestions
-          .filter((s) => s.type === 'keyword')
-          .map((s) => s.name)
-      )
-    }
+    addToHistory(selectedSuggestions)
   }
 
   useEffect(() => {
