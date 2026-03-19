@@ -15,6 +15,7 @@ export const patchCreateSchema = z.object({
   name: z.string().trim().min(1, { message: '游戏名称是必填项' }),
   vndbId: z.string().max(10),
   vndbRelationId: z.string().max(10),
+  bangumiId: z.string().max(10),
   dlsiteCode: z.string().max(20),
   introduction: z
     .string()
@@ -36,6 +37,7 @@ export const patchUpdateSchema = z.object({
   name: z.string().trim().min(1, { message: '游戏名称是必填项' }),
   vndbId: z.string().max(10),
   vndbRelationId: z.string().max(10),
+  bangumiId: z.string().max(10),
   dlsiteCode: z.string().max(20),
   introduction: z
     .string()

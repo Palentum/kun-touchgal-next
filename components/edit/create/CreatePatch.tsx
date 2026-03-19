@@ -5,6 +5,7 @@ import { Card, CardBody, CardHeader, Input } from '@heroui/react'
 import { useCreatePatchStore } from '~/store/editStore'
 import { VNDBInput } from './VNDBInput'
 import { VNDBRelationInput } from './VNDBRelationInput'
+import { BangumiInput } from './BangumiInput'
 import { DLSiteInput } from './DLSiteInput'
 import { AliasInput } from './AliasInput'
 import { BannerImage } from './BannerImage'
@@ -44,6 +45,11 @@ export const CreatePatch = () => {
             data={data}
             setData={setData}
             errors={errors.vndbRelationId}
+          />
+          <BangumiInput
+            data={data}
+            setData={setData}
+            errors={errors.bangumiId}
           />
           <DLSiteInput
             data={data}

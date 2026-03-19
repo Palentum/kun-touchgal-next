@@ -5,6 +5,7 @@ import { handleBatchPatchTags } from './batchTag'
 import { ensurePatchCompanyFromDlsite } from './dlsite'
 import { ensurePatchCompaniesFromVNDB } from './fetchCompanies'
 import { ensurePatchTagsFromVNDB } from './fetchTags'
+import { ensurePatchTagsFromBangumi } from './fetchBangumiTags'
 
 export const updateGalgame = async (
   input: z.infer<typeof patchUpdateSchema>,
@@ -40,6 +41,7 @@ export const updateGalgame = async (
     id,
     vndbId,
     vndbRelationId,
+    bangumiId,
     name,
     alias,
     introduction,
@@ -53,6 +55,7 @@ export const updateGalgame = async (
       name,
       vndb_id: vndbId ? vndbId : null,
       vndb_relation_id: vndbRelationId ? vndbRelationId : null,
+      bangumi_id: bangumiId ? Number(bangumiId) : null,
       dlsite_code: normalizedDlsiteCode ? normalizedDlsiteCode : null,
       introduction,
       content_limit: contentLimit,
@@ -86,6 +89,12 @@ export const updateGalgame = async (
     } catch {}
     try {
       await ensurePatchTagsFromVNDB(id, vndbId, uid)
+    } catch {}
+  }
+
+  if (bangumiId) {
+    try {
+      await ensurePatchTagsFromBangumi(id, Number(bangumiId), uid)
     } catch {}
   }
 

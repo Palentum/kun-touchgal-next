@@ -66,6 +66,24 @@ export const Info = ({ intro }: Props) => {
             </span>
           </div>
         )}
+        {intro.bangumiId && (
+          <div className="flex items-center gap-2 text-sm text-default-500">
+            <Link className="size-4" />
+            <span>
+              Bangumi:{' '}
+              {
+                <LinkComp
+                  underline="hover"
+                  size="sm"
+                  isExternal
+                  href={`https://bgm.tv/subject/${intro.bangumiId}`}
+                >
+                  {intro.bangumiId}
+                </LinkComp>
+              }
+            </span>
+          </div>
+        )}
         {intro.dlsiteCode && (
           <div className="flex items-center gap-2 text-sm text-default-500">
             <Link className="size-4" />

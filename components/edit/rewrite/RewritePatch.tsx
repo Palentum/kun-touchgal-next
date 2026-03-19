@@ -16,6 +16,7 @@ import { BatchTag } from '../components/BatchTag'
 import { ReleaseDateInput } from '../components/ReleaseDateInput'
 import { VNDBInput } from '../create/VNDBInput'
 import { VNDBRelationInput } from '../create/VNDBRelationInput'
+import { BangumiInput } from '../create/BangumiInput'
 import { DLSiteInput } from '../create/DLSiteInput'
 import type { RewritePatchData } from '~/store/rewriteStore'
 
@@ -79,6 +80,11 @@ export const RewritePatch = () => {
             setData={setData}
             errors={errors.vndbRelationId}
             enableDuplicateCheck={false}
+          />
+          <BangumiInput
+            data={data}
+            setData={setData}
+            errors={errors.bangumiId}
           />
           <DLSiteInput
             data={data}

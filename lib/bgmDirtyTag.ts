@@ -1,4 +1,4 @@
-const lowQualityTags = [
+export const lowQualityTags = [
   'o_o',
   'D',
   '视频通关',
