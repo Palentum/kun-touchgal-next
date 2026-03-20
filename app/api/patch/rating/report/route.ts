@@ -23,6 +23,22 @@ export const createReport = async (
   if (rating.patch_id !== input.patchId) {
     return '评价不属于当前游戏'
   }
+  if (rating.user_id === uid) {
+    return '不能举报自己的评价'
+  }
+
+  const existingReport = await prisma.user_message.findFirst({
+    where: {
+      type: 'report',
+      sender_id: uid,
+      status: 0,
+      link: { contains: `ratingId=${input.ratingId}` }
+    },
+    select: { id: true }
+  })
+  if (existingReport) {
+    return '您已经举报过该评价，请等待管理员处理'
+  }
 
   const [patch, user] = await Promise.all([
     prisma.patch.findUnique({

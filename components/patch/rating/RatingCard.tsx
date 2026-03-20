@@ -200,17 +200,19 @@ export const RatingCard = ({
           <RatingLikeButton rating={rating} />
 
           <div className="flex gap-1">
-            <Tooltip content="举报">
-              <Button
-                variant="light"
-                isIconOnly
-                size="sm"
-                onPress={onOpenReport}
-                className="text-warning"
-              >
-                <TriangleAlert className="size-4" />
-              </Button>
-            </Tooltip>
+            {user.uid > 0 && user.uid !== rating.user.id && (
+              <Tooltip content="举报">
+                <Button
+                  variant="light"
+                  isIconOnly
+                  size="sm"
+                  onPress={onOpenReport}
+                  className="text-warning"
+                >
+                  <TriangleAlert className="size-4" />
+                </Button>
+              </Tooltip>
+            )}
             {canEdit && (
               <>
                 <Tooltip content="编辑">

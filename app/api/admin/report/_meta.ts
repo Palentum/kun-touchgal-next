@@ -193,11 +193,18 @@ export const resolveReportMeta = async (content: string, link: string) => {
     }
   }
 
+  const previewText = baseMeta.targetPreview.slice(0, 200)
+  const isGeneratedPreview = previewText.startsWith('总分 ')
+
+  if (isGeneratedPreview) {
+    return getEmptyReportMeta()
+  }
+
   const matchedRating = await prisma.patch_rating.findFirst({
     where: {
       patch_id: patch.id,
       short_summary: {
-        startsWith: baseMeta.targetPreview.slice(0, 200)
+        startsWith: previewText
       }
     },
     select: {
