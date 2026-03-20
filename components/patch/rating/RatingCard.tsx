@@ -186,7 +186,7 @@ export const RatingCard = ({
                     <Eye className="size-3 text-default-500" />
                   </button>
                 )}
-                <p className="text-sm text-default-700 dark:text-default-300 whitespace-pre-wrap leading-relaxed">
+                <p className="text-sm text-default-800 whitespace-pre-wrap leading-relaxed">
                   {rating.shortSummary}
                 </p>
               </div>
