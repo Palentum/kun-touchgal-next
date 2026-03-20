@@ -163,6 +163,21 @@ export const createPatchCommentReportSchema = z.object({
     .max(5000, { message: '举报原因最多 5000 个字符' })
 })
 
+export const createPatchRatingReportSchema = z.object({
+  ratingId: z.coerce
+    .number({ message: '评价 ID 必须为数字' })
+    .min(1)
+    .max(9999999),
+  patchId: z.coerce
+    .number({ message: '游戏 ID 必须为数字' })
+    .min(1)
+    .max(9999999),
+  content: z
+    .string({ message: '举报原因为必填字段' })
+    .min(2, { message: '举报原因最少 2 个字符' })
+    .max(5000, { message: '举报原因最多 5000 个字符' })
+})
+
 export const togglePatchFavoriteSchema = z.object({
   patchId: z.coerce
     .number({ message: '游戏 ID 必须为数字' })

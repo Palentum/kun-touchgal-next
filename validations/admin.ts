@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+export const adminReportTargetTypeSchema = z.enum(['comment', 'rating'])
+
 export const adminPaginationSchema = z.object({
   page: z.coerce.number().min(1).max(9999999),
   limit: z.coerce.number().min(1).max(100),
@@ -16,7 +18,8 @@ export const adminUserPaginationSchema = adminPaginationSchema.extend({
 })
 
 export const adminReportPaginationSchema = adminPaginationSchema.extend({
-  tab: z.enum(['pending', 'handled']).default('pending')
+  tab: z.enum(['pending', 'handled']).default('pending'),
+  targetType: adminReportTargetTypeSchema.default('comment')
 })
 
 export const adminUpdateUserSchema = z.object({
@@ -62,7 +65,8 @@ export const adminHandleFeedbackSchema = z.object({
 export const adminHandleReportSchema = z.object({
   messageId: z.coerce.number().min(1).max(9999999),
   action: z.enum(['delete', 'reject']),
-  commentId: z.coerce.number().min(1).max(9999999).optional(),
+  targetType: adminReportTargetTypeSchema.default('comment'),
+  targetId: z.coerce.number().min(1).max(9999999).optional(),
   content: z
     .string()
     .trim()

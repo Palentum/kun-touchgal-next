@@ -63,6 +63,11 @@ const menuItems = [
     icon: TriangleAlert
   },
   {
+    name: '评价举报管理',
+    href: '/admin/rating-report',
+    icon: TriangleAlert
+  },
+  {
     name: '管理日志',
     href: '/admin/log',
     icon: FileClock

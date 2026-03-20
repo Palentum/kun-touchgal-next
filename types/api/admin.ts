@@ -66,9 +66,13 @@ export type AdminComment = PatchComment
 
 export type AdminFeedback = Message
 
+export type AdminReportTargetType = 'comment' | 'rating'
+
 export interface AdminReport extends Message {
+  targetType: AdminReportTargetType
   reportedUserId?: number
   reportedCommentId?: number
+  reportedRatingId?: number
   reportedUser: KunUser | null
 }
 

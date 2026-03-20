@@ -34,6 +34,7 @@ export const createReport = async (
       return ''
     }
     const params = new URLSearchParams()
+    params.set('target', 'comment')
     if (comment?.id) {
       params.set('commentId', String(comment.id))
     }
