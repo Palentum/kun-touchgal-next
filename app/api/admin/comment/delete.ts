@@ -1,35 +1,19 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
-
-const commentIdSchema = z.object({
-  commentId: z.coerce
-    .number({ message: '评论 ID 必须为数字' })
-    .min(1)
-    .max(9999999)
-})
-
-const deleteCommentWithReplies = async (commentId: number) => {
-  const childComments = await prisma.patch_comment.findMany({
-    where: { parent_id: commentId }
-  })
-
-  for (const child of childComments) {
-    await deleteCommentWithReplies(child.id)
-  }
-
-  await prisma.patch_comment.delete({
-    where: { id: commentId }
-  })
-}
+import { adminDeleteCommentSchema } from '~/validations/admin'
 
 export const deleteComment = async (
-  input: z.infer<typeof commentIdSchema>,
+  input: z.infer<typeof adminDeleteCommentSchema>,
   uid: number
 ) => {
-  const comment = await prisma.patch_comment.findUnique({
-    where: { id: input.commentId }
+  const comments = await prisma.patch_comment.findMany({
+    where: {
+      id: {
+        in: input.commentIds
+      }
+    }
   })
-  if (!comment) {
+  if (!comments.length) {
     return '未找到对应的评论'
   }
 
@@ -39,13 +23,26 @@ export const deleteComment = async (
   }
 
   return await prisma.$transaction(async (prisma) => {
-    await deleteCommentWithReplies(input.commentId)
+    await prisma.patch_comment.deleteMany({
+      where: {
+        id: {
+          in: comments.map((comment) => comment.id)
+        }
+      }
+    })
+
+    const logContent =
+      comments.length > 1
+        ? `管理员 ${admin.name} 批量删除了 ${comments.length} 条评论\n评论 ID: ${comments
+            .map((comment) => comment.id)
+            .join(', ')}\n原评论: ${JSON.stringify(comments)}`
+        : `管理员 ${admin.name} 删除了一条评论\n原评论: ${JSON.stringify(comments[0])}`
 
     await prisma.admin_log.create({
       data: {
         type: 'delete',
         user_id: uid,
-        content: `管理员 ${admin.name} 删除了一条评论\n原评论: ${JSON.stringify(comment)}`
+        content: logContent
       }
     })
 

@@ -17,6 +17,58 @@ export const adminUserPaginationSchema = adminPaginationSchema.extend({
   searchType: adminUserSearchTypeSchema.default('name')
 })
 
+export const adminCommentSearchTypeSchema = z.enum(['content', 'user'])
+
+export const adminCommentPaginationSchema = adminPaginationSchema.extend({
+  searchType: adminCommentSearchTypeSchema.default('content')
+})
+
+const adminCommentIdsSchema = z
+  .string()
+  .trim()
+  .min(1, { message: '至少选择一条评论' })
+  .refine(
+    (value) =>
+      value.split(',').every((item) => {
+        const trimmed = item.trim()
+        if (!/^\d+$/.test(trimmed)) {
+          return false
+        }
+
+        const commentId = Number.parseInt(trimmed, 10)
+        return commentId >= 1 && commentId <= 9999999
+      }),
+    { message: '评论 ID 格式不正确' }
+  )
+  .transform((value) => [
+    ...new Set(
+      value
+        .split(',')
+        .map((item) => Number.parseInt(item.trim(), 10))
+        .filter((commentId) => commentId >= 1 && commentId <= 9999999)
+    )
+  ])
+
+export const adminDeleteCommentSchema = z.union([
+  z
+    .object({
+      commentId: z.coerce
+        .number({ message: '评论 ID 必须为数字' })
+        .min(1)
+        .max(9999999)
+    })
+    .transform(({ commentId }) => ({
+      commentIds: [commentId]
+    })),
+  z
+    .object({
+      commentIds: adminCommentIdsSchema
+    })
+    .transform(({ commentIds }) => ({
+      commentIds
+    }))
+])
+
 export const adminReportPaginationSchema = adminPaginationSchema.extend({
   tab: z.enum(['pending', 'handled']).default('pending'),
   targetType: adminReportTargetTypeSchema.default('comment')

@@ -1,6 +1,8 @@
-import { z } from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
-import { adminPaginationSchema } from '~/validations/admin'
+import {
+  adminCommentPaginationSchema,
+  adminDeleteCommentSchema
+} from '~/validations/admin'
 import {
   kunParseDeleteQuery,
   kunParseGetQuery,
@@ -12,15 +14,8 @@ import { getComment } from './get'
 import { updateComment } from './update'
 import { deleteComment } from './delete'
 
-const commentIdSchema = z.object({
-  commentId: z.coerce
-    .number({ message: '评论 ID 必须为数字' })
-    .min(1)
-    .max(9999999)
-})
-
 export async function GET(req: NextRequest) {
-  const input = kunParseGetQuery(req, adminPaginationSchema)
+  const input = kunParseGetQuery(req, adminCommentPaginationSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }
@@ -54,7 +49,7 @@ export const PUT = async (req: NextRequest) => {
 }
 
 export const DELETE = async (req: NextRequest) => {
-  const input = kunParseDeleteQuery(req, commentIdSchema)
+  const input = kunParseDeleteQuery(req, adminDeleteCommentSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }

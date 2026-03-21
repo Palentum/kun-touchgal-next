@@ -25,9 +25,10 @@ import toast from 'react-hot-toast'
 
 interface Props {
   initialComment: AdminComment
+  onSuccess?: () => Promise<void> | void
 }
 
-export const CommentEdit = ({ initialComment }: Props) => {
+export const CommentEdit = ({ initialComment, onSuccess }: Props) => {
   const currentUser = useUserStore((state) => state.user)
 
   const {
@@ -38,14 +39,19 @@ export const CommentEdit = ({ initialComment }: Props) => {
   const [deleting, setDeleting] = useState(false)
   const handleDeleteComment = async () => {
     setDeleting(true)
-    const res = await kunFetchDelete<KunResponse<{}>>('/admin/comment', {
-      commentId: initialComment.id
-    })
-    if (typeof res === 'string') {
-      toast.error(res)
-    } else {
-      onCloseDelete()
-      toast.success('评论删除成功')
+    try {
+      const res = await kunFetchDelete<KunResponse<{}>>('/admin/comment', {
+        commentIds: String(initialComment.id)
+      })
+      if (typeof res === 'string') {
+        toast.error(res)
+      } else {
+        onCloseDelete()
+        toast.success('评论删除成功')
+        await onSuccess?.()
+      }
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -62,18 +68,25 @@ export const CommentEdit = ({ initialComment }: Props) => {
       return
     }
     setUpdating(true)
-    const res = await kunFetchPut<KunResponse<AdminComment>>('/admin/comment', {
-      commentId: initialComment.id,
-      content: editContent.trim()
-    })
-    if (typeof res === 'string') {
-      toast.error(res)
-    } else {
-      onCloseEdit()
-      setEditContent('')
-      toast.success('更新评论成功!')
+    try {
+      const res = await kunFetchPut<KunResponse<AdminComment>>(
+        '/admin/comment',
+        {
+          commentId: initialComment.id,
+          content: editContent.trim()
+        }
+      )
+      if (typeof res === 'string') {
+        toast.error(res)
+      } else {
+        onCloseEdit()
+        setEditContent('')
+        toast.success('更新评论成功!')
+        await onSuccess?.()
+      }
+    } finally {
+      setUpdating(false)
     }
-    setUpdating(false)
   }
 
   return (
