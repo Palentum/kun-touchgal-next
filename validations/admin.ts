@@ -18,6 +18,7 @@ export const adminUserPaginationSchema = adminPaginationSchema.extend({
 })
 
 export const adminCommentSearchTypeSchema = z.enum(['content', 'user'])
+const adminCommentDeleteLimit = 30
 
 export const adminCommentPaginationSchema = adminPaginationSchema.extend({
   searchType: adminCommentSearchTypeSchema.default('content')
@@ -48,6 +49,9 @@ const adminCommentIdsSchema = z
         .filter((commentId) => commentId >= 1 && commentId <= 9999999)
     )
   ])
+  .refine((commentIds) => commentIds.length <= adminCommentDeleteLimit, {
+    message: `单次最多删除 ${adminCommentDeleteLimit} 条评论`
+  })
 
 export const adminDeleteCommentSchema = z.union([
   z
