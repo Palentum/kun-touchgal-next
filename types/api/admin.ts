@@ -28,6 +28,7 @@ export interface OverviewData {
 export interface AdminUser {
   id: number
   name: string
+  email: string
   bio: string
   avatar: string
   role: number

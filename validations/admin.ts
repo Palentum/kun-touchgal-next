@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { kunPasswordRegex } from '~/utils/validate'
 
 export const adminReportTargetTypeSchema = z.enum(['comment', 'rating'])
 
@@ -85,9 +86,27 @@ export const adminUpdateUserSchema = z.object({
     .trim()
     .min(1, { message: '用户名长度至少为 1 个字符' })
     .max(17, { message: '用户名长度不能超过 17 个字符' }),
+  email: z.string().trim().email({ message: '请输入合法的邮箱格式' }),
   role: z.coerce.number().min(1).max(3),
   status: z.coerce.number().min(0).max(2),
   dailyImageCount: z.coerce.number().min(0).max(50),
+  password: z.preprocess(
+    (value) => {
+      if (typeof value !== 'string') {
+        return value
+      }
+
+      const trimmedValue = value.trim()
+      return trimmedValue ? trimmedValue : undefined
+    },
+    z
+      .string()
+      .regex(kunPasswordRegex, {
+        message:
+          '新密码格式非法, 密码长度需为 6 到 1007 位, 且至少包含一个英文字符和一个数字'
+      })
+      .optional()
+  ),
   bio: z.string().trim().max(107, { message: '个人简介不能超过 107 个字符' })
 })
 

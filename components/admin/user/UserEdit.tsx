@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import {
   Button,
@@ -38,31 +38,55 @@ const statusOptions = Object.entries(USER_STATUS_MAP).map(([value, label]) => ({
 
 export const UserEdit = ({ initialUser }: Props) => {
   const [user, setUser] = useState<AdminUser>(initialUser)
+  const [formUser, setFormUser] = useState<AdminUser>(initialUser)
+  const [password, setPassword] = useState('')
   const currentUser = useUserStore((state) => state.user)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
+  useEffect(() => {
+    setUser(initialUser)
+    setFormUser(initialUser)
+  }, [initialUser])
+
   const handleChange = (key: keyof AdminUser, value: string | number) => {
-    setUser((prev) => ({ ...prev, [key]: value }))
+    setFormUser((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const handleOpen = () => {
+    setFormUser(user)
+    setPassword('')
+    onOpen()
+  }
+
+  const handleClose = () => {
+    setFormUser(user)
+    setPassword('')
+    onClose()
   }
 
   const [updating, setUpdating] = useState(false)
   const handleUpdateUserInfo = async () => {
     const requestData = {
-      uid: user.id,
-      name: user.name,
-      role: user.role,
-      status: user.status,
-      dailyImageCount: user.dailyImageCount,
-      bio: user.bio
+      uid: formUser.id,
+      name: formUser.name,
+      email: formUser.email,
+      role: formUser.role,
+      status: formUser.status,
+      dailyImageCount: formUser.dailyImageCount,
+      bio: formUser.bio,
+      ...(password ? { password } : {})
     }
 
     setUpdating(true)
     const res = await kunFetchPut<KunResponse<{}>>('/admin/user', requestData)
     kunErrorHandler(res, () => {
+      setUser(formUser)
+      setFormUser(formUser)
+      setPassword('')
       toast.success('更新用户信息成功')
+      onClose()
     })
     setUpdating(false)
-    onClose()
   }
 
   return (
@@ -71,26 +95,33 @@ export const UserEdit = ({ initialUser }: Props) => {
         isIconOnly
         size="sm"
         variant="light"
-        onPress={onOpen}
+        onPress={handleOpen}
         isDisabled={currentUser.role < 3}
       >
         <Edit2 size={16} />
       </Button>
 
-      <Modal size="2xl" isOpen={isOpen} onClose={onClose}>
+      <Modal size="2xl" isOpen={isOpen} onClose={handleClose}>
         <ModalContent>
-          <ModalHeader>编辑用户: {user.name}</ModalHeader>
+          <ModalHeader>编辑用户: {formUser.name}</ModalHeader>
           <ModalBody>
             <p>请注意, 您的任何更改都会导致该用户重新登录</p>
             <div className="grid grid-cols-2 gap-4">
+              <Input label="用户 ID" value={String(formUser.id)} isReadOnly />
               <Input
                 label="用户名"
-                value={user.name}
+                value={formUser.name}
                 onChange={(e) => handleChange('name', e.target.value)}
+              />
+              <Input
+                label="邮箱"
+                type="email"
+                value={formUser.email}
+                onChange={(e) => handleChange('email', e.target.value)}
               />
               <Select
                 label="角色"
-                selectedKeys={[String(user.role)]}
+                selectedKeys={[String(formUser.role)]}
                 onChange={(e) => handleChange('role', Number(e.target.value))}
               >
                 {roleOptions.map((role) => (
@@ -99,7 +130,7 @@ export const UserEdit = ({ initialUser }: Props) => {
               </Select>
               <Select
                 label="状态"
-                selectedKeys={[String(user.status)]}
+                selectedKeys={[String(formUser.status)]}
                 onChange={(e) => handleChange('status', Number(e.target.value))}
                 disabledKeys={['1']}
               >
@@ -110,22 +141,32 @@ export const UserEdit = ({ initialUser }: Props) => {
               <Input
                 label="每日图片限额"
                 type="number"
-                value={String(user.dailyImageCount)}
+                value={String(formUser.dailyImageCount)}
                 onChange={(e) =>
                   handleChange('dailyImageCount', Number(e.target.value))
                 }
               />
               <div className="col-span-2">
+                <Input
+                  label="新密码"
+                  type="password"
+                  autoComplete="new-password"
+                  description="留空则不修改该用户密码"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <div className="col-span-2">
                 <Textarea
                   label="签名"
-                  value={user.bio}
+                  value={formUser.bio}
                   onChange={(e) => handleChange('bio', e.target.value)}
                 />
               </div>
             </div>
           </ModalBody>
           <ModalFooter>
-            <Button color="danger" variant="light" onPress={onClose}>
+            <Button color="danger" variant="light" onPress={handleClose}>
               取消
             </Button>
             <Button

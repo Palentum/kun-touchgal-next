@@ -63,6 +63,7 @@ export const getUserInfo = async (
   const users: AdminUser[] = data.map((user) => ({
     id: user.id,
     name: user.name,
+    email: user.email,
     bio: user.bio,
     avatar: user.avatar,
     role: user.role,
