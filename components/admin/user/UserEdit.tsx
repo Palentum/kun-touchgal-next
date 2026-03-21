@@ -17,8 +17,8 @@ import {
 } from '@heroui/react'
 import { Edit2 } from 'lucide-react'
 import { USER_ROLE_MAP, USER_STATUS_MAP } from '~/constants/user'
-import { kunFetchPut } from '~/utils/kunFetch'
-import { kunErrorHandler } from '~/utils/kunErrorHandler'
+import { kunFetchPost, kunFetchPut } from '~/utils/kunFetch'
+import { errorReporter, kunErrorHandler } from '~/utils/kunErrorHandler'
 import { useUserStore } from '~/store/userStore'
 import type { AdminUser } from '~/types/api/admin'
 
@@ -40,6 +40,7 @@ export const UserEdit = ({ initialUser }: Props) => {
   const [user, setUser] = useState<AdminUser>(initialUser)
   const [formUser, setFormUser] = useState<AdminUser>(initialUser)
   const [password, setPassword] = useState('')
+  const [disabling2FA, setDisabling2FA] = useState(false)
   const currentUser = useUserStore((state) => state.user)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -78,15 +79,41 @@ export const UserEdit = ({ initialUser }: Props) => {
     }
 
     setUpdating(true)
-    const res = await kunFetchPut<KunResponse<{}>>('/admin/user', requestData)
-    kunErrorHandler(res, () => {
-      setUser(formUser)
-      setFormUser(formUser)
-      setPassword('')
-      toast.success('更新用户信息成功')
-      onClose()
-    })
-    setUpdating(false)
+    try {
+      const res = await kunFetchPut<KunResponse<{}>>('/admin/user', requestData)
+      kunErrorHandler(res, () => {
+        setUser(formUser)
+        setFormUser(formUser)
+        setPassword('')
+        toast.success('更新用户信息成功')
+        onClose()
+      })
+    } catch (error) {
+      errorReporter(error)
+    } finally {
+      setUpdating(false)
+    }
+  }
+
+  const handleDisable2FA = async () => {
+    setDisabling2FA(true)
+    try {
+      const res = await kunFetchPost<KunResponse<{}>>(
+        '/admin/user/2fa/disable',
+        {
+          uid: formUser.id
+        }
+      )
+      kunErrorHandler(res, () => {
+        setUser((prev) => ({ ...prev, enable2FA: false }))
+        setFormUser((prev) => ({ ...prev, enable2FA: false }))
+        toast.success('关闭用户两步验证成功')
+      })
+    } catch (error) {
+      errorReporter(error)
+    } finally {
+      setDisabling2FA(false)
+    }
   }
 
   return (
@@ -166,12 +193,24 @@ export const UserEdit = ({ initialUser }: Props) => {
             </div>
           </ModalBody>
           <ModalFooter>
+            {currentUser.role === 4 && (
+              <Button
+                color="warning"
+                variant="flat"
+                className="mr-auto"
+                isDisabled={updating || disabling2FA || !formUser.enable2FA}
+                isLoading={disabling2FA}
+                onPress={handleDisable2FA}
+              >
+                关闭两步验证
+              </Button>
+            )}
             <Button color="danger" variant="light" onPress={handleClose}>
               取消
             </Button>
             <Button
               color="primary"
-              isDisabled={updating}
+              isDisabled={updating || disabling2FA}
               isLoading={updating}
               onPress={handleUpdateUserInfo}
             >

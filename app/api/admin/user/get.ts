@@ -64,6 +64,7 @@ export const getUserInfo = async (
     id: user.id,
     name: user.name,
     email: user.email,
+    enable2FA: user.enable_2fa,
     bio: user.bio,
     avatar: user.avatar,
     role: user.role,

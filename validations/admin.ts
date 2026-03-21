@@ -110,6 +110,10 @@ export const adminUpdateUserSchema = z.object({
   bio: z.string().trim().max(107, { message: '个人简介不能超过 107 个字符' })
 })
 
+export const adminDisableUser2FASchema = z.object({
+  uid: z.coerce.number({ message: '用户 ID 必须为数字' }).min(1).max(9999999)
+})
+
 export const approveCreatorSchema = z.object({
   messageId: z.coerce.number().min(1).max(9999999),
   uid: z.coerce.number().min(1).max(9999999)
