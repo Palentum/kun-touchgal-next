@@ -19,6 +19,10 @@ export const UserActivity = ({ id }: UserActivityProps) => {
     { key: 'resource', title: '发布补丁', href: `/user/${id}/resource` }
   ]
 
+  const selectedKey = tabs.some((tab) => tab.key === lastSegment)
+    ? lastSegment
+    : 'comment'
+
   return (
     <Card className="w-full">
       <CardBody>
@@ -26,7 +30,7 @@ export const UserActivity = ({ id }: UserActivityProps) => {
           aria-label="用户活动"
           variant="underlined"
           fullWidth
-          selectedKey={lastSegment}
+          selectedKey={selectedKey}
         >
           {tabs.map(({ key, title, href }) => (
             <Tab key={key} as={Link} title={title} href={href} />
