@@ -17,7 +17,10 @@ export const POST = async (req: NextRequest) => {
     const data = await fetchSteamAppData(Number(input.steamId))
     return NextResponse.json({
       name: data.name,
-      aliases: data.aliases
+      aliases: data.aliases,
+      releaseDate: data.releaseDate,
+      tags: data.tags,
+      developers: data.developers
     })
   } catch (error) {
     console.error(error)

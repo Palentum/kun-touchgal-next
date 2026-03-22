@@ -1,8 +1,10 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Button, Input } from '@heroui/react'
 import toast from 'react-hot-toast'
 import { kunFetchPost } from '~/utils/kunFetch'
+import { FetchPreview } from '~/components/edit/components/FetchPreview'
 import type { PatchFormDataShape } from '~/components/edit/types'
 
 interface DlsiteResponse {
@@ -14,6 +16,15 @@ interface DlsiteResponse {
   tags?: string
   circle_name?: string
   circle_link?: string
+}
+
+interface PreviewData {
+  titleDefault: string
+  titleJp: string
+  titleEn: string
+  tags: string[]
+  circleName: string
+  releaseDate: string
 }
 
 const parseTags = (raw?: string) => {
@@ -35,6 +46,12 @@ export const DLSiteInput = <T extends PatchFormDataShape>({
   data,
   setData
 }: Props<T>) => {
+  const [preview, setPreview] = useState<PreviewData | null>(null)
+
+  useEffect(() => {
+    setPreview(null)
+  }, [data.dlsiteCode])
+
   const handleFetch = async () => {
     const rawCode = data.dlsiteCode.trim()
     if (!rawCode) {
@@ -65,11 +82,22 @@ export const DLSiteInput = <T extends PatchFormDataShape>({
         return
       }
 
+      const parsedTags = parseTags(result.tags)
+
+      setPreview({
+        titleDefault: result.title_default,
+        titleJp: result.title_jp?.trim() ?? '',
+        titleEn: result.title_en?.trim() ?? '',
+        tags: parsedTags,
+        circleName: result.circle_name?.trim() ?? '',
+        releaseDate: result.release_date ?? ''
+      })
+
       const extraAliases = [result.title_jp, result.title_en]
         .map((title) => title?.trim())
         .filter((title): title is string => !!title)
       const alias = [...new Set([...data.alias, ...extraAliases])]
-      const tags = [...new Set([...data.tag, ...parseTags(result.tags)])]
+      const tags = [...new Set([...data.tag, ...parsedTags])]
 
       setData({
         ...data,
@@ -84,6 +112,7 @@ export const DLSiteInput = <T extends PatchFormDataShape>({
       toast.success('已获取 DLSite 数据并自动写入表单')
     } catch (error) {
       console.error(error)
+      setPreview(null)
       toast.error('DLSite API 请求失败, 请稍后重试')
     }
   }
@@ -112,6 +141,18 @@ export const DLSiteInput = <T extends PatchFormDataShape>({
           </Button>
         )}
       </div>
+      {preview && (
+        <FetchPreview
+          fields={[
+            { label: '默认标题', value: preview.titleDefault },
+            { label: '日文标题', value: preview.titleJp },
+            { label: '英文标题', value: preview.titleEn },
+            { label: '标签', value: preview.tags },
+            { label: '社团', value: preview.circleName },
+            { label: '发售日期', value: preview.releaseDate }
+          ]}
+        />
+      )}
     </div>
   )
 }

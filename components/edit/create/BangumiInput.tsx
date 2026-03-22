@@ -1,8 +1,10 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Button, Input } from '@heroui/react'
 import toast from 'react-hot-toast'
 import { kunFetchPost } from '~/utils/kunFetch'
+import { FetchPreview } from '~/components/edit/components/FetchPreview'
 import type { PatchFormDataShape } from '~/components/edit/types'
 
 interface BangumiPreview {
@@ -21,6 +23,12 @@ export const BangumiInput = <T extends PatchFormDataShape>({
   data,
   setData
 }: Props<T>) => {
+  const [preview, setPreview] = useState<BangumiPreview | null>(null)
+
+  useEffect(() => {
+    setPreview(null)
+  }, [data.bangumiId])
+
   const handleFetch = async () => {
     const rawInput = data.bangumiId.trim()
     if (!rawInput) {
@@ -51,9 +59,19 @@ export const BangumiInput = <T extends PatchFormDataShape>({
         return
       }
 
+      setPreview(result)
+
+      const extraAliases = [result.name, result.nameCn]
+        .map((n) => n?.trim())
+        .filter((n): n is string => !!n)
+      const alias = [...new Set([...data.alias, ...extraAliases])]
+
+      setData({ ...data, alias })
+
       toast.success(`确认: ${displayName}`)
     } catch (error) {
       console.error(error)
+      setPreview(null)
       toast.error('Bangumi API 请求失败, 请稍后重试')
     }
   }
@@ -82,6 +100,14 @@ export const BangumiInput = <T extends PatchFormDataShape>({
           </Button>
         )}
       </div>
+      {preview && (
+        <FetchPreview
+          fields={[
+            { label: '名称', value: preview.name },
+            { label: '中文名', value: preview.nameCn }
+          ]}
+        />
+      )}
     </div>
   )
 }

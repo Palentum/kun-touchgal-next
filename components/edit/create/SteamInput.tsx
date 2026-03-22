@@ -1,8 +1,10 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Button, Input } from '@heroui/react'
 import toast from 'react-hot-toast'
 import { kunFetchPost } from '~/utils/kunFetch'
+import { FetchPreview } from '~/components/edit/components/FetchPreview'
 import type { PatchFormDataShape } from '~/components/edit/types'
 
 interface SteamPreview {
@@ -12,6 +14,9 @@ interface SteamPreview {
     japanese?: string
     tchinese?: string
   }
+  releaseDate: string
+  tags: string[]
+  developers: { name: string; link: string }[]
 }
 
 interface Props<T extends PatchFormDataShape> {
@@ -25,6 +30,12 @@ export const SteamInput = <T extends PatchFormDataShape>({
   data,
   setData
 }: Props<T>) => {
+  const [preview, setPreview] = useState<SteamPreview | null>(null)
+
+  useEffect(() => {
+    setPreview(null)
+  }, [data.steamId])
+
   const handleFetch = async () => {
     const rawInput = data.steamId.trim()
     if (!rawInput) {
@@ -54,6 +65,8 @@ export const SteamInput = <T extends PatchFormDataShape>({
         return
       }
 
+      setPreview(result)
+
       const extraAliases = [
         result.aliases.japanese,
         result.aliases.english,
@@ -64,13 +77,27 @@ export const SteamInput = <T extends PatchFormDataShape>({
 
       const alias = [...new Set([...data.alias, ...extraAliases])]
 
-      setData({ ...data, alias })
+      setData({
+        ...data,
+        alias,
+        released: result.releaseDate || data.released
+      })
 
       toast.success(`确认: ${result.name}`)
     } catch (error) {
       console.error(error)
+      setPreview(null)
       toast.error('Steam API 请求失败, 请稍后重试')
     }
+  }
+
+  const getAliasChips = () => {
+    if (!preview) return []
+    return [
+      preview.aliases.japanese,
+      preview.aliases.english,
+      preview.aliases.tchinese
+    ].filter((a): a is string => !!a?.trim())
   }
 
   return (
@@ -97,6 +124,20 @@ export const SteamInput = <T extends PatchFormDataShape>({
           </Button>
         )}
       </div>
+      {preview && (
+        <FetchPreview
+          fields={[
+            { label: '游戏名', value: preview.name },
+            { label: '别名', value: getAliasChips() },
+            { label: '标签', value: preview.tags },
+            { label: '发售日期', value: preview.releaseDate },
+            {
+              label: '开发商',
+              value: preview.developers.map((d) => d.name)
+            }
+          ]}
+        />
+      )}
     </div>
   )
 }

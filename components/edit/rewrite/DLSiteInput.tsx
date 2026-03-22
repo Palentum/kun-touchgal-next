@@ -1,9 +1,11 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Button, Input } from '@heroui/react'
 import toast from 'react-hot-toast'
 import { useRewritePatchStore } from '~/store/rewriteStore'
 import { kunFetchPost } from '~/utils/kunFetch'
+import { FetchPreview } from '~/components/edit/components/FetchPreview'
 
 interface DlsiteResponse {
   rj_code: string
@@ -16,6 +18,15 @@ interface DlsiteResponse {
   circle_link?: string
 }
 
+interface PreviewData {
+  titleDefault: string
+  titleJp: string
+  titleEn: string
+  tags: string[]
+  circleName: string
+  releaseDate: string
+}
+
 const parseTags = (raw?: string) => {
   if (!raw) return [] as string[]
   return raw
@@ -26,6 +37,11 @@ const parseTags = (raw?: string) => {
 
 export const DLSiteInput = ({ errors }: { errors?: string }) => {
   const { data, setData } = useRewritePatchStore()
+  const [preview, setPreview] = useState<PreviewData | null>(null)
+
+  useEffect(() => {
+    setPreview(null)
+  }, [data.dlsiteCode])
 
   const handleFetch = async () => {
     const rawCode = data.dlsiteCode.trim()
@@ -57,11 +73,22 @@ export const DLSiteInput = ({ errors }: { errors?: string }) => {
         return
       }
 
+      const parsedTags = parseTags(result.tags)
+
+      setPreview({
+        titleDefault: result.title_default,
+        titleJp: result.title_jp?.trim() ?? '',
+        titleEn: result.title_en?.trim() ?? '',
+        tags: parsedTags,
+        circleName: result.circle_name?.trim() ?? '',
+        releaseDate: result.release_date ?? ''
+      })
+
       const aliasExtras = [result.title_jp, result.title_en]
         .map((title) => title?.trim())
         .filter((title): title is string => !!title)
       const alias = [...new Set([...data.alias, ...aliasExtras])]
-      const tags = [...new Set([...data.tag, ...parseTags(result.tags)])]
+      const tags = [...new Set([...data.tag, ...parsedTags])]
 
       setData({
         ...data,
@@ -76,6 +103,7 @@ export const DLSiteInput = ({ errors }: { errors?: string }) => {
       toast.success('已获取 DLSite 数据并自动写入表单')
     } catch (error) {
       console.error(error)
+      setPreview(null)
       toast.error('DLSite API 请求失败, 请稍后重试')
     }
   }
@@ -104,6 +132,18 @@ export const DLSiteInput = ({ errors }: { errors?: string }) => {
           </Button>
         )}
       </div>
+      {preview && (
+        <FetchPreview
+          fields={[
+            { label: '默认标题', value: preview.titleDefault },
+            { label: '日文标题', value: preview.titleJp },
+            { label: '英文标题', value: preview.titleEn },
+            { label: '标签', value: preview.tags },
+            { label: '社团', value: preview.circleName },
+            { label: '发售日期', value: preview.releaseDate }
+          ]}
+        />
+      )}
     </div>
   )
 }

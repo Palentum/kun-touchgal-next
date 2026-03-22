@@ -1,9 +1,16 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Button, Input } from '@heroui/react'
 import toast from 'react-hot-toast'
 import { fetchVNDBDetails } from '~/utils/vndb'
+import { FetchPreview } from '~/components/edit/components/FetchPreview'
 import type { PatchFormDataShape } from '~/components/edit/types'
+
+interface PreviewData {
+  titles: string[]
+  released: string
+}
 
 interface Props<T extends PatchFormDataShape> {
   errors: string | undefined
@@ -16,6 +23,12 @@ export const VNDBInput = <T extends PatchFormDataShape>({
   data,
   setData
 }: Props<T>) => {
+  const [preview, setPreview] = useState<PreviewData | null>(null)
+
+  useEffect(() => {
+    setPreview(null)
+  }, [data.vndbId])
+
   const handleFetchData = async () => {
     const rawInput = data.vndbId.trim()
     if (!rawInput) {
@@ -33,6 +46,8 @@ export const VNDBInput = <T extends PatchFormDataShape>({
       toast('正在从 VNDB 获取数据...')
       const { titles, released } = await fetchVNDBDetails(normalizedInput)
 
+      setPreview({ titles, released })
+
       setData({
         ...data,
         vndbId: normalizedInput,
@@ -43,6 +58,7 @@ export const VNDBInput = <T extends PatchFormDataShape>({
       toast.success('获取数据成功! 已为您自动添加游戏别名')
     } catch (error) {
       console.error(error)
+      setPreview(null)
       if (
         error instanceof Error &&
         (error.message === 'VNDB_API_ERROR' ||
@@ -83,6 +99,14 @@ export const VNDBInput = <T extends PatchFormDataShape>({
           </Button>
         )}
       </div>
+      {preview && (
+        <FetchPreview
+          fields={[
+            { label: '别名', value: preview.titles },
+            { label: '发售日期', value: preview.released }
+          ]}
+        />
+      )}
     </div>
   )
 }

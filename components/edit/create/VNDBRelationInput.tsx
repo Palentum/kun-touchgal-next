@@ -1,12 +1,20 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Button, Input } from '@heroui/react'
 import toast from 'react-hot-toast'
 import { kunFetchGet, kunFetchPost } from '~/utils/kunFetch'
 import { fetchVNDBDetails } from '~/utils/vndb'
+import { FetchPreview } from '~/components/edit/components/FetchPreview'
 import type { PatchFormDataShape } from '~/components/edit/types'
 
 interface RelationResponse {
+  vndbId: string
+  titles: string[]
+  released: string
+}
+
+interface PreviewData {
   vndbId: string
   titles: string[]
   released: string
@@ -25,6 +33,12 @@ export const VNDBRelationInput = <T extends PatchFormDataShape>({
   setData,
   enableDuplicateCheck = true
 }: Props<T>) => {
+  const [preview, setPreview] = useState<PreviewData | null>(null)
+
+  useEffect(() => {
+    setPreview(null)
+  }, [data.vndbRelationId])
+
   const handleFetchRelation = async () => {
     const rawInput = data.vndbRelationId.trim()
     if (!rawInput) {
@@ -85,17 +99,28 @@ export const VNDBRelationInput = <T extends PatchFormDataShape>({
       const { titles: vnTitles, released: vnReleased } =
         await fetchVNDBDetails(vndbId)
 
+      const mergedTitles = [...new Set([...relationTitles, ...vnTitles])]
+      const finalReleased =
+        relationReleased || vnReleased || data.released
+
+      setPreview({
+        vndbId,
+        titles: mergedTitles,
+        released: finalReleased
+      })
+
       setData({
         ...data,
         vndbId,
         vndbRelationId: normalized,
-        alias: [...new Set([...relationTitles, ...vnTitles])],
-        released: relationReleased || vnReleased || data.released
+        alias: mergedTitles,
+        released: finalReleased
       })
 
       toast.success('已获取 Release 数据! 并完成 VNDB 同步')
     } catch (error) {
       console.error(error)
+      setPreview(null)
       if (
         error instanceof Error &&
         (error.message === 'VNDB_API_ERROR' ||
@@ -107,7 +132,7 @@ export const VNDBRelationInput = <T extends PatchFormDataShape>({
             : 'VNDB API 请求失败, 请稍后重试'
         toast.error(message)
       } else {
-        toast.error('获取 Release 数据失败, 请稍后重试')
+        toast.error('获取 Release 数据失败, 请稍���重试')
       }
     }
   }
@@ -140,6 +165,15 @@ export const VNDBRelationInput = <T extends PatchFormDataShape>({
           </Button>
         )}
       </div>
+      {preview && (
+        <FetchPreview
+          fields={[
+            { label: '关联 VNDB ID', value: preview.vndbId },
+            { label: '别名', value: preview.titles },
+            { label: '发售日期', value: preview.released }
+          ]}
+        />
+      )}
     </div>
   )
 }
