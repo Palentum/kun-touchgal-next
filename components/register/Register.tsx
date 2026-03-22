@@ -53,7 +53,7 @@ export const RegisterForm = () => {
       setUser(value)
       reset()
       toast.success('注册成功!')
-      redirect(`/user/${value.uid}`)
+      redirect(`/user/${value.uid}/comment`)
     })
   }
 

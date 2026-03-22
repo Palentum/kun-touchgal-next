@@ -97,7 +97,9 @@ export const MentionsListDropdown = () => {
       const user = users.find((u) => u.id === userId)
 
       if (user?.name) {
-        const link = linkSchema.type(ctx).create({ href: `/user/${user.id}` })
+        const link = linkSchema
+          .type(ctx)
+          .create({ href: `/user/${user.id}/comment` })
         const node = state.schema.text(`@${user.name} `).mark([link])
 
         if (from - offset > 0) {

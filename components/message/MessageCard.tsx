@@ -50,7 +50,7 @@ const getCardRoute = (msg: Message) => {
     return '/'
   }
   if (!msg.link) {
-    return `/user/${msg.sender.id}`
+    return `/user/${msg.sender.id}/comment`
   }
   return msg.link
 }

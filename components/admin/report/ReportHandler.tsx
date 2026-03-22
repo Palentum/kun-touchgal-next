@@ -19,7 +19,7 @@ export const ReportHandler = ({ initialReport }: Props) => {
   const currentUser = useUserStore((state) => state.user)
   const reportedUid =
     initialReport.reportedUserId ?? initialReport.reportedUser?.id
-  const userLink = reportedUid ? `/user/${reportedUid}` : ''
+  const userLink = reportedUid ? `/user/${reportedUid}/comment` : ''
   const disabledKeys = [
     ...(initialReport.link ? [] : ['game']),
     ...(userLink ? [] : ['user'])

@@ -19,7 +19,7 @@ export const UserCommentCard = ({ comment }: Props) => {
         {comment.quotedUserUid && (
           <h4 className="space-x-2">
             <span className="text-default-500">回复给</span>
-            <Link href={`/user/${comment.quotedUserUid}`}>
+            <Link href={`/user/${comment.quotedUserUid}/comment`}>
               {comment.quotedUsername}
             </Link>
           </h4>

@@ -134,7 +134,7 @@ export const UserDropdown = () => {
           </DropdownItem>
           <DropdownItem
             key="profile"
-            onPress={() => router.push(`/user/${user.uid}`)}
+            onPress={() => router.push(`/user/${user.uid}/comment`)}
             startContent={<UserRound className="size-4" />}
           >
             用户主页

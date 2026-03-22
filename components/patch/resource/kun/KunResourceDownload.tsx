@@ -118,7 +118,7 @@ export const KunResourceDownload = ({ resource }: Props) => {
       <div className="flex justify-between">
         <Link
           target="_blank"
-          href={`${KUN_PATCH_WEBSITE_ENDPOINT}/user/${resource.user.id}`}
+          href={`${KUN_PATCH_WEBSITE_ENDPOINT}/user/${resource.user.id}/resource`}
         >
           <User
             name={resource.user.name}

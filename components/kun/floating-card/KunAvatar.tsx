@@ -38,7 +38,7 @@ export const KunAvatar = ({ uid, avatarProps }: Props) => {
           event.preventDefault()
           event.stopPropagation()
 
-          router.push(`/user/${uid}`)
+          router.push(`/user/${uid}/comment`)
         }}
         {...rest}
       />
