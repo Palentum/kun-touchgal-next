@@ -146,33 +146,23 @@ export const ChatMessage = ({
           }}
         />
 
-        <Dropdown isOpen={isMenuOpen} onOpenChange={setIsMenuOpen}>
-          <DropdownTrigger>
-            <div
-              className={cn(
-                'max-w-[70%] rounded-2xl px-4 py-2 cursor-pointer',
-                isOwn
-                  ? 'bg-primary-500 text-white'
-                  : 'bg-default-100 dark:bg-default-200'
-              )}
-              onContextMenu={handleContextMenu}
-              onClick={handleClick}
-            >
-              <p className="text-sm whitespace-pre-wrap break-words">
-                {message.content}
-              </p>
+        {isOwn ? (
+          <Dropdown isOpen={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <DropdownTrigger>
               <div
-                className={cn(
-                  'text-xs mt-1 flex items-center gap-2',
-                  isOwn ? 'text-primary-100' : 'text-default-400'
-                )}
+                className="max-w-[70%] rounded-2xl px-4 py-2 cursor-pointer bg-primary-500 text-white"
+                onContextMenu={handleContextMenu}
+                onClick={handleClick}
               >
-                <span>{formatTimeDifference(message.created)}</span>
-                {message.editedAt && <span>(已编辑)</span>}
+                <p className="text-sm whitespace-pre-wrap break-words">
+                  {message.content}
+                </p>
+                <div className="text-xs mt-1 flex items-center gap-2 text-primary-100">
+                  <span>{formatTimeDifference(message.created)}</span>
+                  {message.editedAt && <span>(已编辑)</span>}
+                </div>
               </div>
-            </div>
-          </DropdownTrigger>
-          {isOwn && (
+            </DropdownTrigger>
             <DropdownMenu aria-label="消息操作">
               <DropdownItem
                 key="edit"
@@ -194,8 +184,18 @@ export const ChatMessage = ({
                 删除
               </DropdownItem>
             </DropdownMenu>
-          )}
-        </Dropdown>
+          </Dropdown>
+        ) : (
+          <div className="max-w-[70%] rounded-2xl px-4 py-2 bg-default-100 dark:bg-default-200">
+            <p className="text-sm whitespace-pre-wrap break-words">
+              {message.content}
+            </p>
+            <div className="text-xs mt-1 flex items-center gap-2 text-default-400">
+              <span>{formatTimeDifference(message.created)}</span>
+              {message.editedAt && <span>(已编辑)</span>}
+            </div>
+          </div>
+        )}
       </div>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
