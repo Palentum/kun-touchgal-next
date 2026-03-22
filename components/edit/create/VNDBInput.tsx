@@ -10,6 +10,8 @@ import type { PatchFormDataShape } from '~/components/edit/types'
 interface PreviewData {
   titles: string[]
   released: string
+  tags: string[]
+  developers: string[]
 }
 
 interface Props<T extends PatchFormDataShape> {
@@ -44,15 +46,18 @@ export const VNDBInput = <T extends PatchFormDataShape>({
 
     try {
       toast('正在从 VNDB 获取数据...')
-      const { titles, released } = await fetchVNDBDetails(normalizedInput)
+      const { titles, released, tags, developers } =
+        await fetchVNDBDetails(normalizedInput)
 
-      setPreview({ titles, released })
+      setPreview({ titles, released, tags, developers })
 
       setData({
         ...data,
         vndbId: normalizedInput,
         alias: [...new Set(titles)],
-        released: released || data.released
+        released: released || data.released,
+        vndbTags: tags,
+        vndbDevelopers: developers
       })
 
       toast.success('获取数据成功! 已为您自动添加游戏别名')
@@ -103,6 +108,8 @@ export const VNDBInput = <T extends PatchFormDataShape>({
         <FetchPreview
           fields={[
             { label: '别名', value: preview.titles },
+            { label: '标签', value: preview.tags },
+            { label: '开发商', value: preview.developers },
             { label: '发售日期', value: preview.released }
           ]}
         />

@@ -14,6 +14,7 @@ import { AliasManager } from './AliasManager'
 import { ContentLimit } from './ContentLimit'
 import { BatchTag } from '../components/BatchTag'
 import { ReleaseDateInput } from '../components/ReleaseDateInput'
+import { CompanySummary } from '../components/CompanySummary'
 import { VNDBInput } from '../create/VNDBInput'
 import { VNDBRelationInput } from '../create/VNDBRelationInput'
 import { BangumiInput } from '../create/BangumiInput'
@@ -111,6 +112,8 @@ export const RewritePatch = () => {
             )}
             <KunDualEditorProvider storeName="patchRewrite" />
           </div>
+
+          <CompanySummary data={data} />
 
           <AliasManager
             aliasList={data.alias}

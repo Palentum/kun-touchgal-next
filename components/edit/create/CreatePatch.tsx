@@ -16,6 +16,7 @@ import { ContentLimit } from './ContentLimit'
 import { DuplicateCheckButton } from './DuplicateCheckButton'
 import { BatchTag } from '../components/BatchTag'
 import { ReleaseDateInput } from '../components/ReleaseDateInput'
+import { CompanySummary } from '../components/CompanySummary'
 import type { CreatePatchRequestData } from '~/store/editStore'
 
 export const CreatePatch = () => {
@@ -82,6 +83,8 @@ export const CreatePatch = () => {
           <PatchIntroduction errors={errors.banner} />
 
           <AliasInput errors={errors.alias} />
+
+          <CompanySummary data={data} />
 
           <ReleaseDateInput
             date={data.released}

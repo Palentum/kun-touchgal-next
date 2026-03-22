@@ -18,6 +18,8 @@ interface PreviewData {
   vndbId: string
   titles: string[]
   released: string
+  tags: string[]
+  developers: string[]
 }
 
 interface Props<T extends PatchFormDataShape> {
@@ -96,8 +98,12 @@ export const VNDBRelationInput = <T extends PatchFormDataShape>({
       }
 
       toast('正在同步 VNDB 数据...')
-      const { titles: vnTitles, released: vnReleased } =
-        await fetchVNDBDetails(vndbId)
+      const {
+        titles: vnTitles,
+        released: vnReleased,
+        tags,
+        developers
+      } = await fetchVNDBDetails(vndbId)
 
       const mergedTitles = [...new Set([...relationTitles, ...vnTitles])]
       const finalReleased =
@@ -106,7 +112,9 @@ export const VNDBRelationInput = <T extends PatchFormDataShape>({
       setPreview({
         vndbId,
         titles: mergedTitles,
-        released: finalReleased
+        released: finalReleased,
+        tags,
+        developers
       })
 
       setData({
@@ -114,7 +122,9 @@ export const VNDBRelationInput = <T extends PatchFormDataShape>({
         vndbId,
         vndbRelationId: normalized,
         alias: mergedTitles,
-        released: finalReleased
+        released: finalReleased,
+        vndbTags: tags,
+        vndbDevelopers: developers
       })
 
       toast.success('已获取 Release 数据! 并完成 VNDB 同步')
@@ -170,6 +180,8 @@ export const VNDBRelationInput = <T extends PatchFormDataShape>({
           fields={[
             { label: '关联 VNDB ID', value: preview.vndbId },
             { label: '别名', value: preview.titles },
+            { label: '标签', value: preview.tags },
+            { label: '开发商', value: preview.developers },
             { label: '发售日期', value: preview.released }
           ]}
         />

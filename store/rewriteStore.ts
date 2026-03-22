@@ -9,6 +9,13 @@ export interface RewritePatchData {
   dlsiteCode: string
   dlsiteCircleName: string
   dlsiteCircleLink: string
+  vndbTags: string[]
+  vndbDevelopers: string[]
+  bangumiTags: string[]
+  bangumiDevelopers: string[]
+  steamTags: string[]
+  steamDevelopers: string[]
+  steamAliases: string[]
   name: string
   introduction: string
   alias: string[]
@@ -34,6 +41,13 @@ const initialState: RewritePatchData = {
   dlsiteCode: '',
   dlsiteCircleName: '',
   dlsiteCircleLink: '',
+  vndbTags: [],
+  vndbDevelopers: [],
+  bangumiTags: [],
+  bangumiDevelopers: [],
+  steamTags: [],
+  steamDevelopers: [],
+  steamAliases: [],
   name: '',
   introduction: '',
   alias: [],

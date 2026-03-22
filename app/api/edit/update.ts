@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { patchUpdateSchema } from '~/validations/edit'
-import { syncExternalData } from './syncExternalData'
+import { processSubmittedExternalData } from './processExternalData'
 
 export const updateGalgame = async (
   input: z.infer<typeof patchUpdateSchema>,
@@ -41,6 +41,13 @@ export const updateGalgame = async (
     steamId,
     dlsiteCircleName,
     dlsiteCircleLink,
+    vndbTags,
+    vndbDevelopers,
+    bangumiTags,
+    bangumiDevelopers,
+    steamTags,
+    steamDevelopers,
+    steamAliases,
     name,
     alias,
     introduction,
@@ -79,15 +86,18 @@ export const updateGalgame = async (
     })
   })
 
-  await syncExternalData(
+  await processSubmittedExternalData(
     id,
     {
-      vndbId,
-      bangumiId: bangumiId ? Number(bangumiId) : null,
-      steamId: steamId ? Number(steamId) : null,
-      dlsiteCode: normalizedDlsiteCode || null,
-      dlsiteCircleName,
-      dlsiteCircleLink
+      vndbTags: vndbTags ?? [],
+      vndbDevelopers: vndbDevelopers ?? [],
+      bangumiTags: bangumiTags ?? [],
+      bangumiDevelopers: bangumiDevelopers ?? [],
+      steamTags: steamTags ?? [],
+      steamDevelopers: steamDevelopers ?? [],
+      steamAliases: steamAliases ?? [],
+      dlsiteCircleName: dlsiteCircleName ?? '',
+      dlsiteCircleLink: dlsiteCircleLink ?? ''
     },
     input.tag,
     uid

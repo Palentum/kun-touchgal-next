@@ -5,7 +5,7 @@ import { uploadPatchBanner } from './_upload'
 import { patchCreateSchema } from '~/validations/edit'
 import { kunMoyuMoe } from '~/config/moyu-moe'
 import { postToIndexNow } from './_postToIndexNow'
-import { syncExternalData } from './syncExternalData'
+import { processSubmittedExternalData } from './processExternalData'
 
 export const createGalgame = async (
   input: Omit<z.infer<typeof patchCreateSchema>, 'alias' | 'tag'> & {
@@ -24,6 +24,13 @@ export const createGalgame = async (
     dlsiteCode,
     dlsiteCircleName,
     dlsiteCircleLink,
+    vndbTags,
+    vndbDevelopers,
+    bangumiTags,
+    bangumiDevelopers,
+    steamTags,
+    steamDevelopers,
+    steamAliases,
     alias,
     banner,
     bannerOriginal,
@@ -118,15 +125,18 @@ export const createGalgame = async (
     return res
   }
 
-  await syncExternalData(
+  await processSubmittedExternalData(
     res.patchId,
     {
-      vndbId,
-      bangumiId: bangumiId ? Number(bangumiId) : null,
-      steamId: steamId ? Number(steamId) : null,
-      dlsiteCode: normalizedDlsiteCode || null,
-      dlsiteCircleName,
-      dlsiteCircleLink
+      vndbTags,
+      vndbDevelopers,
+      bangumiTags,
+      bangumiDevelopers,
+      steamTags,
+      steamDevelopers,
+      steamAliases,
+      dlsiteCircleName: dlsiteCircleName ?? '',
+      dlsiteCircleLink: dlsiteCircleLink ?? ''
     },
     tag,
     uid

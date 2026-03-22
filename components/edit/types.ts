@@ -7,6 +7,13 @@ export interface PatchFormDataShape {
   dlsiteCode: string
   dlsiteCircleName: string
   dlsiteCircleLink: string
+  vndbTags: string[]
+  vndbDevelopers: string[]
+  bangumiTags: string[]
+  bangumiDevelopers: string[]
+  steamTags: string[]
+  steamDevelopers: string[]
+  steamAliases: string[]
   alias: string[]
   tag: string[]
   released: string

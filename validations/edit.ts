@@ -38,6 +38,19 @@ const optionalDlsiteCode = z
 
 const optionalCircleField = z.string().max(500).optional().default('')
 
+const optionalStringArray = z
+  .string()
+  .optional()
+  .default('[]')
+  .transform((val) => {
+    try {
+      const parsed = JSON.parse(val)
+      return Array.isArray(parsed) ? parsed.filter((s: unknown) => typeof s === 'string') : []
+    } catch {
+      return []
+    }
+  })
+
 export const patchCreateSchema = z.object({
   banner: z.any(),
   bannerOriginal: z.any().optional(),
@@ -49,6 +62,13 @@ export const patchCreateSchema = z.object({
   dlsiteCode: optionalDlsiteCode,
   dlsiteCircleName: optionalCircleField,
   dlsiteCircleLink: optionalCircleField,
+  vndbTags: optionalStringArray,
+  vndbDevelopers: optionalStringArray,
+  bangumiTags: optionalStringArray,
+  bangumiDevelopers: optionalStringArray,
+  steamTags: optionalStringArray,
+  steamDevelopers: optionalStringArray,
+  steamAliases: optionalStringArray,
   introduction: z
     .string()
     .trim()
@@ -74,6 +94,13 @@ export const patchUpdateSchema = z.object({
   dlsiteCode: optionalDlsiteCode,
   dlsiteCircleName: optionalCircleField,
   dlsiteCircleLink: optionalCircleField,
+  vndbTags: z.array(z.string()).optional().default([]),
+  vndbDevelopers: z.array(z.string()).optional().default([]),
+  bangumiTags: z.array(z.string()).optional().default([]),
+  bangumiDevelopers: z.array(z.string()).optional().default([]),
+  steamTags: z.array(z.string()).optional().default([]),
+  steamDevelopers: z.array(z.string()).optional().default([]),
+  steamAliases: z.array(z.string()).optional().default([]),
   introduction: z
     .string()
     .trim()

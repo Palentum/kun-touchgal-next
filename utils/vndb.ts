@@ -5,11 +5,13 @@ import { kunFetchPost } from '~/utils/kunFetch'
 interface VNDBDetailsResponse {
   titles: string[]
   released: string
+  tags: string[]
+  developers: string[]
 }
 
 export const fetchVNDBDetails = async (
   vnId: string
-): Promise<{ titles: string[]; released: string }> => {
+): Promise<VNDBDetailsResponse> => {
   const response = await kunFetchPost<VNDBDetailsResponse | string>(
     '/edit/vndb/details',
     { vndbId: vnId }

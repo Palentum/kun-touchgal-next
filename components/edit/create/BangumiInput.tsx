@@ -68,7 +68,12 @@ export const BangumiInput = <T extends PatchFormDataShape>({
         .filter((n): n is string => !!n)
       const alias = [...new Set([...data.alias, ...extraAliases])]
 
-      setData({ ...data, alias })
+      setData({
+        ...data,
+        alias,
+        bangumiTags: result.tags,
+        bangumiDevelopers: result.developers
+      })
 
       toast.success(`确认: ${displayName}`)
     } catch (error) {

@@ -40,7 +40,14 @@ export const PublishButton = ({ setErrors, className }: Props) => {
       ...data,
       banner: localeBannerBlob,
       alias: JSON.stringify(data.alias),
-      tag: JSON.stringify(data.tag)
+      tag: JSON.stringify(data.tag),
+      vndbTags: JSON.stringify(data.vndbTags),
+      vndbDevelopers: JSON.stringify(data.vndbDevelopers),
+      bangumiTags: JSON.stringify(data.bangumiTags),
+      bangumiDevelopers: JSON.stringify(data.bangumiDevelopers),
+      steamTags: JSON.stringify(data.steamTags),
+      steamDevelopers: JSON.stringify(data.steamDevelopers),
+      steamAliases: JSON.stringify(data.steamAliases)
     })
     if (!result.success) {
       const newErrors: Partial<Record<keyof CreatePatchRequestData, string>> =
@@ -70,6 +77,19 @@ export const PublishButton = ({ setErrors, className }: Props) => {
     formDataToSend.append('dlsiteCode', data.dlsiteCode)
     formDataToSend.append('dlsiteCircleName', data.dlsiteCircleName)
     formDataToSend.append('dlsiteCircleLink', data.dlsiteCircleLink)
+    formDataToSend.append('vndbTags', JSON.stringify(data.vndbTags))
+    formDataToSend.append('vndbDevelopers', JSON.stringify(data.vndbDevelopers))
+    formDataToSend.append('bangumiTags', JSON.stringify(data.bangumiTags))
+    formDataToSend.append(
+      'bangumiDevelopers',
+      JSON.stringify(data.bangumiDevelopers)
+    )
+    formDataToSend.append('steamTags', JSON.stringify(data.steamTags))
+    formDataToSend.append(
+      'steamDevelopers',
+      JSON.stringify(data.steamDevelopers)
+    )
+    formDataToSend.append('steamAliases', JSON.stringify(data.steamAliases))
     formDataToSend.append('introduction', data.introduction)
     formDataToSend.append('alias', JSON.stringify(data.alias))
     formDataToSend.append('tag', JSON.stringify(data.tag))
