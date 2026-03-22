@@ -19,6 +19,7 @@ export const searchSchema = z.object({
   sortField: z.union([
     z.literal('resource_update_time'),
     z.literal('created'),
+    z.literal('rating'),
     z.literal('view'),
     z.literal('download'),
     z.literal('favorite')

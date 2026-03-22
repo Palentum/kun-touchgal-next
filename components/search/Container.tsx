@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { KunLoading } from '~/components/kun/Loading'
 import { kunFetchPost } from '~/utils/kunFetch'
+import { errorReporter, kunErrorHandler } from '~/utils/kunErrorHandler'
 import { KunHeader } from '~/components/kun/Header'
 import { KunNull } from '~/components/kun/Null'
 import { GalgameCard } from '~/components/galgame/Card'
@@ -82,34 +83,52 @@ export const SearchPage = () => {
     setShowHistory(false)
     setShowSuggestions(false)
 
-    const { galgames, total } = await kunFetchPost<{
-      galgames: GalgameCard[]
-      total: number
-    }>('/search', {
-      queryString: JSON.stringify(selectedSuggestions),
-      limit: 12,
-      searchOption: {
-        searchInIntroduction: searchData.searchInIntroduction,
-        searchInAlias: searchData.searchInAlias,
-        searchInTag: searchData.searchInTag
-      },
+    try {
+      const response = await kunFetchPost<
+        | {
+            galgames: GalgameCard[]
+            total: number
+          }
+        | string
+      >('/search', {
+        queryString: JSON.stringify(selectedSuggestions),
+        limit: 12,
+        searchOption: {
+          searchInIntroduction: searchData.searchInIntroduction,
+          searchInAlias: searchData.searchInAlias,
+          searchInTag: searchData.searchInTag
+        },
 
-      page: currentPage,
-      selectedType,
-      selectedLanguage,
-      selectedPlatform,
-      sortField,
-      sortOrder,
-      selectedYears,
-      selectedMonths
-    })
+        page: currentPage,
+        selectedType,
+        selectedLanguage,
+        selectedPlatform,
+        sortField,
+        sortOrder,
+        selectedYears,
+        selectedMonths
+      })
 
-    setPatches(galgames)
-    setTotal(total)
-    setHasSearched(true)
-    setLoading(false)
+      if (typeof response === 'string') {
+        kunErrorHandler(response, () => {})
+        setPatches([])
+        setTotal(0)
+        setHasSearched(true)
+        return
+      }
 
-    addToHistory(selectedSuggestions)
+      setPatches(Array.isArray(response.galgames) ? response.galgames : [])
+      setTotal(typeof response.total === 'number' ? response.total : 0)
+      setHasSearched(true)
+      addToHistory(selectedSuggestions)
+    } catch (error) {
+      setPatches([])
+      setTotal(0)
+      setHasSearched(true)
+      errorReporter(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
