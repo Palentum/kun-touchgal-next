@@ -9,6 +9,8 @@ export interface CreatePatchData {
   bangumiId: string
   steamId: string
   dlsiteCode: string
+  dlsiteCircleName: string
+  dlsiteCircleLink: string
   alias: string[]
   tag: string[]
   released: string
@@ -34,6 +36,8 @@ const initialState: CreatePatchData = {
   bangumiId: '',
   steamId: '',
   dlsiteCode: '',
+  dlsiteCircleName: '',
+  dlsiteCircleLink: '',
   alias: [],
   tag: [],
   released: '',

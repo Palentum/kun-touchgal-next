@@ -5,6 +5,8 @@ export interface PatchFormDataShape {
   bangumiId: string
   steamId: string
   dlsiteCode: string
+  dlsiteCircleName: string
+  dlsiteCircleLink: string
   alias: string[]
   tag: string[]
   released: string

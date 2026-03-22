@@ -3,14 +3,9 @@ import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { uploadPatchBanner } from './_upload'
 import { patchCreateSchema } from '~/validations/edit'
-import { handleBatchPatchTags } from './batchTag'
 import { kunMoyuMoe } from '~/config/moyu-moe'
 import { postToIndexNow } from './_postToIndexNow'
-import { ensurePatchCompaniesFromVNDB } from './fetchCompanies'
-import { ensurePatchCompanyFromDlsite } from './dlsite'
-import { ensurePatchTagsFromVNDB } from './fetchTags'
-import { ensurePatchTagsFromBangumi } from './fetchBangumiTags'
-import { ensurePatchDataFromSteam } from './fetchSteamTags'
+import { syncExternalData } from './syncExternalData'
 
 export const createGalgame = async (
   input: Omit<z.infer<typeof patchCreateSchema>, 'alias' | 'tag'> & {
@@ -27,6 +22,8 @@ export const createGalgame = async (
     bangumiId,
     steamId,
     dlsiteCode,
+    dlsiteCircleName,
+    dlsiteCircleLink,
     alias,
     banner,
     bannerOriginal,
@@ -121,37 +118,19 @@ export const createGalgame = async (
     return res
   }
 
-  if (vndbId) {
-    try {
-      await ensurePatchCompaniesFromVNDB(res.patchId, vndbId, uid)
-    } catch {}
-  }
-
-  if (normalizedDlsiteCode) {
-    await ensurePatchCompanyFromDlsite(res.patchId, normalizedDlsiteCode, uid)
-  }
-
-  if (tag.length) {
-    await handleBatchPatchTags(res.patchId, tag, uid)
-  }
-
-  if (vndbId) {
-    try {
-      await ensurePatchTagsFromVNDB(res.patchId, vndbId, uid)
-    } catch {}
-  }
-
-  if (bangumiId) {
-    try {
-      await ensurePatchTagsFromBangumi(res.patchId, Number(bangumiId), uid)
-    } catch {}
-  }
-
-  if (steamId) {
-    try {
-      await ensurePatchDataFromSteam(res.patchId, Number(steamId), uid)
-    } catch {}
-  }
+  await syncExternalData(
+    res.patchId,
+    {
+      vndbId,
+      bangumiId: bangumiId ? Number(bangumiId) : null,
+      steamId: steamId ? Number(steamId) : null,
+      dlsiteCode: normalizedDlsiteCode || null,
+      dlsiteCircleName,
+      dlsiteCircleLink
+    },
+    tag,
+    uid
+  )
 
   if (contentLimit === 'sfw') {
     const newPatchUrl = `${kunMoyuMoe.domain.main}/${galgameUniqueId}`

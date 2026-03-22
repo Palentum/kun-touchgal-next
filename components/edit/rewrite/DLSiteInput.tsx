@@ -12,6 +12,8 @@ interface DlsiteResponse {
   title_en?: string
   release_date?: string
   tags?: string
+  circle_name?: string
+  circle_link?: string
 }
 
 const parseTags = (raw?: string) => {
@@ -64,6 +66,8 @@ export const DLSiteInput = ({ errors }: { errors?: string }) => {
       setData({
         ...data,
         dlsiteCode: normalized,
+        dlsiteCircleName: result.circle_name?.trim() ?? '',
+        dlsiteCircleLink: result.circle_link?.trim() ?? '',
         alias,
         tag: tags,
         released: result.release_date || data.released

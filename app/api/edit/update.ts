@@ -1,12 +1,7 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { patchUpdateSchema } from '~/validations/edit'
-import { handleBatchPatchTags } from './batchTag'
-import { ensurePatchCompanyFromDlsite } from './dlsite'
-import { ensurePatchCompaniesFromVNDB } from './fetchCompanies'
-import { ensurePatchTagsFromVNDB } from './fetchTags'
-import { ensurePatchTagsFromBangumi } from './fetchBangumiTags'
-import { ensurePatchDataFromSteam } from './fetchSteamTags'
+import { syncExternalData } from './syncExternalData'
 
 export const updateGalgame = async (
   input: z.infer<typeof patchUpdateSchema>,
@@ -44,6 +39,8 @@ export const updateGalgame = async (
     vndbRelationId,
     bangumiId,
     steamId,
+    dlsiteCircleName,
+    dlsiteCircleLink,
     name,
     alias,
     introduction,
@@ -82,34 +79,19 @@ export const updateGalgame = async (
     })
   })
 
-  if (input.tag.length) {
-    await handleBatchPatchTags(input.id, input.tag, uid)
-  }
-
-  if (vndbId) {
-    try {
-      await ensurePatchCompaniesFromVNDB(id, vndbId, uid)
-    } catch {}
-    try {
-      await ensurePatchTagsFromVNDB(id, vndbId, uid)
-    } catch {}
-  }
-
-  if (bangumiId) {
-    try {
-      await ensurePatchTagsFromBangumi(id, Number(bangumiId), uid)
-    } catch {}
-  }
-
-  if (steamId) {
-    try {
-      await ensurePatchDataFromSteam(id, Number(steamId), uid)
-    } catch {}
-  }
-
-  if (normalizedDlsiteCode) {
-    await ensurePatchCompanyFromDlsite(id, normalizedDlsiteCode, uid)
-  }
+  await syncExternalData(
+    id,
+    {
+      vndbId,
+      bangumiId: bangumiId ? Number(bangumiId) : null,
+      steamId: steamId ? Number(steamId) : null,
+      dlsiteCode: normalizedDlsiteCode || null,
+      dlsiteCircleName,
+      dlsiteCircleLink
+    },
+    input.tag,
+    uid
+  )
 
   return {}
 }

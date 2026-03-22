@@ -68,6 +68,8 @@ export const PublishButton = ({ setErrors, className }: Props) => {
     formDataToSend.append('bangumiId', data.bangumiId)
     formDataToSend.append('steamId', data.steamId)
     formDataToSend.append('dlsiteCode', data.dlsiteCode)
+    formDataToSend.append('dlsiteCircleName', data.dlsiteCircleName)
+    formDataToSend.append('dlsiteCircleLink', data.dlsiteCircleLink)
     formDataToSend.append('introduction', data.introduction)
     formDataToSend.append('alias', JSON.stringify(data.alias))
     formDataToSend.append('tag', JSON.stringify(data.tag))

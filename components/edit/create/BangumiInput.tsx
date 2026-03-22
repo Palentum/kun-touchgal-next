@@ -1,7 +1,14 @@
 'use client'
 
-import { Input } from '@heroui/react'
+import { Button, Input } from '@heroui/react'
+import toast from 'react-hot-toast'
+import { kunFetchPost } from '~/utils/kunFetch'
 import type { PatchFormDataShape } from '~/components/edit/types'
+
+interface BangumiPreview {
+  name: string
+  nameCn: string
+}
 
 interface Props<T extends PatchFormDataShape> {
   errors?: string
@@ -14,6 +21,43 @@ export const BangumiInput = <T extends PatchFormDataShape>({
   data,
   setData
 }: Props<T>) => {
+  const handleFetch = async () => {
+    const rawInput = data.bangumiId.trim()
+    if (!rawInput) {
+      toast.error('Bangumi ID 不可为空')
+      return
+    }
+
+    if (!/^\d+$/.test(rawInput)) {
+      toast.error('Bangumi ID 必须为纯数字')
+      return
+    }
+
+    try {
+      toast('正在从 Bangumi 获取数据...')
+      const result = await kunFetchPost<KunResponse<BangumiPreview>>(
+        '/edit/bangumi',
+        { bangumiId: rawInput }
+      )
+
+      if (typeof result === 'string') {
+        toast.error(result)
+        return
+      }
+
+      const displayName = result.nameCn || result.name
+      if (!displayName) {
+        toast.error('未找到对应的 Bangumi 条目')
+        return
+      }
+
+      toast.success(`确认: ${displayName}`)
+    } catch (error) {
+      console.error(error)
+      toast.error('Bangumi API 请求失败, 请稍后重试')
+    }
+  }
+
   return (
     <div className="w-full space-y-2">
       <h2 className="text-xl">Bangumi ID (可选)</h2>
@@ -26,6 +70,18 @@ export const BangumiInput = <T extends PatchFormDataShape>({
         isInvalid={!!errors}
         errorMessage={errors}
       />
+      <div className="flex items-center text-sm">
+        {data.bangumiId && (
+          <Button
+            className="mr-4"
+            color="primary"
+            size="sm"
+            onPress={handleFetch}
+          >
+            获取 Bangumi 数据
+          </Button>
+        )}
+      </div>
     </div>
   )
 }

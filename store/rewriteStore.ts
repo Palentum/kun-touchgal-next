@@ -7,6 +7,8 @@ export interface RewritePatchData {
   bangumiId: string
   steamId: string
   dlsiteCode: string
+  dlsiteCircleName: string
+  dlsiteCircleLink: string
   name: string
   introduction: string
   alias: string[]
@@ -30,6 +32,8 @@ const initialState: RewritePatchData = {
   bangumiId: '',
   steamId: '',
   dlsiteCode: '',
+  dlsiteCircleName: '',
+  dlsiteCircleLink: '',
   name: '',
   introduction: '',
   alias: [],

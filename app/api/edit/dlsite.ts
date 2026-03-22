@@ -7,17 +7,24 @@ export type { DlsiteApiResponse } from '~/lib/arnebiae/dlsite'
 export const ensurePatchCompanyFromDlsite = async (
   patchId: number,
   dlsiteCode: string | null | undefined,
-  uid: number
+  uid: number,
+  prefetchedCircleName?: string | null,
+  prefetchedCircleLink?: string | null
 ) => {
   const code = dlsiteCode?.trim()
   if (!code) return
 
   try {
-    const data = await fetchDlsiteData(code)
-    const circleName = data.circle_name?.trim()
-    if (!circleName) return
+    let circleName = prefetchedCircleName?.trim() || ''
+    let circleLink = prefetchedCircleLink?.trim() || ''
 
-    const circleLink = data.circle_link?.trim()
+    if (!circleName) {
+      const data = await fetchDlsiteData(code)
+      circleName = data.circle_name?.trim() ?? ''
+      circleLink = data.circle_link?.trim() ?? ''
+    }
+
+    if (!circleName) return
 
     let company = await prisma.patch_company.findFirst({
       where: { name: circleName }
