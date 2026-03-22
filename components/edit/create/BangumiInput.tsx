@@ -10,6 +10,8 @@ import type { PatchFormDataShape } from '~/components/edit/types'
 interface BangumiPreview {
   name: string
   nameCn: string
+  tags: string[]
+  developers: string[]
 }
 
 interface Props<T extends PatchFormDataShape> {
@@ -104,7 +106,9 @@ export const BangumiInput = <T extends PatchFormDataShape>({
         <FetchPreview
           fields={[
             { label: '名称', value: preview.name },
-            { label: '中文名', value: preview.nameCn }
+            { label: '中文名', value: preview.nameCn },
+            { label: '标签', value: preview.tags },
+            { label: '开发商', value: preview.developers }
           ]}
         />
       )}
