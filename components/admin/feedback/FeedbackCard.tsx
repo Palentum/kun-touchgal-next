@@ -55,7 +55,7 @@ export const FeedbackCard = ({ feedback }: Props) => {
                   size="sm"
                   color="primary"
                   variant="flat"
-                  href={`/user/${feedback.sender?.id}/resource`}
+                  href={`/user/${feedback.sender?.id}`}
                 >
                   前往用户
                 </Button>

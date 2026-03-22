@@ -75,7 +75,7 @@ export const UserList = ({ userId, type }: UserListProps) => {
                 <div className="space-y-2 grow">
                   <h4
                     className="text-lg font-semibold transition-colors cursor-pointer hover:text-primary-500"
-                    onClick={() => router.push(`/user/${user.id}/resource`)}
+                    onClick={() => router.push(`/user/${user.id}`)}
                   >
                     {user.name}
                   </h4>

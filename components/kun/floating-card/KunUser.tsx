@@ -34,7 +34,7 @@ export const KunUser = ({ user, userProps }: KunUserProps) => {
         onClick={(event) => {
           event.preventDefault()
           event.stopPropagation()
-          router.push(`/user/${user.id}/resource`)
+          router.push(`/user/${user.id}`)
         }}
         avatarProps={{
           name: username,

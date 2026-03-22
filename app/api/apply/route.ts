@@ -37,7 +37,7 @@ export const applyForCreator = async (uid: number) => {
     type: 'apply',
     content: '申请成为创作者',
     sender_id: uid,
-    link: `/user/${uid}/resource`
+    link: `/user/${uid}`
   })
 
   return {}
