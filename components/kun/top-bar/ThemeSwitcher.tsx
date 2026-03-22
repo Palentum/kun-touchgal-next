@@ -1,13 +1,10 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useTheme } from 'next-themes'
 import { Tooltip } from '@heroui/tooltip'
-import { DropdownItem, DropdownMenu, DropdownTrigger } from '@heroui/dropdown'
 import { Button } from '@heroui/button'
 import { Moon, Sun, SunMoon } from 'lucide-react'
-import { Dropdown } from '@heroui/dropdown'
-import type { Selection } from '@heroui/react'
 
 enum Theme {
   dark = 'dark',
@@ -21,82 +18,42 @@ enum ThemeLabel {
   system = '跟随系统'
 }
 
-type SelectionSet = Exclude<Selection, 'all'>
+const themeOrder: Theme[] = [Theme.light, Theme.dark, Theme.system]
 
 export const ThemeSwitcher = () => {
   const { theme, setTheme } = useTheme()
-  const [selectedTheme, setSelectedTheme] = useState(
-    new Set([theme]) as SelectionSet
-  )
-
-  useEffect(() => {
-    if (theme && !selectedTheme.has(theme)) {
-      setSelectedTheme(new Set([theme]))
-    }
-  }, [selectedTheme, theme])
-
-  const onSelectedThemeChange = useCallback(
-    (value: Selection) => {
-      const newValue = value as SelectionSet
-      const currentSelectedTheme = newValue.values().next().value as Theme
-
-      setTheme(currentSelectedTheme)
-      setSelectedTheme(newValue)
-    },
-    [setTheme]
-  )
+  const currentTheme =
+    theme === Theme.light || theme === Theme.dark || theme === Theme.system
+      ? theme
+      : Theme.system
 
   const themeIcon = useMemo(() => {
-    if (selectedTheme.has(Theme.light)) {
+    if (currentTheme === Theme.light) {
       return <Sun />
     }
-    if (selectedTheme.has(Theme.dark)) {
+    if (currentTheme === Theme.dark) {
       return <Moon />
     }
     return <SunMoon />
-  }, [selectedTheme])
+  }, [currentTheme])
+
+  const nextTheme =
+    themeOrder[(themeOrder.indexOf(currentTheme) + 1) % themeOrder.length]
+  const tooltipContent = ThemeLabel[currentTheme]
 
   return (
-    <Dropdown className="min-w-0">
-      <Tooltip disableAnimation showArrow closeDelay={0} content="主题切换">
-        <div className="flex">
-          <DropdownTrigger>
-            <Button
-              isIconOnly
-              variant="light"
-              aria-label="主题切换"
-              className="text-default-500"
-            >
-              {themeIcon}
-            </Button>
-          </DropdownTrigger>
-        </div>
-      </Tooltip>
-      <DropdownMenu
-        disallowEmptySelection
-        selectedKeys={selectedTheme}
-        selectionMode="single"
-        onSelectionChange={onSelectedThemeChange}
-      >
-        <DropdownItem
-          startContent={<Sun className="size-4" />}
-          key={Theme.light}
+    <Tooltip disableAnimation showArrow closeDelay={0} content={tooltipContent}>
+      <div className="flex">
+        <Button
+          isIconOnly
+          variant="light"
+          aria-label={tooltipContent}
+          className="text-default-500"
+          onPress={() => setTheme(nextTheme)}
         >
-          {ThemeLabel.light}
-        </DropdownItem>
-        <DropdownItem
-          startContent={<Moon className="size-4" />}
-          key={Theme.dark}
-        >
-          {ThemeLabel.dark}
-        </DropdownItem>
-        <DropdownItem
-          startContent={<SunMoon className="size-4" />}
-          key={Theme.system}
-        >
-          {ThemeLabel.system}
-        </DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
+          {themeIcon}
+        </Button>
+      </div>
+    </Tooltip>
   )
 }
