@@ -76,6 +76,8 @@ model user_message {
 
   created DateTime @default(now())
   updated DateTime @updatedAt
+
+  @@index([recipient_id, status, type, id])
 }
 
 model user_patch_favorite_folder {

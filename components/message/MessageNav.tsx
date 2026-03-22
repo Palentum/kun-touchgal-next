@@ -37,6 +37,10 @@ export const MessageNav = () => {
   const isChatSection = pathname.startsWith('/message/chat')
 
   useEffect(() => {
+    if (!isNotificationSection) {
+      return
+    }
+
     const readAllMessage = async () => {
       const res = await kunFetchPut<KunResponse<{}>>('/message/read')
       if (typeof res === 'string') {
@@ -44,7 +48,7 @@ export const MessageNav = () => {
       }
     }
     readAllMessage()
-  }, [])
+  }, [isNotificationSection])
 
   return (
     <Card className="w-full lg:w-1/4">
