@@ -26,6 +26,15 @@ export const SearchHistory = ({
     setSelectedSuggestions(historyItem)
   }
 
+  const handleHistoryDelete = (historyIndex: number) => {
+    setSearchData({
+      ...searchData,
+      searchHistory: searchData.searchHistory.filter(
+        (_, index) => index !== historyIndex
+      )
+    })
+  }
+
   return (
     <>
       {showHistory && searchData.searchHistory.length > 0 && (
@@ -55,7 +64,7 @@ export const SearchHistory = ({
                 onMouseDown={() => handleHistoryClick(item)}
               >
                 <Clock size={16} className="shrink-0 text-default-400" />
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap flex-1 gap-1">
                   {item.map((s, i) => (
                     <Chip
                       key={i}
@@ -67,6 +76,20 @@ export const SearchHistory = ({
                     </Chip>
                   ))}
                 </div>
+                <Button
+                  isIconOnly
+                  size="sm"
+                  variant="light"
+                  className="shrink-0 text-default-400"
+                  aria-label="删除该条搜索历史"
+                  onMouseDown={(event) => {
+                    event.preventDefault()
+                    event.stopPropagation()
+                  }}
+                  onPress={() => handleHistoryDelete(index)}
+                >
+                  <X size={16} />
+                </Button>
               </div>
             ))}
           </div>
