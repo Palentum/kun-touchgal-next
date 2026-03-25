@@ -139,6 +139,10 @@ export const updateMessage = async (
     return '消息不存在'
   }
 
+  if (message.conversation_id !== conversationId) {
+    return '消息不属于当前会话'
+  }
+
   if (message.sender_id !== uid) {
     return '只能编辑自己的消息'
   }
@@ -182,6 +186,10 @@ export const deleteMessage = async (
     return '消息不存在'
   }
 
+  if (message.conversation_id !== conversationId) {
+    return '消息不属于当前会话'
+  }
+
   if (message.sender_id !== uid) {
     return '只能删除自己的消息'
   }
@@ -189,6 +197,22 @@ export const deleteMessage = async (
   await prisma.user_private_message.update({
     where: { id: messageId },
     data: { is_deleted: true }
+  })
+
+  return {}
+}
+
+export const deleteConversation = async (
+  conversationId: number,
+  uid: number
+) => {
+  const conversation = await verifyConversationAccess(conversationId, uid)
+  if (!conversation) {
+    return '会话不存在或无权访问'
+  }
+
+  await prisma.user_conversation.delete({
+    where: { id: conversationId }
   })
 
   return {}
@@ -280,16 +304,27 @@ export const DELETE = async (
     return NextResponse.json('无效的会话 ID')
   }
 
-  const input = kunParseGetQuery(req, deletePrivateMessageSchema)
-  if (typeof input === 'string') {
-    return NextResponse.json(input)
-  }
-
   const payload = await verifyHeaderCookie(req)
   if (!payload) {
     return NextResponse.json('用户未登录')
   }
 
-  const response = await deleteMessage(conversationId, input, payload.uid)
+  const { searchParams } = new URL(req.url)
+
+  if (searchParams.has('messageId')) {
+    const input = kunParseGetQuery(req, deletePrivateMessageSchema)
+    if (typeof input === 'string') {
+      return NextResponse.json(input)
+    }
+
+    const response = await deleteMessage(conversationId, input, payload.uid)
+    return NextResponse.json(response)
+  }
+
+  if (searchParams.get('action') !== 'conversation') {
+    return NextResponse.json('无效的删除操作类型')
+  }
+
+  const response = await deleteConversation(conversationId, payload.uid)
   return NextResponse.json(response)
 }

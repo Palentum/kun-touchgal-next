@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { KunNull } from '~/components/kun/Null'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
+import { DeleteConversationButton } from './DeleteConversationButton'
 import { KunAvatar } from '~/components/kun/floating-card/KunAvatar'
 import { kunFetchGet, kunFetchPut } from '~/utils/kunFetch'
 import { useUserStore } from '~/store/userStore'
@@ -174,25 +175,32 @@ export const ChatContainer = ({
 
   return (
     <Card className="h-[calc(100vh-200px)] min-h-[500px]">
-      <CardHeader className="border-b border-default-200 flex items-center gap-3">
-        <Button
-          as={Link}
-          href="/message/chat"
-          variant="light"
-          isIconOnly
-          size="sm"
-        >
-          <ArrowLeft className="size-4" />
-        </Button>
-        <KunAvatar
-          uid={otherUser.id}
-          avatarProps={{
-            src: otherUser.avatar,
-            name: otherUser.name,
-            size: 'sm'
-          }}
+      <CardHeader className="border-b border-default-200 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Button
+            as={Link}
+            href="/message/chat"
+            variant="light"
+            isIconOnly
+            size="sm"
+          >
+            <ArrowLeft className="size-4" />
+          </Button>
+          <KunAvatar
+            uid={otherUser.id}
+            avatarProps={{
+              src: otherUser.avatar,
+              name: otherUser.name,
+              size: 'sm'
+            }}
+          />
+          <span className="font-semibold">{otherUser.name}</span>
+        </div>
+
+        <DeleteConversationButton
+          conversationId={conversationId}
+          otherUserName={otherUser.name}
         />
-        <span className="font-semibold">{otherUser.name}</span>
       </CardHeader>
 
       <CardBody className="flex flex-col p-0">
