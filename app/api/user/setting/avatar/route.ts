@@ -3,7 +3,16 @@ import { kunParseFormData } from '~/app/api/utils/parseQuery'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { prisma } from '~/prisma/index'
 import { avatarSchema } from '~/validations/user'
+import { purgeCloudflareCache } from '~/app/api/utils/purgeCloudflareCache'
 import { uploadUserAvatar } from '../_upload'
+
+const purgeCache = async (uid: number) => {
+  const imageBedUrl = process.env.KUN_VISUAL_NOVEL_IMAGE_BED_URL
+  const avatarUrl = `${imageBedUrl}/user/avatar/user_${uid}/avatar.avif`
+  const avatarMiniUrl = `${imageBedUrl}/user/avatar/user_${uid}/avatar-mini.avif`
+
+  return purgeCloudflareCache([avatarUrl, avatarMiniUrl])
+}
 
 export const updateUserAvatar = async (uid: number, avatar: ArrayBuffer) => {
   const user = await prisma.user.findUnique({
@@ -27,6 +36,7 @@ export const updateUserAvatar = async (uid: number, avatar: ArrayBuffer) => {
     where: { id: uid },
     data: { avatar: imageLink }
   })
+  await purgeCache(uid)
 
   return { avatar: imageLink }
 }
