@@ -5,7 +5,7 @@ import { kunGetTagByIdActions, kunTagGalgameActions } from './actions'
 import { ErrorComponent } from '~/components/error/ErrorComponent'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 import { KunNull } from '~/components/kun/Null'
-import type { SortField, SortOrder } from '~/components/tag/detail/_sort'
+import type { SortField, SortOrder } from '~/components/galgame/_sort'
 import type { Metadata } from 'next'
 
 export const revalidate = 3

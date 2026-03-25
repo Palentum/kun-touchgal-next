@@ -10,32 +10,42 @@ export const getPatchByCompany = async (
   input: z.infer<typeof getPatchByCompanySchema>,
   nsfwEnable: Record<string, string | undefined>
 ) => {
-  const { companyId, page, limit } = input
+  const { companyId, page, limit, sortOrder } = input
   const offset = (page - 1) * limit
+  const orderBy =
+    input.sortField === 'favorite'
+      ? { favorite_folder: { _count: sortOrder } }
+      : input.sortField === 'rating'
+        ? { rating_stat: { avg_overall: sortOrder } }
+        : { [input.sortField]: sortOrder }
+  const where = {
+    company: {
+      some: {
+        company_id: companyId
+      }
+    },
+    ...nsfwEnable
+  }
 
   const [data, total] = await Promise.all([
-    prisma.patch_company_relation.findMany({
-      where: { company_id: companyId, patch: nsfwEnable },
-      select: {
-        patch: {
-          select: GalgameCardSelectField
-        }
-      },
-      orderBy: { created: 'desc' },
+    prisma.patch.findMany({
+      where,
+      select: GalgameCardSelectField,
+      orderBy,
       take: limit,
       skip: offset
     }),
-    prisma.patch_company_relation.count({
-      where: { company_id: companyId, patch: nsfwEnable }
+    prisma.patch.count({
+      where
     })
   ])
 
   const galgames: GalgameCard[] = data.map((gal) => ({
-    ...gal.patch,
-    tags: gal.patch.tag.map((t) => t.tag.name).slice(0, 3),
-    uniqueId: gal.patch.unique_id,
-    averageRating: gal.patch.rating_stat?.avg_overall
-      ? Math.round(gal.patch.rating_stat.avg_overall * 10) / 10
+    ...gal,
+    tags: gal.tag.map((t) => t.tag.name).slice(0, 3),
+    uniqueId: gal.unique_id,
+    averageRating: gal.rating_stat?.avg_overall
+      ? Math.round(gal.rating_stat.avg_overall * 10) / 10
       : 0
   }))
 

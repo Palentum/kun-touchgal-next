@@ -61,7 +61,16 @@ export const getCompanyByIdSchema = z.object({
 export const getPatchByCompanySchema = z.object({
   companyId: z.coerce.number().min(1).max(9999999),
   page: z.coerce.number().min(1).max(9999999),
-  limit: z.coerce.number().min(1).max(24)
+  limit: z.coerce.number().min(1).max(24),
+  sortOrder: z.union([z.literal('asc'), z.literal('desc')]).default('desc'),
+  sortField: z.union([
+    z.literal('resource_update_time'),
+    z.literal('created'),
+    z.literal('view'),
+    z.literal('download'),
+    z.literal('favorite'),
+    z.literal('rating')
+  ])
 })
 
 export const searchCompanySchema = z.object({

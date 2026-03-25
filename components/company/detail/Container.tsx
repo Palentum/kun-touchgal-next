@@ -2,10 +2,10 @@
 
 import { useState, useTransition, useEffect } from 'react'
 import { useRouter } from '@bprogress/next'
+import { useSearchParams } from 'next/navigation'
 import { Button, Chip } from '@heroui/react'
 import { useDisclosure } from '@heroui/modal'
 import { Link } from '@heroui/link'
-import { Pagination } from '@heroui/pagination'
 import { Pencil } from 'lucide-react'
 import { useMounted } from '~/hooks/useMounted'
 import { KunHeader } from '~/components/kun/Header'
@@ -13,12 +13,15 @@ import { KunUser } from '~/components/kun/floating-card/KunUser'
 import { KunLoading } from '~/components/kun/Loading'
 import { GalgameCard } from '~/components/galgame/Card'
 import { KunNull } from '~/components/kun/Null'
+import { KunPagination } from '~/components/kun/Pagination'
 import { CompanyFormModal } from '../form/CompanyFormModal'
 import { formatTimeDifference } from '~/utils/time'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { SUPPORTED_LANGUAGE_MAP } from '~/constants/resource'
 import { useUserStore } from '~/store/userStore'
+import { SortFilterBar } from '~/components/galgame/SortFilterBar'
 import type { CompanyDetail } from '~/types/api/company'
+import type { SortField, SortOrder } from '~/components/galgame/_sort'
 import type { FC } from 'react'
 
 interface Props {
@@ -37,11 +40,26 @@ export const CompanyDetailContainer: FC<Props> = ({
   const isMounted = useMounted()
   const user = useUserStore((state) => state.user)
   const router = useRouter()
-  const [page, setPage] = useState(1)
+  const searchParams = useSearchParams()
+  const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
+  const [sortField, setSortField] = useState<SortField>(
+    (searchParams.get('sortField') as SortField) || 'resource_update_time'
+  )
+  const [sortOrder, setSortOrder] = useState<SortOrder>(
+    (searchParams.get('sortOrder') as SortOrder) || 'desc'
+  )
 
   const [company, setCompany] = useState(initialCompany)
   const [patches, setPatches] = useState<GalgameCard[]>(initialPatches)
   const [loading, startTransition] = useTransition()
+  const handleSortFieldChange = (value: SortField) => {
+    setPage(1)
+    setSortField(value)
+  }
+  const handleSortOrderChange = (value: SortOrder) => {
+    setPage(1)
+    setSortOrder(value)
+  }
 
   const fetchPatches = () => {
     startTransition(async () => {
@@ -51,7 +69,9 @@ export const CompanyDetailContainer: FC<Props> = ({
       }>('/company/galgame', {
         companyId: company.id,
         page,
-        limit: 24
+        limit: 24,
+        sortField,
+        sortOrder
       })
       setPatches(galgames)
     })
@@ -62,10 +82,10 @@ export const CompanyDetailContainer: FC<Props> = ({
       return
     }
     fetchPatches()
-  }, [page])
+  }, [page, sortField, sortOrder])
 
   return (
-    <div className="w-full my-4">
+    <div className="w-full my-4 space-y-6">
       <KunHeader
         name={company.name}
         description={company.introduction}
@@ -113,7 +133,7 @@ export const CompanyDetailContainer: FC<Props> = ({
       />
 
       {company.alias.length > 0 && (
-        <div className="mb-4">
+        <div>
           <h2 className="mb-2 text-lg font-semibold">别名</h2>
           <div className="flex flex-wrap gap-2">
             {company.alias.map((alias, index) => (
@@ -126,7 +146,7 @@ export const CompanyDetailContainer: FC<Props> = ({
       )}
 
       {company.official_website.length > 0 && (
-        <div className="mb-4">
+        <div>
           <h2 className="mb-2 text-lg font-semibold">官网地址</h2>
           <div className="flex flex-wrap gap-2">
             {company.official_website.map((site, index) => (
@@ -139,7 +159,7 @@ export const CompanyDetailContainer: FC<Props> = ({
       )}
 
       {company.primary_language.length > 0 && (
-        <div className="mb-4">
+        <div>
           <h2 className="mb-4 text-lg font-semibold">主语言</h2>
           <div className="flex flex-wrap gap-2">
             {company.primary_language.map((language, index) => (
@@ -151,8 +171,15 @@ export const CompanyDetailContainer: FC<Props> = ({
         </div>
       )}
 
+      <SortFilterBar
+        sortField={sortField}
+        setSortField={handleSortFieldChange}
+        sortOrder={sortOrder}
+        setSortOrder={handleSortOrderChange}
+      />
+
       {company.parent_brand.length > 0 && (
-        <div className="mb-4">
+        <div>
           <h2 className="mb-4 text-lg font-semibold">父会社</h2>
           <div className="flex flex-wrap gap-2">
             {company.parent_brand.map((brand, index) => (
@@ -176,17 +203,11 @@ export const CompanyDetailContainer: FC<Props> = ({
 
           {total > 24 && (
             <div className="flex justify-center">
-              <Pagination
+              <KunPagination
                 total={Math.ceil(total / 24)}
                 page={page}
-                onChange={setPage}
-                showControls
-                size="lg"
-                radius="lg"
-                classNames={{
-                  wrapper: 'gap-2',
-                  item: 'w-10 h-10'
-                }}
+                onPageChange={setPage}
+                isLoading={loading}
               />
             </div>
           )}

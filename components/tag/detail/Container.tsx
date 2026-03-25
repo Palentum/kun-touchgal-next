@@ -18,9 +18,9 @@ import { KunUser } from '~/components/kun/floating-card/KunUser'
 import { formatTimeDifference } from '~/utils/time'
 import { useUserStore } from '~/store/userStore'
 import { useSearchParams } from 'next/navigation'
-import { FilterBar } from './FilterBar'
+import { SortFilterBar } from '~/components/galgame/SortFilterBar'
 import { KunPagination } from '~/components/kun/Pagination'
-import type { SortField, SortOrder } from './_sort'
+import type { SortField, SortOrder } from '~/components/galgame/_sort'
 
 interface Props {
   initialTag: TagDetail
@@ -124,7 +124,7 @@ export const TagDetailContainer = ({
         }
       />
 
-      <FilterBar
+      <SortFilterBar
         sortField={sortField}
         setSortField={setSortField}
         sortOrder={sortOrder}
