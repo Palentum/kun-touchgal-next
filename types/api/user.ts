@@ -65,6 +65,19 @@ export interface UserComment {
   quotedUsername?: string | null
 }
 
+export interface UserRating {
+  id: number
+  patchUniqueId: string
+  patchName: string
+  recommend: string
+  overall: number
+  playStatus: string
+  shortSummary: string
+  spoilerLevel: string
+  like: number
+  created: string
+}
+
 export interface FloatingCardUser {
   id: number
   name: string
