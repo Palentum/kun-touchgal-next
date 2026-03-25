@@ -10,8 +10,14 @@ export const getPatchByTag = async (
   input: z.infer<typeof getPatchByTagSchema>,
   nsfwEnable: Record<string, string | undefined>
 ) => {
-  const { tagId, page, limit } = input
+  const { tagId, page, limit, sortOrder } = input
   const offset = (page - 1) * limit
+  const orderBy =
+    input.sortField === 'favorite'
+      ? { patch: { favorite_folder: { _count: sortOrder } } }
+      : input.sortField === 'rating'
+        ? { patch: { rating_stat: { avg_overall: sortOrder } } }
+        : { patch: { [input.sortField]: sortOrder } }
 
   const [data, total] = await Promise.all([
     prisma.patch_tag_relation.findMany({
@@ -21,7 +27,7 @@ export const getPatchByTag = async (
           select: GalgameCardSelectField
         }
       },
-      orderBy: { patch: { [input.sortField]: 'desc' } },
+      orderBy,
       take: limit,
       skip: offset
     }),

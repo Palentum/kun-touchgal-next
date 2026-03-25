@@ -5,14 +5,18 @@ import { kunGetTagByIdActions, kunTagGalgameActions } from './actions'
 import { ErrorComponent } from '~/components/error/ErrorComponent'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 import { KunNull } from '~/components/kun/Null'
-import type { SortField } from '~/components/tag/detail/_sort'
+import type { SortField, SortOrder } from '~/components/tag/detail/_sort'
 import type { Metadata } from 'next'
 
 export const revalidate = 3
 
 interface Props {
   params: Promise<{ id: string }>
-  searchParams?: Promise<{ page?: number; sortField: SortField }>
+  searchParams?: Promise<{
+    page?: number
+    sortField?: SortField
+    sortOrder?: SortOrder
+  }>
 }
 
 export const generateMetadata = async ({
@@ -31,7 +35,8 @@ export const generateMetadata = async ({
 export default async function Kun({ params, searchParams }: Props) {
   const { id } = await params
   const res = await searchParams
-  const sortField = res?.sortField ? res.sortField : 'created'
+  const sortField = res?.sortField ? res.sortField : 'resource_update_time'
+  const sortOrder = res?.sortOrder ? res.sortOrder : 'desc'
   const currentPage = res?.page ? res.page : 1
 
   const tag = await kunGetTagByIdActions({ tagId: Number(id) })
@@ -43,7 +48,8 @@ export default async function Kun({ params, searchParams }: Props) {
     tagId: Number(id),
     page: currentPage,
     limit: 24,
-    sortField
+    sortField,
+    sortOrder
   })
   if (typeof response === 'string') {
     return <ErrorComponent error={response} />

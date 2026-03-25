@@ -14,14 +14,13 @@ import { GalgameCard } from '~/components/galgame/Card'
 import { KunNull } from '~/components/kun/Null'
 import { EditTagModal } from './EditTagModal'
 import { DeleteTagModal } from './DeleteTagModal'
-import { useRouter } from '@bprogress/next'
 import { KunUser } from '~/components/kun/floating-card/KunUser'
 import { formatTimeDifference } from '~/utils/time'
 import { useUserStore } from '~/store/userStore'
 import { useSearchParams } from 'next/navigation'
 import { FilterBar } from './FilterBar'
 import { KunPagination } from '~/components/kun/Pagination'
-import type { SortField } from './_sort'
+import type { SortField, SortOrder } from './_sort'
 
 interface Props {
   initialTag: TagDetail
@@ -36,11 +35,13 @@ export const TagDetailContainer = ({
 }: Props) => {
   const isMounted = useMounted()
   const user = useUserStore((state) => state.user)
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
   const [sortField, setSortField] = useState<SortField>(
     (searchParams.get('sortField') as SortField) || 'resource_update_time'
+  )
+  const [sortOrder, setSortOrder] = useState<SortOrder>(
+    (searchParams.get('sortOrder') as SortOrder) || 'desc'
   )
 
   const [tag, setTag] = useState(initialTag)
@@ -58,7 +59,8 @@ export const TagDetailContainer = ({
       tagId: tag.id,
       page,
       limit: 24,
-      sortField
+      sortField,
+      sortOrder
     })
 
     setPatches(galgames)
@@ -70,22 +72,7 @@ export const TagDetailContainer = ({
       return
     }
     fetchPatches()
-  }, [page])
-
-  useEffect(() => {
-    if (!isMounted) {
-      return
-    }
-
-    const params = new URLSearchParams()
-    params.set('sortField', sortField)
-
-    const queryString = params.toString()
-    const url = queryString ? `?${queryString}` : ''
-    router.push(url)
-
-    fetchPatches()
-  }, [sortField])
+  }, [page, sortField, sortOrder])
 
   return (
     <div className="w-full my-4 space-y-6">
@@ -137,7 +124,12 @@ export const TagDetailContainer = ({
         }
       />
 
-      <FilterBar sortField={sortField} setSortField={setSortField} />
+      <FilterBar
+        sortField={sortField}
+        setSortField={setSortField}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+      />
 
       {tag.alias.length > 0 && (
         <div>
