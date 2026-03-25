@@ -21,7 +21,7 @@ export const getUserProfile = async (
           patch_resource: true,
           patch: true,
           patch_comment: true,
-          send_message: true
+          patch_rating: true
         }
       },
       follower: true,

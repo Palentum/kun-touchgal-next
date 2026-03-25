@@ -17,7 +17,7 @@ export interface UserInfo {
     patch_resource: number
     patch_comment: number
     patch_favorite: number
-    send_message: number
+    patch_rating: number
   }
 }
 
