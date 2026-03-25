@@ -10,7 +10,7 @@ import { UserFollow } from './follow/Follow'
 import { Stats } from './follow/Stats'
 import { SelfButton } from './SelfButton'
 import { StartChatButton } from './StartChatButton'
-import { USER_ROLE_MAP } from '~/constants/user'
+import { USER_ROLE_MAP, USER_STATUS_COLOR_MAP } from '~/constants/user'
 import type { UserInfo } from '~/types/api/user'
 
 export const UserProfile = ({ user }: { user: UserInfo }) => {
@@ -27,9 +27,20 @@ export const UserProfile = ({ user }: { user: UserInfo }) => {
             />
             <div className="flex flex-col items-center gap-1">
               <h4 className="text-2xl font-bold">{user.name}</h4>
-              <Chip color="primary" variant="flat" size="sm" className="mt-1">
-                {USER_ROLE_MAP[user.role]}
-              </Chip>
+              <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
+                <Chip color="primary" variant="flat" size="sm">
+                  {USER_ROLE_MAP[user.role]}
+                </Chip>
+                {user.status === 2 && (
+                  <Chip
+                    color={USER_STATUS_COLOR_MAP[user.status]}
+                    variant="flat"
+                    size="sm"
+                  >
+                    已封禁
+                  </Chip>
+                )}
+              </div>
 
               <Stats user={user} />
             </div>
