@@ -40,9 +40,9 @@ export const toggleCommentLike = async (
     }
   )
 
-  return await prisma.$transaction(async (prisma) => {
+  return await prisma.$transaction(async (tx) => {
     if (existingLike) {
-      await prisma.user_patch_comment_like_relation.delete({
+      await tx.user_patch_comment_like_relation.delete({
         where: {
           user_id_comment_id: {
             user_id: uid,
@@ -51,7 +51,7 @@ export const toggleCommentLike = async (
         }
       })
     } else {
-      await prisma.user_patch_comment_like_relation.create({
+      await tx.user_patch_comment_like_relation.create({
         data: {
           user_id: uid,
           comment_id: commentId
@@ -65,9 +65,9 @@ export const toggleCommentLike = async (
       sender_id: uid,
       recipient_id: comment.user_id,
       link: `/${comment.patch.unique_id}`
-    })
+    }, tx)
 
-    await prisma.user.update({
+    await tx.user.update({
       where: { id: comment.user_id },
       data: { moemoepoint: { increment: existingLike ? -1 : 1 } }
     })

@@ -41,9 +41,9 @@ export const toggleResourceLike = async (
       }
     })
 
-  return await prisma.$transaction(async (prisma) => {
+  return await prisma.$transaction(async (tx) => {
     if (existingLike) {
-      await prisma.user_patch_resource_like_relation.delete({
+      await tx.user_patch_resource_like_relation.delete({
         where: {
           user_id_resource_id: {
             user_id: uid,
@@ -52,7 +52,7 @@ export const toggleResourceLike = async (
         }
       })
     } else {
-      await prisma.user_patch_resource_like_relation.create({
+      await tx.user_patch_resource_like_relation.create({
         data: {
           user_id: uid,
           resource_id: resourceId
@@ -60,7 +60,7 @@ export const toggleResourceLike = async (
       })
     }
 
-    await prisma.user.update({
+    await tx.user.update({
       where: { id: resource.user_id },
       data: { moemoepoint: { increment: existingLike ? -1 : 1 } }
     })
@@ -71,7 +71,7 @@ export const toggleResourceLike = async (
       sender_id: uid,
       recipient_id: resource.user_id,
       link: `/${resource.patch.unique_id}`
-    })
+    }, tx)
 
     return !existingLike
   })

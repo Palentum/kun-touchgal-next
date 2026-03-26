@@ -35,9 +35,9 @@ export const toggleRatingLike = async (
     }
   })
 
-  return await prisma.$transaction(async (prisma) => {
+  return await prisma.$transaction(async (tx) => {
     if (existingLike) {
-      await prisma.patch_rating_like.delete({
+      await tx.patch_rating_like.delete({
         where: {
           patch_rating_id_user_id: {
             patch_rating_id: ratingId,
@@ -46,7 +46,7 @@ export const toggleRatingLike = async (
         }
       })
     } else {
-      await prisma.patch_rating_like.create({
+      await tx.patch_rating_like.create({
         data: {
           patch_rating_id: ratingId,
           user_id: uid
@@ -60,9 +60,9 @@ export const toggleRatingLike = async (
       sender_id: uid,
       recipient_id: rating.user_id,
       link: `/${rating.patch.unique_id}`
-    })
+    }, tx)
 
-    await prisma.user.update({
+    await tx.user.update({
       where: { id: rating.user_id },
       data: { moemoepoint: { increment: existingLike ? -1 : 1 } }
     })
