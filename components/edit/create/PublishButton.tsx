@@ -10,6 +10,7 @@ import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import { patchCreateSchema } from '~/validations/edit'
 import { useRouter } from '@bprogress/next'
 import { cn } from '~/utils/cn'
+import { normalizeStringArray } from '~/utils/normalizeStringArray'
 import type { Dispatch, SetStateAction } from 'react'
 import type { CreatePatchRequestData } from '~/store/editStore'
 
@@ -36,11 +37,14 @@ export const PublishButton = ({ setErrors, className }: Props) => {
       return
     }
 
+    const sanitizedAlias = normalizeStringArray(data.alias)
+    const sanitizedTag = normalizeStringArray(data.tag)
+
     const result = patchCreateSchema.safeParse({
       ...data,
       banner: localeBannerBlob,
-      alias: JSON.stringify(data.alias),
-      tag: JSON.stringify(data.tag),
+      alias: JSON.stringify(sanitizedAlias),
+      tag: JSON.stringify(sanitizedTag),
       vndbTags: JSON.stringify(data.vndbTags),
       vndbDevelopers: JSON.stringify(data.vndbDevelopers),
       bangumiTags: JSON.stringify(data.bangumiTags),
@@ -91,8 +95,8 @@ export const PublishButton = ({ setErrors, className }: Props) => {
     )
     formDataToSend.append('steamAliases', JSON.stringify(data.steamAliases))
     formDataToSend.append('introduction', data.introduction)
-    formDataToSend.append('alias', JSON.stringify(data.alias))
-    formDataToSend.append('tag', JSON.stringify(data.tag))
+    formDataToSend.append('alias', JSON.stringify(sanitizedAlias))
+    formDataToSend.append('tag', JSON.stringify(sanitizedTag))
     formDataToSend.append('released', data.released)
     formDataToSend.append('contentLimit', data.contentLimit)
 

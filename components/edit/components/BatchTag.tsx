@@ -1,7 +1,12 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Chip, Textarea } from '@heroui/react'
 import type { PatchFormDataShape } from '~/components/edit/types'
+import {
+  normalizeStringArray,
+  parseCommaSeparatedStringArray
+} from '~/utils/normalizeStringArray'
 
 interface TagEntry {
   name: string
@@ -40,6 +45,18 @@ interface Props {
 
 export const BatchTag = ({ data, saveTag, errors }: Props) => {
   const externalTags = collectExternalTags(data)
+  const [manualTagInput, setManualTagInput] = useState(() =>
+    normalizeStringArray(data.tag).join(',')
+  )
+
+  useEffect(() => {
+    const normalizedTags = normalizeStringArray(data.tag)
+    const currentInputTags = parseCommaSeparatedStringArray(manualTagInput)
+
+    if (normalizedTags.join(',') !== currentInputTags.join(',')) {
+      setManualTagInput(normalizedTags.join(','))
+    }
+  }, [data.tag, manualTagInput])
 
   return (
     <div className="space-y-4">
@@ -73,9 +90,11 @@ export const BatchTag = ({ data, saveTag, errors }: Props) => {
         <p className="text-sm text-default-500">手动添加标签</p>
         <Textarea
           placeholder="批量添加标签, 每个标签需要使用英语逗号 ( , ) 分隔"
-          value={data.tag.toString()}
+          value={manualTagInput}
           onChange={(e) => {
-            saveTag(e.target.value.split(',').map((tag) => tag.trim()))
+            const input = e.target.value
+            setManualTagInput(input)
+            saveTag(parseCommaSeparatedStringArray(input))
           }}
           className="w-full"
           minRows={3}

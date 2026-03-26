@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { FetchPreview } from '~/components/edit/components/FetchPreview'
 import type { PatchFormDataShape } from '~/components/edit/types'
+import { normalizeStringArray } from '~/utils/normalizeStringArray'
 
 interface DlsiteResponse {
   rj_code: string
@@ -27,13 +28,8 @@ interface PreviewData {
   releaseDate: string
 }
 
-const parseTags = (raw?: string) => {
-  if (!raw) return [] as string[]
-  return raw
-    .split(/[,，]/)
-    .map((t) => t.trim())
-    .filter((t) => t.length > 0)
-}
+const parseTags = (raw?: string) =>
+  normalizeStringArray(raw?.split(/[,，]/) ?? [])
 
 interface Props<T extends PatchFormDataShape> {
   errors?: string
@@ -93,11 +89,12 @@ export const DLSiteInput = <T extends PatchFormDataShape>({
         releaseDate: result.release_date ?? ''
       })
 
-      const extraAliases = [result.title_jp, result.title_en]
-        .map((title) => title?.trim())
-        .filter((title): title is string => !!title)
-      const alias = [...new Set([...data.alias, ...extraAliases])]
-      const tags = [...new Set([...data.tag, ...parsedTags])]
+      const alias = normalizeStringArray([
+        ...data.alias,
+        result.title_jp,
+        result.title_en
+      ])
+      const tags = normalizeStringArray([...data.tag, ...parsedTags])
 
       setData({
         ...data,

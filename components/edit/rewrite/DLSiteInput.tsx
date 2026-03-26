@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import { useRewritePatchStore } from '~/store/rewriteStore'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { FetchPreview } from '~/components/edit/components/FetchPreview'
+import { normalizeStringArray } from '~/utils/normalizeStringArray'
 
 interface DlsiteResponse {
   rj_code: string
@@ -27,13 +28,8 @@ interface PreviewData {
   releaseDate: string
 }
 
-const parseTags = (raw?: string) => {
-  if (!raw) return [] as string[]
-  return raw
-    .split(/[,，]/)
-    .map((t) => t.trim())
-    .filter((t) => t.length > 0)
-}
+const parseTags = (raw?: string) =>
+  normalizeStringArray(raw?.split(/[,，]/) ?? [])
 
 export const DLSiteInput = ({ errors }: { errors?: string }) => {
   const { data, setData } = useRewritePatchStore()
@@ -84,11 +80,12 @@ export const DLSiteInput = ({ errors }: { errors?: string }) => {
         releaseDate: result.release_date ?? ''
       })
 
-      const aliasExtras = [result.title_jp, result.title_en]
-        .map((title) => title?.trim())
-        .filter((title): title is string => !!title)
-      const alias = [...new Set([...data.alias, ...aliasExtras])]
-      const tags = [...new Set([...data.tag, ...parsedTags])]
+      const alias = normalizeStringArray([
+        ...data.alias,
+        result.title_jp,
+        result.title_en
+      ])
+      const tags = normalizeStringArray([...data.tag, ...parsedTags])
 
       setData({
         ...data,
