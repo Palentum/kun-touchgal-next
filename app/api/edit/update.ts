@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { patchUpdateSchema } from '~/validations/edit'
+import { invalidatePatchContentCache } from '~/app/api/patch/cache'
 import { processSubmittedExternalData } from './processExternalData'
 
 export const updateGalgame = async (
@@ -102,6 +103,12 @@ export const updateGalgame = async (
     input.tag,
     uid
   )
+
+  try {
+    await invalidatePatchContentCache(patch.unique_id)
+  } catch (error) {
+    console.error(`Failed to invalidate patch cache for ${patch.unique_id}:`, error)
+  }
 
   return {}
 }

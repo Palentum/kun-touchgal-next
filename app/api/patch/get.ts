@@ -3,21 +3,62 @@ import { prisma } from '~/prisma/index'
 import { getKv, setKv } from '~/lib/redis'
 import { PATCH_CACHE_DURATION } from '~/config/cache'
 import { roundOneDecimal } from '~/utils/rating/average'
+import {
+  getCachedPatchFavoriteStatus,
+  getPatchCacheKey,
+  setCachedPatchFavoriteStatus
+} from './cache'
 import type { Patch } from '~/types/api/patch'
 
-const CACHE_KEY = 'patch'
+type CachedPatch = Omit<Patch, 'isFavorite'>
 
 const uniqueIdSchema = z.object({
   uniqueId: z.string().min(8).max(8)
 })
 
+const getPatchFavoriteStatus = async (
+  uniqueId: string,
+  patchId: number,
+  uid: number
+) => {
+  if (uid <= 0) {
+    return false
+  }
+
+  const cachedFavoriteStatus = await getCachedPatchFavoriteStatus(uniqueId, uid)
+  if (cachedFavoriteStatus !== null) {
+    return cachedFavoriteStatus
+  }
+
+  const relation = await prisma.user_patch_favorite_folder_relation.findFirst({
+    where: {
+      patch_id: patchId,
+      folder: {
+        user_id: uid
+      }
+    },
+    select: {
+      id: true
+    }
+  })
+
+  const isFavorite = Boolean(relation)
+  await setCachedPatchFavoriteStatus(uniqueId, uid, isFavorite)
+
+  return isFavorite
+}
+
 export const getPatchById = async (
   input: z.infer<typeof uniqueIdSchema>,
   uid: number
 ) => {
-  const cachedPatch = await getKv(`${CACHE_KEY}:${input.uniqueId}`)
+  const cachedPatch = await getKv(getPatchCacheKey(input.uniqueId))
   if (cachedPatch) {
-    return JSON.parse(cachedPatch) as Patch
+    const patch = JSON.parse(cachedPatch) as CachedPatch
+    return {
+      ...patch,
+      isFavorite: await getPatchFavoriteStatus(input.uniqueId, patch.id, uid)
+    }
   }
 
   const { uniqueId } = input
@@ -44,13 +85,6 @@ export const getPatchById = async (
           resource: true,
           comment: true
         }
-      },
-      favorite_folder: {
-        where: {
-          folder: {
-            user_id: uid
-          }
-        }
       }
     }
   })
@@ -63,7 +97,7 @@ export const getPatchById = async (
     where: { patch_id: patch.id }
   })
 
-  const response: Patch = {
+  const response: CachedPatch = {
     id: patch.id,
     uniqueId: patch.unique_id,
     vndbId: patch.vndb_id,
@@ -82,7 +116,6 @@ export const getPatchById = async (
     platform: patch.platform,
     tags: patch.tag.map((t) => t.tag.name),
     alias: patch.alias.map((a) => a.name),
-    isFavorite: patch.favorite_folder.length > 0,
     contentLimit: patch.content_limit,
     ratingSummary: stat
       ? {
@@ -134,10 +167,13 @@ export const getPatchById = async (
   }
 
   await setKv(
-    `${CACHE_KEY}:${input.uniqueId}`,
+    getPatchCacheKey(input.uniqueId),
     JSON.stringify(response),
     PATCH_CACHE_DURATION
   )
 
-  return response
+  return {
+    ...response,
+    isFavorite: await getPatchFavoriteStatus(input.uniqueId, patch.id, uid)
+  }
 }

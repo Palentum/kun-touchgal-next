@@ -5,6 +5,10 @@ import { prisma } from '~/prisma/index'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { togglePatchFavoriteSchema } from '~/validations/patch'
 import { createDedupMessage } from '~/app/api/utils/message'
+import {
+  bumpPatchFavoriteCacheVersion,
+  invalidatePatchContentCache
+} from '../cache'
 
 export const togglePatchFavorite = async (
   input: z.infer<typeof togglePatchFavoriteSchema>,
@@ -36,7 +40,7 @@ export const togglePatchFavorite = async (
     }
   })
 
-  return await prisma.$transaction(async (prisma) => {
+  const response = await prisma.$transaction(async (prisma) => {
     if (patch.user_id !== uid) {
       await createDedupMessage({
         type: 'favorite',
@@ -67,6 +71,20 @@ export const togglePatchFavorite = async (
       return { added: true }
     }
   })
+
+  try {
+    await Promise.all([
+      bumpPatchFavoriteCacheVersion(uid),
+      invalidatePatchContentCache(patch.unique_id)
+    ])
+  } catch (error) {
+    console.error(
+      `Failed to invalidate favorite cache for patch ${patch.unique_id} and user ${uid}:`,
+      error
+    )
+  }
+
+  return response
 }
 
 export const PUT = async (req: NextRequest) => {

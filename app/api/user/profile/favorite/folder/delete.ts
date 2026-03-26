@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
+import { bumpPatchFavoriteCacheVersion } from '~/app/api/patch/cache'
 
 const folderIdSchema = z.object({
   folderId: z.coerce.number().min(1).max(9999999)
@@ -22,6 +23,15 @@ export const deleteFolder = async (
   await prisma.user_patch_favorite_folder.delete({
     where: { id: input.folderId }
   })
+
+  try {
+    await bumpPatchFavoriteCacheVersion(uid)
+  } catch (error) {
+    console.error(
+      `Failed to invalidate favorite cache version for user ${uid}:`,
+      error
+    )
+  }
 
   return {}
 }

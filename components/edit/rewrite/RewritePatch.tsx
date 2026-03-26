@@ -6,9 +6,8 @@ import { useRewritePatchStore } from '~/store/rewriteStore'
 import { KunDualEditorProvider } from '~/components/kun/milkdown/DualEditorProvider'
 import toast from 'react-hot-toast'
 import { kunFetchPut } from '~/utils/kunFetch'
-import { kunErrorHandler } from '~/utils/kunErrorHandler'
+import { errorReporter, kunErrorHandler } from '~/utils/kunErrorHandler'
 import { patchUpdateSchema } from '~/validations/edit'
-import { useRouter } from '@bprogress/next'
 import { GameNameInput } from './GameNameInput'
 import { AliasManager } from './AliasManager'
 import { ContentLimit } from './ContentLimit'
@@ -23,7 +22,6 @@ import { DLSiteInput } from '../create/DLSiteInput'
 import type { RewritePatchData } from '~/store/rewriteStore'
 
 export const RewritePatch = () => {
-  const router = useRouter()
   const { data, setData } = useRewritePatchStore()
   const [errors, setErrors] = useState<
     Partial<Record<keyof RewritePatchData, string>>
@@ -59,12 +57,17 @@ export const RewritePatch = () => {
 
     setRewriting(true)
 
-    const res = kunFetchPut<KunResponse<{}>>('/edit', { ...data })
-    kunErrorHandler(res, async () => {
-      router.push(`/${data.uniqueId}`)
-    })
-    toast.success('重新编辑成功, 由于缓存影响, 您的更改将在至多 30 秒后生效')
-    setRewriting(false)
+    try {
+      const res = await kunFetchPut<KunResponse<{}>>('/edit', { ...data })
+      kunErrorHandler(res, () => {
+        toast.success('重新编辑成功')
+        window.location.assign(`/${data.uniqueId}`)
+      })
+    } catch (error) {
+      errorReporter(error)
+    } finally {
+      setRewriting(false)
+    }
   }
 
   return (
