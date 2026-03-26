@@ -6,10 +6,17 @@ import { avatarSchema } from '~/validations/user'
 import { purgeCloudflareCache } from '~/app/api/utils/purgeCloudflareCache'
 import { uploadUserAvatar } from '../_upload'
 
-const purgeCache = async (uid: number) => {
+const getAvatarUrls = (uid: number) => {
   const imageBedUrl = process.env.KUN_VISUAL_NOVEL_IMAGE_BED_URL
-  const avatarUrl = `${imageBedUrl}/user/avatar/user_${uid}/avatar.avif`
-  const avatarMiniUrl = `${imageBedUrl}/user/avatar/user_${uid}/avatar-mini.avif`
+
+  return {
+    avatarUrl: `${imageBedUrl}/user/avatar/user_${uid}/avatar.avif`,
+    avatarMiniUrl: `${imageBedUrl}/user/avatar/user_${uid}/avatar-mini.avif`
+  }
+}
+
+const purgeCache = async (uid: number) => {
+  const { avatarUrl, avatarMiniUrl } = getAvatarUrls(uid)
 
   return purgeCloudflareCache([avatarUrl, avatarMiniUrl])
 }
@@ -30,7 +37,9 @@ export const updateUserAvatar = async (uid: number, avatar: ArrayBuffer) => {
     return res
   }
 
-  const imageLink = `${process.env.KUN_VISUAL_NOVEL_IMAGE_BED_URL}/user/avatar/user_${uid}/avatar-mini.avif`
+  const avatarVersion = Date.now().toString(36)
+  const { avatarMiniUrl } = getAvatarUrls(uid)
+  const imageLink = `${avatarMiniUrl}?v=${avatarVersion}`
 
   await prisma.user.update({
     where: { id: uid },
