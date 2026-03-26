@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useTransition, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useDebounce } from 'use-debounce'
 import { useRouter } from '@bprogress/next'
 import { useSearchParams } from 'next/navigation'
 import { Button, Chip } from '@heroui/react'
@@ -19,10 +20,20 @@ import { formatTimeDifference } from '~/utils/time'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { SUPPORTED_LANGUAGE_MAP } from '~/constants/resource'
 import { useUserStore } from '~/store/userStore'
-import { SortFilterBar } from '~/components/galgame/SortFilterBar'
+import { FilterBar } from '~/components/galgame/FilterBar'
 import type { CompanyDetail } from '~/types/api/company'
 import type { SortField, SortOrder } from '~/components/galgame/_sort'
 import type { FC } from 'react'
+import {
+  DEFAULT_GALGAME_FILTER_VALUE,
+  DEFAULT_GALGAME_MIN_RATING_COUNT,
+  DEFAULT_GALGAME_SORT_FIELD,
+  DEFAULT_GALGAME_SORT_ORDER,
+  parseGalgameFilterArray,
+  parseNonNegativeIntParam,
+  parsePositiveIntParam
+} from '~/utils/galgameFilter'
+import { errorReporter, kunErrorHandler } from '~/utils/kunErrorHandler'
 
 interface Props {
   initialCompany: CompanyDetail
@@ -41,40 +52,89 @@ export const CompanyDetailContainer: FC<Props> = ({
   const user = useUserStore((state) => state.user)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
+  const [page, setPage] = useState(
+    parsePositiveIntParam(searchParams.get('page'), 1)
+  )
+  const [selectedType, setSelectedType] = useState(
+    searchParams.get('selectedType') || DEFAULT_GALGAME_FILTER_VALUE
+  )
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    searchParams.get('selectedLanguage') || DEFAULT_GALGAME_FILTER_VALUE
+  )
+  const [selectedPlatform, setSelectedPlatform] = useState(
+    searchParams.get('selectedPlatform') || DEFAULT_GALGAME_FILTER_VALUE
+  )
   const [sortField, setSortField] = useState<SortField>(
-    (searchParams.get('sortField') as SortField) || 'resource_update_time'
+    (searchParams.get('sortField') as SortField) || DEFAULT_GALGAME_SORT_FIELD
   )
   const [sortOrder, setSortOrder] = useState<SortOrder>(
-    (searchParams.get('sortOrder') as SortOrder) || 'desc'
+    (searchParams.get('sortOrder') as SortOrder) || DEFAULT_GALGAME_SORT_ORDER
   )
+  const [selectedYears, setSelectedYears] = useState<string[]>(
+    parseGalgameFilterArray(searchParams.get('yearString'))
+  )
+  const [selectedMonths, setSelectedMonths] = useState<string[]>(
+    parseGalgameFilterArray(searchParams.get('monthString'))
+  )
+  const [minRatingCount, setMinRatingCount] = useState(
+    parseNonNegativeIntParam(
+      searchParams.get('minRatingCount'),
+      DEFAULT_GALGAME_MIN_RATING_COUNT
+    )
+  )
+  const [debouncedMinRatingCount] = useDebounce(minRatingCount, 400)
 
   const [company, setCompany] = useState(initialCompany)
   const [patches, setPatches] = useState<GalgameCard[]>(initialPatches)
-  const [loading, startTransition] = useTransition()
-  const handleSortFieldChange = (value: SortField) => {
-    setPage(1)
-    setSortField(value)
-  }
-  const handleSortOrderChange = (value: SortOrder) => {
-    setPage(1)
-    setSortOrder(value)
+  const [totalCount, setTotalCount] = useState(total)
+  const [loading, setLoading] = useState(false)
+  const withPageReset = <T,>(setter: (value: T) => void) => {
+    return (value: T) => {
+      setPage(1)
+      setter(value)
+    }
   }
 
-  const fetchPatches = () => {
-    startTransition(async () => {
-      const { galgames } = await kunFetchGet<{
-        galgames: GalgameCard[]
-        total: number
-      }>('/company/galgame', {
+  const fetchPatches = async () => {
+    setLoading(true)
+
+    try {
+      const response = await kunFetchGet<
+        | {
+            galgames: GalgameCard[]
+            total: number
+          }
+        | string
+      >('/company/galgame', {
         companyId: company.id,
         page,
         limit: 24,
+        selectedType,
+        selectedLanguage,
+        selectedPlatform,
         sortField,
-        sortOrder
+        sortOrder,
+        yearString: JSON.stringify(selectedYears),
+        monthString: JSON.stringify(selectedMonths),
+        minRatingCount: sortField === 'rating' ? debouncedMinRatingCount : 0
       })
-      setPatches(galgames)
-    })
+
+      if (typeof response === 'string') {
+        kunErrorHandler(response, () => {})
+        setPatches([])
+        setTotalCount(0)
+        return
+      }
+
+      setPatches(response.galgames)
+      setTotalCount(response.total)
+    } catch (error) {
+      setPatches([])
+      setTotalCount(0)
+      errorReporter(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -82,7 +142,17 @@ export const CompanyDetailContainer: FC<Props> = ({
       return
     }
     fetchPatches()
-  }, [page, sortField, sortOrder])
+  }, [
+    page,
+    selectedType,
+    selectedLanguage,
+    selectedPlatform,
+    sortField,
+    sortOrder,
+    selectedYears,
+    selectedMonths,
+    sortField === 'rating' ? debouncedMinRatingCount : null
+  ])
 
   return (
     <div className="w-full my-4 space-y-6">
@@ -171,11 +241,23 @@ export const CompanyDetailContainer: FC<Props> = ({
         </div>
       )}
 
-      <SortFilterBar
+      <FilterBar
+        selectedType={selectedType}
+        setSelectedType={withPageReset(setSelectedType)}
+        selectedLanguage={selectedLanguage}
+        setSelectedLanguage={withPageReset(setSelectedLanguage)}
+        selectedPlatform={selectedPlatform}
+        setSelectedPlatform={withPageReset(setSelectedPlatform)}
         sortField={sortField}
-        setSortField={handleSortFieldChange}
+        setSortField={withPageReset(setSortField)}
         sortOrder={sortOrder}
-        setSortOrder={handleSortOrderChange}
+        setSortOrder={withPageReset(setSortOrder)}
+        selectedYears={selectedYears}
+        setSelectedYears={withPageReset(setSelectedYears)}
+        selectedMonths={selectedMonths}
+        setSelectedMonths={withPageReset(setSelectedMonths)}
+        minRatingCount={minRatingCount}
+        setMinRatingCount={withPageReset(setMinRatingCount)}
       />
 
       {company.parent_brand.length > 0 && (
@@ -201,10 +283,10 @@ export const CompanyDetailContainer: FC<Props> = ({
             ))}
           </div>
 
-          {total > 24 && (
+          {totalCount > 24 && (
             <div className="flex justify-center">
               <KunPagination
-                total={Math.ceil(total / 24)}
+                total={Math.ceil(totalCount / 24)}
                 page={page}
                 onPageChange={setPage}
                 isLoading={loading}
@@ -212,7 +294,9 @@ export const CompanyDetailContainer: FC<Props> = ({
             </div>
           )}
 
-          {!total && <KunNull message="暂无 Galgame, 或您未开启网站 NSFW" />}
+          {!totalCount && (
+            <KunNull message="暂无 Galgame, 或您未开启网站 NSFW" />
+          )}
         </div>
       )}
     </div>

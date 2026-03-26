@@ -7,6 +7,11 @@ import { GalgameCardSelectField } from '~/constants/api/select'
 import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 import { Prisma } from '~/prisma/generated/prisma/client'
 import type { SearchSuggestionType } from '~/types/api/search'
+import {
+  buildGalgameDateFilter,
+  buildGalgameOrderBy,
+  buildGalgameWhere
+} from '../utils/galgameQuery'
 
 export const searchGalgame = async (
   input: z.infer<typeof searchSchema>,
@@ -38,70 +43,15 @@ export const searchGalgame = async (
     .filter((item) => item.type === 'tag')
     .map((item) => item.name)
 
-  let dateFilter = {}
-  if (!selectedYears.includes('all')) {
-    const dateConditions = []
-
-    if (selectedYears.includes('future')) {
-      dateConditions.push({ released: 'future' })
-    }
-
-    if (selectedYears.includes('unknown')) {
-      dateConditions.push({ released: 'unknown' })
-    }
-
-    const nonFutureYears = selectedYears.filter((year) => year !== 'future')
-    if (nonFutureYears.length > 0) {
-      if (!selectedMonths.includes('all')) {
-        const yearMonthConditions = nonFutureYears.flatMap((year) =>
-          selectedMonths.map((month) => ({
-            released: {
-              startsWith: `${year}-${month}`
-            }
-          }))
-        )
-        dateConditions.push(...yearMonthConditions)
-      } else {
-        const yearConditions = nonFutureYears.map((year) => ({
-          released: {
-            startsWith: year
-          }
-        }))
-        dateConditions.push(...yearConditions)
-      }
-    }
-
-    if (dateConditions.length > 0) {
-      dateFilter = { OR: dateConditions }
-    }
-  }
-
-  // Other fields sort
-  const ratingFilter =
-    sortField === 'rating' && minRatingCount > 0
-      ? {
-          rating_stat: {
-            count: {
-              gte: minRatingCount
-            }
-          }
-        }
-      : {}
-
-  const where = {
-    ...(selectedType !== 'all' && { type: { has: selectedType } }),
-    ...(selectedLanguage !== 'all' && { language: { has: selectedLanguage } }),
-    ...(selectedPlatform !== 'all' && { platform: { has: selectedPlatform } }),
-    ...ratingFilter,
-    ...nsfwEnable
-  }
-
-  const orderBy =
-    sortField === 'favorite'
-      ? { favorite_folder: { _count: sortOrder } }
-      : sortField === 'rating'
-        ? { rating_stat: { avg_overall: sortOrder } }
-        : { [sortField]: sortOrder }
+  const dateFilter = buildGalgameDateFilter(selectedYears, selectedMonths)
+  const where = buildGalgameWhere({
+    selectedType,
+    selectedLanguage,
+    selectedPlatform,
+    minRatingCount: sortField === 'rating' ? minRatingCount : 0,
+    nsfwEnable
+  })
+  const orderBy = buildGalgameOrderBy(sortField, sortOrder)
 
   const queryCondition = [
     ...queryArray.map((q) => ({

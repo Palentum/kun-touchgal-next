@@ -28,6 +28,7 @@ import {
   SUPPORTED_PLATFORM_MAP,
   SUPPORTED_TYPE_MAP
 } from '~/constants/resource'
+import { DEFAULT_GALGAME_MIN_RATING_COUNT } from '~/utils/galgameFilter'
 import type { SortField, SortOrder } from './_sort'
 
 interface Props {
@@ -112,7 +113,9 @@ export const FilterBar = ({
   const currentSortLabel =
     sortFieldLabelMap[sortField] ?? (sortField === 'rating' ? '评分' : '排序')
 
-  const ratingFilterActive = sortField === 'rating' && minRatingCount !== 10
+  const ratingFilterActive =
+    sortField === 'rating' &&
+    minRatingCount !== DEFAULT_GALGAME_MIN_RATING_COUNT
 
   const hasActiveFilters =
     selectedType !== 'all' ||
@@ -348,7 +351,7 @@ export const FilterBar = ({
                   <Input
                     type="number"
                     label="最低评分人数（仅评分排序生效）"
-                    placeholder="10"
+                    placeholder={String(DEFAULT_GALGAME_MIN_RATING_COUNT)}
                     size="sm"
                     value={String(minRatingCount)}
                     min={0}
@@ -374,7 +377,7 @@ export const FilterBar = ({
                     setSelectedPlatform('all')
                     setSelectedYears(['all'])
                     setSelectedMonths(['all'])
-                    setMinRatingCount?.(10)
+                    setMinRatingCount?.(DEFAULT_GALGAME_MIN_RATING_COUNT)
                   }}
                 >
                   重置筛选

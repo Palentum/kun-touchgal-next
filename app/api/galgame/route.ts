@@ -10,6 +10,12 @@ import {
 } from '~/constants/resource'
 import { GalgameCardSelectField } from '~/constants/api/select'
 import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
+import {
+  buildGalgameDateFilter,
+  buildGalgameOrderBy,
+  buildGalgameWhere
+} from '../utils/galgameQuery'
+import { parseGalgameFilterArray } from '~/utils/galgameFilter'
 
 export const getGalgame = async (
   input: z.infer<typeof galgameSchema>,
@@ -25,76 +31,19 @@ export const getGalgame = async (
     limit,
     minRatingCount
   } = input
-  const years = JSON.parse(input.yearString) as string[]
-  const months = JSON.parse(input.monthString) as string[]
+  const years = parseGalgameFilterArray(input.yearString)
+  const months = parseGalgameFilterArray(input.monthString)
 
   const offset = (page - 1) * limit
-
-  // Releases date sort
-  let dateFilter = {}
-  if (!years.includes('all')) {
-    const dateConditions = []
-
-    if (years.includes('future')) {
-      dateConditions.push({ released: 'future' })
-    }
-
-    if (years.includes('unknown')) {
-      dateConditions.push({ released: 'unknown' })
-    }
-
-    const nonFutureYears = years.filter((year) => year !== 'future')
-    if (nonFutureYears.length > 0) {
-      if (!months.includes('all')) {
-        const yearMonthConditions = nonFutureYears.flatMap((year) =>
-          months.map((month) => ({
-            released: {
-              startsWith: `${year}-${month}`
-            }
-          }))
-        )
-        dateConditions.push(...yearMonthConditions)
-      } else {
-        const yearConditions = nonFutureYears.map((year) => ({
-          released: {
-            startsWith: year
-          }
-        }))
-        dateConditions.push(...yearConditions)
-      }
-    }
-
-    if (dateConditions.length > 0) {
-      dateFilter = { OR: dateConditions }
-    }
-  }
-
-  // Other fields sort
-  const ratingFilter =
-    minRatingCount > 0
-      ? {
-          rating_stat: {
-            count: {
-              gte: minRatingCount
-            }
-          }
-        }
-      : {}
-
-  const where = {
-    ...(selectedType !== 'all' && { type: { has: selectedType } }),
-    ...(selectedLanguage !== 'all' && { language: { has: selectedLanguage } }),
-    ...(selectedPlatform !== 'all' && { platform: { has: selectedPlatform } }),
-    ...ratingFilter,
-    ...nsfwEnable
-  }
-
-  const orderBy =
-    sortField === 'favorite'
-      ? { favorite_folder: { _count: sortOrder } }
-      : sortField === 'rating'
-        ? { rating_stat: { avg_overall: sortOrder } }
-        : { [sortField]: sortOrder }
+  const dateFilter = buildGalgameDateFilter(years, months)
+  const where = buildGalgameWhere({
+    selectedType,
+    selectedLanguage,
+    selectedPlatform,
+    minRatingCount,
+    nsfwEnable
+  })
+  const orderBy = buildGalgameOrderBy(sortField, sortOrder)
 
   const [data, total] = await Promise.all([
     prisma.patch.findMany({

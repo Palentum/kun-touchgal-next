@@ -5,23 +5,53 @@ import { prisma } from '~/prisma/index'
 import { getPatchByTagSchema } from '~/validations/tag'
 import { GalgameCardSelectField } from '~/constants/api/select'
 import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
+import {
+  ALL_SUPPORTED_LANGUAGE,
+  ALL_SUPPORTED_PLATFORM,
+  ALL_SUPPORTED_TYPE
+} from '~/constants/resource'
+import {
+  buildGalgameDateFilter,
+  buildGalgameOrderBy,
+  buildGalgameWhere
+} from '~/app/api/utils/galgameQuery'
+import { parseGalgameFilterArray } from '~/utils/galgameFilter'
 
 export const getPatchByTag = async (
   input: z.infer<typeof getPatchByTagSchema>,
   nsfwEnable: Record<string, string | undefined>
 ) => {
-  const { tagId, page, limit, sortOrder } = input
+  const {
+    tagId,
+    page,
+    limit,
+    sortField,
+    sortOrder,
+    selectedType,
+    selectedLanguage,
+    selectedPlatform,
+    yearString,
+    monthString,
+    minRatingCount
+  } = input
   const offset = (page - 1) * limit
-  const orderBy =
-    input.sortField === 'favorite'
-      ? { patch: { favorite_folder: { _count: sortOrder } } }
-      : input.sortField === 'rating'
-        ? { patch: { rating_stat: { avg_overall: sortOrder } } }
-        : { patch: { [input.sortField]: sortOrder } }
+  const years = parseGalgameFilterArray(yearString)
+  const months = parseGalgameFilterArray(monthString)
+  const orderBy = { patch: buildGalgameOrderBy(sortField, sortOrder) }
+  const patchWhere = {
+    ...buildGalgameDateFilter(years, months),
+    ...buildGalgameWhere({
+      selectedType,
+      selectedLanguage,
+      selectedPlatform,
+      minRatingCount: sortField === 'rating' ? minRatingCount : 0,
+      nsfwEnable
+    })
+  }
 
   const [data, total] = await Promise.all([
     prisma.patch_tag_relation.findMany({
-      where: { tag_id: tagId, patch: nsfwEnable },
+      where: { tag_id: tagId, patch: patchWhere },
       select: {
         patch: {
           select: GalgameCardSelectField
@@ -32,7 +62,7 @@ export const getPatchByTag = async (
       skip: offset
     }),
     prisma.patch_tag_relation.count({
-      where: { tag_id: tagId, patch: nsfwEnable }
+      where: { tag_id: tagId, patch: patchWhere }
     })
   ])
 
@@ -53,6 +83,13 @@ export const GET = async (req: NextRequest) => {
   const input = kunParseGetQuery(req, getPatchByTagSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)
+  }
+  if (
+    !ALL_SUPPORTED_TYPE.includes(input.selectedType) ||
+    !ALL_SUPPORTED_LANGUAGE.includes(input.selectedLanguage) ||
+    !ALL_SUPPORTED_PLATFORM.includes(input.selectedPlatform)
+  ) {
+    return NextResponse.json('请选择我们支持的 Galgame 排序类型')
   }
   const nsfwEnable = getNSFWHeader(req)
 

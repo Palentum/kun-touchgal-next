@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { galgameSchema } from './galgame'
 
 export const createTagSchema = z.object({
   name: z
@@ -35,17 +36,21 @@ export const getTagByIdSchema = z.object({
   tagId: z.coerce.number().min(1).max(9999999)
 })
 
-export const getPatchByTagSchema = z.object({
-  tagId: z.coerce.number().min(1).max(9999999),
-  page: z.coerce.number().min(1).max(9999999),
-  limit: z.coerce.number().min(1).max(24),
-  sortOrder: z.union([z.literal('asc'), z.literal('desc')]).default('desc'),
-  sortField: z.union([
-    z.literal('resource_update_time'),
-    z.literal('created'),
-    z.literal('view'),
-    z.literal('download'),
-    z.literal('favorite'),
-    z.literal('rating')
-  ])
+const galgameListQuerySchema = galgameSchema.pick({
+  selectedType: true,
+  selectedLanguage: true,
+  selectedPlatform: true,
+  sortField: true,
+  sortOrder: true,
+  page: true,
+  limit: true,
+  yearString: true,
+  monthString: true,
+  minRatingCount: true
 })
+
+export const getPatchByTagSchema = z
+  .object({
+    tagId: z.coerce.number().min(1).max(9999999)
+  })
+  .merge(galgameListQuerySchema)

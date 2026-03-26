@@ -8,6 +8,7 @@ import { useMounted } from '~/hooks/useMounted'
 import { KunHeader } from '../kun/Header'
 import { KunPagination } from '../kun/Pagination'
 import type { SortField, SortOrder } from './_sort'
+import { DEFAULT_GALGAME_MIN_RATING_COUNT } from '~/utils/galgameFilter'
 
 interface Props {
   initialGalgames: GalgameCard[]
@@ -28,7 +29,9 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
   const [selectedYears, setSelectedYears] = useState<string[]>(['all'])
   const [selectedMonths, setSelectedMonths] = useState<string[]>(['all'])
   const [page, setPage] = useState(1)
-  const [minRatingCount, setMinRatingCount] = useState(10)
+  const [minRatingCount, setMinRatingCount] = useState(
+    DEFAULT_GALGAME_MIN_RATING_COUNT
+  )
 
   const fetchPatches = async () => {
     setLoading(true)
