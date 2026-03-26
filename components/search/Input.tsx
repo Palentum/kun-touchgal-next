@@ -30,41 +30,62 @@ export const SearchInput = ({
   setShowHistory
 }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
+  const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [isFocused, setIsFocused] = useState(false)
+
+  const syncDropdownVisibility = (
+    currentQuery: string,
+    currentSuggestions: SearchSuggestionType[]
+  ) => {
+    const hasQuery = currentQuery.trim().length > 0
+    const hasSelectedSuggestions = currentSuggestions.length > 0
+
+    setShowSuggestions(hasQuery)
+    setShowHistory(!hasQuery && !hasSelectedSuggestions)
+  }
+
+  const clearBlurTimeout = () => {
+    if (blurTimeoutRef.current) {
+      clearTimeout(blurTimeoutRef.current)
+      blurTimeoutRef.current = null
+    }
+  }
 
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
 
+  useEffect(() => clearBlurTimeout, [])
+
+  useEffect(() => {
+    if (!isFocused) {
+      return
+    }
+
+    syncDropdownVisibility(query, selectedSuggestions)
+  }, [isFocused, query, selectedSuggestions, setShowHistory, setShowSuggestions])
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
-    if (!event.target.value.trim()) {
-      setShowSuggestions(false)
-      setShowHistory(true)
-    } else {
-      setShowSuggestions(true)
-      setShowHistory(false)
-    }
   }
 
   const handleInputFocus = () => {
+    clearBlurTimeout()
     setIsFocused(true)
-    if (!query.trim()) {
-      setShowHistory(true)
-    } else {
-      setShowSuggestions(true)
-    }
   }
 
   const handleInputBlur = () => {
     setIsFocused(false)
-    setTimeout(() => {
+    clearBlurTimeout()
+    blurTimeoutRef.current = setTimeout(() => {
       setShowHistory(false)
       setShowSuggestions(false)
+      blurTimeoutRef.current = null
     }, 100)
   }
 
   const handleRemoveChip = (nameToRemove: string) => {
+    clearBlurTimeout()
     setSelectedSuggestions((prevSuggestions) =>
       prevSuggestions.filter((suggestion) => suggestion.name !== nameToRemove)
     )
@@ -113,9 +134,11 @@ export const SearchInput = ({
 
   const isShowClearButton = !!(query.length || selectedSuggestions.length)
   const handleClearInput = () => {
+    clearBlurTimeout()
     setQuery('')
     setSelectedSuggestions([])
     setIsFocused(true)
+    syncDropdownVisibility('', [])
     inputRef.current?.focus()
   }
 
