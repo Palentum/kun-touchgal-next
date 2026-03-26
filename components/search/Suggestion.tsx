@@ -6,16 +6,18 @@ import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import { Chip } from '@heroui/react'
 import { Key, Tag } from 'lucide-react'
 import { KunLoading } from '~/components/kun/Loading'
-import type { Dispatch, SetStateAction } from 'react'
+import type { Dispatch, RefObject, SetStateAction } from 'react'
 import type { SearchSuggestionType } from '~/types/api/search'
 
 interface Props {
+  inputRef: RefObject<HTMLInputElement | null>
   query: string
   setQuery: Dispatch<SetStateAction<string>>
   setSelectedSuggestions: Dispatch<SetStateAction<SearchSuggestionType[]>>
 }
 
 export const SearchSuggestion = ({
+  inputRef,
   query,
   setQuery,
   setSelectedSuggestions
@@ -57,6 +59,7 @@ export const SearchSuggestion = ({
       const filtered = prev.filter((item) => !namesToRemove.has(item.name))
       return [...filtered, ...suggestions]
     })
+    inputRef.current?.focus()
   }
 
   const handleSelectMultiQueryKeywords = () => {

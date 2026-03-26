@@ -8,11 +8,13 @@ import type {
   ChangeEvent,
   Dispatch,
   KeyboardEvent,
+  RefObject,
   SetStateAction
 } from 'react'
 import { X } from 'lucide-react'
 
 interface Props {
+  inputRef: RefObject<HTMLInputElement | null>
   query: string
   setQuery: Dispatch<SetStateAction<string>>
   setShowSuggestions: Dispatch<SetStateAction<boolean>>
@@ -22,6 +24,7 @@ interface Props {
 }
 
 export const SearchInput = ({
+  inputRef,
   query,
   setQuery,
   setShowSuggestions,
@@ -29,7 +32,6 @@ export const SearchInput = ({
   setSelectedSuggestions,
   setShowHistory
 }: Props) => {
-  const inputRef = useRef<HTMLInputElement>(null)
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [isFocused, setIsFocused] = useState(false)
 

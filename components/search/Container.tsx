@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { KunLoading } from '~/components/kun/Loading'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { errorReporter, kunErrorHandler } from '~/utils/kunErrorHandler'
@@ -22,6 +22,7 @@ import type { SortField, SortOrder } from '~/components/galgame/_sort'
 const MAX_HISTORY_ITEMS = 10
 
 export const SearchPage = () => {
+  const inputRef = useRef<HTMLInputElement | null>(null)
   const [query, setQuery] = useState('')
   const [debouncedQuery] = useDebounce(query, 500)
   const [hasSearched, setHasSearched] = useState(false)
@@ -176,6 +177,7 @@ export const SearchPage = () => {
       />
 
       <SearchInput
+        inputRef={inputRef}
         query={query}
         setQuery={setQuery}
         setShowSuggestions={setShowSuggestions}
@@ -186,6 +188,7 @@ export const SearchPage = () => {
 
       {showSuggestions && (
         <SearchSuggestion
+          inputRef={inputRef}
           query={debouncedQuery}
           setQuery={setQuery}
           setSelectedSuggestions={setSelectedSuggestions}
