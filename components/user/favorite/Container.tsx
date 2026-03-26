@@ -89,7 +89,11 @@ export const UserFavorite = ({
 
   const handlePressFolderCard = (folder: UserFavoritePatchFolder) => {
     setSelectedFolder(folder)
-    fetchPatchesInFolder(folder.id)
+    if (page === 1) {
+      fetchPatchesInFolder(folder.id)
+    } else {
+      setPage(1)
+    }
     onOpenFolder()
   }
 
@@ -174,7 +178,7 @@ export const UserFavorite = ({
                 {isPending ? (
                   <KunLoading hint="正在获取收藏数据..." />
                 ) : (
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
                     {patches.map((galgame) => (
                       <UserGalgameCard
                         key={galgame.id}
