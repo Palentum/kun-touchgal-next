@@ -30,7 +30,8 @@ export const searchSchema = z.object({
     .max(10, { message: '您最多选择 10 组年份' }),
   selectedMonths: z
     .array(z.string().trim().min(1).max(50))
-    .max(10, { message: '您最多选择 12 组月份' })
+    .max(10, { message: '您最多选择 12 组月份' }),
+  minRatingCount: z.coerce.number().min(0).max(999999).default(10)
 })
 
 export const searchTagSchema = z.object({

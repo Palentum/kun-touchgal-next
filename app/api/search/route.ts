@@ -23,7 +23,8 @@ export const searchGalgame = async (
     sortField,
     sortOrder,
     selectedYears = ['all'],
-    selectedMonths = ['all']
+    selectedMonths = ['all'],
+    minRatingCount
   } = input
   const offset = (page - 1) * limit
   const insensitive = Prisma.QueryMode.insensitive
@@ -76,10 +77,22 @@ export const searchGalgame = async (
   }
 
   // Other fields sort
+  const ratingFilter =
+    sortField === 'rating' && minRatingCount > 0
+      ? {
+          rating_stat: {
+            count: {
+              gte: minRatingCount
+            }
+          }
+        }
+      : {}
+
   const where = {
     ...(selectedType !== 'all' && { type: { has: selectedType } }),
     ...(selectedLanguage !== 'all' && { language: { has: selectedLanguage } }),
     ...(selectedPlatform !== 'all' && { platform: { has: selectedPlatform } }),
+    ...ratingFilter,
     ...nsfwEnable
   }
 

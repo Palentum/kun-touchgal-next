@@ -23,6 +23,7 @@ const MAX_HISTORY_ITEMS = 10
 
 export const SearchPage = () => {
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const latestSearchRequestIdRef = useRef(0)
   const [query, setQuery] = useState('')
   const [debouncedQuery] = useDebounce(query, 500)
   const [hasSearched, setHasSearched] = useState(false)
@@ -42,6 +43,8 @@ export const SearchPage = () => {
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
   const [selectedYears, setSelectedYears] = useState<string[]>(['all'])
   const [selectedMonths, setSelectedMonths] = useState<string[]>(['all'])
+  const [minRatingCount, setMinRatingCount] = useState(10)
+  const [debouncedMinRatingCount] = useDebounce(minRatingCount, 400)
 
   const [showHistory, setShowHistory] = useState(false)
   const searchData = useSearchStore((state) => state.data)
@@ -80,6 +83,9 @@ export const SearchPage = () => {
       return
     }
 
+    const requestId = latestSearchRequestIdRef.current + 1
+    latestSearchRequestIdRef.current = requestId
+
     setLoading(true)
     setShowHistory(false)
     setShowSuggestions(false)
@@ -107,8 +113,13 @@ export const SearchPage = () => {
         sortField,
         sortOrder,
         selectedYears,
-        selectedMonths
+        selectedMonths,
+        minRatingCount: sortField === 'rating' ? debouncedMinRatingCount : 0
       })
+
+      if (requestId !== latestSearchRequestIdRef.current) {
+        return
+      }
 
       if (typeof response === 'string') {
         kunErrorHandler(response, () => {})
@@ -123,19 +134,32 @@ export const SearchPage = () => {
       setHasSearched(true)
       addToHistory(selectedSuggestions)
     } catch (error) {
+      if (requestId !== latestSearchRequestIdRef.current) {
+        return
+      }
+
       setPatches([])
       setTotal(0)
       setHasSearched(true)
       errorReporter(error)
     } finally {
-      setLoading(false)
+      if (requestId === latestSearchRequestIdRef.current) {
+        setLoading(false)
+      }
     }
   }
+
+  useEffect(() => {
+    return () => {
+      latestSearchRequestIdRef.current += 1
+    }
+  }, [])
 
   useEffect(() => {
     if (selectedSuggestions.length) {
       handleSearch()
     } else {
+      latestSearchRequestIdRef.current += 1
       setPatches([])
       setHasSearched(false)
       setPage(1)
@@ -151,6 +175,7 @@ export const SearchPage = () => {
     sortOrder,
     selectedYears,
     selectedMonths,
+    sortField === 'rating' ? debouncedMinRatingCount : null,
     selectedSuggestions,
     searchData.searchInAlias,
     searchData.searchInIntroduction,
@@ -210,6 +235,8 @@ export const SearchPage = () => {
         setSelectedYears={setSelectedYears}
         selectedMonths={selectedMonths}
         setSelectedMonths={setSelectedMonths}
+        minRatingCount={minRatingCount}
+        setMinRatingCount={setMinRatingCount}
       />
 
       {loading ? (
