@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { galgameSchema } from './galgame'
+import { DEFAULT_TAG_COMPANY_MIN_RATING_COUNT } from '~/utils/galgameFilter'
 
 export const createTagSchema = z.object({
   name: z
@@ -36,18 +37,26 @@ export const getTagByIdSchema = z.object({
   tagId: z.coerce.number().min(1).max(9999999)
 })
 
-const galgameListQuerySchema = galgameSchema.pick({
-  selectedType: true,
-  selectedLanguage: true,
-  selectedPlatform: true,
-  sortField: true,
-  sortOrder: true,
-  page: true,
-  limit: true,
-  yearString: true,
-  monthString: true,
-  minRatingCount: true
-})
+const galgameListQuerySchema = galgameSchema
+  .pick({
+    selectedType: true,
+    selectedLanguage: true,
+    selectedPlatform: true,
+    sortField: true,
+    sortOrder: true,
+    page: true,
+    limit: true,
+    yearString: true,
+    monthString: true,
+    minRatingCount: true
+  })
+  .extend({
+    minRatingCount: z.coerce
+      .number()
+      .min(0)
+      .max(999999)
+      .default(DEFAULT_TAG_COMPANY_MIN_RATING_COUNT)
+  })
 
 export const getPatchByTagSchema = z
   .object({

@@ -26,9 +26,9 @@ import type { SortField, SortOrder } from '~/components/galgame/_sort'
 import type { FC } from 'react'
 import {
   DEFAULT_GALGAME_FILTER_VALUE,
-  DEFAULT_GALGAME_MIN_RATING_COUNT,
   DEFAULT_GALGAME_SORT_FIELD,
   DEFAULT_GALGAME_SORT_ORDER,
+  DEFAULT_TAG_COMPANY_MIN_RATING_COUNT,
   parseGalgameFilterArray,
   parseNonNegativeIntParam,
   parsePositiveIntParam
@@ -79,7 +79,7 @@ export const CompanyDetailContainer: FC<Props> = ({
   const [minRatingCount, setMinRatingCount] = useState(
     parseNonNegativeIntParam(
       searchParams.get('minRatingCount'),
-      DEFAULT_GALGAME_MIN_RATING_COUNT
+      DEFAULT_TAG_COMPANY_MIN_RATING_COUNT
     )
   )
   const [debouncedMinRatingCount] = useDebounce(minRatingCount, 400)
@@ -258,6 +258,7 @@ export const CompanyDetailContainer: FC<Props> = ({
         setSelectedMonths={withPageReset(setSelectedMonths)}
         minRatingCount={minRatingCount}
         setMinRatingCount={withPageReset(setMinRatingCount)}
+        defaultMinRatingCount={DEFAULT_TAG_COMPANY_MIN_RATING_COUNT}
       />
 
       {company.parent_brand.length > 0 && (

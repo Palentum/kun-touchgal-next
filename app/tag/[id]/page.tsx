@@ -9,10 +9,10 @@ import type { SortField, SortOrder } from '~/components/galgame/_sort'
 import type { Metadata } from 'next'
 import {
   DEFAULT_GALGAME_FILTER_VALUE,
-  DEFAULT_GALGAME_MIN_RATING_COUNT,
   DEFAULT_GALGAME_MONTH_STRING,
   DEFAULT_GALGAME_SORT_FIELD,
   DEFAULT_GALGAME_SORT_ORDER,
+  DEFAULT_TAG_COMPANY_MIN_RATING_COUNT,
   DEFAULT_GALGAME_YEAR_STRING,
   getSearchParamValue,
   parseNonNegativeIntParam,
@@ -73,7 +73,7 @@ export default async function Kun({ params, searchParams }: Props) {
     sortField === 'rating'
       ? parseNonNegativeIntParam(
           getSearchParamValue(res?.minRatingCount),
-          DEFAULT_GALGAME_MIN_RATING_COUNT
+          DEFAULT_TAG_COMPANY_MIN_RATING_COUNT
         )
       : 0
 

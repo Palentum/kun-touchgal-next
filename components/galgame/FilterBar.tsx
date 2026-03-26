@@ -48,6 +48,7 @@ interface Props {
   setSelectedMonths: (months: string[]) => void
   minRatingCount?: number
   setMinRatingCount?: (count: number) => void
+  defaultMinRatingCount?: number
 }
 
 const sortFieldLabelMap: Record<string, string> = {
@@ -107,15 +108,15 @@ export const FilterBar = ({
   selectedMonths,
   setSelectedMonths,
   minRatingCount,
-  setMinRatingCount
+  setMinRatingCount,
+  defaultMinRatingCount = DEFAULT_GALGAME_MIN_RATING_COUNT
 }: Props) => {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
   const currentSortLabel =
     sortFieldLabelMap[sortField] ?? (sortField === 'rating' ? '评分' : '排序')
 
   const ratingFilterActive =
-    sortField === 'rating' &&
-    minRatingCount !== DEFAULT_GALGAME_MIN_RATING_COUNT
+    sortField === 'rating' && minRatingCount !== defaultMinRatingCount
 
   const hasActiveFilters =
     selectedType !== 'all' ||
@@ -351,7 +352,7 @@ export const FilterBar = ({
                   <Input
                     type="number"
                     label="最低评分人数（仅评分排序生效）"
-                    placeholder={String(DEFAULT_GALGAME_MIN_RATING_COUNT)}
+                    placeholder={String(defaultMinRatingCount)}
                     size="sm"
                     value={String(minRatingCount)}
                     min={0}
@@ -377,7 +378,7 @@ export const FilterBar = ({
                     setSelectedPlatform('all')
                     setSelectedYears(['all'])
                     setSelectedMonths(['all'])
-                    setMinRatingCount?.(DEFAULT_GALGAME_MIN_RATING_COUNT)
+                    setMinRatingCount?.(defaultMinRatingCount)
                   }}
                 >
                   重置筛选
