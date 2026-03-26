@@ -135,6 +135,11 @@ export const SearchInput = ({
   }
 
   const isShowClearButton = !!(query.length || selectedSuggestions.length)
+  const placeholder =
+    selectedSuggestions.length > 0
+      ? '继续添加关键词'
+      : '输入内容, 点击按钮或回车创建关键词'
+
   const handleClearInput = () => {
     clearBlurTimeout()
     setQuery('')
@@ -173,7 +178,7 @@ export const SearchInput = ({
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           onKeyUp={(e) => handleKeyUp(e)}
-          placeholder="输入内容, 点击按钮或回车创建关键词"
+          placeholder={placeholder}
         />
 
         {isShowClearButton && (
