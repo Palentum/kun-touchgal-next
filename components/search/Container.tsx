@@ -1,11 +1,11 @@
 'use client'
 
+import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { KunLoading } from '~/components/kun/Loading'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { errorReporter, kunErrorHandler } from '~/utils/kunErrorHandler'
 import { KunHeader } from '~/components/kun/Header'
-import { KunNull } from '~/components/kun/Null'
 import { GalgameCard } from '~/components/galgame/Card'
 import { useSearchStore } from '~/store/searchStore'
 import { SearchHistory } from './SearchHistory'
@@ -164,14 +164,8 @@ export const SearchPage = () => {
         headerEndContent={<SearchOption />}
         endContent={
           <div className="text-default-500">
-            <p>
-              输入内容并点击搜索按钮以搜索 Galgame,
-              搜索设置默认搜索游戏标题和别名。
-            </p>
-            <p>
-              搜索技巧 - 部分游戏名查找: 要查找游戏《千恋万花》，您应该搜索
-              “千恋” 即可，而不是搜索 “千恋万花”
-            </p>
+            <p>使用游戏标题的一部分作为关键词搜索更容易找到游戏。</p>
+            <p>您可以使用多个关键词和标签的组合进行搜索。</p>
           </div>
         }
       />
@@ -240,13 +234,24 @@ export const SearchPage = () => {
           )}
 
           {hasSearched && patches.length === 0 && (
-            <KunNull
-              message={
-                isNSFWEnabled
-                  ? '您已启用显示 NSFW 内容, 但未找到相关内容, 请尝试使用游戏的日文原名搜索'
-                  : '未找到相关内容, 请尝试使用游戏的日文原名搜索或打开 NSFW'
-              }
-            />
+            <div className="flex flex-col items-center justify-center space-y-4 size-full">
+              <Image
+                className="rounded-2xl"
+                src="/null.webp"
+                alt="未找到相关内容"
+                width={150}
+                height={150}
+                priority
+              />
+              <div className="space-y-1 text-center">
+                <p>未找到相关内容</p>
+                <p>
+                  {isNSFWEnabled
+                    ? '请尝试使用游戏的日文原名搜索'
+                    : '请尝试使用游戏的日文原名搜索或打开 NSFW'}
+                </p>
+              </div>
+            </div>
           )}
         </div>
       )}
