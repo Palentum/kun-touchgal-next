@@ -1,6 +1,5 @@
 import { Button } from '@heroui/button'
 import { Tooltip } from '@heroui/tooltip'
-import { Link } from '@heroui/link'
 import { Card, CardBody } from '@heroui/card'
 import { Chip } from '@heroui/chip'
 import { Sparkles } from 'lucide-react'
@@ -43,9 +42,11 @@ export const HomeHero = () => {
                 <Tooltip showArrow content="Discord 服务器">
                   <Button
                     isIconOnly
-                    isExternal
-                    as={Link}
+                    as="a"
                     href={kunMoyuMoe.domain.discord_group}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="加入 Discord 服务器"
                     variant="flat"
                     color="secondary"
                   >
