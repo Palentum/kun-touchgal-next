@@ -4,7 +4,10 @@ import { useState } from 'react'
 import { Button } from '@heroui/react'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
-import { useCreatePatchStore } from '~/store/editStore'
+import {
+  createPatchEditStoreKey,
+  useCreatePatchStore
+} from '~/store/editStore'
 import { kunFetchGet } from '~/utils/kunFetch'
 
 interface DuplicateResponse {
@@ -70,6 +73,11 @@ export const DuplicateCheckButton = () => {
     }
   }
 
+  const handleClearDraft = () => {
+    localStorage.removeItem(createPatchEditStoreKey)
+    window.location.reload()
+  }
+
   return (
     <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
       <Button
@@ -80,6 +88,15 @@ export const DuplicateCheckButton = () => {
         isLoading={checking}
       >
         检查重复
+      </Button>
+
+      <Button
+        color="danger"
+        variant="flat"
+        size="sm"
+        onPress={handleClearDraft}
+      >
+        清除本地草稿
       </Button>
 
       {duplicateUniqueId && (

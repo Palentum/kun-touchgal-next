@@ -35,6 +35,8 @@ interface StoreState {
   resetData: () => void
 }
 
+export const createPatchEditStoreKey = 'kun-patch-edit-store'
+
 const initialState: CreatePatchData = {
   name: '',
   introduction: '',
@@ -67,7 +69,7 @@ export const useCreatePatchStore = create<StoreState>()(
       resetData: () => set({ data: initialState })
     }),
     {
-      name: 'kun-patch-edit-store',
+      name: createPatchEditStoreKey,
       storage: createJSONStorage(() => localStorage)
     }
   )
