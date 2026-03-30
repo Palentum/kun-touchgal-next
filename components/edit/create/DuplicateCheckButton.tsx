@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@heroui/react'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
+import localforage from 'localforage'
 import {
   createPatchEditStoreKey,
   useCreatePatchStore
@@ -73,8 +74,10 @@ export const DuplicateCheckButton = () => {
     }
   }
 
-  const handleClearDraft = () => {
+  const handleClearDraft = async () => {
     localStorage.removeItem(createPatchEditStoreKey)
+    await localforage.removeItem('kun-patch-banner')
+    await localforage.removeItem('kun-patch-banner-original')
     window.location.reload()
   }
 
