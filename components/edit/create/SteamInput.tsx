@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { Button, Input } from '@heroui/react'
+import Link from 'next/link'
 import toast from 'react-hot-toast'
-import { kunFetchPost } from '~/utils/kunFetch'
+import { kunFetchGet, kunFetchPost } from '~/utils/kunFetch'
 import { FetchPreview } from '~/components/edit/components/FetchPreview'
 import type { PatchFormDataShape } from '~/components/edit/types'
 
@@ -23,17 +24,23 @@ interface Props<T extends PatchFormDataShape> {
   errors?: string
   data: T
   setData: (data: T) => void
+  excludeId?: number
 }
 
 export const SteamInput = <T extends PatchFormDataShape>({
   errors,
   data,
-  setData
+  setData,
+  excludeId
 }: Props<T>) => {
   const [preview, setPreview] = useState<SteamPreview | null>(null)
+  const [duplicateUniqueId, setDuplicateUniqueId] = useState<string | null>(
+    null
+  )
 
   useEffect(() => {
     setPreview(null)
+    setDuplicateUniqueId(null)
   }, [data.steamId])
 
   const handleFetch = async () => {
@@ -47,6 +54,20 @@ export const SteamInput = <T extends PatchFormDataShape>({
       toast.error('Steam ID 必须为纯数字')
       return
     }
+
+    const duplicateResult = await kunFetchGet<
+      KunResponse<{ uniqueId: string }>
+    >('/edit/duplicate', {
+      steamId: rawInput,
+      ...(excludeId ? { excludeId: String(excludeId) } : {})
+    })
+
+    if (typeof duplicateResult !== 'string' && duplicateResult?.uniqueId) {
+      setDuplicateUniqueId(duplicateResult.uniqueId)
+      toast.error('发现重复游戏条目, 请勿重复提交')
+      return
+    }
+    setDuplicateUniqueId(null)
 
     try {
       toast('正在从 Steam 获取数据...')
@@ -115,15 +136,22 @@ export const SteamInput = <T extends PatchFormDataShape>({
         isInvalid={!!errors}
         errorMessage={errors}
       />
-      <div className="flex items-center text-sm">
+      <div className="flex items-center gap-2 text-sm">
         {data.steamId && (
-          <Button
-            className="mr-4"
-            color="primary"
-            size="sm"
-            onPress={handleFetch}
-          >
+          <Button color="primary" size="sm" onPress={handleFetch}>
             获取 Steam 数据
+          </Button>
+        )}
+        {duplicateUniqueId && (
+          <Button
+            as={Link}
+            color="primary"
+            target="_blank"
+            href={`/${duplicateUniqueId}`}
+            variant="flat"
+            size="sm"
+          >
+            跳转到重复游戏
           </Button>
         )}
       </div>

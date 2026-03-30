@@ -128,11 +128,22 @@ export const duplicateSchema = z
   .object({
     vndbId: duplicateQueryField(10),
     vndbRelationId: duplicateQueryField(10),
+    bangumiId: duplicateQueryField(10),
+    steamId: duplicateQueryField(10),
     dlsiteCode: duplicateQueryField(20),
-    title: duplicateQueryField(1007)
+    title: duplicateQueryField(1007),
+    excludeId: duplicateQueryField(10)
   })
   .refine(
-    (data) => Object.values(data).some((value) => typeof value === 'string'),
+    (data) =>
+      [
+        data.vndbId,
+        data.vndbRelationId,
+        data.bangumiId,
+        data.steamId,
+        data.dlsiteCode,
+        data.title
+      ].some((value) => typeof value === 'string'),
     {
       message: '请至少提供一个查重字段'
     }

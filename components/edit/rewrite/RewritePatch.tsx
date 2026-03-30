@@ -90,16 +90,19 @@ export const RewritePatch = () => {
             data={data}
             setData={setData}
             errors={errors.bangumiId}
+            excludeId={data.id}
           />
           <SteamInput
             data={data}
             setData={setData}
             errors={errors.steamId}
+            excludeId={data.id}
           />
           <DLSiteInput
             data={data}
             setData={setData}
             errors={errors.dlsiteCode}
+            excludeId={data.id}
           />
 
           <GameNameInput

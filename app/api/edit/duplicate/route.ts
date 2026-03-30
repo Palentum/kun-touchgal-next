@@ -8,8 +8,11 @@ import type { Prisma } from '~/prisma/generated/prisma/client'
 export const duplicate = async (input: z.infer<typeof duplicateSchema>) => {
   const vndbId = input.vndbId?.toLowerCase()
   const vndbRelationId = input.vndbRelationId?.toLowerCase()
+  const bangumiId = input.bangumiId ? Number(input.bangumiId) : undefined
+  const steamId = input.steamId ? Number(input.steamId) : undefined
   const dlsiteCode = input.dlsiteCode?.toUpperCase()
   const title = input.title
+  const excludeId = input.excludeId ? Number(input.excludeId) : undefined
 
   const conditions: Prisma.patchWhereInput[] = []
 
@@ -25,6 +28,14 @@ export const duplicate = async (input: z.infer<typeof duplicateSchema>) => {
 
   if (vndbRelationId) {
     conditions.push({ vndb_relation_id: vndbRelationId })
+  }
+
+  if (bangumiId) {
+    conditions.push({ bangumi_id: bangumiId })
+  }
+
+  if (steamId) {
+    conditions.push({ steam_id: steamId })
   }
 
   if (dlsiteCode) {
@@ -54,10 +65,16 @@ export const duplicate = async (input: z.infer<typeof duplicateSchema>) => {
     return {}
   }
 
+  const where: Prisma.patchWhereInput = {
+    OR: conditions
+  }
+
+  if (excludeId) {
+    where.id = { not: excludeId }
+  }
+
   const patch = await prisma.patch.findFirst({
-    where: {
-      OR: conditions
-    },
+    where,
     select: {
       unique_id: true
     }
