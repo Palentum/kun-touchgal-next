@@ -147,7 +147,7 @@ export const createPatchResource = async (
   if (needApproval) {
     await createMessage({
       type: 'system',
-      content: `你的第一个补丁资源「${currentPatch?.name ?? ''}」已提交审核，审核通过后将自动公开显示。`,
+      content: `您的首个资源「${currentPatch?.name ?? ''}」已提交审核，通过后将自动公开显示。`,
       recipient_id: uid,
       link: currentPatch?.unique_id ? `/${currentPatch.unique_id}` : '/'
     })

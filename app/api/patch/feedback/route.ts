@@ -17,7 +17,7 @@ export const createFeedback = async (
     where: { id: uid }
   })
 
-  const STATIC_CONTENT = `用户: ${user?.name} 对 游戏: ${patch?.name} 提交了一个反馈\n\n反馈内容\n\n${input.content}`
+  const STATIC_CONTENT = `${user?.name} 对「${patch?.name}」提交了反馈\n\n${input.content}`
 
   await createMessage({
     type: 'feedback',

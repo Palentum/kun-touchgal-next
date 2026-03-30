@@ -44,7 +44,7 @@ export const approveCreator = async (
 
     await createMessage({
       type: 'apply',
-      content: `您的创作者申请被拒绝, 理由: ${reason}`,
+      content: `您的创作者申请未通过，原因：${reason}`,
       recipient_id: message.sender_id ?? undefined,
       link: '/'
     })

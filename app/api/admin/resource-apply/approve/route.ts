@@ -39,7 +39,7 @@ export const approvePatchResource = async (
 
     await createMessage({
       type: 'system',
-      content: `你上传的资源「${resource.name || resource.patch.name}」已通过审核，感谢你的分享！`,
+      content: `您上传的资源「${resource.name || resource.patch.name}」已通过审核，感谢分享！`,
       recipient_id: resource.user_id,
       link: `/${resource.patch.unique_id}`
     })

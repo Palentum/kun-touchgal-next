@@ -28,7 +28,7 @@ export const createReport = async (
     metadataLines.push(`被举报用户ID: ${comment.user_id}`)
   }
   const metadata = metadataLines.length ? `\n${metadataLines.join('\n')}` : ''
-  const STATIC_CONTENT = `用户: ${user?.name} 举报了游戏 ${patch?.name} 下的评论\n\n评论内容: ${comment?.content.slice(0, 200)}${metadata}\n\n举报原因: ${input.content}`
+  const STATIC_CONTENT = `${user?.name} 举报了「${patch?.name}」下的评论\n\n评论内容：${comment?.content.slice(0, 200)}${metadata}\n\n举报原因：${input.content}`
   const reportLink = (() => {
     if (!patch?.unique_id) {
       return ''

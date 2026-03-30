@@ -63,7 +63,7 @@ export const createReport = async (
     ? rating.short_summary.trim().slice(0, 200)
     : `总分 ${rating.overall}/10，${KUN_GALGAME_RATING_RECOMMEND_MAP[rating.recommend]}，${KUN_GALGAME_RATING_PLAY_STATUS_MAP[rating.play_status]}`
   const metadata = `\n举报评价ID: ${rating.id}\n被举报用户ID: ${rating.user_id}`
-  const content = `用户: ${user?.name ?? `用户 #${uid}`} 举报了游戏 ${patch.name} 下的评价\n\n评价内容: ${preview}${metadata}\n\n举报原因: ${input.content}`
+  const content = `${user?.name ?? `用户 #${uid}`} 举报了「${patch.name}」下的评价\n\n评价内容：${preview}${metadata}\n\n举报原因：${input.content}`
 
   const params = new URLSearchParams({
     target: 'rating',

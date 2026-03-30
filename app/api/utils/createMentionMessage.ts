@@ -20,7 +20,7 @@ export const createMentionMessage = async (
       (mentionUid) => {
         return {
           type: 'mention',
-          content: `${senderUsername} 在 ${patchName} 的评论区 @ 了您\n(*・ω・)✄╰ひ╯ ${markdownToText(text).slice(0, 50)}`,
+          content: `${senderUsername} 在「${patchName}」的评论区提到了您\n${markdownToText(text).slice(0, 50)}`,
           sender_id: senderUid,
           recipient_id: mentionUid,
           link: `/${uniqueId}`

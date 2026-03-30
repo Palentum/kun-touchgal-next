@@ -22,7 +22,7 @@ export const handleFeedback = async (
     200
   )
   const handleResult = input.content ? input.content : '无处理留言'
-  const feedbackContent = `您的反馈已处理!\n\n反馈原因: ${SLICED_CONTENT}\n反馈处理回复: ${handleResult}`
+  const feedbackContent = `您的反馈已处理\n\n反馈内容：${SLICED_CONTENT}\n处理回复：${handleResult}`
 
   return prisma.$transaction(async (prisma) => {
     await prisma.user_message.update({

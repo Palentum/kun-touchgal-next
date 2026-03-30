@@ -42,7 +42,7 @@ export const declinePatchResource = async (
 
     await createMessage({
       type: 'system',
-      content: `你上传的资源「${resource.name || resource.patch.name}」未通过审核，原因：${reason}`,
+      content: `您上传的资源「${resource.name || resource.patch.name}」未通过审核，原因：${reason}`,
       recipient_id: resource.user_id,
       link: '/'
     })
