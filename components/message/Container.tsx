@@ -90,18 +90,17 @@ export const MessageContainer = ({ initialMessages, total, type }: Props) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <Button
-          color="danger"
-          variant="flat"
-          startContent={<Trash2 className="size-4" />}
-          isDisabled={loading || clearing || !messageTotal}
-          isLoading={clearing}
-          onPress={handleClearReadMessages}
-        >
-          清理已读信息
-        </Button>
-      </div>
+      <Button
+        color="danger"
+        variant="flat"
+        startContent={<Trash2 className="size-4" />}
+        isDisabled={loading || clearing || !messageTotal}
+        isLoading={clearing}
+        onPress={handleClearReadMessages}
+        fullWidth
+      >
+        清理已读信息
+      </Button>
 
       {loading ? (
         <KunLoading hint="正在获取消息数据..." />
