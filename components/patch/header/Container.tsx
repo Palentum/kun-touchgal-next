@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRewritePatchStore } from '~/store/rewriteStore'
 import { PatchHeaderTabs } from './Tabs'
 import { PatchHeaderInfo } from './Info'
@@ -21,6 +21,7 @@ export const PatchHeaderContainer = ({
 }: PatchHeaderProps) => {
   const { setData } = useRewritePatchStore()
   const [selected, setSelected] = useState('introduction')
+  const tabsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setData({
@@ -59,17 +60,22 @@ export const PatchHeaderContainer = ({
 
           <PatchHeaderInfo
             patch={patch}
-            handleClickDownloadNav={() => setSelected('resources')}
+            handleClickDownloadNav={() => {
+              setSelected('resources')
+              tabsRef.current?.scrollIntoView({ behavior: 'smooth' })
+            }}
           />
 
-          <PatchHeaderTabs
-            id={patch.id}
-            vndbId={patch.vndbId || ''}
-            intro={intro}
-            uid={uid}
-            selected={selected}
-            setSelected={setSelected}
-          />
+          <div ref={tabsRef}>
+            <PatchHeaderTabs
+              id={patch.id}
+              vndbId={patch.vndbId || ''}
+              intro={intro}
+              uid={uid}
+              selected={selected}
+              setSelected={setSelected}
+            />
+          </div>
         </>
       )}
     </div>
