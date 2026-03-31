@@ -18,7 +18,6 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
   const [isHovered, setIsHovered] = useState(false)
   const [direction, setDirection] = useState(0)
   const [isPageVisible, setIsPageVisible] = useState(true)
-
   useEffect(() => {
     const handleVisibility = () => {
       const visible =
@@ -96,6 +95,12 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      <div aria-hidden className="hidden">
+        {posts.map((post, i) => (
+          <img key={i} src={post.banner} alt="" />
+        ))}
+      </div>
+
       <AnimatePresence initial={false} custom={direction} mode="sync">
         <motion.div
           key={currentSlide}
