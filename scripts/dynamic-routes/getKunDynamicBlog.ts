@@ -23,7 +23,9 @@ export const getKunDynamicBlog = (): KunDynamicBlogSitemap[] => {
             .relative(POSTS_PATH, currentPath)
             .replace(/\.mdx$/, '')
             .replace(/\\/g, '/')}`,
-          lastmod: data.date || new Date().toISOString()
+          lastmod: data.date
+            ? new Date(data.date).toISOString()
+            : new Date().toISOString()
         }
       ]
     }
