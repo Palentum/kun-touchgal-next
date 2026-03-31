@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { deleteFileFromS3 } from '~/lib/s3'
 import { prisma } from '~/prisma/index'
+import { recalcPatchType } from './_helper'
 
 const resourceIdSchema = z.object({
   resourceId: z.coerce
@@ -41,6 +42,7 @@ export const deleteResource = async (
     await prisma.patch_resource.delete({
       where: { id: input.resourceId }
     })
+    await recalcPatchType(patchResource.patch_id, prisma)
     return {}
   })
 }

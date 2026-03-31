@@ -4,6 +4,7 @@ import { patchResourceCreateSchema } from '~/validations/patch'
 import { uploadFileToS3 } from '~/lib/s3'
 import { getKv } from '~/lib/redis'
 import { createMessage } from '~/app/api/utils/message'
+import { recalcPatchType } from './_helper'
 import type { PatchResource } from '~/types/api/patch'
 
 const uploadPatchResource = async (patchId: number, hash: string) => {
@@ -38,9 +39,6 @@ export const createPatchResource = async (
   const currentPatch = await prisma.patch.findUnique({
     where: { id: patchId },
     select: {
-      type: true,
-      language: true,
-      platform: true,
       unique_id: true,
       name: true
     }
@@ -92,23 +90,11 @@ export const createPatchResource = async (
     })
 
     if (currentPatch) {
-      const updatedTypes = [...new Set(currentPatch.type.concat(type))]
-      const updatedLanguages = [
-        ...new Set(currentPatch.language.concat(language))
-      ]
-      const updatedPlatforms = [
-        ...new Set(currentPatch.platform.concat(platform))
-      ]
-
       await prisma.patch.update({
         where: { id: patchId },
-        data: {
-          resource_update_time: new Date(),
-          type: { set: updatedTypes },
-          language: { set: updatedLanguages },
-          platform: { set: updatedPlatforms }
-        }
+        data: { resource_update_time: new Date() }
       })
+      await recalcPatchType(patchId, prisma)
     }
 
     const resource: PatchResource = {

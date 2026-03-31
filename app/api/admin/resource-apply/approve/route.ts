@@ -5,6 +5,7 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { createMessage } from '~/app/api/utils/message'
 import { kunParsePutBody } from '~/app/api/utils/parseQuery'
 import { approvePatchResourceSchema } from '~/validations/admin'
+import { recalcPatchType } from '~/app/api/patch/resource/_helper'
 
 export const approvePatchResource = async (
   input: z.infer<typeof approvePatchResourceSchema>,
@@ -36,6 +37,7 @@ export const approvePatchResource = async (
       where: { id: resourceId },
       data: { status: { set: 0 } }
     })
+    await recalcPatchType(resource.patch_id, prisma)
 
     await createMessage({
       type: 'system',

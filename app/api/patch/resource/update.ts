@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { patchResourceUpdateSchema } from '~/validations/patch'
-import { deletePatchResource, uploadPatchResource } from './_helper'
+import { deletePatchResource, uploadPatchResource, recalcPatchType } from './_helper'
 import type { PatchResource } from '~/types/api/patch'
 
 export const updatePatchResource = async (
@@ -24,12 +24,7 @@ export const updatePatchResource = async (
 
   const currentPatch = await prisma.patch.findUnique({
     where: { id: patchId },
-    select: {
-      name: true,
-      type: true,
-      language: true,
-      platform: true
-    }
+    select: { name: true }
   })
   if (!currentPatch) {
     return '未找到该资源对应的 Galgame 信息, 请确认 Galgame 存在'
@@ -74,35 +69,11 @@ export const updatePatchResource = async (
       }
     })
 
-    const currentPatch = await prisma.patch.findUnique({
+    await prisma.patch.update({
       where: { id: patchId },
-      select: {
-        type: true,
-        language: true,
-        platform: true
-      }
+      data: { resource_update_time: new Date() }
     })
-    if (currentPatch) {
-      const updatedTypes = [
-        ...new Set(currentPatch.type.concat(resourceData.type))
-      ]
-      const updatedLanguages = [
-        ...new Set(currentPatch.language.concat(resourceData.language))
-      ]
-      const updatedPlatforms = [
-        ...new Set(currentPatch.platform.concat(resourceData.platform))
-      ]
-
-      await prisma.patch.update({
-        where: { id: patchId },
-        data: {
-          resource_update_time: new Date(),
-          type: { set: updatedTypes },
-          language: { set: updatedLanguages },
-          platform: { set: updatedPlatforms }
-        }
-      })
-    }
+    await recalcPatchType(patchId, prisma)
 
     const resourceResponse: PatchResource = {
       id: newResource.id,
