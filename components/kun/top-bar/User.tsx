@@ -17,7 +17,6 @@ import { UserMessageBell } from './UserMessageBell'
 import { Tooltip } from '@heroui/tooltip'
 import { RandomGalgameButton } from '~/components/home/carousel/RandomGalgameButton'
 import type { UserState } from '~/store/userStore'
-import type { Message } from '~/types/api/message'
 
 export const KunTopBarUser = () => {
   const router = useRouter()
@@ -44,8 +43,14 @@ export const KunTopBarUser = () => {
     }
 
     const getUserUnreadMessage = async () => {
-      const message = await kunFetchGet<Message | null>('/message/unread')
-      if (message) {
+      const res = await kunFetchGet<{
+        hasUnreadNotification: boolean
+        hasUnreadConversation: boolean
+      }>('/message/unread')
+      if (
+        typeof res !== 'string' &&
+        (res.hasUnreadNotification || res.hasUnreadConversation)
+      ) {
         setHasUnread(true)
       }
     }

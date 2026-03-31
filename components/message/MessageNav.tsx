@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect } from 'react'
-import { kunFetchPut } from '~/utils/kunFetch'
+import { useEffect, useState } from 'react'
+import { kunFetchGet, kunFetchPut } from '~/utils/kunFetch'
 import { Button } from '@heroui/react'
 import { AtSign, Bell, Globe, MessageSquare, UserPlus } from 'lucide-react'
 import { Card, CardBody } from '@heroui/card'
@@ -36,6 +36,23 @@ export const MessageNav = () => {
   )
   const isChatSection = pathname.startsWith('/message/chat')
 
+  const [hasUnreadNotification, setHasUnreadNotification] = useState(false)
+  const [hasUnreadConversation, setHasUnreadConversation] = useState(false)
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      const res = await kunFetchGet<{
+        hasUnreadNotification: boolean
+        hasUnreadConversation: boolean
+      }>('/message/unread')
+      if (typeof res !== 'string') {
+        setHasUnreadNotification(res.hasUnreadNotification)
+        setHasUnreadConversation(res.hasUnreadConversation)
+      }
+    }
+    fetchUnread()
+  }, [])
+
   useEffect(() => {
     if (!isNotificationSection) {
       return
@@ -45,6 +62,8 @@ export const MessageNav = () => {
       const res = await kunFetchPut<KunResponse<{}>>('/message/read')
       if (typeof res === 'string') {
         toast.error(res)
+      } else {
+        setHasUnreadNotification(false)
       }
     }
     readAllMessage()
@@ -63,6 +82,9 @@ export const MessageNav = () => {
             href="/message/notice"
           >
             <span>消息</span>
+            {hasUnreadNotification && (
+              <span className="size-2 rounded-full bg-danger shrink-0" />
+            )}
           </Button>
           <Button
             color={isChatSection ? 'primary' : 'default'}
@@ -73,6 +95,9 @@ export const MessageNav = () => {
             href="/message/chat"
           >
             <span>私聊</span>
+            {hasUnreadConversation && (
+              <span className="size-2 rounded-full bg-danger shrink-0" />
+            )}
           </Button>
         </div>
 

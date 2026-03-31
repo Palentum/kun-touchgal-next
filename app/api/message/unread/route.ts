@@ -16,7 +16,10 @@ export const getMessage = async (uid: number) => {
       }
     })
   ])
-  return unreadNotification || unreadConversation
+  return {
+    hasUnreadNotification: !!unreadNotification,
+    hasUnreadConversation: !!unreadConversation
+  }
 }
 
 export const GET = async (req: NextRequest) => {
