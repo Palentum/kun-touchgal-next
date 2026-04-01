@@ -80,7 +80,7 @@ export const checkConversation = async (
     }),
     prisma.user.findUnique({
       where: { id: targetUserId },
-      select: { id: true, name: true }
+      select: { id: true, name: true, allow_private_message: true }
     })
   ])
 
@@ -107,6 +107,10 @@ export const checkConversation = async (
       needsPayment: false,
       targetUserName: targetUser.name
     }
+  }
+
+  if (!targetUser.allow_private_message) {
+    return { error: '对方已关闭私信功能' }
   }
 
   const isPrivileged = role > 2
@@ -144,7 +148,8 @@ export const getOrCreateConversation = async (
       select: { moemoepoint: true }
     }),
     prisma.user.findUnique({
-      where: { id: targetUserId }
+      where: { id: targetUserId },
+      select: { id: true, allow_private_message: true }
     })
   ])
 
@@ -168,6 +173,10 @@ export const getOrCreateConversation = async (
   const isPrivileged = role > 2
 
   if (!conversation) {
+    if (!targetUser.allow_private_message) {
+      return '对方已关闭私信功能'
+    }
+
     if (!isPrivileged) {
       if (currentUser.moemoepoint < MOEMOEPOINT_REQUIRED) {
         return `萌萌点不足，发起私聊需要至少 ${MOEMOEPOINT_REQUIRED} 萌萌点`

@@ -12,6 +12,7 @@ export interface UserState {
   dailyImageLimit: number
   dailyUploadLimit: number
   enableEmailNotice: boolean
+  allowPrivateMessage: boolean
 
   enableRedirect: boolean
   excludedDomains: string[]
@@ -35,6 +36,7 @@ const initialUserStore: UserState = {
   dailyImageLimit: 0,
   dailyUploadLimit: 0,
   enableEmailNotice: false,
+  allowPrivateMessage: true,
 
   enableRedirect: true,
   excludedDomains: [],
