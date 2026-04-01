@@ -3,7 +3,7 @@ import { kunGetActions } from './actions'
 import { ErrorComponent } from '~/components/error/ErrorComponent'
 import { Suspense } from 'react'
 
-export const revalidate = 3
+export const revalidate = 0
 
 interface Props {
   params: Promise<{ id: string }>

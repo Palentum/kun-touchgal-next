@@ -3,7 +3,7 @@ import { ErrorComponent } from '~/components/error/ErrorComponent'
 import { UserRating } from '~/components/user/rating/Container'
 import { kunGetActions } from './actions'
 
-export const revalidate = 3
+export const revalidate = 0
 
 interface Props {
   params: Promise<{ id: string }>

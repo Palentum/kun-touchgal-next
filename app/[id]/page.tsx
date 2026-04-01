@@ -9,7 +9,7 @@ import {
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 import type { Metadata } from 'next'
 
-export const revalidate = 3
+export const revalidate = 120
 
 interface Props {
   params: Promise<{ id: string }>

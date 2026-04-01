@@ -6,7 +6,7 @@ import { Suspense } from 'react'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 import type { Metadata } from 'next'
 
-export const revalidate = 3
+export const revalidate = 120
 
 export const metadata: Metadata = kunMetadata
 

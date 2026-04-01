@@ -5,7 +5,7 @@ import { ErrorComponent } from '~/components/error/ErrorComponent'
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 
-export const revalidate = 3
+export const revalidate = 0
 
 export const metadata: Metadata = kunMetadata
 

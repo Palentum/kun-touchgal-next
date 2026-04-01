@@ -7,7 +7,7 @@ import type { Metadata } from 'next'
 const DEFAULT_MIN_COUNT = 10
 const PAGE_SIZE = 48
 
-export const revalidate = 3
+export const revalidate = 120
 
 // export const metadata: Metadata = kunMetadata
 
