@@ -78,7 +78,7 @@ export const CardContainer = ({ initialGalgames, initialTotal }: Props) => {
     <div className="container mx-auto my-4 space-y-6">
       <KunHeader
         name="Galgame"
-        description="这里展示了本站所有的 Galgame, 您可以点击进入以下载 Galgame 资源"
+        description="这里展示了本站所有的 Galgame, 您可以使用多个条件的组合进行筛选"
       />
 
       <FilterBar

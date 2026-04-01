@@ -1,7 +1,7 @@
 {
   "name": "kun-touchgal-next",
   "version": "1.0.7",
-  "description": "TouchGAL是立足于分享快乐的一站式Galgame文化社区, 为Gal爱好者提供一片净土!",
+  "description": "TouchGal 是一个一站式 Galgame 文化社区。提供Galgame 论坛、Galgame 下载等服务。承诺永久免费, 高质量。为Galgame 爱好者提供一片净土！",
   "private": true,
   "type": "module",
   "scripts": {
