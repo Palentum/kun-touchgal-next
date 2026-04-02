@@ -44,6 +44,22 @@ export const createGalgame = async (
   const bannerOriginalArrayBuffer = bannerOriginal as ArrayBuffer | undefined
   const galgameUniqueId = crypto.randomBytes(4).toString('hex')
 
+  const normalizedVndbId = vndbId?.trim() ? vndbId.trim().toLowerCase() : ''
+  const normalizedVndbRelationId = vndbRelationId?.trim()
+    ? vndbRelationId.trim().toLowerCase()
+    : ''
+  if (normalizedVndbId && normalizedVndbRelationId) {
+    const vndbPatch = await prisma.patch.findFirst({
+      where: {
+        vndb_id: normalizedVndbId,
+        vndb_relation_id: normalizedVndbRelationId
+      }
+    })
+    if (vndbPatch) {
+      return `Galgame VNDB ID 与 Relation ID 的组合与游戏 ID 为 ${vndbPatch.unique_id} 的游戏重复`
+    }
+  }
+
   const normalizedDlsiteCode = dlsiteCode?.trim()
     ? dlsiteCode.trim().toUpperCase()
     : ''
@@ -62,8 +78,10 @@ export const createGalgame = async (
         data: {
           name,
           unique_id: galgameUniqueId,
-          vndb_id: vndbId ? vndbId : null,
-          vndb_relation_id: vndbRelationId ? vndbRelationId : null,
+          vndb_id: normalizedVndbId ? normalizedVndbId : null,
+          vndb_relation_id: normalizedVndbRelationId
+            ? normalizedVndbRelationId
+            : null,
           bangumi_id: bangumiId ? Number(bangumiId) : null,
           steam_id: steamId ? Number(steamId) : null,
           dlsite_code: normalizedDlsiteCode ? normalizedDlsiteCode : null,
