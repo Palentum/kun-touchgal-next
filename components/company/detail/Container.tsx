@@ -275,7 +275,7 @@ export const CompanyDetailContainer: FC<Props> = ({
       )}
 
       {loading ? (
-        <KunLoading hint="正在获取 Galgame 中..." />
+        <KunLoading hint="正在获取 Galgame 中..." className="min-h-[50vh]" />
       ) : (
         <div>
           <div className="grid grid-cols-2 gap-2 mx-auto mb-8 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
