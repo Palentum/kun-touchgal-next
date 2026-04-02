@@ -41,7 +41,7 @@ export const KunResourceDownloadCard = ({ resource }: Props) => {
       <Link
         isExternal
         underline="always"
-        className="block overflow-auto whitespace-normal"
+        className="block break-all"
         href={resourceLink}
       >
         {resourceLink}
