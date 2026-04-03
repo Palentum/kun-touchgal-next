@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Card, CardBody, CardHeader } from '@heroui/card'
-import { Button, Chip, Tooltip, Divider, Textarea } from '@heroui/react'
+import { Button, Chip, Tooltip, Textarea } from '@heroui/react'
 import {
   Modal,
   ModalBody,
@@ -193,9 +193,6 @@ export const RatingCard = ({
             )}
           </>
         )}
-
-        <Divider />
-
         <div className="flex items-center justify-between">
           <RatingLikeButton rating={rating} />
 
