@@ -1,5 +1,5 @@
-import { prisma } from '../prisma/index'
-import { parseResourceLink } from '../utils/resourceLink'
+import { prisma } from '../../prisma/index'
+import { parseResourceLink } from '../../utils/resourceLink'
 
 type ResourceRecord = {
   id: number
