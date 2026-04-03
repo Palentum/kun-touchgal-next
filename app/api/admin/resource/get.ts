@@ -1,24 +1,27 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
-import { adminPaginationSchema } from '~/validations/admin'
+import { adminResourcePaginationSchema } from '~/validations/admin'
 import type { AdminResource } from '~/types/api/admin'
 
 export const getPatchResource = async (
-  input: z.infer<typeof adminPaginationSchema>,
+  input: z.infer<typeof adminResourcePaginationSchema>,
   nsfwEnable: Record<string, string | undefined>
 ) => {
-  const { page, limit, search } = input
+  const { page, limit, search, userId } = input
   const offset = (page - 1) * limit
 
-  const where = search
-    ? {
-        content: {
-          contains: search,
-          mode: 'insensitive' as const
-        },
-        patch: nsfwEnable
-      }
-    : { patch: nsfwEnable }
+  const where = {
+    ...(search
+      ? {
+          content: {
+            contains: search,
+            mode: 'insensitive' as const
+          }
+        }
+      : {}),
+    ...(userId ? { user_id: userId } : {}),
+    patch: nsfwEnable
+  }
 
   const [data, total] = await Promise.all([
     prisma.patch_resource.findMany({
