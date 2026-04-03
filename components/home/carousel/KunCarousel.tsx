@@ -18,6 +18,7 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
   const [isHovered, setIsHovered] = useState(false)
   const [direction, setDirection] = useState(0)
   const [isPageVisible, setIsPageVisible] = useState(true)
+
   useEffect(() => {
     const handleVisibility = () => {
       const visible =
@@ -83,9 +84,43 @@ export const KunCarousel = ({ posts }: KunCarouselProps) => {
   }
 
   const paginate = (newDirection: number) => {
+    if (posts.length === 0) {
+      return
+    }
+
     setDirection(newDirection)
     setCurrentSlide(
       (prev) => (prev + newDirection + posts.length) % posts.length
+    )
+  }
+
+  if (posts.length === 0) {
+    return (
+      <div className="relative h-[300px] overflow-hidden group touch-pan-y flex items-end">
+        <div className="absolute inset-0 hidden sm:flex items-center justify-center rounded-2xl border border-default-200 bg-default-50/60 text-default-500">
+          暂无可展示的置顶文章
+        </div>
+
+        <div className="z-10 w-full py-3 space-y-3 sm:hidden">
+          <div className="flex items-center justify-center rounded-2xl border border-default-200 bg-default-50/60 px-4 py-6 text-sm text-default-500">
+            暂无可展示的置顶文章
+          </div>
+
+          <RandomGalgameButton
+            className="shadow-md"
+            color="primary"
+            variant="flat"
+            size="sm"
+            fullWidth
+          >
+            随机一部游戏
+          </RandomGalgameButton>
+
+          <div className="grid grid-cols-3 gap-3 sm:hidden sm:gap-6">
+            <KunHomeNavigationItems buttonSize="sm" />
+          </div>
+        </div>
+      </div>
     )
   }
 
