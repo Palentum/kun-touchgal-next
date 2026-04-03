@@ -73,6 +73,7 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
   const [resources, setResources] = useState<AdminResource[]>(initialResources)
   const [total, setTotal] = useState(initialTotal)
   const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(30)
   const [searchType, setSearchType] = useState<ResourceSearchType>('content')
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set())
   const [batchDeleting, setBatchDeleting] = useState(false)
@@ -99,7 +100,7 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
     const fetchUsers = async () => {
       setUserSearchLoading(true)
       try {
-        const { users } = await kunFetchGet<{
+        const res = await kunFetchGet<{
           users: AdminUser[]
           total: number
         }>('/admin/user', {
@@ -109,9 +110,13 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
           searchType: 'name'
         })
         if (!cancelled) {
-          setUserOptions(
-            users.map((u) => ({ id: u.id, name: u.name, avatar: u.avatar }))
-          )
+          if (typeof res === 'string') {
+            toast.error(res)
+          } else {
+            setUserOptions(
+              res.users.map((u) => ({ id: u.id, name: u.name, avatar: u.avatar }))
+            )
+          }
         }
       } finally {
         if (!cancelled) {
@@ -132,7 +137,7 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
     const fetchData = async () => {
       setLoading(true)
       try {
-        const params: Record<string, string | number> = { page, limit: 30 }
+        const params: Record<string, string | number> = { page, limit }
         if (searchType === 'content' && debouncedContent) {
           params.search = debouncedContent
         }
@@ -140,20 +145,25 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
           params.userId = selectedUserId
         }
 
-        const { resources, total } = await kunFetchGet<{
+        const res = await kunFetchGet<{
           resources: AdminResource[]
           total: number
         }>('/admin/resource', params)
 
-        setResources(resources)
-        setTotal(total)
+        if (typeof res === 'string') {
+          toast.error(res)
+          return
+        }
+
+        setResources(res.resources)
+        setTotal(res.total)
         setSelectedKeys(new Set<string | number>())
       } finally {
         setLoading(false)
       }
     }
     fetchData()
-  }, [isMounted, page, searchType, debouncedContent, selectedUserId])
+  }, [isMounted, page, limit, searchType, debouncedContent, selectedUserId])
 
   const selectedCount =
     selectedKeys === 'all' ? resources.length : selectedKeys.size
@@ -190,19 +200,23 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
     setSelectedKeys(new Set<string | number>())
 
     // 刷新列表
-    const params: Record<string, string | number> = { page, limit: 30 }
+    const params: Record<string, string | number> = { page, limit }
     if (searchType === 'content' && debouncedContent) {
       params.search = debouncedContent
     }
     if (searchType === 'user' && selectedUserId) {
       params.userId = selectedUserId
     }
-    const res = await kunFetchGet<{ resources: AdminResource[]; total: number }>(
+    const refreshRes = await kunFetchGet<{ resources: AdminResource[]; total: number }>(
       '/admin/resource',
       params
     )
-    setResources(res.resources)
-    setTotal(res.total)
+    if (typeof refreshRes === 'string') {
+      toast.error(refreshRes)
+    } else {
+      setResources(refreshRes.resources)
+      setTotal(refreshRes.total)
+    }
   }
 
   const handleSearchTypeChange = (keys: 'all' | Set<Key>) => {
@@ -326,7 +340,7 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
           bottomContent={
             <div className="flex justify-center w-full">
               <KunPagination
-                total={Math.ceil(total / 30)}
+                total={Math.ceil(total / limit)}
                 onPageChange={setPage}
                 isLoading={loading}
                 page={page}
@@ -339,19 +353,42 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
               <TableColumn key={column.id}>{column.name}</TableColumn>
             )}
           </TableHeader>
-          <TableBody items={resources}>
-            {(item) => (
+          <TableBody>
+            {resources.map((item) => (
               <TableRow key={item.id}>
-                {(columnKey) => (
-                  <TableCell>
-                    {RenderCell(item, columnKey.toString())}
+                {columns.map((column) => (
+                  <TableCell key={column.id}>
+                    {RenderCell(item, column.id)}
                   </TableCell>
-                )}
+                ))}
               </TableRow>
-            )}
+            ))}
           </TableBody>
         </Table>
       )}
+
+      <div className="flex items-center justify-center gap-2 text-sm text-default-500">
+        <span>每页显示</span>
+        <Select
+          aria-label="每页显示数量"
+          size="sm"
+          className="w-20"
+          selectedKeys={new Set([String(limit)])}
+          onSelectionChange={(keys) => {
+            const val = Number(Array.from(keys)[0])
+            if (val && val !== limit) {
+              setLimit(val)
+              setPage(1)
+            }
+          }}
+        >
+          <SelectItem key="30">30</SelectItem>
+          <SelectItem key="50">50</SelectItem>
+          <SelectItem key="100">100</SelectItem>
+          <SelectItem key="500">500</SelectItem>
+        </Select>
+        <span>条，共 {total} 条</span>
+      </div>
 
       <Modal isOpen={isBatchOpen} onClose={onBatchClose} placement="center">
         <ModalContent>

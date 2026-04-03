@@ -75,6 +75,7 @@ export const adminDeleteCommentSchema = z.union([
 ])
 
 export const adminResourcePaginationSchema = adminPaginationSchema.extend({
+  limit: z.coerce.number().min(1).max(500),
   userId: z.coerce.number().min(1).max(9999999).optional()
 })
 
