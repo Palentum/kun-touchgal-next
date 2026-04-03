@@ -53,8 +53,10 @@ export const PublishResource = ({
   const [creating, setCreating] = useState(false)
   const [uploadingResource, setUploadingResource] = useState(false)
   const user = useUserStore((state) => state.user)
-  const isCreator = user.role === 2
-  const [sectionConfirmed, setSectionConfirmed] = useState(!isCreator)
+  const needsSectionPreselection = user.role <= 2
+  const [sectionConfirmed, setSectionConfirmed] = useState(
+    !needsSectionPreselection
+  )
 
   const {
     control,
@@ -123,7 +125,7 @@ export const PublishResource = ({
     <ModalContent>
       <ModalHeader className="flex-col space-y-2">
         <h3 className="text-lg">发布资源</h3>
-        {(sectionConfirmed || !isCreator) && (
+        {(sectionConfirmed || !needsSectionPreselection) && (
           <div className="text-sm font-medium text-default-500">
             {user.role > 1 ? (
               <div className="space-y-1">
@@ -147,7 +149,7 @@ export const PublishResource = ({
       </ModalHeader>
 
       <ModalBody>
-        {isCreator && !sectionConfirmed ? (
+        {needsSectionPreselection && !sectionConfirmed ? (
           <div className="flex flex-col items-center justify-center gap-6 py-8">
             <h3 className="text-xl font-semibold">请先选择资源的类别</h3>
             <div className="flex gap-4">
@@ -174,7 +176,7 @@ export const PublishResource = ({
           </div>
         ) : (
           <form className="space-y-6">
-            {!isCreator && (
+            {!needsSectionPreselection && (
               <ResourceSectionSelect
                 errors={errors}
                 section={watch().section}
@@ -221,7 +223,7 @@ export const PublishResource = ({
           <Button color="danger" variant="light" onPress={onClose}>
             取消
           </Button>
-          {(sectionConfirmed || !isCreator) && (
+          {(sectionConfirmed || !needsSectionPreselection) && (
             <Button
               color="primary"
               disabled={creating || uploadingResource}
