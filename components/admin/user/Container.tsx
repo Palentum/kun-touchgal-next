@@ -50,6 +50,7 @@ export const User = ({ initialUsers, initialTotal }: Props) => {
   const [users, setUsers] = useState<AdminUser[]>(initialUsers)
   const [total, setTotal] = useState(initialTotal)
   const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(30)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchType, setSearchType] = useState<AdminUserSearchType>('name')
   const [debouncedQuery] = useDebounce(searchQuery, 500)
@@ -64,7 +65,7 @@ export const User = ({ initialUsers, initialTotal }: Props) => {
       total: number
     }>('/admin/user', {
       page,
-      limit: 30,
+      limit,
       search: debouncedQuery,
       searchType
     })
@@ -79,7 +80,7 @@ export const User = ({ initialUsers, initialTotal }: Props) => {
       return
     }
     fetchData()
-  }, [page, debouncedQuery, searchType])
+  }, [page, limit, debouncedQuery, searchType])
 
   const handleSearch = (value: string) => {
     setSearchQuery(value)
@@ -140,7 +141,7 @@ export const User = ({ initialUsers, initialTotal }: Props) => {
             <div className="flex justify-center w-full">
               <KunPagination
                 page={page}
-                total={Math.ceil(total / 30)}
+                total={Math.ceil(total / limit)}
                 onPageChange={setPage}
                 isLoading={loading}
               />
@@ -165,6 +166,29 @@ export const User = ({ initialUsers, initialTotal }: Props) => {
           </TableBody>
         </Table>
       )}
+
+      <div className="flex items-center justify-center gap-2 text-sm text-default-500">
+        <span>每页显示</span>
+        <Select
+          aria-label="每页显示数量"
+          size="sm"
+          className="w-20"
+          selectedKeys={new Set([String(limit)])}
+          onSelectionChange={(keys) => {
+            const val = Number(Array.from(keys)[0])
+            if (val && val !== limit) {
+              setLimit(val)
+              setPage(1)
+            }
+          }}
+        >
+          <SelectItem key="30">30</SelectItem>
+          <SelectItem key="50">50</SelectItem>
+          <SelectItem key="100">100</SelectItem>
+          <SelectItem key="500">500</SelectItem>
+        </Select>
+        <span>条，共 {total} 条</span>
+      </div>
     </div>
   )
 }

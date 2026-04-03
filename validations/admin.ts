@@ -15,6 +15,7 @@ export const adminPaginationSchema = z.object({
 export const adminUserSearchTypeSchema = z.enum(['name', 'email', 'id'])
 
 export const adminUserPaginationSchema = adminPaginationSchema.extend({
+  limit: z.coerce.number().min(1).max(500),
   searchType: adminUserSearchTypeSchema.default('name')
 })
 
@@ -22,6 +23,7 @@ export const adminCommentSearchTypeSchema = z.enum(['content', 'user'])
 const adminCommentDeleteLimit = 30
 
 export const adminCommentPaginationSchema = adminPaginationSchema.extend({
+  limit: z.coerce.number().min(1).max(500),
   searchType: adminCommentSearchTypeSchema.default('content'),
   userId: z.coerce.number().min(1).max(9999999).optional()
 })
@@ -74,6 +76,18 @@ export const adminDeleteCommentSchema = z.union([
       commentIds
     }))
 ])
+
+export const adminGalgamePaginationSchema = adminPaginationSchema.extend({
+  limit: z.coerce.number().min(1).max(500)
+})
+
+export const adminFeedbackPaginationSchema = adminPaginationSchema.extend({
+  limit: z.coerce.number().min(1).max(500)
+})
+
+export const adminResourceApplyPaginationSchema = adminPaginationSchema.extend({
+  limit: z.coerce.number().min(1).max(500)
+})
 
 export const adminResourcePaginationSchema = adminPaginationSchema.extend({
   limit: z.coerce.number().min(1).max(500),

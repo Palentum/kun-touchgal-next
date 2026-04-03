@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
-import { adminPaginationSchema } from '~/validations/admin'
+import { adminResourceApplyPaginationSchema } from '~/validations/admin'
 import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { getPatchResourceApply } from './get'
 
 export const GET = async (req: NextRequest) => {
-  const input = kunParseGetQuery(req, adminPaginationSchema)
+  const input = kunParseGetQuery(req, adminResourceApplyPaginationSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }

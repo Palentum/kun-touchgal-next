@@ -2,12 +2,12 @@ import { z } from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
 import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
-import { adminPaginationSchema } from '~/validations/admin'
+import { adminFeedbackPaginationSchema } from '~/validations/admin'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import type { Message } from '~/types/api/message'
 
 export const getFeedback = async (
-  input: z.infer<typeof adminPaginationSchema>
+  input: z.infer<typeof adminFeedbackPaginationSchema>
 ) => {
   const { page, limit } = input
   const offset = (page - 1) * limit
@@ -47,7 +47,7 @@ export const getFeedback = async (
 }
 
 export const GET = async (req: NextRequest) => {
-  const input = kunParseGetQuery(req, adminPaginationSchema)
+  const input = kunParseGetQuery(req, adminFeedbackPaginationSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }

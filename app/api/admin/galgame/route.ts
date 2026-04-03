@@ -2,13 +2,13 @@ import { z } from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
 import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
-import { adminPaginationSchema } from '~/validations/admin'
+import { adminGalgamePaginationSchema } from '~/validations/admin'
 import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import type { AdminGalgame } from '~/types/api/admin'
 
 export const getGalgame = async (
-  input: z.infer<typeof adminPaginationSchema>,
+  input: z.infer<typeof adminGalgamePaginationSchema>,
   nsfwEnable: Record<string, string | undefined>
 ) => {
   const { page, limit, search } = input
@@ -56,7 +56,7 @@ export const getGalgame = async (
 }
 
 export async function GET(req: NextRequest) {
-  const input = kunParseGetQuery(req, adminPaginationSchema)
+  const input = kunParseGetQuery(req, adminGalgamePaginationSchema)
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }

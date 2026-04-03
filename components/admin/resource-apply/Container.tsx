@@ -1,6 +1,6 @@
 'use client'
 
-import { Chip, Input } from '@heroui/react'
+import { Chip, Input, Select, SelectItem } from '@heroui/react'
 import { Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useDebounce } from 'use-debounce'
@@ -22,6 +22,7 @@ export const ResourceApply = ({ initialResources, initialTotal }: Props) => {
   const [resources, setResources] = useState<AdminResource[]>(initialResources)
   const [total, setTotal] = useState(initialTotal)
   const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(30)
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedQuery] = useDebounce(searchQuery, 500)
   const isMounted = useMounted()
@@ -35,7 +36,7 @@ export const ResourceApply = ({ initialResources, initialTotal }: Props) => {
       total: number
     }>('/admin/resource-apply', {
       page,
-      limit: 30,
+      limit,
       search: debouncedQuery
     })
 
@@ -50,7 +51,7 @@ export const ResourceApply = ({ initialResources, initialTotal }: Props) => {
     }
 
     fetchData()
-  }, [page, debouncedQuery])
+  }, [page, limit, debouncedQuery])
 
   const handleSearch = (value: string) => {
     setSearchQuery(value)
@@ -109,11 +110,34 @@ export const ResourceApply = ({ initialResources, initialTotal }: Props) => {
 
       <div className="flex justify-center w-full">
         <KunPagination
-          total={Math.ceil(total / 30)}
+          total={Math.ceil(total / limit)}
           onPageChange={setPage}
           isLoading={loading}
           page={page}
         />
+      </div>
+
+      <div className="flex items-center justify-center gap-2 text-sm text-default-500">
+        <span>每页显示</span>
+        <Select
+          aria-label="每页显示数量"
+          size="sm"
+          className="w-20"
+          selectedKeys={new Set([String(limit)])}
+          onSelectionChange={(keys) => {
+            const val = Number(Array.from(keys)[0])
+            if (val && val !== limit) {
+              setLimit(val)
+              setPage(1)
+            }
+          }}
+        >
+          <SelectItem key="30">30</SelectItem>
+          <SelectItem key="50">50</SelectItem>
+          <SelectItem key="100">100</SelectItem>
+          <SelectItem key="500">500</SelectItem>
+        </Select>
+        <span>条，共 {total} 条</span>
       </div>
     </div>
   )

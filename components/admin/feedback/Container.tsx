@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Select, SelectItem } from '@heroui/react'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { KunLoading } from '~/components/kun/Loading'
 import { useMounted } from '~/hooks/useMounted'
@@ -13,25 +14,28 @@ interface Props {
   total: number
 }
 
-export const Feedback = ({ initialFeedbacks, total }: Props) => {
+export const Feedback = ({ initialFeedbacks, total: initialTotal }: Props) => {
   const [feedbacks, setFeedbacks] = useState<AdminFeedback[]>(initialFeedbacks)
+  const [total, setTotal] = useState(initialTotal)
   const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(30)
   const isMounted = useMounted()
 
   const [loading, setLoading] = useState(false)
   const fetchData = async () => {
     setLoading(true)
 
-    const { feedbacks } = await kunFetchGet<{
+    const res = await kunFetchGet<{
       feedbacks: AdminFeedback[]
       total: number
     }>('/admin/feedback', {
       page,
-      limit: 30
+      limit
     })
 
     setLoading(false)
-    setFeedbacks(feedbacks)
+    setFeedbacks(res.feedbacks)
+    setTotal(res.total)
   }
 
   useEffect(() => {
@@ -39,7 +43,7 @@ export const Feedback = ({ initialFeedbacks, total }: Props) => {
       return
     }
     fetchData()
-  }, [page])
+  }, [page, limit])
 
   return (
     <div className="space-y-6">
@@ -59,11 +63,34 @@ export const Feedback = ({ initialFeedbacks, total }: Props) => {
 
       <div className="flex justify-center">
         <KunPagination
-          total={Math.ceil(total / 30)}
+          total={Math.ceil(total / limit)}
           page={page}
           onPageChange={setPage}
           isLoading={loading}
         />
+      </div>
+
+      <div className="flex items-center justify-center gap-2 text-sm text-default-500">
+        <span>每页显示</span>
+        <Select
+          aria-label="每页显示数量"
+          size="sm"
+          className="w-20"
+          selectedKeys={new Set([String(limit)])}
+          onSelectionChange={(keys) => {
+            const val = Number(Array.from(keys)[0])
+            if (val && val !== limit) {
+              setLimit(val)
+              setPage(1)
+            }
+          }}
+        >
+          <SelectItem key="30">30</SelectItem>
+          <SelectItem key="50">50</SelectItem>
+          <SelectItem key="100">100</SelectItem>
+          <SelectItem key="500">500</SelectItem>
+        </Select>
+        <span>条，共 {total} 条</span>
       </div>
     </div>
   )

@@ -1,10 +1,10 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
-import { adminPaginationSchema } from '~/validations/admin'
+import { adminResourceApplyPaginationSchema } from '~/validations/admin'
 import type { AdminResource } from '~/types/api/admin'
 
 export const getPatchResourceApply = async (
-  input: z.infer<typeof adminPaginationSchema>,
+  input: z.infer<typeof adminResourceApplyPaginationSchema>,
   nsfwEnable: Record<string, string | undefined>
 ) => {
   const { page, limit, search } = input
