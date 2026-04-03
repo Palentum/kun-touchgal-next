@@ -17,6 +17,53 @@ interface ResourceLinksInputProps {
   size: string
   setContent: (value: string) => void
   setSize: (value: string) => void
+  setCode?: (value: string) => void
+}
+
+const CODE_PATTERNS = [
+  /提取码\s*[：:]\s*([a-zA-Z0-9]+)/,
+  /访问码\s*[：:]\s*([a-zA-Z0-9]+)/,
+  /密码\s*[：:]\s*([a-zA-Z0-9]+)/,
+  /pwd\s*[：:=]\s*([a-zA-Z0-9]+)/i
+]
+
+const parseResourceLink = (input: string): { url: string; code: string } => {
+  const urlMatch = input.match(/https?:\/\/[^\s]+/)
+  if (!urlMatch) {
+    return { url: input.trim(), code: '' }
+  }
+
+  let url = urlMatch[0].replace(/[,.!?，。！？、「」【】]+$/, '')
+  let code = ''
+
+  try {
+    const urlObj = new URL(url)
+    const pwdParam =
+      urlObj.searchParams.get('pwd') ||
+      urlObj.searchParams.get('password') ||
+      urlObj.searchParams.get('code')
+    if (pwdParam) {
+      code = pwdParam
+      urlObj.searchParams.delete('pwd')
+      urlObj.searchParams.delete('password')
+      urlObj.searchParams.delete('code')
+      url = urlObj.toString().replace(/\?$/, '')
+    }
+  } catch {
+    // URL 解析失败，保持原样
+  }
+
+  if (!code) {
+    for (const pattern of CODE_PATTERNS) {
+      const match = input.match(pattern)
+      if (match) {
+        code = match[1]
+        break
+      }
+    }
+  }
+
+  return { url, code }
 }
 
 export const ResourceLinksInput = ({
@@ -25,7 +72,8 @@ export const ResourceLinksInput = ({
   content,
   size,
   setContent,
-  setSize
+  setSize,
+  setCode
 }: ResourceLinksInputProps) => {
   const links = content.trim() ? content.trim().split(',') : ['']
 
@@ -53,6 +101,32 @@ export const ResourceLinksInput = ({
       checkLinkSize(links[0])
     }
   }, [links, setSize])
+
+  const handleLinkChange = (index: number, rawValue: string) => {
+    const newLinks = [...links]
+    newLinks[index] = rawValue
+    setContent(newLinks.filter(Boolean).toString())
+  }
+
+  const handleLinkPaste = (
+    index: number,
+    e: React.ClipboardEvent<HTMLInputElement>
+  ) => {
+    if (storage === 's3' || !setCode) return
+    const pasted = e.clipboardData.getData('text')
+    if (!pasted.trim()) return
+    const { url, code } = parseResourceLink(pasted)
+    if (url !== pasted.trim() || code) {
+      e.preventDefault()
+      const newLinks = [...links]
+      newLinks[index] = url
+      setContent(newLinks.filter(Boolean).toString())
+      if (code) {
+        setCode(code)
+        toast.success('已自动识别并填入提取码')
+      }
+    }
+  }
 
   return (
     <div className="space-y-2">
@@ -84,12 +158,8 @@ export const ResourceLinksInput = ({
               isDisabled={storage === 's3'}
               isInvalid={!!errors.content}
               errorMessage={errors.content?.message}
-              onChange={(e) => {
-                e.preventDefault()
-                const newLinks = [...links]
-                newLinks[index] = e.target.value
-                setContent(newLinks.filter(Boolean).toString())
-              }}
+              onChange={(e) => handleLinkChange(index, e.target.value)}
+              onPaste={(e) => handleLinkPaste(index, e)}
             />
           </div>
 
