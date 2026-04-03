@@ -51,10 +51,11 @@ const getRecommendColor = (recommend: string) => {
 }
 
 const getScoreColor = (score: number) => {
-  if (score >= 8) return 'text-success'
-  if (score >= 6) return 'text-primary'
-  if (score >= 4) return 'text-warning'
-  return 'text-danger'
+  if (score >= 9) return 'text-amber-400'
+  if (score >= 7) return 'text-emerald-500'
+  if (score >= 5) return 'text-sky-500'
+  if (score >= 3) return 'text-orange-400'
+  return 'text-rose-500'
 }
 
 export const RatingCard = ({
@@ -138,10 +139,12 @@ export const RatingCard = ({
           }}
         />
         <div
-          className={`flex items-center gap-1 ${getScoreColor(rating.overall)}`}
+          className={`flex items-center gap-1.5 px-2 py-1 rounded-lg bg-default-100 dark:bg-default-50/10 ${getScoreColor(rating.overall)}`}
         >
-          <Star className="size-5" fill="currentColor" />
-          <span className="text-2xl font-bold">{rating.overall}</span>
+          <Star className="size-4" fill="currentColor" strokeWidth={0} />
+          <span className="text-xl font-bold tabular-nums leading-none">
+            {rating.overall}
+          </span>
         </div>
       </CardHeader>
 
