@@ -35,20 +35,26 @@ export const KunNavigationBreadcrumb = () => {
   useEffect(() => {
     updateBreadcrumb()
 
-    const titleEl = document.querySelector('title')
-    if (!titleEl) return
-
+    // Next.js 在软导航时可能会替换整个 <title> 节点，
+    // 直接监听旧节点会漏掉后续标题更新
     const observer = new MutationObserver(() => {
       updateBreadcrumb()
     })
-    observer.observe(titleEl, {
+    observer.observe(document.head, {
       childList: true,
       characterData: true,
       subtree: true
     })
 
-    return () => observer.disconnect()
-  }, [pathname])
+    const frameId = requestAnimationFrame(() => {
+      updateBreadcrumb()
+    })
+
+    return () => {
+      observer.disconnect()
+      cancelAnimationFrame(frameId)
+    }
+  }, [pathname, params])
 
   const hideBreadcrumbRoutes = [
     '/',
