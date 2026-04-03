@@ -8,6 +8,7 @@ import { Plus, X } from 'lucide-react'
 import { ErrorType } from '../share'
 import { SUPPORTED_RESOURCE_LINK_MAP } from '~/constants/resource'
 import { fetchLinkData, fetchListData } from './fetchAlistSize'
+import { parseResourceLink } from '~/utils/resourceLink'
 import toast from 'react-hot-toast'
 
 interface ResourceLinksInputProps {
@@ -18,52 +19,6 @@ interface ResourceLinksInputProps {
   setContent: (value: string) => void
   setSize: (value: string) => void
   setCode?: (value: string) => void
-}
-
-const CODE_PATTERNS = [
-  /提取码\s*[：:]\s*([a-zA-Z0-9]+)/,
-  /访问码\s*[：:]\s*([a-zA-Z0-9]+)/,
-  /密码\s*[：:]\s*([a-zA-Z0-9]+)/,
-  /pwd\s*[：:=]\s*([a-zA-Z0-9]+)/i
-]
-
-const parseResourceLink = (input: string): { url: string; code: string } => {
-  const urlMatch = input.match(/https?:\/\/[^\s]+/)
-  if (!urlMatch) {
-    return { url: input.trim(), code: '' }
-  }
-
-  let url = urlMatch[0].replace(/[,.!?，。！？、「」【】]+$/, '')
-  let code = ''
-
-  try {
-    const urlObj = new URL(url)
-    const pwdParam =
-      urlObj.searchParams.get('pwd') ||
-      urlObj.searchParams.get('password') ||
-      urlObj.searchParams.get('code')
-    if (pwdParam) {
-      code = pwdParam
-      urlObj.searchParams.delete('pwd')
-      urlObj.searchParams.delete('password')
-      urlObj.searchParams.delete('code')
-      url = urlObj.toString().replace(/\?$/, '')
-    }
-  } catch {
-    // URL 解析失败，保持原样
-  }
-
-  if (!code) {
-    for (const pattern of CODE_PATTERNS) {
-      const match = input.match(pattern)
-      if (match) {
-        code = match[1]
-        break
-      }
-    }
-  }
-
-  return { url, code }
 }
 
 export const ResourceLinksInput = ({
