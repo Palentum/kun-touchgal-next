@@ -41,6 +41,7 @@ const copyFiles = async () => {
 
         await copyDirectory('public', '.next/standalone/public')
         await copyDirectory('.next/static', '.next/standalone/.next/static')
+        await copyDirectory('server/image', '.next/standalone/server/image')
         console.log('Files copied successfully.')
       } else {
         console.log(
@@ -49,7 +50,8 @@ const copyFiles = async () => {
 
         const commands: string[] = [
           'cp -r public .next/standalone/',
-          'cp -r .next/static .next/standalone/.next/'
+          'cp -r .next/static .next/standalone/.next/',
+          'cp -r server/image .next/standalone/server/'
         ]
 
         for (const command of commands) {
