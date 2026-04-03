@@ -7,6 +7,7 @@ import { insertImageCommand } from '@milkdown/preset-commonmark'
 import toast from 'react-hot-toast'
 import { resizeImage } from '~/utils/resizeImage'
 import { kunFetchFormData } from '~/utils/kunFetch'
+import { errorReporter, kunErrorHandler } from '~/utils/kunErrorHandler'
 import { MenuButton } from '../MenuButton'
 import type { CmdKey } from '@milkdown/core'
 import type { UseEditorReturn } from '@milkdown/react'
@@ -35,21 +36,23 @@ export const ImageUploadButton = ({
 
     toast('正在上传图片...')
 
-    const res = await kunFetchFormData<
-      KunResponse<{
-        imageLink: string
-      }>
-    >('/user/image', formData)
-    if (typeof res === 'string') {
-      toast.error(res)
-      return
-    } else {
-      toast.success('上传图片成功')
-      call(insertImageCommand.key, {
-        src: res.imageLink,
-        title: file.name,
-        alt: file.name
+    try {
+      const res = await kunFetchFormData<
+        KunResponse<{
+          imageLink: string
+        }>
+      >('/user/image', formData)
+
+      kunErrorHandler(res, (value) => {
+        toast.success('上传图片成功')
+        call(insertImageCommand.key, {
+          src: value.imageLink,
+          title: file.name,
+          alt: file.name
+        })
       })
+    } catch (error) {
+      errorReporter(error)
     }
   }
 

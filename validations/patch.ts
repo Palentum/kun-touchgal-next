@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { ResourceSizeRegex } from '~/utils/validate'
+import { nonEmptyFileSchema } from './file'
 import {
   SUPPORTED_TYPE,
   SUPPORTED_LANGUAGE,
@@ -125,8 +126,8 @@ export const declinePullRequestSchema = z.object({
 
 export const updatePatchBannerSchema = z.object({
   patchId: z.coerce.number().min(1).max(9999999),
-  image: z.any(),
-  imageOriginal: z.any().optional()
+  image: nonEmptyFileSchema,
+  imageOriginal: nonEmptyFileSchema.optional()
 })
 
 export const getPatchHistorySchema = z.object({

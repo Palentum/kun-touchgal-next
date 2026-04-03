@@ -8,6 +8,10 @@ export const uploadIntroductionImage = async (
   image: ArrayBuffer,
   uid: number
 ) => {
+  if (image.byteLength === 0) {
+    return '上传文件不能为空'
+  }
+
   const minImage = await sharp(image)
     .resize(1920, 1080, {
       fit: 'inside',

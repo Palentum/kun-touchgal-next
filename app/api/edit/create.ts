@@ -7,14 +7,17 @@ import { kunMoyuMoe } from '~/config/moyu-moe'
 import { postToIndexNow } from './_postToIndexNow'
 import { processSubmittedExternalData } from './processExternalData'
 
-export const createGalgame = async (
-  input: Omit<z.infer<typeof patchCreateSchema>, 'alias' | 'tag'> & {
-    alias: string[]
-    tag: string[]
-    bannerOriginal?: ArrayBuffer
-  },
-  uid: number
-) => {
+type CreateGalgameInput = Omit<
+  z.infer<typeof patchCreateSchema>,
+  'alias' | 'tag' | 'banner' | 'bannerOriginal'
+> & {
+  alias: string[]
+  tag: string[]
+  banner: ArrayBuffer
+  bannerOriginal?: ArrayBuffer
+}
+
+export const createGalgame = async (input: CreateGalgameInput, uid: number) => {
   const {
     name,
     vndbId,
@@ -40,8 +43,6 @@ export const createGalgame = async (
     contentLimit
   } = input
 
-  const bannerArrayBuffer = banner as ArrayBuffer
-  const bannerOriginalArrayBuffer = bannerOriginal as ArrayBuffer | undefined
   const galgameUniqueId = crypto.randomBytes(4).toString('hex')
 
   const normalizedVndbId = vndbId?.trim() ? vndbId.trim().toLowerCase() : ''
@@ -96,9 +97,9 @@ export const createGalgame = async (
       const newId = patch.id
 
       const uploadResult = await uploadPatchBanner(
-        bannerArrayBuffer,
+        banner,
         newId,
-        bannerOriginalArrayBuffer
+        bannerOriginal
       )
       if (typeof uploadResult === 'string') {
         return uploadResult

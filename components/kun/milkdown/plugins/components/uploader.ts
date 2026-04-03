@@ -1,7 +1,7 @@
 import { Decoration } from '@milkdown/prose/view'
 import { kunFetchFormData } from '~/utils/kunFetch'
-import toast from 'react-hot-toast'
 import { resizeImage } from '~/utils/resizeImage'
+import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import type { Uploader } from '@milkdown/plugin-upload'
 import type { Node } from '@milkdown/prose/model'
 
@@ -33,16 +33,17 @@ export const kunUploader: Uploader = async (files, schema) => {
           imageLink: string
         }>
       >('/user/image', formData)
-      if (typeof res === 'string') {
-        toast.error(res)
-        return
-      }
-
       const alt = image.name
-      return schema.nodes.image.createAndFill({
-        src: res.imageLink,
-        alt
-      }) as Node
+      let uploadedNode: Node | undefined
+
+      kunErrorHandler(res, (value) => {
+        uploadedNode = schema.nodes.image.createAndFill({
+          src: value.imageLink,
+          alt
+        }) as Node
+      })
+
+      return uploadedNode
     })
   )
 

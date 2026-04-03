@@ -4,6 +4,10 @@ import { uploadImageToS3 } from '~/lib/s3'
 import { checkBufferSize } from '~/app/api/utils/checkBufferSize'
 
 export const uploadUserAvatar = async (image: ArrayBuffer, uid: number) => {
+  if (image.byteLength === 0) {
+    return '上传文件不能为空'
+  }
+
   const avatar = await sharp(image)
     .resize(256, 256, {
       fit: 'inside',

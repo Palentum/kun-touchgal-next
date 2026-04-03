@@ -16,6 +16,7 @@ import { Camera } from 'lucide-react'
 import { dataURItoBlob } from '~/utils/dataURItoBlob'
 import { kunFetchFormData } from '~/utils/kunFetch'
 import toast from 'react-hot-toast'
+import { errorReporter, kunErrorHandler } from '~/utils/kunErrorHandler'
 
 export const AvatarCrop = () => {
   const { user, setUser } = useUserStore((state) => state)
@@ -75,18 +76,21 @@ export const AvatarCrop = () => {
     formData.append('avatar', avatarBlob)
 
     setLoading(true)
-    const res = await kunFetchFormData<KunResponse<{ avatar: string }>>(
-      '/user/setting/avatar',
-      formData
-    )
-    if (typeof res === 'string') {
-      toast.error(res)
-    } else {
+    try {
+      const res = await kunFetchFormData<KunResponse<{ avatar: string }>>(
+        '/user/setting/avatar',
+        formData
+      )
+      kunErrorHandler(res, (value) => {
+        toast.success('更新头像成功!')
+        setCroppedImage(base64Image)
+        setUser({ ...user, avatar: value.avatar })
+        onClose()
+      })
+    } catch (error) {
+      errorReporter(error)
+    } finally {
       setLoading(false)
-      toast.success('更新头像成功!')
-      setCroppedImage(base64Image)
-      setUser({ ...user, avatar: res.avatar })
-      onClose()
     }
   }
 
