@@ -105,7 +105,9 @@ export const VNDBRelationInput = <T extends PatchFormDataShape>({
         developers
       } = await fetchVNDBDetails(vndbId)
 
-      const mergedTitles = [...new Set([...relationTitles, ...vnTitles])]
+      const mergedTitles = [...new Set([...relationTitles, ...vnTitles])].filter(
+        (t) => t !== data.name
+      )
       const finalReleased =
         relationReleased || vnReleased || data.released
 

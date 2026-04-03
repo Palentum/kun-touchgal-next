@@ -96,7 +96,9 @@ export const SteamInput = <T extends PatchFormDataShape>({
         .map((a) => a?.trim())
         .filter((a): a is string => !!a)
 
-      const alias = [...new Set([...data.alias, ...extraAliases])]
+      const alias = [...new Set([...data.alias, ...extraAliases])].filter(
+        (a) => a !== data.name
+      )
 
       setData({
         ...data,

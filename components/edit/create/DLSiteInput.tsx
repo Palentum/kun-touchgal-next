@@ -114,7 +114,7 @@ export const DLSiteInput = <T extends PatchFormDataShape>({
         ...data.alias,
         result.title_jp,
         result.title_en
-      ])
+      ]).filter((a) => a !== data.name)
       const tags = normalizeStringArray([...data.tag, ...parsedTags])
 
       setData({

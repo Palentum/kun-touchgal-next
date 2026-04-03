@@ -54,7 +54,7 @@ export const VNDBInput = <T extends PatchFormDataShape>({
       setData({
         ...data,
         vndbId: normalizedInput,
-        alias: [...new Set(titles)],
+        alias: [...new Set(titles)].filter((t) => t !== data.name),
         released: released || data.released,
         vndbTags: tags,
         vndbDevelopers: developers

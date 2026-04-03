@@ -87,7 +87,9 @@ export const BangumiInput = <T extends PatchFormDataShape>({
       const extraAliases = [result.name, result.nameCn]
         .map((n) => n?.trim())
         .filter((n): n is string => !!n)
-      const alias = [...new Set([...data.alias, ...extraAliases])]
+      const alias = [...new Set([...data.alias, ...extraAliases])].filter(
+        (a) => a !== data.name
+      )
 
       setData({
         ...data,
