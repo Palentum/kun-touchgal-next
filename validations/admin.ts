@@ -22,7 +22,8 @@ export const adminCommentSearchTypeSchema = z.enum(['content', 'user'])
 const adminCommentDeleteLimit = 30
 
 export const adminCommentPaginationSchema = adminPaginationSchema.extend({
-  searchType: adminCommentSearchTypeSchema.default('content')
+  searchType: adminCommentSearchTypeSchema.default('content'),
+  userId: z.coerce.number().min(1).max(9999999).optional()
 })
 
 const adminCommentIdsSchema = z

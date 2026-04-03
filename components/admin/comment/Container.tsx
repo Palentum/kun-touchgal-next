@@ -1,6 +1,15 @@
 'use client'
 
-import { Button, Chip, Input, Select, SelectItem } from '@heroui/react'
+import {
+  Autocomplete,
+  AutocompleteItem,
+  Avatar,
+  Button,
+  Chip,
+  Input,
+  Select,
+  SelectItem
+} from '@heroui/react'
 import {
   Modal,
   ModalBody,
@@ -17,7 +26,7 @@ import { useMounted } from '~/hooks/useMounted'
 import { CommentCard } from './Card'
 import { useDebounce } from 'use-debounce'
 import { KunPagination } from '~/components/kun/Pagination'
-import type { AdminComment } from '~/types/api/admin'
+import type { AdminComment, AdminUser } from '~/types/api/admin'
 import toast from 'react-hot-toast'
 
 type AdminCommentSearchType = 'content' | 'user'
@@ -28,8 +37,14 @@ const searchTypeOptions: Array<{
   placeholder: string
 }> = [
   { key: 'content', label: '评论内容', placeholder: '输入评论内容搜索评论' },
-  { key: 'user', label: '用户', placeholder: '输入用户名搜索评论' }
+  { key: 'user', label: '用户名', placeholder: '输入用户名搜索...' }
 ]
+
+interface UserOption {
+  id: number
+  name: string
+  avatar: string
+}
 
 interface Props {
   initialComments: AdminComment[]
@@ -40,13 +55,21 @@ export const Comment = ({ initialComments, initialTotal }: Props) => {
   const [comments, setComments] = useState<AdminComment[]>(initialComments)
   const [total, setTotal] = useState(initialTotal)
   const [page, setPage] = useState(1)
-  const [searchQuery, setSearchQuery] = useState('')
   const [searchType, setSearchType] =
     useState<AdminCommentSearchType>('content')
   const [selectedCommentIds, setSelectedCommentIds] = useState<Set<number>>(
     new Set()
   )
-  const [debouncedQuery] = useDebounce(searchQuery, 500)
+
+  const [contentQuery, setContentQuery] = useState('')
+  const [debouncedContent] = useDebounce(contentQuery, 500)
+
+  const [userInput, setUserInput] = useState('')
+  const [debouncedUserInput] = useDebounce(userInput, 400)
+  const [userOptions, setUserOptions] = useState<UserOption[]>([])
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
+  const [userSearchLoading, setUserSearchLoading] = useState(false)
+
   const isMounted = useMounted()
   const {
     isOpen: isOpenDelete,
@@ -56,19 +79,62 @@ export const Comment = ({ initialComments, initialTotal }: Props) => {
 
   const [loading, setLoading] = useState(false)
   const [deleting, setDeleting] = useState(false)
+
+  useEffect(() => {
+    if (!debouncedUserInput.trim()) {
+      setUserOptions([])
+      return
+    }
+    let cancelled = false
+    const fetchUsers = async () => {
+      setUserSearchLoading(true)
+      try {
+        const res = await kunFetchGet<{
+          users: AdminUser[]
+          total: number
+        }>('/admin/user', {
+          page: 1,
+          limit: 10,
+          search: debouncedUserInput,
+          searchType: 'name'
+        })
+        if (!cancelled) {
+          if (typeof res === 'string') {
+            toast.error(res)
+          } else {
+            setUserOptions(
+              res.users.map((u) => ({ id: u.id, name: u.name, avatar: u.avatar }))
+            )
+          }
+        }
+      } finally {
+        if (!cancelled) {
+          setUserSearchLoading(false)
+        }
+      }
+    }
+    fetchUsers()
+    return () => {
+      cancelled = true
+    }
+  }, [debouncedUserInput])
+
   const fetchData = async () => {
     setLoading(true)
 
     try {
+      const params: Record<string, string | number> = { page, limit: 30, searchType }
+      if (searchType === 'content' && debouncedContent) {
+        params.search = debouncedContent
+      }
+      if (searchType === 'user' && selectedUserId) {
+        params.userId = selectedUserId
+      }
+
       const response = await kunFetchGet<{
         comments: AdminComment[]
         total: number
-      }>('/admin/comment', {
-        page,
-        limit: 30,
-        search: debouncedQuery,
-        searchType
-      })
+      }>('/admin/comment', params)
 
       const totalPage = Math.max(1, Math.ceil(response.total / 30))
       if (page > totalPage) {
@@ -96,21 +162,41 @@ export const Comment = ({ initialComments, initialTotal }: Props) => {
       return
     }
     fetchData()
-  }, [page, debouncedQuery, searchType])
-
-  const handleSearch = (value: string) => {
-    setSearchQuery(value)
-    setPage(1)
-  }
+  }, [page, searchType, debouncedContent, selectedUserId])
 
   const handleSearchTypeChange = (keys: 'all' | Set<Key>) => {
     const key = Array.from(keys)[0] as AdminCommentSearchType | undefined
     if (!key) {
       return
     }
-
     setSearchType(key)
     setPage(1)
+    setContentQuery('')
+    setUserInput('')
+    setSelectedUserId(null)
+    setUserOptions([])
+  }
+
+  const handleContentSearch = (value: string) => {
+    setContentQuery(value)
+    setPage(1)
+  }
+
+  const handleUserSelectionChange = (key: Key | null) => {
+    if (!key) {
+      setSelectedUserId(null)
+    } else {
+      setSelectedUserId(Number(key))
+    }
+    setPage(1)
+  }
+
+  const handleUserInputChange = (value: string) => {
+    setUserInput(value)
+    if (!value) {
+      setSelectedUserId(null)
+      setPage(1)
+    }
   }
 
   const handleCommentSelectionChange = (
@@ -177,8 +263,7 @@ export const Comment = ({ initialComments, initialTotal }: Props) => {
   }
 
   const currentPlaceholder =
-    searchTypeOptions.find((option) => option.key === searchType)
-      ?.placeholder ?? '输入评论内容搜索评论'
+    searchTypeOptions.find((option) => option.key === searchType)?.placeholder ?? ''
   const isAllSelected =
     comments.length > 0 &&
     comments.every((comment) => selectedCommentIds.has(comment.id))
@@ -200,14 +285,42 @@ export const Comment = ({ initialComments, initialTotal }: Props) => {
             ))}
           </Select>
 
-          <Input
-            fullWidth
-            isClearable
-            placeholder={currentPlaceholder}
-            startContent={<Search className="text-default-300" size={20} />}
-            value={searchQuery}
-            onValueChange={handleSearch}
-          />
+          {searchType === 'user' ? (
+            <Autocomplete
+              fullWidth
+              isClearable
+              placeholder={currentPlaceholder}
+              startContent={<Search className="text-default-300" size={20} />}
+              inputValue={userInput}
+              isLoading={userSearchLoading}
+              items={userOptions}
+              onInputChange={handleUserInputChange}
+              onSelectionChange={handleUserSelectionChange}
+            >
+              {(user) => (
+                <AutocompleteItem key={user.id} textValue={user.name}>
+                  <div className="flex items-center gap-2">
+                    <Avatar
+                      src={user.avatar}
+                      size="sm"
+                      showFallback
+                      name={user.name.charAt(0).toUpperCase()}
+                    />
+                    <span>{user.name}</span>
+                  </div>
+                </AutocompleteItem>
+              )}
+            </Autocomplete>
+          ) : (
+            <Input
+              fullWidth
+              isClearable
+              placeholder={currentPlaceholder}
+              startContent={<Search className="text-default-300" size={20} />}
+              value={contentQuery}
+              onValueChange={handleContentSearch}
+            />
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">

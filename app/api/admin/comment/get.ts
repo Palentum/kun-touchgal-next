@@ -7,24 +7,17 @@ import type { AdminComment } from '~/types/api/admin'
 export const getComment = async (
   input: z.infer<typeof adminCommentPaginationSchema>
 ) => {
-  const { page, limit, search, searchType } = input
+  const { page, limit, search, searchType, userId } = input
   const offset = (page - 1) * limit
   const normalizedSearch = search?.trim()
 
   const where = (() => {
-    if (!normalizedSearch) {
-      return {}
+    if (searchType === 'user' && userId) {
+      return { user_id: userId }
     }
 
-    if (searchType === 'user') {
-      return {
-        user: {
-          name: {
-            contains: normalizedSearch,
-            mode: 'insensitive' as const
-          }
-        }
-      }
+    if (!normalizedSearch) {
+      return {}
     }
 
     return {

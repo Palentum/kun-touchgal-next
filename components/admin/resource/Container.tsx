@@ -163,7 +163,7 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
       }
     }
     fetchData()
-  }, [isMounted, page, limit, searchType, debouncedContent, selectedUserId])
+  }, [page, limit, searchType, debouncedContent, selectedUserId])
 
   const selectedCount =
     selectedKeys === 'all' ? resources.length : selectedKeys.size
