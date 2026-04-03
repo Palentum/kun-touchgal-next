@@ -23,6 +23,16 @@ const copyDirectory = async (src: string, dest: string): Promise<void> => {
   }
 }
 
+const copyRuntimeFile = async (src: string, dest: string): Promise<void> => {
+  try {
+    await mkdir(path.dirname(dest), { recursive: true })
+    await copyFile(src, dest)
+  } catch (error) {
+    console.error(`Error copying file from ${src} to ${dest}:`, error)
+    throw error
+  }
+}
+
 const copyFiles = async () => {
   try {
     execSync('pnpm build:sitemap', { stdio: 'inherit' })
@@ -30,6 +40,8 @@ const copyFiles = async () => {
     await copyDirectory('public', '.next/standalone/public')
     await copyDirectory('.next/static', '.next/standalone/.next/static')
     await copyDirectory('server/image', '.next/standalone/server/image')
+    await copyDirectory('posts', '.next/standalone/posts')
+    await copyRuntimeFile('config/redirect.json', '.next/standalone/config/redirect.json')
 
     console.log('Files copied successfully.')
   } catch (error) {
