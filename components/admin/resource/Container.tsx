@@ -4,8 +4,14 @@ import {
   Autocomplete,
   AutocompleteItem,
   Avatar,
+  Button,
   Chip,
   Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   Select,
   SelectItem,
   Table,
@@ -13,11 +19,14 @@ import {
   TableCell,
   TableColumn,
   TableHeader,
-  TableRow
+  TableRow,
+  useDisclosure
 } from '@heroui/react'
-import { Search } from 'lucide-react'
-import { kunFetchGet } from '~/utils/kunFetch'
+import { Search, Trash2 } from 'lucide-react'
+import toast from 'react-hot-toast'
+import { kunFetchDelete, kunFetchGet } from '~/utils/kunFetch'
 import { useEffect, useState, type Key } from 'react'
+import type { Selection } from '@heroui/table'
 import { useMounted } from '~/hooks/useMounted'
 import { KunLoading } from '~/components/kun/Loading'
 import { RenderCell } from './RenderCell'
@@ -65,6 +74,9 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
   const [total, setTotal] = useState(initialTotal)
   const [page, setPage] = useState(1)
   const [searchType, setSearchType] = useState<ResourceSearchType>('content')
+  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set())
+  const [batchDeleting, setBatchDeleting] = useState(false)
+  const { isOpen: isBatchOpen, onOpen: onBatchOpen, onClose: onBatchClose } = useDisclosure()
 
   const [contentQuery, setContentQuery] = useState('')
   const [debouncedContent] = useDebounce(contentQuery, 500)
@@ -120,7 +132,7 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
     const fetchData = async () => {
       setLoading(true)
       try {
-        const params: Record<string, unknown> = { page, limit: 30 }
+        const params: Record<string, string | number> = { page, limit: 30 }
         if (searchType === 'content' && debouncedContent) {
           params.search = debouncedContent
         }
@@ -135,12 +147,63 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
 
         setResources(resources)
         setTotal(total)
+        setSelectedKeys(new Set<string | number>())
       } finally {
         setLoading(false)
       }
     }
     fetchData()
   }, [isMounted, page, searchType, debouncedContent, selectedUserId])
+
+  const selectedCount =
+    selectedKeys === 'all' ? resources.length : selectedKeys.size
+
+  const handleBatchDelete = async () => {
+    setBatchDeleting(true)
+    const ids =
+      selectedKeys === 'all'
+        ? resources.map((r) => r.id)
+        : Array.from(selectedKeys).map(Number)
+
+    const results = await Promise.allSettled(
+      ids.map((id) =>
+        kunFetchDelete<KunResponse<{}>>('/admin/resource', { resourceId: id })
+      )
+    )
+
+    const failed = results.filter(
+      (r) =>
+        r.status === 'rejected' ||
+        (r.status === 'fulfilled' && typeof r.value === 'string')
+    ).length
+    const succeeded = results.length - failed
+
+    if (succeeded > 0) {
+      toast.success(`成功删除 ${succeeded} 条资源`)
+    }
+    if (failed > 0) {
+      toast.error(`${failed} 条资源删除失败`)
+    }
+
+    setBatchDeleting(false)
+    onBatchClose()
+    setSelectedKeys(new Set<string | number>())
+
+    // 刷新列表
+    const params: Record<string, string | number> = { page, limit: 30 }
+    if (searchType === 'content' && debouncedContent) {
+      params.search = debouncedContent
+    }
+    if (searchType === 'user' && selectedUserId) {
+      params.userId = selectedUserId
+    }
+    const res = await kunFetchGet<{ resources: AdminResource[]; total: number }>(
+      '/admin/resource',
+      params
+    )
+    setResources(res.resources)
+    setTotal(res.total)
+  }
 
   const handleSearchTypeChange = (keys: 'all' | Set<Key>) => {
     const key = Array.from(keys)[0] as ResourceSearchType | undefined
@@ -184,9 +247,22 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">补丁资源管理</h1>
-        <Chip color="primary" variant="flat">
-          支持按内容、哈希和用户搜索
-        </Chip>
+        <div className="flex items-center gap-2">
+          {selectedCount > 0 && (
+            <Button
+              color="danger"
+              variant="flat"
+              size="sm"
+              startContent={<Trash2 size={14} />}
+              onPress={onBatchOpen}
+            >
+              批量删除 ({selectedCount})
+            </Button>
+          )}
+          <Chip color="primary" variant="flat">
+            支持按内容、哈希和用户搜索
+          </Chip>
+        </div>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
@@ -244,6 +320,9 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
       ) : (
         <Table
           aria-label="资源管理列表"
+          selectionMode="multiple"
+          selectedKeys={selectedKeys}
+          onSelectionChange={setSelectedKeys}
           bottomContent={
             <div className="flex justify-center w-full">
               <KunPagination
@@ -273,6 +352,30 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
           </TableBody>
         </Table>
       )}
+
+      <Modal isOpen={isBatchOpen} onClose={onBatchClose} placement="center">
+        <ModalContent>
+          <ModalHeader>批量删除资源</ModalHeader>
+          <ModalBody>
+            <p>
+              您确定要删除选中的 <strong>{selectedCount}</strong>{' '}
+              条资源吗？该操作不可撤销。
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onPress={onBatchClose}>
+              取消
+            </Button>
+            <Button
+              color="danger"
+              onPress={handleBatchDelete}
+              isLoading={batchDeleting}
+            >
+              确认删除
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   )
 }
