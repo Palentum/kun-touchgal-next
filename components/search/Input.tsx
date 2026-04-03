@@ -65,7 +65,13 @@ export const SearchInput = ({
     }
 
     syncDropdownVisibility(query, selectedSuggestions)
-  }, [isFocused, query, selectedSuggestions, setShowHistory, setShowSuggestions])
+  }, [
+    isFocused,
+    query,
+    selectedSuggestions,
+    setShowHistory,
+    setShowSuggestions
+  ])
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)

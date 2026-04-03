@@ -115,8 +115,8 @@ export const updateGalgame = async (
 
   try {
     await invalidatePatchContentCache(patch.unique_id)
-  } catch (error) {
-    console.error(`Failed to invalidate patch cache for ${patch.unique_id}:`, error)
+  } catch {
+    // 缓存失效失败不影响编辑结果
   }
 
   return {}

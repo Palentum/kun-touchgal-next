@@ -47,7 +47,6 @@ export const POST = async (req: NextRequest) => {
       released: release.released ?? ''
     })
   } catch (error) {
-    console.error(error)
     return NextResponse.json(
       `VNDB Release API 请求失败 - ${JSON.stringify(error)}`
     )

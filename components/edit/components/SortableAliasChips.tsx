@@ -43,11 +43,7 @@ const moveItem = (values: string[], fromIndex: number, toIndex: number) => {
   return nextValues
 }
 
-export const SortableAliasChips = ({
-  values,
-  onReorder,
-  onRemove
-}: Props) => {
+export const SortableAliasChips = ({ values, onReorder, onRemove }: Props) => {
   const [dragState, setDragState] = useState<DragState | null>(null)
   const dragStateRef = useRef<DragState | null>(null)
   const onReorderRef = useRef(onReorder)

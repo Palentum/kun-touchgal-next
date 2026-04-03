@@ -3,7 +3,11 @@ import { z } from 'zod'
 import { kunParsePostBody } from '~/app/api/utils/parseQuery'
 import { fetchVndbVn } from '~/lib/arnebiae/vndb'
 import { TAG_MAP } from '~/lib/tagMap'
-import type { VNDBDetailResult, VndbTag, VndbProducer } from '~/lib/arnebiae/vndb'
+import type {
+  VNDBDetailResult,
+  VndbTag,
+  VndbProducer
+} from '~/lib/arnebiae/vndb'
 
 const detailsSchema = z.object({
   vndbId: z.string().regex(/^v\d+$/i, 'VNDB ID 格式不正确')
@@ -44,8 +48,7 @@ const buildDevelopers = (results: VNDBFullResult[]) => {
   const allDevs = results.flatMap((vn) => vn.developers ?? [])
   return allDevs
     .filter(
-      (d) =>
-        d.name && (d.type === 'co' || d.type === 'ng' || d.type === 'in')
+      (d) => d.name && (d.type === 'co' || d.type === 'ng' || d.type === 'in')
     )
     .map((d) => d.name!)
     .filter((name, i, arr) => arr.indexOf(name) === i)
@@ -75,7 +78,6 @@ export const POST = async (req: NextRequest) => {
 
     return NextResponse.json({ titles, released, tags, developers })
   } catch (error) {
-    console.error(error)
     return NextResponse.json('VNDB API 请求失败')
   }
 }

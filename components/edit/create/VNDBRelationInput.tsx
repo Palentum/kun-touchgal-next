@@ -105,11 +105,10 @@ export const VNDBRelationInput = <T extends PatchFormDataShape>({
         developers
       } = await fetchVNDBDetails(vndbId)
 
-      const mergedTitles = [...new Set([...relationTitles, ...vnTitles])].filter(
-        (t) => t !== data.name
-      )
-      const finalReleased =
-        relationReleased || vnReleased || data.released
+      const mergedTitles = [
+        ...new Set([...relationTitles, ...vnTitles])
+      ].filter((t) => t !== data.name)
+      const finalReleased = relationReleased || vnReleased || data.released
 
       setPreview({
         vndbId,
@@ -131,7 +130,6 @@ export const VNDBRelationInput = <T extends PatchFormDataShape>({
 
       toast.success('已获取 Release 数据! 并完成 VNDB 同步')
     } catch (error) {
-      console.error(error)
       setPreview(null)
       if (
         error instanceof Error &&

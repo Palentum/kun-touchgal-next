@@ -53,11 +53,7 @@ export const CreatePatch = () => {
             setData={setData}
             errors={errors.bangumiId}
           />
-          <SteamInput
-            data={data}
-            setData={setData}
-            errors={errors.steamId}
-          />
+          <SteamInput data={data} setData={setData} errors={errors.steamId} />
           <DLSiteInput
             data={data}
             setData={setData}

@@ -83,7 +83,6 @@ export const POST = async (req: NextRequest) => {
       developers
     })
   } catch (error) {
-    console.error(error)
     return NextResponse.json('Bangumi API 请求失败')
   }
 }

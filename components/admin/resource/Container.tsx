@@ -77,7 +77,11 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
   const [searchType, setSearchType] = useState<ResourceSearchType>('content')
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set())
   const [batchDeleting, setBatchDeleting] = useState(false)
-  const { isOpen: isBatchOpen, onOpen: onBatchOpen, onClose: onBatchClose } = useDisclosure()
+  const {
+    isOpen: isBatchOpen,
+    onOpen: onBatchOpen,
+    onClose: onBatchClose
+  } = useDisclosure()
 
   const [contentQuery, setContentQuery] = useState('')
   const [debouncedContent] = useDebounce(contentQuery, 500)
@@ -114,7 +118,11 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
             toast.error(res)
           } else {
             setUserOptions(
-              res.users.map((u) => ({ id: u.id, name: u.name, avatar: u.avatar }))
+              res.users.map((u) => ({
+                id: u.id,
+                name: u.name,
+                avatar: u.avatar
+              }))
             )
           }
         }
@@ -207,10 +215,10 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
     if (searchType === 'user' && selectedUserId) {
       params.userId = selectedUserId
     }
-    const refreshRes = await kunFetchGet<{ resources: AdminResource[]; total: number }>(
-      '/admin/resource',
-      params
-    )
+    const refreshRes = await kunFetchGet<{
+      resources: AdminResource[]
+      total: number
+    }>('/admin/resource', params)
     if (typeof refreshRes === 'string') {
       toast.error(refreshRes)
     } else {

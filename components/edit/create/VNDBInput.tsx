@@ -62,7 +62,6 @@ export const VNDBInput = <T extends PatchFormDataShape>({
 
       toast.success('获取数据成功! 已为您自动添加游戏别名')
     } catch (error) {
-      console.error(error)
       setPreview(null)
       if (
         error instanceof Error &&

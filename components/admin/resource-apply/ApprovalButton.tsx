@@ -83,7 +83,12 @@ export const ResourceApprovalButton = ({
 
   return (
     <div className="flex gap-2">
-      <Button size="sm" variant="flat" startContent={<Edit2 size={14} />} onPress={onOpenEdit}>
+      <Button
+        size="sm"
+        variant="flat"
+        startContent={<Edit2 size={14} />}
+        onPress={onOpenEdit}
+      >
         编辑
       </Button>
       <Button size="sm" color="success" onPress={onOpenApprove}>

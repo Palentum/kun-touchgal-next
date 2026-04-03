@@ -65,13 +65,16 @@ export const toggleResourceLike = async (
       data: { moemoepoint: { increment: existingLike ? -1 : 1 } }
     })
 
-    await createDedupMessage({
-      type: 'like',
-      content: `赞了您在「${resource.patch.name}」下发布的资源`,
-      sender_id: uid,
-      recipient_id: resource.user_id,
-      link: `/${resource.patch.unique_id}`
-    }, tx)
+    await createDedupMessage(
+      {
+        type: 'like',
+        content: `赞了您在「${resource.patch.name}」下发布的资源`,
+        sender_id: uid,
+        recipient_id: resource.user_id,
+        link: `/${resource.patch.unique_id}`
+      },
+      tx
+    )
 
     return !existingLike
   })

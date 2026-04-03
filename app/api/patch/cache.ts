@@ -39,7 +39,9 @@ export const getCachedPatchFavoriteStatus = async (
   }
 
   const version = await getPatchFavoriteCacheVersion(uid)
-  const cachedStatus = await getKv(getPatchFavoriteCacheKey(uniqueId, uid, version))
+  const cachedStatus = await getKv(
+    getPatchFavoriteCacheKey(uniqueId, uid, version)
+  )
 
   if (cachedStatus === null) {
     return null

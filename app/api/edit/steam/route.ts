@@ -23,7 +23,6 @@ export const POST = async (req: NextRequest) => {
       developers: data.developers
     })
   } catch (error) {
-    console.error(error)
     return NextResponse.json('Steam API 请求失败')
   }
 }

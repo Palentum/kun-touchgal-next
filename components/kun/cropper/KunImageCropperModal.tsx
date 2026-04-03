@@ -13,7 +13,6 @@ import {
 import { KunCropControls } from './KunCropControls'
 import { centerAspectCrop, createCroppedImage } from './utils'
 import type { KunAspect } from './types'
-// @ts-ignore
 import 'react-image-crop/dist/ReactCrop.css'
 
 interface Props {

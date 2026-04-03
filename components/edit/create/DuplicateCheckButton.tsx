@@ -5,10 +5,7 @@ import { Button } from '@heroui/react'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
 import localforage from 'localforage'
-import {
-  createPatchEditStoreKey,
-  useCreatePatchStore
-} from '~/store/editStore'
+import { createPatchEditStoreKey, useCreatePatchStore } from '~/store/editStore'
 import { kunFetchGet } from '~/utils/kunFetch'
 
 interface DuplicateResponse {
@@ -67,7 +64,6 @@ export const DuplicateCheckButton = () => {
         toast.success('检查完成, 未找到重复游戏')
       }
     } catch (error) {
-      console.error(error)
       toast.error('查重失败, 请稍后再试')
     } finally {
       setChecking(false)

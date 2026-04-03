@@ -109,9 +109,7 @@ const ensureCompanies = async (
   const existingRelationIds = new Set(
     existingRelations.map((r) => r.company_id)
   )
-  const newCompanyIds = companyIds.filter(
-    (id) => !existingRelationIds.has(id)
-  )
+  const newCompanyIds = companyIds.filter((id) => !existingRelationIds.has(id))
 
   if (newCompanyIds.length) {
     await prisma.patch_company_relation.createMany({
@@ -228,18 +226,5 @@ export const processSubmittedExternalData = async (
     data.steamAliases.length && ensureAliases(patchId, data.steamAliases)
   ].filter(Boolean)
 
-  const results = await Promise.allSettled([
-    ...tagTasks,
-    ...companyTasks,
-    ...aliasTasks
-  ])
-
-  results.forEach((result) => {
-    if (result.status === 'rejected') {
-      console.error(
-        `Failed to process external data for patch ${patchId}:`,
-        result.reason
-      )
-    }
-  })
+  await Promise.allSettled([...tagTasks, ...companyTasks, ...aliasTasks])
 }

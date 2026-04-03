@@ -29,9 +29,7 @@ export interface SteamApiResponse {
 export const fetchSteamAppData = async (
   steamId: number
 ): Promise<SteamAppData> => {
-  const res = await fetch(
-    `${STEAM_API_BASE}/app/${steamId}/tags?lang=schinese`
-  )
+  const res = await fetch(`${STEAM_API_BASE}/app/${steamId}/tags?lang=schinese`)
 
   if (!res.ok) {
     throw new Error('STEAM_FETCH_FAILED')

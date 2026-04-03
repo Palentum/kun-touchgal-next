@@ -44,8 +44,7 @@ export const handleReport = async (
   const reportStatus = input.action === 'reject' ? 3 : 2
   const reportResult =
     input.action === 'reject' ? '您的举报已驳回' : '您的举报已处理'
-  const reportReplyLabel =
-    input.action === 'reject' ? '驳回回复' : '处理回复'
+  const reportReplyLabel = input.action === 'reject' ? '驳回回复' : '处理回复'
   const reportContent = `${reportResult}\n\n举报原因：${SLICED_CONTENT}\n${reportReplyLabel}：${handleResult}`
 
   const ratingPatchId =

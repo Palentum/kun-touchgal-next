@@ -99,7 +99,6 @@ export const DLSiteInput = ({ errors }: { errors?: string }) => {
 
       toast.success('已获取 DLSite 数据并自动写入表单')
     } catch (error) {
-      console.error(error)
       setPreview(null)
       toast.error('DLSite API 请求失败, 请稍后重试')
     }

@@ -104,7 +104,11 @@ export const Comment = ({ initialComments, initialTotal }: Props) => {
             toast.error(res)
           } else {
             setUserOptions(
-              res.users.map((u) => ({ id: u.id, name: u.name, avatar: u.avatar }))
+              res.users.map((u) => ({
+                id: u.id,
+                name: u.name,
+                avatar: u.avatar
+              }))
             )
           }
         }
@@ -124,7 +128,11 @@ export const Comment = ({ initialComments, initialTotal }: Props) => {
     setLoading(true)
 
     try {
-      const params: Record<string, string | number> = { page, limit, searchType }
+      const params: Record<string, string | number> = {
+        page,
+        limit,
+        searchType
+      }
       if (searchType === 'content' && debouncedContent) {
         params.search = debouncedContent
       }
@@ -264,7 +272,8 @@ export const Comment = ({ initialComments, initialTotal }: Props) => {
   }
 
   const currentPlaceholder =
-    searchTypeOptions.find((option) => option.key === searchType)?.placeholder ?? ''
+    searchTypeOptions.find((option) => option.key === searchType)
+      ?.placeholder ?? ''
   const isAllSelected =
     comments.length > 0 &&
     comments.every((comment) => selectedCommentIds.has(comment.id))

@@ -66,7 +66,7 @@ export const ensurePatchCompanyFromDlsite = async (
         }
       })
     }
-  } catch (error) {
-    console.error('Failed to sync DLsite company', error)
+  } catch {
+    // 忽略同步失败，避免阻塞主流程
   }
 }

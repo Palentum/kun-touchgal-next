@@ -17,7 +17,6 @@ export const POST = async (req: NextRequest) => {
     const data = await fetchDlsiteData(input.code)
     return NextResponse.json(data)
   } catch (error) {
-    console.error('Failed to fetch DLsite data:', error)
     return NextResponse.json('DLSite API 请求失败, 请稍后重试')
   }
 }

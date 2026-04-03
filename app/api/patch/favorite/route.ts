@@ -77,11 +77,8 @@ export const togglePatchFavorite = async (
       bumpPatchFavoriteCacheVersion(uid),
       invalidatePatchContentCache(patch.unique_id)
     ])
-  } catch (error) {
-    console.error(
-      `Failed to invalidate favorite cache for patch ${patch.unique_id} and user ${uid}:`,
-      error
-    )
+  } catch {
+    // 缓存失效失败不影响收藏结果
   }
 
   return response

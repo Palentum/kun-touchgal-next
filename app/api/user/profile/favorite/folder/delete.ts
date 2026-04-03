@@ -26,11 +26,8 @@ export const deleteFolder = async (
 
   try {
     await bumpPatchFavoriteCacheVersion(uid)
-  } catch (error) {
-    console.error(
-      `Failed to invalidate favorite cache version for user ${uid}:`,
-      error
-    )
+  } catch {
+    // 缓存版本更新失败不影响删除结果
   }
 
   return {}

@@ -100,7 +100,6 @@ export const BangumiInput = <T extends PatchFormDataShape>({
 
       toast.success(`确认: ${displayName}`)
     } catch (error) {
-      console.error(error)
       setPreview(null)
       toast.error('Bangumi API 请求失败, 请稍后重试')
     }

@@ -129,7 +129,11 @@ export const PublishResource = ({
               <div className="space-y-1">
                 <p>每日上传总额度为 5GB (5120MB)，上传越多可用额度越高。</p>
                 <p>{`今日剩余上传额度 ${user.dailyUploadLimit.toFixed(3)} MB`}</p>
-                <Progress size="sm" value={progress} aria-label="今日上传额度" />
+                <Progress
+                  size="sm"
+                  value={progress}
+                  aria-label="今日上传额度"
+                />
               </div>
             ) : (
               <>

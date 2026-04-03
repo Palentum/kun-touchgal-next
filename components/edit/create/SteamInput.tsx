@@ -111,7 +111,6 @@ export const SteamInput = <T extends PatchFormDataShape>({
 
       toast.success(`确认: ${result.name}`)
     } catch (error) {
-      console.error(error)
       setPreview(null)
       toast.error('Steam API 请求失败, 请稍后重试')
     }

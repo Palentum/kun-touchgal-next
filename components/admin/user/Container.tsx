@@ -98,8 +98,8 @@ export const User = ({ initialUsers, initialTotal }: Props) => {
   }
 
   const currentPlaceholder =
-    searchTypeOptions.find((option) => option.key === searchType)?.placeholder ??
-    '搜索用户名...'
+    searchTypeOptions.find((option) => option.key === searchType)
+      ?.placeholder ?? '搜索用户名...'
 
   return (
     <div className="space-y-6">
