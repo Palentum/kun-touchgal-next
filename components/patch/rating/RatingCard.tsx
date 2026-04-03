@@ -126,58 +126,69 @@ export const RatingCard = ({
 
   return (
     <Card className="w-full">
-      <CardHeader className="flex items-start justify-between gap-3 pb-0">
-        <KunUser
-          user={rating.user}
-          userProps={{
+      <CardHeader className="flex items-start justify-between gap-2 pb-0">
+        <div className="ml-1">
+          <KunUser
+            user={rating.user}
+            userProps={{
             name: rating.user.name,
-            description: formatTimeDifference(rating.created),
+            description: (
+              <span className="flex items-center gap-1.5">
+                <span>{formatTimeDifference(rating.created)}</span>
+                <Chip
+                  color={getRecommendColor(rating.recommend)}
+                  variant="flat"
+                  size="sm"
+                  className="h-5 px-1.5"
+                >
+                  {KUN_GALGAME_RATING_RECOMMEND_MAP[rating.recommend]}
+                </Chip>
+                <Chip
+                  color="secondary"
+                  variant="flat"
+                  size="sm"
+                  className="h-5 px-1.5"
+                >
+                  {KUN_GALGAME_RATING_PLAY_STATUS_MAP[rating.playStatus]}
+                </Chip>
+              </span>
+            ),
             avatarProps: {
               src: rating.user.avatar,
               size: 'sm'
             }
           }}
-        />
+          />
+        </div>
         <div
-          className={`flex items-center gap-1.5 px-2 py-1 rounded-lg bg-default-100 dark:bg-default-50/10 ${getScoreColor(rating.overall)}`}
+          className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-default-100 dark:bg-default-50/10 ${getScoreColor(rating.overall)}`}
         >
-          <Star className="size-4" fill="currentColor" strokeWidth={0} />
-          <span className="text-xl font-bold tabular-nums leading-none">
+          <Star className="size-3.5" fill="currentColor" strokeWidth={0} />
+          <span className="text-lg font-bold tabular-nums leading-none">
             {rating.overall}
           </span>
         </div>
       </CardHeader>
 
-      <CardBody className="pt-3 space-y-3">
-        <div className="flex flex-wrap gap-2">
-          <Chip
-            color={getRecommendColor(rating.recommend)}
-            variant="flat"
-            size="sm"
-          >
-            {KUN_GALGAME_RATING_RECOMMEND_MAP[rating.recommend]}
-          </Chip>
-          <Chip color="secondary" variant="flat" size="sm">
-            {KUN_GALGAME_RATING_PLAY_STATUS_MAP[rating.playStatus]}
-          </Chip>
-        </div>
-
+      <CardBody
+        className={
+          rating.shortSummary ? 'py-2 space-y-2' : 'pt-0 pb-1'
+        }
+      >
         {rating.shortSummary && (
           <>
             {rating.spoilerLevel !== 'none' && !isShowSummary ? (
               <div
-                className="relative p-3 rounded-lg bg-warning-50 dark:bg-warning-100/10 border border-warning-200 dark:border-warning-500/20 cursor-pointer hover:bg-warning-100 dark:hover:bg-warning-100/20 transition-colors"
+                className="relative p-2 rounded-lg bg-warning-50 dark:bg-warning-100/10 border border-warning-200 dark:border-warning-500/20 cursor-pointer hover:bg-warning-100 dark:hover:bg-warning-100/20 transition-colors"
                 onClick={() => setIsShowSummary(true)}
               >
-                <div className="flex items-center gap-2 text-warning-600 dark:text-warning-500">
-                  <EyeOff className="size-4" />
-                  <span className="text-sm font-medium">
+                <div className="flex items-center gap-1.5 text-warning-600 dark:text-warning-500">
+                  <EyeOff className="size-3.5" />
+                  <span className="text-xs font-medium">
                     {KUN_GALGAME_RATING_SPOILER_MAP[rating.spoilerLevel]}
+                    {' — '}点击显示
                   </span>
                 </div>
-                <p className="text-xs text-warning-500 dark:text-warning-400 mt-1">
-                  点击显示评价内容
-                </p>
               </div>
             ) : (
               <div className="relative">
@@ -189,7 +200,7 @@ export const RatingCard = ({
                     <Eye className="size-3 text-default-500" />
                   </button>
                 )}
-                <p className="text-sm text-default-800 whitespace-pre-wrap leading-relaxed">
+                <p className="text-sm text-default-800 whitespace-pre-wrap leading-relaxed ml-1">
                   {rating.shortSummary}
                 </p>
               </div>
@@ -199,15 +210,15 @@ export const RatingCard = ({
         <div className="flex items-center justify-between">
           <RatingLikeButton rating={rating} />
 
-          <div className="flex gap-1">
+          <div className="flex gap-0.5">
             {user.uid > 0 && user.uid !== rating.user.id && (
-              <Tooltip content="举报">
+              <Tooltip content="举报" placement="bottom">
                 <Button
                   variant="light"
                   isIconOnly
                   size="sm"
                   onPress={onOpenReport}
-                  className="text-warning"
+                  className="text-default-500"
                 >
                   <TriangleAlert className="size-4" />
                 </Button>
@@ -215,7 +226,7 @@ export const RatingCard = ({
             )}
             {canEdit && (
               <>
-                <Tooltip content="编辑">
+                <Tooltip content="编辑" placement="bottom">
                   <Button
                     variant="light"
                     isIconOnly
@@ -226,7 +237,7 @@ export const RatingCard = ({
                     <Pencil className="size-4" />
                   </Button>
                 </Tooltip>
-                <Tooltip content="删除">
+                <Tooltip content="删除" placement="bottom">
                   <Button
                     variant="light"
                     isIconOnly
