@@ -36,6 +36,15 @@ const resolveNextCode = (resource: ResourceRecord, codes: string[]) => {
 
 const formatResource = async (resource: ResourceRecord) => {
   const normalized = normalizeResourceContent(resource.content)
+
+  if (normalized.links.length >= 2) {
+    return {
+      status: 'skipped' as const,
+      resource,
+      reason: 'multiple-links' as const
+    }
+  }
+
   const { nextCode, hasConflict } = resolveNextCode(resource, normalized.codes)
   const nextContent = normalized.content
 
@@ -94,6 +103,7 @@ const main = async () => {
   let updated = 0
   let unchanged = 0
   let conflicts = 0
+  let skipped = 0
 
   console.log(
     `${SHOULD_WRITE ? 'Write' : 'Dry-run'} mode: scanning ${resources.length} custom-link resources`
@@ -115,6 +125,14 @@ const main = async () => {
       continue
     }
 
+    if (result.status === 'skipped') {
+      skipped += 1
+      console.log(
+        `[skipped] #${result.resource.id} ${result.resource.patch.name} / ${result.resource.name || '未命名资源'} => multiple links`
+      )
+      continue
+    }
+
     updated += 1
     console.log(
       `[${SHOULD_WRITE ? 'updated' : 'preview'}] #${result.resource.id} content: ${result.resource.content} -> ${result.nextContent} | code: ${result.resource.code || '(empty)'} -> ${result.nextCode || '(empty)'}`
@@ -122,7 +140,7 @@ const main = async () => {
   }
 
   console.log(
-    `Done. updated=${updated}, unchanged=${unchanged}, conflicts=${conflicts}`
+    `Done. updated=${updated}, unchanged=${unchanged}, conflicts=${conflicts}, skipped=${skipped}`
   )
 }
 
