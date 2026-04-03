@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { Modal } from '@heroui/modal'
 import { Button } from '@heroui/button'
+import { Switch } from '@heroui/switch'
 import { Plus } from 'lucide-react'
 import Masonry from 'react-masonry-css'
 import { kunFetchGet } from '~/utils/kunFetch'
@@ -29,6 +30,8 @@ export const Ratings = ({ id }: Props) => {
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
+  const [initialized, setInitialized] = useState(false)
+  const [hideNoContent, setHideNoContent] = useState(true)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const user = useUserStore((state) => state.user)
   const observerRef = useRef<IntersectionObserver | null>(null)
@@ -55,6 +58,7 @@ export const Ratings = ({ id }: Props) => {
         setHasMore(res.ratings.length === RATINGS_PER_PAGE)
       }
       setLoading(false)
+      setInitialized(true)
     },
     [id, loading]
   )
@@ -115,9 +119,20 @@ export const Ratings = ({ id }: Props) => {
     640: 1
   }
 
+  const displayedRatings = hideNoContent
+    ? ratings.filter((r) => r.shortSummary && r.shortSummary.trim())
+    : ratings
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between">
+        <Switch
+          isSelected={hideNoContent}
+          onValueChange={setHideNoContent}
+          size="sm"
+        >
+          隐藏无短评评价
+        </Switch>
         <Button
           color="primary"
           variant="flat"
@@ -133,7 +148,7 @@ export const Ratings = ({ id }: Props) => {
         className="flex w-auto -ml-4"
         columnClassName="pl-4 bg-clip-padding"
       >
-        {ratings.map((rating) => (
+        {displayedRatings.map((rating) => (
           <div key={rating.id} className="mb-4">
             <RatingCard
               rating={rating}
@@ -145,7 +160,7 @@ export const Ratings = ({ id }: Props) => {
         ))}
       </Masonry>
 
-      {loading && (
+      {(!initialized || loading) && (
         <Masonry
           breakpointCols={breakpointColumns}
           className="flex w-auto -ml-4"
@@ -161,7 +176,15 @@ export const Ratings = ({ id }: Props) => {
 
       <div ref={loadMoreRef} className="w-full h-4" />
 
-      {!ratings.length && !loading && <KunNull message="这个游戏还没有评价" />}
+      {initialized && !displayedRatings.length && !loading && (
+        <KunNull
+          message={
+            ratings.length
+              ? '所有评价均无正文，关闭过滤开关可查看全部'
+              : '这个游戏还没有评价'
+          }
+        />
+      )}
 
       {!hasMore && ratings.length > 0 && (
         <p className="text-center text-default-500 text-sm">
