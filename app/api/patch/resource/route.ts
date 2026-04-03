@@ -16,6 +16,7 @@ import { createPatchResource } from './create'
 import { updatePatchResource } from './update'
 import { deleteResource } from './delete'
 import { prisma } from '~/prisma/index'
+import { acquireKvLock, releaseKvLock } from '~/lib/redis'
 
 const patchIdSchema = z.object({
   patchId: z.coerce.number().min(1).max(9999999)
@@ -69,8 +70,34 @@ export const POST = async (req: NextRequest) => {
     )
   }
 
-  const response = await createPatchResource(input, payload.uid, payload.role)
-  return NextResponse.json(response)
+  const lockKey = `lock:patch:resource:create:${payload.uid}`
+  let lockToken: string | null = null
+
+  try {
+    lockToken = await acquireKvLock(lockKey, 300)
+  } catch (error) {
+    process.stderr.write(
+      `Failed to acquire patch resource lock: ${String(error)}\n`
+    )
+    return NextResponse.json('资源提交服务暂时不可用, 请稍后重试')
+  }
+
+  if (!lockToken) {
+    return NextResponse.json('资源正在提交中, 请勿重复点击')
+  }
+
+  try {
+    const response = await createPatchResource(input, payload.uid, payload.role)
+    return NextResponse.json(response)
+  } finally {
+    try {
+      await releaseKvLock(lockKey, lockToken)
+    } catch (error) {
+      process.stderr.write(
+        `Failed to release patch resource lock: ${String(error)}\n`
+      )
+    }
+  }
 }
 
 export const PUT = async (req: NextRequest) => {

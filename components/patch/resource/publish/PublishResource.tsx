@@ -1,7 +1,7 @@
 'use client'
 
 import { z } from 'zod'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@heroui/button'
@@ -51,6 +51,7 @@ export const PublishResource = ({
   onSuccess
 }: CreateResourceProps) => {
   const [creating, setCreating] = useState(false)
+  const creatingRef = useRef(false)
   const [uploadingResource, setUploadingResource] = useState(false)
   const user = useUserStore((state) => state.user)
   const needsSectionPreselection = user.role <= 2
@@ -84,22 +85,31 @@ export const PublishResource = ({
   })
 
   const handleRewriteResource = async () => {
+    if (creatingRef.current || uploadingResource) {
+      return
+    }
+
+    creatingRef.current = true
     setCreating(true)
-    const res = await kunFetchPost<KunResponse<PatchResource>>(
-      '/patch/resource',
-      watch()
-    )
-    setCreating(false)
-    kunErrorHandler(res, (value) => {
-      reset()
-      if (value.status === 2) {
-        toast.success('资源已提交审核，通过后将自动显示')
-        onClose()
-      } else {
-        onSuccess?.(value)
-        toast.success('发布成功')
-      }
-    })
+    try {
+      const res = await kunFetchPost<KunResponse<PatchResource>>(
+        '/patch/resource',
+        watch()
+      )
+      kunErrorHandler(res, (value) => {
+        reset()
+        if (value.status === 2) {
+          toast.success('资源已提交审核，通过后将自动显示')
+          onClose()
+        } else {
+          onSuccess?.(value)
+          toast.success('发布成功')
+        }
+      })
+    } finally {
+      creatingRef.current = false
+      setCreating(false)
+    }
   }
 
   const handleUploadSuccess = (
