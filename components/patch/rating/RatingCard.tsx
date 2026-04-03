@@ -131,33 +131,33 @@ export const RatingCard = ({
           <KunUser
             user={rating.user}
             userProps={{
-            name: rating.user.name,
-            description: (
-              <span className="flex items-center gap-1.5">
-                <span>{formatTimeDifference(rating.created)}</span>
-                <Chip
-                  color={getRecommendColor(rating.recommend)}
-                  variant="flat"
-                  size="sm"
-                  className="h-5 px-1.5"
-                >
-                  {KUN_GALGAME_RATING_RECOMMEND_MAP[rating.recommend]}
-                </Chip>
-                <Chip
-                  color="secondary"
-                  variant="flat"
-                  size="sm"
-                  className="h-5 px-1.5"
-                >
-                  {KUN_GALGAME_RATING_PLAY_STATUS_MAP[rating.playStatus]}
-                </Chip>
-              </span>
-            ),
-            avatarProps: {
-              src: rating.user.avatar,
-              size: 'sm'
-            }
-          }}
+              name: rating.user.name,
+              description: (
+                <span className="flex items-center gap-1.5">
+                  <span>{formatTimeDifference(rating.created)}</span>
+                  <Chip
+                    color={getRecommendColor(rating.recommend)}
+                    variant="flat"
+                    size="sm"
+                    className="h-5 px-1.5"
+                  >
+                    {KUN_GALGAME_RATING_RECOMMEND_MAP[rating.recommend]}
+                  </Chip>
+                  <Chip
+                    color="secondary"
+                    variant="flat"
+                    size="sm"
+                    className="h-5 px-1.5"
+                  >
+                    {KUN_GALGAME_RATING_PLAY_STATUS_MAP[rating.playStatus]}
+                  </Chip>
+                </span>
+              ),
+              avatarProps: {
+                src: rating.user.avatar,
+                size: 'sm'
+              }
+            }}
           />
         </div>
         <div
@@ -171,9 +171,7 @@ export const RatingCard = ({
       </CardHeader>
 
       <CardBody
-        className={
-          rating.shortSummary ? 'py-2 space-y-2' : 'pt-0 pb-1'
-        }
+        className={rating.shortSummary ? 'py-2 space-y-2' : 'pt-0 pb-1'}
       >
         {rating.shortSummary && (
           <>
