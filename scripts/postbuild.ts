@@ -1,5 +1,5 @@
 import { execSync } from 'child_process'
-import { mkdir, readdir, copyFile } from 'fs/promises'
+import { mkdir, readdir, copyFile, stat } from 'fs/promises'
 import path from 'path'
 
 const copyDirectory = async (src: string, dest: string): Promise<void> => {
@@ -33,6 +33,10 @@ const copyRuntimeFile = async (src: string, dest: string): Promise<void> => {
   }
 }
 
+const assertExists = async (targetPath: string) => {
+  await stat(targetPath)
+}
+
 const copyFiles = async () => {
   try {
     execSync('pnpm build:sitemap', { stdio: 'inherit' })
@@ -42,6 +46,11 @@ const copyFiles = async () => {
     await copyDirectory('server/image', '.next/standalone/server/image')
     await copyDirectory('posts', '.next/standalone/posts')
     await copyRuntimeFile('config/redirect.json', '.next/standalone/config/redirect.json')
+    await assertExists('.next/standalone/public/favicon.webp')
+    await assertExists('.next/standalone/public/sooner/こじかひわ.webp')
+    await assertExists('.next/standalone/server/image/auth/white')
+    await assertExists('.next/standalone/posts')
+    await assertExists('.next/standalone/config/redirect.json')
 
     console.log('Files copied successfully.')
   } catch (error) {

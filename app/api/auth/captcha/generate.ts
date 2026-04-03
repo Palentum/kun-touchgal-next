@@ -2,6 +2,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import crypto from 'crypto'
 import { setKv } from '~/lib/redis'
+import { resolveRuntimeDirectory } from '~/lib/runtimePaths'
 import { readImageBase64, shuffleKunArray } from './_utils'
 
 const IMAGES_PER_CAPTCHA = 4
@@ -9,8 +10,8 @@ const MIN_WHITE_HAIR_IMAGES = 1
 const MAX_WHITE_HAIR_IMAGES = 3
 
 export const generateCaptcha = async () => {
-  const whiteHairPath = path.join(process.cwd(), 'server/image/auth/white')
-  const otherHairPath = path.join(process.cwd(), 'server/image/auth/other')
+  const whiteHairPath = resolveRuntimeDirectory('server/image/auth/white')
+  const otherHairPath = resolveRuntimeDirectory('server/image/auth/other')
 
   const whiteHairFiles = await fs.readdir(whiteHairPath)
   const otherHairFiles = await fs.readdir(otherHairPath)

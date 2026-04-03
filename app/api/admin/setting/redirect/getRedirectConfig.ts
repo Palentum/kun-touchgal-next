@@ -1,6 +1,6 @@
-import path from 'path'
 import { readFile } from 'fs/promises'
 import { getKv, setKv } from '~/lib/redis'
+import { resolveRuntimeFile } from '~/lib/runtimePaths'
 import type { AdminRedirectConfig } from '~/types/api/admin'
 
 const REDIS_KEY = 'admin:config:redirect'
@@ -11,7 +11,7 @@ export const getRedirectConfig = async () => {
     return JSON.parse(redirectJson) as AdminRedirectConfig
   }
 
-  const configPath = path.join(process.cwd(), 'config/redirect.json')
+  const configPath = resolveRuntimeFile('config/redirect.json')
   const redirectJsonFile = (await readFile(
     configPath,
     'utf8'

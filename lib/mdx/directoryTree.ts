@@ -3,8 +3,9 @@ import path from 'path'
 import matter from 'gray-matter'
 import { docDirectoryLabelMap } from '~/constants/doc'
 import type { KunTreeNode } from './types'
+import { resolveRuntimeDirectory } from '~/lib/runtimePaths'
 
-const POSTS_PATH = path.join(process.cwd(), 'posts')
+const POSTS_PATH = resolveRuntimeDirectory('posts')
 
 export const getDirectoryTree = (): KunTreeNode => {
   const buildTree = (

@@ -4,8 +4,9 @@ import matter from 'gray-matter'
 import { markdownToText } from '~/utils/markdownToText'
 import type { KunPostMetadata } from './types'
 import type { KunBlog, KunFrontmatter } from './types'
+import { resolveRuntimeDirectory } from '~/lib/runtimePaths'
 
-const POSTS_PATH = path.join(process.cwd(), 'posts')
+const POSTS_PATH = resolveRuntimeDirectory('posts')
 
 export const getAllPosts = () => {
   const posts: KunPostMetadata[] = []

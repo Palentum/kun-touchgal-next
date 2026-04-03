@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
+import { resolveRuntimeDirectory } from '~/lib/runtimePaths'
 
 export interface HomeCarouselMetadata {
   title: string
@@ -14,7 +15,7 @@ export interface HomeCarouselMetadata {
   link: string
 }
 
-const POSTS_PATH = path.join(process.cwd(), 'posts')
+const POSTS_PATH = resolveRuntimeDirectory('posts')
 
 export const getKunPosts = (): HomeCarouselMetadata[] => {
   if (!fs.existsSync(POSTS_PATH)) {
