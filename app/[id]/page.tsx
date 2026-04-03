@@ -7,6 +7,7 @@ import {
   kunUpdatePatchViewsActions
 } from './actions'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
+import { after } from 'next/server'
 import type { Metadata } from 'next'
 
 export const revalidate = 120
@@ -39,8 +40,7 @@ export default async function Kun({ params }: Props) {
   const [patch, intro, payload] = await Promise.all([
     kunGetPatchActions({ uniqueId: id }),
     kunGetPatchIntroductionActions({ uniqueId: id }),
-    verifyHeaderCookie(),
-    kunUpdatePatchViewsActions({ uniqueId: id })
+    verifyHeaderCookie()
   ])
   if (typeof patch === 'string') {
     return <ErrorComponent error={patch} />
@@ -48,6 +48,8 @@ export default async function Kun({ params }: Props) {
   if (typeof intro === 'string') {
     return <ErrorComponent error={intro} />
   }
+
+  after(() => kunUpdatePatchViewsActions({ uniqueId: id }))
 
   return (
     <div className="container py-6 mx-auto space-y-6">
