@@ -8,6 +8,16 @@
   width: 100%;
 }
 
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+.yarl__container img {
+  -webkit-user-drag: auto;
+  user-drag: auto;
+}
+
 /** TODO: **/
 * {
   font-family:
