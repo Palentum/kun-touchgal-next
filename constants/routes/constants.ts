@@ -43,10 +43,12 @@ export const keyLabelMap: Record<string, string> = {
   '/tag': '游戏标签',
   '/tag/[id]': '标签详情',
   '/user/[id]/comment': '用户评论',
-  '/user/[id]/contribute': '用户贡献',
   '/user/[id]/favorite': '用户收藏',
-  '/user/[id]/galgame': '用户 Galgame',
+  '/user/[id]/rating': '用户评价',
   '/user/[id]/resource': '用户资源',
+  '/auth/email-notice': '退订邮件通知',
+  '/login/2fa': '两步验证',
+  '/message/chat/[conversationId]': '私聊消息',
   '/ranking': 'Galgame 排行'
 }
 

@@ -27,9 +27,27 @@ export const KunNavigationBreadcrumb = () => {
   const pathname = usePathname()
   const params = useParams()
 
-  useEffect(() => {
+  const updateBreadcrumb = () => {
     const newItem = createBreadcrumbItem(pathname, params)
     setItems([...initialItem, ...newItem])
+  }
+
+  useEffect(() => {
+    updateBreadcrumb()
+
+    const titleEl = document.querySelector('title')
+    if (!titleEl) return
+
+    const observer = new MutationObserver(() => {
+      updateBreadcrumb()
+    })
+    observer.observe(titleEl, {
+      childList: true,
+      characterData: true,
+      subtree: true
+    })
+
+    return () => observer.disconnect()
   }, [pathname])
 
   const hideBreadcrumbRoutes = [

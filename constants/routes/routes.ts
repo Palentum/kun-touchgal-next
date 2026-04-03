@@ -3,7 +3,9 @@ import {
   isTagPath,
   isUserPath,
   isDocPath,
-  isCompanyPath
+  isCompanyPath,
+  isMessageNoticePath,
+  isMessageChatConversationPath
 } from './matcher'
 import { keyLabelMap } from './constants'
 import { kunMoyuMoe } from '~/config/moyu-moe'
@@ -76,7 +78,7 @@ export const getKunPathLabel = (pathname: string): string => {
   }
 
   for (const key in keyLabelMap) {
-    const regex = new RegExp(`^${key.replace(/\[id\]/g, '\\d+')}$`)
+    const regex = new RegExp(`^${key.replace(/\[\w+\]/g, '\\d+')}$`)
     if (regex.test(pathname)) {
       return keyLabelMap[key]
     }
@@ -149,7 +151,34 @@ export const createBreadcrumbItem = (
       label: '游戏会社',
       href: '/company'
     }
-    return [allCompanyRoute, defaultItem]
+    const companyName =
+      pageTitle.match(/所属会社为 (.+?) 的 Galgame/)?.[1] ?? pageTitle
+    return [
+      allCompanyRoute,
+      { ...defaultItem, label: companyName }
+    ]
+  }
+  if (isMessageNoticePath(pathname)) {
+    const noticeRoute: KunBreadcrumbItem = {
+      key: '/message/notice',
+      label: '通知消息',
+      href: '/message/notice'
+    }
+    return [noticeRoute, defaultItem]
+  }
+  if (isMessageChatConversationPath(pathname)) {
+    const chatRoute: KunBreadcrumbItem = {
+      key: '/message/chat',
+      label: '私聊消息',
+      href: '/message/chat'
+    }
+    return [
+      chatRoute,
+      {
+        ...defaultItem,
+        label: pageTitle
+      }
+    ]
   }
 
   return [defaultItem]

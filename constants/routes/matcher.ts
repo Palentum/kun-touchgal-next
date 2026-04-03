@@ -17,3 +17,13 @@ export const isDocPath = (pathname: string): boolean => {
 export const isCompanyPath = (pathname: string): boolean => {
   return /^\/company\/\d+/.test(pathname)
 }
+
+export const isMessageNoticePath = (pathname: string): boolean => {
+  return ['/message/follow', '/message/system', '/message/mention'].includes(
+    pathname
+  )
+}
+
+export const isMessageChatConversationPath = (pathname: string): boolean => {
+  return /^\/message\/chat\/\d+$/.test(pathname)
+}

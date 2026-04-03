@@ -143,6 +143,10 @@ export const ChatContainer = ({
   )
 
   useEffect(() => {
+    document.title = `与${otherUser.name}的私聊 - TouchGal`
+  }, [otherUser.name])
+
+  useEffect(() => {
     const markAsRead = async () => {
       await kunFetchPut(`/message/conversation/${conversationId}/read`)
     }
