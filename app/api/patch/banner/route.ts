@@ -19,7 +19,7 @@ const purgeCache = async (patchId: number) => {
   ])
 }
 
-export const updatePatchBanner = async (
+const updatePatchBanner = async (
   image: ArrayBuffer,
   patchId: number,
   originalImage?: ArrayBuffer

@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
 import { rankingSchema } from '~/validations/ranking'
-import { getRanking } from '~/app/api/ranking/route'
+import { getRanking } from '~/app/api/ranking/service'
 import { getNSFWHeader } from '~/utils/actions/getNSFWHeader'
 
 export const kunGetRankingActions = async (

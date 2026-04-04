@@ -5,7 +5,7 @@ import { setKUNGalgameTask } from '~/server/cron'
 setKUNGalgameTask()
 
 import { getNSFWHeader } from '~/utils/actions/getNSFWHeader'
-import { getHomeData } from '~/app/api/home/route'
+import { getHomeData } from '~/app/api/home/service'
 
 export const kunGetActions = async () => {
   const nsfwEnable = await getNSFWHeader()

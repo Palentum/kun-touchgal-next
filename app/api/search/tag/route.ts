@@ -4,7 +4,7 @@ import { kunParsePostBody } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { searchTagSchema } from '~/validations/search'
 
-export const searchTag = async (input: z.infer<typeof searchTagSchema>) => {
+const searchTag = async (input: z.infer<typeof searchTagSchema>) => {
   const { query } = input
 
   const data = await prisma.patch_tag.findMany({

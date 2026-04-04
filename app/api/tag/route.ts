@@ -17,7 +17,7 @@ import { updateTag } from './update'
 import { getTagById } from './get'
 import { deleteTag } from './delete'
 
-export const tagIdSchema = z.object({
+const tagIdSchema = z.object({
   tagId: z.coerce.number().min(1).max(9999999)
 })
 

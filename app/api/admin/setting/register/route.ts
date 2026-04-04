@@ -4,14 +4,7 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { adminUpdateDisableRegisterSchema } from '~/validations/admin'
 import { delKv, getKv, setKv } from '~/lib/redis'
 import { KUN_PATCH_DISABLE_REGISTER_KEY } from '~/config/redis'
-
-export const getDisableRegisterStatus = async () => {
-  const isDisableKunPatchRegister = await getKv(KUN_PATCH_DISABLE_REGISTER_KEY)
-  return {
-    disableRegister: !!isDisableKunPatchRegister
-  }
-}
-
+import { getDisableRegisterStatus } from './service'
 export const GET = async (req: NextRequest) => {
   const payload = await verifyHeaderCookie(req)
   if (!payload) {

@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
 import { getPatchById } from '~/app/api/patch/get'
-import { getPatchIntroduction } from '~/app/api/patch/introduction/route'
+import { getPatchIntroduction } from '~/app/api/patch/introduction/service'
 import { updatePatchViews } from '~/app/api/patch/views/put'
 
 const uniqueIdSchema = z.object({

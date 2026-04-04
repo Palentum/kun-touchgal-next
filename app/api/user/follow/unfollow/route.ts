@@ -8,7 +8,7 @@ const uidSchema = z.object({
   uid: z.coerce.number({ message: '请输入合法的用户 ID' }).min(1).max(9999999)
 })
 
-export const unfollowUser = async (uid: number, currentUserUid: number) => {
+const unfollowUser = async (uid: number, currentUserUid: number) => {
   if (uid === currentUserUid) {
     return '您不能取消关注自己'
   }

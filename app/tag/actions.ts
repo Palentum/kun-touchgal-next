@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
 import { getTagSchema } from '~/validations/tag'
-import { getTag } from '~/app/api/tag/all/route'
+import { getTag } from '~/app/api/tag/all/service'
 
 export const kunGetActions = async (params: z.infer<typeof getTagSchema>) => {
   const input = safeParseSchema(getTagSchema, params)

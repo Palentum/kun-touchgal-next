@@ -5,7 +5,7 @@ import { prisma } from '~/prisma/index'
 import { uploadIntroductionImage } from './_upload'
 import { imageSchema } from '~/validations/edit'
 
-export const uploadImage = async (uid: number, image: ArrayBuffer) => {
+const uploadImage = async (uid: number, image: ArrayBuffer) => {
   const user = await prisma.user.findUnique({
     where: { id: uid }
   })

@@ -12,40 +12,7 @@ import {
   kunParsePutBody
 } from '../utils/parseQuery'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
-
-export const getCompanyById = async (
-  input: z.infer<typeof getCompanyByIdSchema>
-) => {
-  const { companyId } = input
-
-  const company = await prisma.patch_company.findUnique({
-    where: { id: companyId },
-    select: {
-      id: true,
-      name: true,
-      count: true,
-      alias: true,
-      introduction: true,
-      primary_language: true,
-      official_website: true,
-      parent_brand: true,
-      created: true,
-      user: {
-        select: {
-          id: true,
-          name: true,
-          avatar: true
-        }
-      }
-    }
-  })
-  if (!company) {
-    return '未找到公司'
-  }
-
-  return company
-}
-
+import { getCompanyById } from './service'
 export const GET = async (req: NextRequest) => {
   const input = kunParseGetQuery(req, getCompanyByIdSchema)
   if (typeof input === 'string') {
@@ -56,9 +23,7 @@ export const GET = async (req: NextRequest) => {
   return NextResponse.json(response)
 }
 
-export const rewriteCompany = async (
-  input: z.infer<typeof updateCompanySchema>
-) => {
+const rewriteCompany = async (input: z.infer<typeof updateCompanySchema>) => {
   const {
     companyId,
     name,
@@ -120,7 +85,7 @@ export const PUT = async (req: NextRequest) => {
   return NextResponse.json(response)
 }
 
-export const createCompany = async (
+const createCompany = async (
   input: z.infer<typeof createCompanySchema>,
   uid: number
 ) => {

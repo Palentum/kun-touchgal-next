@@ -5,7 +5,7 @@ import { getUserInfoSchema } from '~/validations/user'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
 import { getNSFWHeader } from '~/utils/actions/getNSFWHeader'
-import { getUserPatchResource } from '~/app/api/user/profile/resource/route'
+import { getUserPatchResource } from '~/app/api/user/profile/resource/service'
 
 export const kunGetActions = async (
   params: z.infer<typeof getUserInfoSchema>

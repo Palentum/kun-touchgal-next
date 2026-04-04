@@ -5,7 +5,7 @@ import { prisma } from '~/prisma/index'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { patchTagChangeSchema } from '~/validations/patch'
 
-export const handleAddPatchTag = async (
+const handleAddPatchTag = async (
   input: z.infer<typeof patchTagChangeSchema>
 ) => {
   const { patchId, tagId } = input
@@ -41,7 +41,7 @@ export const POST = async (req: NextRequest) => {
   return NextResponse.json(response)
 }
 
-export const handleRemovePatchTag = async (
+const handleRemovePatchTag = async (
   input: z.infer<typeof patchTagChangeSchema>
 ) => {
   const { patchId, tagId } = input

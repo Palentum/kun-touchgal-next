@@ -11,10 +11,7 @@ import { prisma } from '~/prisma/index'
 import { getRedirectConfig } from '~/app/api/admin/setting/redirect/getRedirectConfig'
 import type { UserState } from '~/store/userStore'
 
-export const register = async (
-  input: z.infer<typeof registerSchema>,
-  ip: string
-) => {
+const register = async (input: z.infer<typeof registerSchema>, ip: string) => {
   const { name, email, code, password } = input
 
   const isCodeValid = await verifyVerificationCode(email, code)

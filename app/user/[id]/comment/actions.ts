@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { getUserInfoSchema } from '~/validations/user'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
-import { getUserComment } from '~/app/api/user/profile/comment/route'
+import { getUserComment } from '~/app/api/user/profile/comment/service'
 
 export const kunGetActions = async (
   params: z.infer<typeof getUserInfoSchema>

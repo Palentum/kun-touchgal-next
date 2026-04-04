@@ -21,7 +21,7 @@ const purgeCache = async (uid: number) => {
   return purgeCloudflareCache([avatarUrl, avatarMiniUrl])
 }
 
-export const updateUserAvatar = async (uid: number, avatar: ArrayBuffer) => {
+const updateUserAvatar = async (uid: number, avatar: ArrayBuffer) => {
   const user = await prisma.user.findUnique({
     where: { id: uid }
   })

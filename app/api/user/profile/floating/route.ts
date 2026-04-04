@@ -9,7 +9,7 @@ const uidSchema = z.object({
   uid: z.coerce.number().min(1).max(9999999)
 })
 
-export const getUserFloatingProfile = async (
+const getUserFloatingProfile = async (
   input: z.infer<typeof uidSchema>,
   currentUserUid: number
 ) => {

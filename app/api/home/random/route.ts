@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '~/prisma/index'
 import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 
-export const getRandomUniqueId = async (
+const getRandomUniqueId = async (
   nsfwEnable: Record<string, string | undefined>
 ) => {
   const totalArticles = await prisma.patch.findMany({

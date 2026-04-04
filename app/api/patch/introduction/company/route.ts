@@ -5,7 +5,7 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { prisma } from '~/prisma'
 import { patchCompanyChangeSchema } from '~/validations/patch'
 
-export const handlePatchCompanyAction = (type: 'add' | 'delete') => {
+const handlePatchCompanyAction = (type: 'add' | 'delete') => {
   const isAdd = type === 'add'
   return async (input: z.infer<typeof patchCompanyChangeSchema>) => {
     const { patchId, companyId } = input

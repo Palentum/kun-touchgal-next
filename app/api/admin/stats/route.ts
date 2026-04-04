@@ -12,7 +12,7 @@ const daysSchema = z.object({
     .max(60, { message: '最多展示 60 天的数据' })
 })
 
-export const getOverviewData = async (days: number): Promise<OverviewData> => {
+const getOverviewData = async (days: number): Promise<OverviewData> => {
   const time = new Date()
   time.setDate(time.getDate() - days)
 

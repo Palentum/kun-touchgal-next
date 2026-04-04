@@ -13,7 +13,7 @@ import {
   buildGalgameWhere
 } from '../utils/galgameQuery'
 
-export const searchGalgame = async (
+const searchGalgame = async (
   input: z.infer<typeof searchSchema>,
   nsfwEnable: Record<string, string | undefined>
 ) => {

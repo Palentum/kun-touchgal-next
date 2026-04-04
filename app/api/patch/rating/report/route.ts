@@ -10,7 +10,7 @@ import {
   KUN_GALGAME_RATING_RECOMMEND_MAP
 } from '~/constants/galgame'
 
-export const createReport = async (
+const createReport = async (
   input: z.infer<typeof createPatchRatingReportSchema>,
   uid: number
 ) => {

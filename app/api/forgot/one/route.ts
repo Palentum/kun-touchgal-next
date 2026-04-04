@@ -5,7 +5,7 @@ import { stepOneSchema } from '~/validations/forgot'
 import { prisma } from '~/prisma/index'
 import { sendVerificationCodeEmail } from '~/app/api/utils/sendVerificationCodeEmail'
 
-export const stepOne = async (
+const stepOne = async (
   input: z.infer<typeof stepOneSchema>,
   headers: Headers
 ) => {

@@ -9,7 +9,7 @@ const ratingIdSchema = z.object({
   ratingId: z.coerce.number({ message: 'ID 不正确' }).min(1).max(9999999)
 })
 
-export const toggleRatingLike = async (
+const toggleRatingLike = async (
   input: z.infer<typeof ratingIdSchema>,
   uid: number
 ) => {

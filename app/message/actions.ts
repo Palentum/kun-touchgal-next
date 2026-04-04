@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
 import { getMessageSchema } from '~/validations/message'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
-import { getMessage } from '~/app/api/message/all/route'
+import { getMessage } from '~/app/api/message/all/service'
 
 export const kunGetActions = async (
   params: z.infer<typeof getMessageSchema>

@@ -8,7 +8,7 @@ import { prisma } from '~/prisma/index'
 import { getKv } from '~/lib/redis'
 import { KUN_PATCH_DISABLE_REGISTER_KEY } from '~/config/redis'
 
-export const sendRegisterCode = async (
+const sendRegisterCode = async (
   input: z.infer<typeof sendRegisterEmailVerificationCodeSchema>,
   headers: Headers
 ) => {

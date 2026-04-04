@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
 import { galgameSchema } from '~/validations/galgame'
-import { getGalgame } from '~/app/api/galgame/route'
+import { getGalgame } from '~/app/api/galgame/service'
 import { getNSFWHeader } from '~/utils/actions/getNSFWHeader'
 
 export const kunGetActions = async (params: z.infer<typeof galgameSchema>) => {

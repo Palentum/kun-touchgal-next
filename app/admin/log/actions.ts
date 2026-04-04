@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
 import { adminPaginationSchema } from '~/validations/admin'
-import { getLog } from '~/app/api/admin/log/route'
+import { getLog } from '~/app/api/admin/log/service'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 
 export const kunGetActions = async (

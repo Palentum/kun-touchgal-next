@@ -10,9 +10,7 @@ const commentIdSchema = z.object({
     .max(9999999)
 })
 
-export const getCommentMarkdown = async (
-  input: z.infer<typeof commentIdSchema>
-) => {
+const getCommentMarkdown = async (input: z.infer<typeof commentIdSchema>) => {
   const { commentId } = input
 
   const comment = await prisma.patch_comment.findUnique({

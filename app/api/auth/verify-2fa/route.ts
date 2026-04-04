@@ -11,7 +11,7 @@ import { verify2FA } from '~/app/api/utils/verify2FA'
 import { verifyLogin2FASchema } from '~/validations/auth'
 import type { UserState } from '~/store/userStore'
 
-export const verifyLogin2FA = async (
+const verifyLogin2FA = async (
   input: z.infer<typeof verifyLogin2FASchema>,
   tempToken: string,
   uid: number

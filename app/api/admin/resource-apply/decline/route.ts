@@ -8,7 +8,7 @@ import { declinePatchResourceSchema } from '~/validations/admin'
 import { deleteFileFromS3 } from '~/lib/s3'
 import { recalcPatchType } from '~/app/api/patch/resource/_helper'
 
-export const declinePatchResource = async (
+const declinePatchResource = async (
   input: z.infer<typeof declinePatchResourceSchema>,
   adminUid: number
 ) => {

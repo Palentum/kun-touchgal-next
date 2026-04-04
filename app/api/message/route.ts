@@ -5,7 +5,7 @@ import { createMessage } from '~/app/api/utils/message'
 import { createMessageSchema } from '~/validations/message'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 
-export const create = async (
+const create = async (
   input: z.infer<typeof createMessageSchema>,
   uid: number
 ) => {

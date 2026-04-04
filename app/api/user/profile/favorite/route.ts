@@ -7,7 +7,7 @@ import { GalgameCardSelectField } from '~/constants/api/select'
 import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 
-export const getUserFavorite = async (
+const getUserFavorite = async (
   input: z.infer<typeof getUserInfoSchema>,
   nsfwEnable: Record<string, string | undefined>
 ) => {

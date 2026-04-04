@@ -3,7 +3,7 @@ import { prisma } from '~/prisma/index'
 import { createMessage } from '~/app/api/utils/message'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 
-export const applyForCreator = async (uid: number) => {
+const applyForCreator = async (uid: number) => {
   const user = await prisma.user.findUnique({
     where: { id: uid },
     include: {

@@ -12,7 +12,7 @@ const commentIdSchema = z.object({
     .max(9999999)
 })
 
-export const toggleCommentLike = async (
+const toggleCommentLike = async (
   input: z.infer<typeof commentIdSchema>,
   uid: number
 ) => {

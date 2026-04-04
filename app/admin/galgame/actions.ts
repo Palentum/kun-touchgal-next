@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
 import { adminPaginationSchema } from '~/validations/admin'
-import { getGalgame } from '~/app/api/admin/galgame/route'
+import { getGalgame } from '~/app/api/admin/galgame/service'
 import { getNSFWHeader } from '~/utils/actions/getNSFWHeader'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 

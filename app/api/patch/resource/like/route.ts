@@ -12,7 +12,7 @@ const resourceIdSchema = z.object({
     .max(9999999)
 })
 
-export const toggleResourceLike = async (
+const toggleResourceLike = async (
   input: z.infer<typeof resourceIdSchema>,
   uid: number
 ) => {

@@ -8,9 +8,7 @@ import { sliceUntilDelimiterFromEnd } from '~/app/api/utils/sliceUntilDelimiterF
 import { findRelatedReportIds, resolveReportMeta } from '../_meta'
 import { recomputePatchRatingStat } from '~/app/api/patch/rating/stat'
 
-export const handleReport = async (
-  input: z.infer<typeof adminHandleReportSchema>
-) => {
+const handleReport = async (input: z.infer<typeof adminHandleReportSchema>) => {
   const message = await prisma.user_message.findUnique({
     where: { id: input.messageId }
   })

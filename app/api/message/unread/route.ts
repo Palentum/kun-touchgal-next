@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '~/prisma/index'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 
-export const getMessage = async (uid: number) => {
+const getMessage = async (uid: number) => {
   const [unreadNotification, unreadConversation] = await Promise.all([
     prisma.user_message.findFirst({
       where: { recipient_id: uid, status: 0 }

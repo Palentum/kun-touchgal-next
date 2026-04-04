@@ -4,7 +4,7 @@ import { kunParsePutBody } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { updatePatchResourceStatsSchema } from '~/validations/patch'
 
-export const downloadStats = async (
+const downloadStats = async (
   input: z.infer<typeof updatePatchResourceStatsSchema>
 ) => {
   return await prisma.$transaction(async (prisma) => {

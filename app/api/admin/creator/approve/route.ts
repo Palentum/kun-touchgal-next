@@ -6,7 +6,7 @@ import { createMessage } from '~/app/api/utils/message'
 import { kunParsePutBody } from '~/app/api/utils/parseQuery'
 import { approveCreatorSchema } from '~/validations/admin'
 
-export const approveCreator = async (
+const approveCreator = async (
   input: z.infer<typeof approveCreatorSchema>,
   adminUid: number
 ) => {

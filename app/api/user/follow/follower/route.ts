@@ -6,7 +6,7 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { getUserFollowStatusSchema } from '~/validations/user'
 import type { UserFollow } from '~/types/api/user'
 
-export const getUserFollower = async (
+const getUserFollower = async (
   input: z.infer<typeof getUserFollowStatusSchema>,
   currentUserUid: number | undefined
 ) => {

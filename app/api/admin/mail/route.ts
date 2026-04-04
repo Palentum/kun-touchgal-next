@@ -6,7 +6,7 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { adminSendEmailSchema } from '~/validations/admin'
 import { sendEmailHTML } from './_send'
 
-export const sendBulkEmail = async (
+const sendBulkEmail = async (
   input: z.infer<typeof adminSendEmailSchema>,
   uid: number
 ) => {

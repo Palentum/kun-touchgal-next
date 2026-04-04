@@ -1,7 +1,7 @@
 'use server'
 
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
-import { getApplyStatus } from '~/app/api/apply/status/route'
+import { getApplyStatus } from '~/app/api/apply/status/service'
 
 export const kunGetActions = async () => {
   const payload = await verifyHeaderCookie()

@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { getUserInfoSchema } from '~/validations/user'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
-import { getUserPatchRating } from '~/app/api/user/profile/rating/route'
+import { getUserPatchRating } from '~/app/api/user/profile/rating/service'
 
 export const kunGetActions = async (
   params: z.infer<typeof getUserInfoSchema>

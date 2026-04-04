@@ -13,7 +13,7 @@ import { checkKunCaptchaExist } from '~/app/api/utils/verifyKunCaptcha'
 import { getRedirectConfig } from '~/app/api/admin/setting/redirect/getRedirectConfig'
 import type { UserState } from '~/store/userStore'
 
-export const login = async (
+const login = async (
   input: z.infer<typeof loginSchema>
 ): Promise<UserState | ({ require2FA: boolean } & KunUser) | string> => {
   const { name, password, captcha } = input

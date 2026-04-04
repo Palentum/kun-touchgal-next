@@ -6,7 +6,7 @@ import { prisma } from '~/prisma/index'
 import { hashPassword } from '~/app/api/utils/algorithm'
 import { verifyVerificationCode } from '~/app/api/utils/verifyVerificationCode'
 
-export const stepTwo = async (input: z.infer<typeof stepTwoSchema>) => {
+const stepTwo = async (input: z.infer<typeof stepTwoSchema>) => {
   if (input.newPassword !== input.confirmPassword) {
     return '两次密码输入不一致'
   }

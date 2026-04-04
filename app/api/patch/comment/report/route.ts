@@ -6,7 +6,7 @@ import { createPatchCommentReportSchema } from '~/validations/patch'
 import { createMessage } from '~/app/api/utils/message'
 import { prisma } from '~/prisma'
 
-export const createReport = async (
+const createReport = async (
   input: z.infer<typeof createPatchCommentReportSchema>,
   uid: number
 ) => {

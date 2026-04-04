@@ -7,8 +7,8 @@ import {
   getConversationMessagesSchema
 } from '~/validations/conversation'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
-import { getConversations } from '~/app/api/message/conversation/route'
-import { getConversationMessages } from '~/app/api/message/conversation/[id]/route'
+import { getConversations } from '~/app/api/message/conversation/service'
+import { getConversationMessages } from '~/app/api/message/conversation/[id]/service'
 
 export const kunGetConversationsAction = async (
   params: z.infer<typeof getConversationsSchema>

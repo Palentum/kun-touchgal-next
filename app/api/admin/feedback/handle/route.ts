@@ -7,7 +7,7 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { sliceUntilDelimiterFromEnd } from '~/app/api/utils/sliceUntilDelimiterFromEnd'
 import { createMessage } from '~/app/api/utils/message'
 
-export const handleFeedback = async (
+const handleFeedback = async (
   input: z.infer<typeof adminHandleFeedbackSchema>
 ) => {
   const message = await prisma.user_message.findUnique({

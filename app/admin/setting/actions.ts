@@ -1,7 +1,7 @@
 'use server'
 
 import { getRedirectConfig } from '~/app/api/admin/setting/redirect/getRedirectConfig'
-import { getDisableRegisterStatus } from '~/app/api/admin/setting/register/route'
+import { getDisableRegisterStatus } from '~/app/api/admin/setting/register/service'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 
 export const kunGetRedirectConfigActions = async () => {

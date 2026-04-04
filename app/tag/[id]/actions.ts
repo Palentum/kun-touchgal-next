@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
 import { getTagById } from '~/app/api/tag/get'
-import { getPatchByTag } from '~/app/api/tag/galgame/route'
+import { getPatchByTag } from '~/app/api/tag/galgame/service'
 import { getNSFWHeader } from '~/utils/actions/getNSFWHeader'
 import { getPatchByTagSchema, getTagByIdSchema } from '~/validations/tag'
 

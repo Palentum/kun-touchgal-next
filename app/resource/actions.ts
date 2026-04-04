@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
 import { resourceSchema } from '~/validations/resource'
-import { getPatchResource } from '~/app/api/resource/route'
+import { getPatchResource } from '~/app/api/resource/service'
 import { getNSFWHeader } from '~/utils/actions/getNSFWHeader'
 
 export const kunGetActions = async (params: z.infer<typeof resourceSchema>) => {

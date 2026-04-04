@@ -7,7 +7,7 @@ import { kunParsePutBody } from '~/app/api/utils/parseQuery'
 import { approvePatchResourceSchema } from '~/validations/admin'
 import { recalcPatchType } from '~/app/api/patch/resource/_helper'
 
-export const approvePatchResource = async (
+const approvePatchResource = async (
   input: z.infer<typeof approvePatchResourceSchema>,
   adminUid: number
 ) => {

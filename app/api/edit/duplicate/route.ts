@@ -5,7 +5,7 @@ import { prisma } from '~/prisma/index'
 import { duplicateSchema } from '~/validations/edit'
 import type { Prisma } from '~/prisma/generated/prisma/client'
 
-export const duplicate = async (input: z.infer<typeof duplicateSchema>) => {
+const duplicate = async (input: z.infer<typeof duplicateSchema>) => {
   const vndbId = input.vndbId?.toLowerCase()
   const vndbRelationId = input.vndbRelationId?.toLowerCase()
   const bangumiId = input.bangumiId ? Number(input.bangumiId) : undefined

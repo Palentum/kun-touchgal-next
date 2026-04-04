@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '~/prisma/index'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 
-export const markConversationAsRead = async (
-  conversationId: number,
-  uid: number
-) => {
+const markConversationAsRead = async (conversationId: number, uid: number) => {
   const conversation = await prisma.user_conversation.findUnique({
     where: { id: conversationId }
   })

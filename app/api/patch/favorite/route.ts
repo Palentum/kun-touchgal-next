@@ -10,7 +10,7 @@ import {
   invalidatePatchContentCache
 } from '../cache'
 
-export const togglePatchFavorite = async (
+const togglePatchFavorite = async (
   input: z.infer<typeof togglePatchFavoriteSchema>,
   uid: number
 ) => {

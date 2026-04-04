@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { createConversationSchema } from '~/validations/conversation'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
-import { checkConversation } from '../route'
+import { checkConversation } from '../service'
 
 export const GET = async (req: NextRequest) => {
   const input = kunParseGetQuery(req, createConversationSchema)

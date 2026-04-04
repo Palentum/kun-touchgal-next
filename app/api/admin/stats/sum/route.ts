@@ -3,7 +3,7 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { prisma } from '~/prisma/index'
 import type { SumData } from '~/types/api/admin'
 
-export const getSumData = async (): Promise<SumData> => {
+const getSumData = async (): Promise<SumData> => {
   const [
     userCount,
     galgameCount,
