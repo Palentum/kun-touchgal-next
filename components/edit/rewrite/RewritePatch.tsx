@@ -84,7 +84,7 @@ export const RewritePatch = () => {
             data={data}
             setData={setData}
             errors={errors.vndbRelationId}
-            enableDuplicateCheck={false}
+            excludeId={data.id}
           />
           <BangumiInput
             data={data}

@@ -27,13 +27,15 @@ interface Props<T extends PatchFormDataShape> {
   data: T
   setData: (data: T) => void
   enableDuplicateCheck?: boolean
+  excludeId?: number
 }
 
 export const VNDBRelationInput = <T extends PatchFormDataShape>({
   errors,
   data,
   setData,
-  enableDuplicateCheck = true
+  enableDuplicateCheck = true,
+  excludeId
 }: Props<T>) => {
   const [preview, setPreview] = useState<PreviewData | null>(null)
 
@@ -81,7 +83,8 @@ export const VNDBRelationInput = <T extends PatchFormDataShape>({
           vndbId,
           vndbRelationId: normalized,
           dlsiteCode: data.dlsiteCode.trim().toUpperCase(),
-          title: data.name.trim()
+          title: data.name.trim(),
+          ...(excludeId ? { excludeId: String(excludeId) } : {})
         })
 
         if (typeof duplicateResult === 'string') {

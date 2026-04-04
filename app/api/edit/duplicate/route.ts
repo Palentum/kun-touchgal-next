@@ -16,17 +16,19 @@ export const duplicate = async (input: z.infer<typeof duplicateSchema>) => {
 
   const conditions: Prisma.patchWhereInput[] = []
 
-  if (vndbId && vndbRelationId) {
+  const hasCompositeVndbKey = Boolean(vndbId && vndbRelationId)
+
+  if (hasCompositeVndbKey) {
     conditions.push({
       AND: [{ vndb_id: vndbId }, { vndb_relation_id: vndbRelationId }]
     })
   }
 
-  if (vndbId) {
+  if (vndbId && !hasCompositeVndbKey) {
     conditions.push({ vndb_id: vndbId })
   }
 
-  if (vndbRelationId) {
+  if (vndbRelationId && !hasCompositeVndbKey) {
     conditions.push({ vndb_relation_id: vndbRelationId })
   }
 
