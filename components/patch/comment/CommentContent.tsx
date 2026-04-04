@@ -35,7 +35,7 @@ export const CommentContent = ({ comment }: Props) => {
       const videoRoot = createRoot(root)
       videoRoot.render(<KunExternalLink link={href}>{text}</KunExternalLink>)
     })
-  }, [isMounted])
+  }, [comment.content, isMounted])
 
   return (
     <div
@@ -43,7 +43,7 @@ export const CommentContent = ({ comment }: Props) => {
       dangerouslySetInnerHTML={{
         __html: DOMPurify.sanitize(comment.content)
       }}
-      className="kun-prose max-w-none"
+      className="kun-prose kun-comment-content max-w-none"
     />
   )
 }

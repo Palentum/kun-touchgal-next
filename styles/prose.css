@@ -118,6 +118,16 @@
   @apply rounded-lg shadow-md border border-default-200;
 }
 
+.kun-comment-content img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(100%, 32rem);
+  max-height: 24rem;
+  object-fit: contain;
+  margin: 0.75rem 0;
+}
+
 .kun-prose figure {
   @apply my-8;
 }
