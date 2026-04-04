@@ -14,20 +14,12 @@ export interface ParsedResourceLink {
 }
 
 const parseCodeFromSearchParams = (url: URL) => {
-  const code =
+  return (
     url.searchParams.get('pwd') ||
     url.searchParams.get('password') ||
     url.searchParams.get('code') ||
     ''
-
-  if (!code) {
-    return ''
-  }
-
-  url.searchParams.delete('pwd')
-  url.searchParams.delete('password')
-  url.searchParams.delete('code')
-  return code
+  )
 }
 
 const parseCodeFromText = (input: string) => {
@@ -54,9 +46,6 @@ export const parseResourceLink = (input: string): ParsedResourceLink => {
   try {
     const urlObject = new URL(url)
     code = parseCodeFromSearchParams(urlObject)
-    if (code) {
-      url = urlObject.toString().replace(/\?$/, '')
-    }
   } catch {
     // URL 解析失败时保留原始链接
   }
