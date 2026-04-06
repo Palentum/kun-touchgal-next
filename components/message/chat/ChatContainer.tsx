@@ -45,14 +45,16 @@ export const ChatContainer = ({
   const [hasMore, setHasMore] = useState(initialMessages.length < total)
   const [page, setPage] = useState(1)
   const [totalCount, setTotalCount] = useState(total)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const user = useUserStore((state) => state.user)
   const isInitialMount = useRef(true)
 
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'instant' })
+    const container = scrollContainerRef.current
+    if (container) {
+      container.scrollTop = container.scrollHeight
+    }
   }, [])
 
   const loadMoreMessages = useCallback(async () => {
@@ -232,7 +234,6 @@ export const ChatContainer = ({
                   }
                 />
               ))}
-              <div ref={messagesEndRef} />
             </>
           )}
         </div>
