@@ -203,6 +203,7 @@ export const UserFavorite = ({
                       page={page}
                       onPageChange={setPage}
                       isLoading={isPending}
+                      disableScrollToTop
                     />
                   </div>
                 )}

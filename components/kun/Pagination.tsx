@@ -10,13 +10,15 @@ interface Props {
   page: number
   onPageChange: (page: number) => void
   isLoading?: boolean
+  disableScrollToTop?: boolean
 }
 
 export const KunPagination = ({
   total,
   onPageChange,
   page,
-  isLoading = false
+  isLoading = false,
+  disableScrollToTop = false
 }: Props) => {
   const [isEditing, setIsEditing] = useState(false)
   const [inputValue, setInputValue] = useState(String(page))
@@ -26,7 +28,7 @@ export const KunPagination = ({
   }, [page])
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && !disableScrollToTop) {
       // Compatible FireFox Browser, because the render mechanism are difference
       setTimeout(() => {
         window.scrollTo({
@@ -35,7 +37,7 @@ export const KunPagination = ({
         })
       }, 0)
     }
-  }, [isLoading])
+  }, [isLoading, disableScrollToTop])
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= total) {
