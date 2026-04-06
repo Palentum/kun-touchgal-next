@@ -174,7 +174,7 @@ export const UserFavorite = ({
             </ModalHeader>
 
             <ModalBody>
-              <div className="space-y-3">
+              <div className="space-y-3 min-h-72">
                 {isPending ? (
                   <KunLoading hint="正在获取收藏数据..." />
                 ) : (
