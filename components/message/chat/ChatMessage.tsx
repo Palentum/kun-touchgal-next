@@ -198,7 +198,7 @@ export const ChatMessage = ({
         )}
       </div>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top">
         <ModalContent>
           <ModalHeader>编辑消息</ModalHeader>
           <ModalBody>
