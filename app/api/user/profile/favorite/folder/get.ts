@@ -3,7 +3,9 @@ import { prisma } from '~/prisma/index'
 import type { UserFavoritePatchFolder } from '~/types/api/user'
 
 const patchIdSchema = z.object({
-  patchId: z.coerce.number().min(1).max(9999999).optional()
+  patchId: z.coerce.number().min(1).max(9999999).optional(),
+  page: z.coerce.number().min(1).max(9999999).optional(),
+  limit: z.coerce.number().min(1).max(100).optional()
 })
 
 export const getFolders = async (
@@ -11,22 +13,34 @@ export const getFolders = async (
   pageUid: number,
   currentUserUid: number
 ) => {
-  const folders = await prisma.user_patch_favorite_folder.findMany({
-    where: {
-      user_id: pageUid,
-      is_public: pageUid !== currentUserUid ? true : undefined
-    },
-    include: {
-      patch: {
-        where: {
-          patch_id: input.patchId ?? 0
+  const where = {
+    user_id: pageUid,
+    is_public: pageUid !== currentUserUid ? true : undefined
+  }
+
+  const paginated = input.page != null && input.limit != null
+
+  const [folders, total] = await Promise.all([
+    prisma.user_patch_favorite_folder.findMany({
+      where,
+      include: {
+        patch: {
+          where: {
+            patch_id: input.patchId ?? 0
+          }
+        },
+        _count: {
+          select: { patch: true }
         }
       },
-      _count: {
-        select: { patch: true }
-      }
-    }
-  })
+      orderBy: { created: 'desc' },
+      skip: paginated ? (input.page! - 1) * input.limit! : undefined,
+      take: paginated ? input.limit : undefined
+    }),
+    paginated
+      ? prisma.user_patch_favorite_folder.count({ where })
+      : Promise.resolve(0)
+  ])
 
   const response: UserFavoritePatchFolder[] = folders.map((f) => ({
     name: f.name,
@@ -37,5 +51,5 @@ export const getFolders = async (
     _count: f._count
   }))
 
-  return response
+  return { folders: response, total }
 }

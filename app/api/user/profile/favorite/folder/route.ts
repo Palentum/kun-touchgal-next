@@ -21,7 +21,9 @@ const folderIdSchema = z.object({
 })
 
 const patchIdSchema = z.object({
-  patchId: z.coerce.number().min(1).max(9999999).optional()
+  patchId: z.coerce.number().min(1).max(9999999).optional(),
+  page: z.coerce.number().min(1).max(9999999).optional(),
+  limit: z.coerce.number().min(1).max(100).optional()
 })
 
 export const GET = async (req: NextRequest) => {

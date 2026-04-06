@@ -9,6 +9,6 @@ export const kunGetActions = async (uid: number) => {
     return '用户登陆失效'
   }
 
-  const response = await getFolders({}, uid, payload.uid)
-  return { folders: response, currentUserUid: payload.uid }
+  const { folders } = await getFolders({}, uid, payload.uid)
+  return { folders, currentUserUid: payload.uid }
 }
