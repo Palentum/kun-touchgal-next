@@ -9,8 +9,8 @@ export const kunGetRedirectConfigActions = async () => {
   if (!payload) {
     return '用户登陆失效'
   }
-  if (payload.role < 3) {
-    return '本页面仅管理员可访问'
+  if (payload.role < 4) {
+    return '本页面仅超级管理员可访问'
   }
 
   const response = await getRedirectConfig()
@@ -22,8 +22,8 @@ export const kunGetDisableRegisterStatusActions = async () => {
   if (!payload) {
     return '用户登陆失效'
   }
-  if (payload.role < 3) {
-    return '本页面仅管理员可访问'
+  if (payload.role < 4) {
+    return '本页面仅超级管理员可访问'
   }
 
   const response = await getDisableRegisterStatus()

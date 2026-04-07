@@ -76,8 +76,8 @@ export const PUT = async (req: NextRequest) => {
   if (!payload) {
     return NextResponse.json('未登录')
   }
-  if (payload.role < 3) {
-    return NextResponse.json('权限不足')
+  if (payload.role < 4) {
+    return NextResponse.json('仅超级管理员可访问')
   }
 
   const response = await declinePatchResource(input, payload.uid)

@@ -1,5 +1,16 @@
 import { redirect } from 'next/navigation'
+import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 
 export default async function Kun() {
-  redirect('/edit/create')
+  const payload = await verifyHeaderCookie()
+
+  if (!payload) {
+    redirect('/login')
+  }
+
+  if (payload.role >= 4) {
+    redirect('/edit/create')
+  }
+
+  redirect('/')
 }

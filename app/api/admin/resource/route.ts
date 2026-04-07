@@ -30,8 +30,8 @@ export const GET = async (req: NextRequest) => {
   if (!payload) {
     return NextResponse.json('用户未登录')
   }
-  if (payload.role < 3) {
-    return NextResponse.json('本页面仅管理员可访问')
+  if (payload.role < 4) {
+    return NextResponse.json('本页面仅超级管理员可访问')
   }
 
   const res = await getPatchResource(input, nsfwEnable)
@@ -47,8 +47,8 @@ export const PUT = async (req: NextRequest) => {
   if (!payload) {
     return NextResponse.json('用户未登录')
   }
-  if (payload.role < 3) {
-    return NextResponse.json('本页面仅管理员可访问')
+  if (payload.role < 4) {
+    return NextResponse.json('本页面仅超级管理员可访问')
   }
 
   const response = await updatePatchResource(input, payload.uid)
@@ -64,8 +64,8 @@ export const DELETE = async (req: NextRequest) => {
   if (!payload) {
     return NextResponse.json('用户未登录')
   }
-  if (payload.role < 3) {
-    return NextResponse.json('本页面仅管理员可访问')
+  if (payload.role < 4) {
+    return NextResponse.json('本页面仅超级管理员可访问')
   }
 
   const response = await deleteResource(input, payload.uid)

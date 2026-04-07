@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { Button, Card, CardBody } from '@heroui/react'
 import { motion } from 'framer-motion'
-import { BadgeCheck, Home, Rocket } from 'lucide-react'
+import { BadgeCheck, Home, Sparkles } from 'lucide-react'
 import { useRouter } from '@bprogress/next'
 import { useConfetti } from '~/hooks/useConfetti'
 
@@ -61,14 +61,14 @@ export const ApplySuccess = () => {
             transition={{ delay: 0.5 }}
           >
             <Button
-              startContent={<Rocket className="size-4" />}
+              startContent={<Sparkles className="size-4" />}
               color="primary"
               variant="shadow"
               className="flex-1"
               size="lg"
-              onPress={() => router.push('/edit/create')}
+              onPress={() => router.push('/')}
             >
-              发布补丁
+              开始浏览
             </Button>
             <Button
               startContent={<Home className="size-4" />}

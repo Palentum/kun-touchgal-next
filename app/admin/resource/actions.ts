@@ -18,8 +18,8 @@ export const kunGetActions = async (
   if (!payload) {
     return '用户登陆失效'
   }
-  if (payload.role < 3) {
-    return '本页面仅管理员可访问'
+  if (payload.role < 4) {
+    return '本页面仅超级管理员可访问'
   }
 
   const nsfwEnable = await getNSFWHeader()

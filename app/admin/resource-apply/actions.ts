@@ -18,8 +18,8 @@ export const kunGetActions = async (
   if (!payload) {
     return '未登录'
   }
-  if (payload.role < 3) {
-    return '权限不足'
+  if (payload.role < 4) {
+    return '仅超级管理员可访问'
   }
 
   const nsfwEnable = await getNSFWHeader()

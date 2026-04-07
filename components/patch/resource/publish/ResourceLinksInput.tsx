@@ -28,7 +28,7 @@ interface ResourceLinksInputProps {
 
 const getDefaultLinkStorage = (section: string, role: number) => {
   if (section === 'galgame') {
-    return role > 2 ? 'touchgal' : 'user'
+    return role > 3 ? 'touchgal' : 'user'
   }
   if (role > 3) {
     return 'touchgal'

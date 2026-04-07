@@ -50,10 +50,10 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json('用户未登录')
   }
   if (
-    payload.role < 3 &&
+    payload.role < 4 &&
     input.links.some((link) => link.storage === 'touchgal')
   ) {
-    return NextResponse.json('仅管理员可使用 TouchGal 资源盘')
+    return NextResponse.json('仅超级管理员可使用 TouchGal 资源盘')
   }
 
   const user = await prisma.user.findUnique({ where: { id: payload.uid } })
@@ -111,6 +111,12 @@ export const PUT = async (req: NextRequest) => {
   const payload = await verifyHeaderCookie(req)
   if (!payload) {
     return NextResponse.json('用户未登录')
+  }
+  if (
+    payload.role < 4 &&
+    input.links.some((link) => link.storage === 'touchgal')
+  ) {
+    return NextResponse.json('仅超级管理员可使用 TouchGal 资源盘')
   }
 
   const response = await updatePatchResource(input, payload.uid, payload.role)

@@ -39,7 +39,7 @@ interface CreateResourceProps {
 const userRoleStorageMap: Record<number, string> = {
   1: 'user',
   2: 's3',
-  3: 'touchgal',
+  3: 's3',
   4: 'touchgal'
 }
 
@@ -51,7 +51,7 @@ export const PublishResource = ({
   const createDefaultLink = (section: string) => ({
     storage:
       section === 'galgame'
-        ? user.role > 2
+        ? user.role > 3
           ? 'touchgal'
           : 'user'
         : userRoleStorageMap[user.role],

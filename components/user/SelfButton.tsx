@@ -11,7 +11,7 @@ interface Props {
 
 export const SelfButton = ({ user }: Props) => {
   const router = useRouter()
-  const isShowAdminButton = user.id === user.requestUserUid && user.role > 2
+  const isShowAdminButton = user.id === user.requestUserUid && user.role > 3
 
   return (
     <div className="flex-col w-full space-y-3">

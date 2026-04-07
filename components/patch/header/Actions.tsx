@@ -60,8 +60,8 @@ export const PatchHeaderActions = ({
   }
 
   const handlePressDeleteButton = () => {
-    if (user.uid !== patch.user.id && user.role < 4) {
-      toast.error('仅游戏发布者或超级管理员可删除该游戏')
+    if (user.role < 4) {
+      toast.error('仅超级管理员可删除该游戏')
       return
     }
     onOpen()
@@ -112,17 +112,19 @@ export const PatchHeaderActions = ({
               </Button>
             </Tooltip>
 
-            <Tooltip content="删除游戏">
-              <Button
-                variant="bordered"
-                isIconOnly
-                size="sm"
-                onPress={handlePressDeleteButton}
-                aria-label="删除游戏"
-              >
-                <Trash2 className="size-4" />
-              </Button>
-            </Tooltip>
+            {user.role > 3 && (
+              <Tooltip content="删除游戏">
+                <Button
+                  variant="bordered"
+                  isIconOnly
+                  size="sm"
+                  onPress={handlePressDeleteButton}
+                  aria-label="删除游戏"
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </Tooltip>
+            )}
 
             <FeedbackButton patch={patch} />
           </>
