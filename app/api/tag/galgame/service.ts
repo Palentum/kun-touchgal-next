@@ -2,22 +2,17 @@ import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { getPatchByTagSchema } from '~/validations/tag'
 import { GalgameCardSelectField } from '~/constants/api/select'
-import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
-import {
-  ALL_SUPPORTED_LANGUAGE,
-  ALL_SUPPORTED_PLATFORM,
-  ALL_SUPPORTED_TYPE
-} from '~/constants/resource'
 import {
   buildGalgameDateFilter,
   buildGalgameOrderBy,
   buildGalgameWhere
 } from '~/app/api/utils/galgameQuery'
 import { parseGalgameFilterArray } from '~/utils/galgameFilter'
+import type { Prisma } from '~/prisma/generated/prisma/client'
 
 export const getPatchByTag = async (
   input: z.infer<typeof getPatchByTagSchema>,
-  nsfwEnable: Record<string, string | undefined>
+  visibilityWhere: Prisma.patchWhereInput
 ) => {
   const {
     tagId,
@@ -43,7 +38,7 @@ export const getPatchByTag = async (
       selectedLanguage,
       selectedPlatform,
       minRatingCount: sortField === 'rating' ? minRatingCount : 0,
-      nsfwEnable
+      visibilityWhere
     })
   }
 

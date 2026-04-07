@@ -4,6 +4,7 @@ import { cookieStorage } from './_cookie'
 
 export interface KunSettingData {
   kunNsfwEnable: string
+  kunBlockedTagIds: number[]
 }
 
 interface StoreState {
@@ -14,7 +15,8 @@ interface StoreState {
 }
 
 const initialState: KunSettingData = {
-  kunNsfwEnable: 'sfw'
+  kunNsfwEnable: 'sfw',
+  kunBlockedTagIds: []
 }
 
 export const useSettingStore = create<StoreState>()(

@@ -38,7 +38,7 @@ export const KunTopBarUser = () => {
         toast.error(res)
         router.push('/login')
       } else {
-        setUser(user)
+        setUser(res)
       }
     }
 

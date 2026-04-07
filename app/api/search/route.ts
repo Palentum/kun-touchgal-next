@@ -4,7 +4,7 @@ import { kunParsePostBody } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { searchSchema } from '~/validations/search'
 import { GalgameCardSelectField } from '~/constants/api/select'
-import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
+import { getPatchVisibilityWhere } from '~/app/api/utils/getPatchVisibilityWhere'
 import { Prisma } from '~/prisma/generated/prisma/client'
 import type { SearchSuggestionType } from '~/types/api/search'
 import {
@@ -15,7 +15,7 @@ import {
 
 const searchGalgame = async (
   input: z.infer<typeof searchSchema>,
-  nsfwEnable: Record<string, string | undefined>
+  visibilityWhere: Prisma.patchWhereInput
 ) => {
   const {
     queryString,
@@ -49,7 +49,7 @@ const searchGalgame = async (
     selectedLanguage,
     selectedPlatform,
     minRatingCount: sortField === 'rating' ? minRatingCount : 0,
-    nsfwEnable
+    visibilityWhere
   })
   const orderBy = buildGalgameOrderBy(sortField, sortOrder)
 
@@ -88,7 +88,7 @@ const searchGalgame = async (
       ]
     })),
 
-    nsfwEnable,
+    visibilityWhere,
 
     ...tagArray.map((q) => ({
       tag: {
@@ -131,8 +131,8 @@ export const POST = async (req: NextRequest) => {
   if (typeof input === 'string') {
     return NextResponse.json(input)
   }
-  const nsfwEnable = getNSFWHeader(req)
+  const visibilityWhere = await getPatchVisibilityWhere(req)
 
-  const response = await searchGalgame(input, nsfwEnable)
+  const response = await searchGalgame(input, visibilityWhere)
   return NextResponse.json(response)
 }

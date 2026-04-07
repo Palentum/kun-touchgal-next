@@ -2,22 +2,17 @@ import { z } from 'zod'
 import { prisma } from '~/prisma'
 import { getPatchByCompanySchema } from '~/validations/company'
 import { GalgameCardSelectField } from '~/constants/api/select'
-import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
-import {
-  ALL_SUPPORTED_LANGUAGE,
-  ALL_SUPPORTED_PLATFORM,
-  ALL_SUPPORTED_TYPE
-} from '~/constants/resource'
 import {
   buildGalgameDateFilter,
   buildGalgameOrderBy,
   buildGalgameWhere
 } from '~/app/api/utils/galgameQuery'
 import { parseGalgameFilterArray } from '~/utils/galgameFilter'
+import type { Prisma } from '~/prisma/generated/prisma/client'
 
 export const getPatchByCompany = async (
   input: z.infer<typeof getPatchByCompanySchema>,
-  nsfwEnable: Record<string, string | undefined>
+  visibilityWhere: Prisma.patchWhereInput
 ) => {
   const {
     companyId,
@@ -48,7 +43,7 @@ export const getPatchByCompany = async (
       selectedLanguage,
       selectedPlatform,
       minRatingCount: sortField === 'rating' ? minRatingCount : 0,
-      nsfwEnable
+      visibilityWhere
     })
   }
 

@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '~/prisma/index'
-import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
+import { getPatchVisibilityWhere } from '~/app/api/utils/getPatchVisibilityWhere'
+import type { Prisma } from '~/prisma/generated/prisma/client'
 
 const getRandomUniqueId = async (
-  nsfwEnable: Record<string, string | undefined>
+  visibilityWhere: Prisma.patchWhereInput
 ) => {
   const totalArticles = await prisma.patch.findMany({
-    where: nsfwEnable,
+    where: visibilityWhere,
     select: { unique_id: true }
   })
   if (totalArticles.length === 0) {
@@ -19,8 +20,8 @@ const getRandomUniqueId = async (
 }
 
 export const GET = async (req: NextRequest) => {
-  const nsfwEnable = getNSFWHeader(req)
+  const visibilityWhere = await getPatchVisibilityWhere(req)
 
-  const response = await getRandomUniqueId(nsfwEnable)
+  const response = await getRandomUniqueId(visibilityWhere)
   return NextResponse.json(response)
 }

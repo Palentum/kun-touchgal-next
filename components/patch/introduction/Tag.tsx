@@ -16,6 +16,9 @@ interface Props {
 export const PatchTag = ({ patchId, initialTags }: Props) => {
   const [selectedTags, setSelectedTags] = useState<Tag[]>(initialTags ?? [])
   const user = useUserStore((state) => state.user)
+  const visibleTags = selectedTags.filter(
+    (tag) => !user.blockedTagIds.includes(tag.id)
+  )
 
   return (
     <div className="mt-4 space-y-4">
@@ -24,7 +27,7 @@ export const PatchTag = ({ patchId, initialTags }: Props) => {
       </h2>
 
       <div className="flex flex-wrap gap-2">
-        {selectedTags.map((tag) => (
+        {visibleTags.map((tag) => (
           <Tooltip key={tag.id} content={`${tag.count} 个 Galgame 使用此标签`}>
             <Link href={`/tag/${tag.id}`}>
               <Chip color="secondary" variant="flat">
@@ -35,7 +38,7 @@ export const PatchTag = ({ patchId, initialTags }: Props) => {
           </Tooltip>
         ))}
 
-        {!initialTags.length && <Chip>{'这个 Galgame 暂时没有标签'}</Chip>}
+        {!visibleTags.length && <Chip>{'这个 Galgame 暂时没有可显示的标签'}</Chip>}
       </div>
 
       {user.role > 2 && (

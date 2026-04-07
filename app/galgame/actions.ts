@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
 import { galgameSchema } from '~/validations/galgame'
 import { getGalgame } from '~/app/api/galgame/service'
-import { getNSFWHeader } from '~/utils/actions/getNSFWHeader'
+import { getPatchVisibilityWhere } from '~/utils/actions/getPatchVisibilityWhere'
 
 export const kunGetActions = async (params: z.infer<typeof galgameSchema>) => {
   const input = safeParseSchema(galgameSchema, params)
@@ -12,8 +12,8 @@ export const kunGetActions = async (params: z.infer<typeof galgameSchema>) => {
     return input
   }
 
-  const nsfwEnable = await getNSFWHeader()
+  const visibilityWhere = await getPatchVisibilityWhere()
 
-  const response = await getGalgame(input, nsfwEnable)
+  const response = await getGalgame(input, visibilityWhere)
   return response
 }

@@ -1,12 +1,12 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { resourceSchema } from '~/validations/resource'
-import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
+import type { Prisma } from '~/prisma/generated/prisma/client'
 import type { PatchResource } from '~/types/api/resource'
 
 export const getPatchResource = async (
   input: z.infer<typeof resourceSchema>,
-  nsfwEnable: Record<string, string | undefined>
+  visibilityWhere: Prisma.patchWhereInput
 ) => {
   const { sortField, sortOrder, page, limit } = input
 
@@ -22,7 +22,7 @@ export const getPatchResource = async (
       take: limit,
       skip: offset,
       orderBy: orderByField,
-      where: { patch: nsfwEnable, section: 'patch', status: 0 },
+      where: { patch: visibilityWhere, section: 'patch', status: 0 },
       include: {
         patch: {
           select: {
@@ -45,7 +45,7 @@ export const getPatchResource = async (
       }
     }),
     prisma.patch_resource.count({
-      where: { patch: nsfwEnable, section: 'patch', status: 0 }
+      where: { patch: visibilityWhere, section: 'patch', status: 0 }
     })
   ])
 

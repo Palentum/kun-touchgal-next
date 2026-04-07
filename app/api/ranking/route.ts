@@ -4,7 +4,7 @@ import { prisma } from '~/prisma/index'
 import { GalgameCardSelectField } from '~/constants/api/select'
 import { rankingSchema } from '~/validations/ranking'
 import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
-import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
+import { getPatchVisibilityWhere } from '~/app/api/utils/getPatchVisibilityWhere'
 import type { RankingSortField, RankingCard } from '~/types/api/ranking'
 import type { Prisma } from '~/prisma/generated/prisma/client'
 import { getRanking } from './service'
@@ -15,8 +15,8 @@ export const GET = async (req: NextRequest) => {
     return NextResponse.json(input)
   }
 
-  const nsfwEnable = getNSFWHeader(req)
+  const visibilityWhere = await getPatchVisibilityWhere(req)
 
-  const response = await getRanking(input, nsfwEnable)
+  const response = await getRanking(input, visibilityWhere)
   return NextResponse.json(response)
 }

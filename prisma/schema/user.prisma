@@ -14,6 +14,7 @@ model user {
 
   enable_email_notice    Boolean @default(true)
   allow_private_message  Boolean @default(true)
+  blocked_tag_ids        Int[]   @default([])
   daily_image_count   Int     @default(0)
   daily_check_in      Int     @default(0)
   daily_upload_size   Float   @default(0)

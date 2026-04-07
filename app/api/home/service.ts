@@ -1,21 +1,21 @@
 import { prisma } from '~/prisma/index'
 import { HomeResource } from '~/types/api/home'
 import { GalgameCardSelectField } from '~/constants/api/select'
-import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
+import type { Prisma } from '~/prisma/generated/prisma/client'
 
 export const getHomeData = async (
-  nsfwEnable: Record<string, string | undefined>
+  visibilityWhere: Prisma.patchWhereInput
 ) => {
   const [data, resourcesData] = await Promise.all([
     prisma.patch.findMany({
       orderBy: { created: 'desc' },
-      where: nsfwEnable,
+      where: visibilityWhere,
       select: GalgameCardSelectField,
       take: 20
     }),
     prisma.patch_resource.findMany({
       orderBy: { created: 'desc' },
-      where: { patch: nsfwEnable, section: 'patch', status: 0 },
+      where: { patch: visibilityWhere, section: 'patch', status: 0 },
       include: {
         patch: {
           select: {

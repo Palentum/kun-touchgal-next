@@ -6,7 +6,7 @@ interface BuildGalgameWhereOptions {
   selectedLanguage?: string
   selectedPlatform?: string
   minRatingCount?: number
-  nsfwEnable: Record<string, string | undefined>
+  visibilityWhere: Prisma.patchWhereInput
 }
 
 export const buildGalgameDateFilter = (
@@ -61,7 +61,7 @@ export const buildGalgameWhere = ({
   selectedLanguage = 'all',
   selectedPlatform = 'all',
   minRatingCount = 0,
-  nsfwEnable
+  visibilityWhere
 }: BuildGalgameWhereOptions): Prisma.patchWhereInput => {
   return {
     ...(selectedType !== 'all' && { type: { has: selectedType } }),
@@ -74,7 +74,7 @@ export const buildGalgameWhere = ({
         }
       }
     }),
-    ...nsfwEnable
+    ...visibilityWhere
   }
 }
 

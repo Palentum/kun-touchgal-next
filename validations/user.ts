@@ -104,3 +104,7 @@ export const enableUser2FASchema = z.object({
     .min(6, { message: '2FA 验证码必须为 6 位数字' })
     .max(6, { message: '2FA 验证码必须为 6 位数字' })
 })
+
+export const blockedTagSchema = z.object({
+  tagId: z.coerce.number().min(1).max(9999999)
+})

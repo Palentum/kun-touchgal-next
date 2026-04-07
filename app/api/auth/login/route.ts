@@ -83,6 +83,7 @@ const login = async (
     dailyUploadLimit: user.daily_upload_size,
     enableEmailNotice: user.enable_email_notice,
     allowPrivateMessage: user.allow_private_message,
+    blockedTagIds: user.blocked_tag_ids,
     ...redirectConfig
   }
 

@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { getUserInfoSchema } from '~/validations/user'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
-import { getNSFWHeader } from '~/utils/actions/getNSFWHeader'
+import { getPatchVisibilityWhere } from '~/utils/actions/getPatchVisibilityWhere'
 import { getUserPatchResource } from '~/app/api/user/profile/resource/service'
 
 export const kunGetActions = async (
@@ -19,8 +19,8 @@ export const kunGetActions = async (
     return '用户登陆失效'
   }
 
-  const nsfwEnable = await getNSFWHeader()
+  const visibilityWhere = await getPatchVisibilityWhere()
 
-  const response = await getUserPatchResource(input, nsfwEnable)
+  const response = await getUserPatchResource(input, visibilityWhere)
   return response
 }

@@ -1,19 +1,19 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { getUserInfoSchema } from '~/validations/user'
-import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
+import type { Prisma } from '~/prisma/generated/prisma/client'
 import type { UserResource } from '~/types/api/user'
 
 export const getUserPatchResource = async (
   input: z.infer<typeof getUserInfoSchema>,
-  nsfwEnable: Record<string, string | undefined>
+  visibilityWhere: Prisma.patchWhereInput
 ) => {
   const { uid, page, limit } = input
   const offset = (page - 1) * limit
 
   const [data, total] = await Promise.all([
     prisma.patch_resource.findMany({
-      where: { user_id: uid, patch: nsfwEnable, status: 0 },
+      where: { user_id: uid, patch: visibilityWhere, status: 0 },
       include: {
         patch: true
       },
@@ -22,7 +22,7 @@ export const getUserPatchResource = async (
       take: limit
     }),
     prisma.patch_resource.count({
-      where: { user_id: uid, patch: nsfwEnable, status: 0 }
+      where: { user_id: uid, patch: visibilityWhere, status: 0 }
     })
   ])
 

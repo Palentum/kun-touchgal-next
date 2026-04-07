@@ -4,7 +4,7 @@ import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { getPatchByTagSchema } from '~/validations/tag'
 import { GalgameCardSelectField } from '~/constants/api/select'
-import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
+import { getPatchVisibilityWhere } from '~/app/api/utils/getPatchVisibilityWhere'
 import {
   ALL_SUPPORTED_LANGUAGE,
   ALL_SUPPORTED_PLATFORM,
@@ -29,8 +29,8 @@ export const GET = async (req: NextRequest) => {
   ) {
     return NextResponse.json('请选择我们支持的 Galgame 排序类型')
   }
-  const nsfwEnable = getNSFWHeader(req)
+  const visibilityWhere = await getPatchVisibilityWhere(req)
 
-  const response = await getPatchByTag(input, nsfwEnable)
+  const response = await getPatchByTag(input, visibilityWhere)
   return NextResponse.json(response)
 }

@@ -8,6 +8,7 @@ import { EmailNotice } from './EmailNotice'
 import { AllowPrivateMessage } from './AllowPrivateMessage'
 import { TwoFactorAuth } from './TwoFactorAuth'
 import { Reset } from './Reset'
+import { BlockedTags } from './BlockedTags'
 
 export const UserSettings = () => {
   return (
@@ -22,6 +23,7 @@ export const UserSettings = () => {
         <Password />
         <EmailNotice />
         <AllowPrivateMessage />
+        <BlockedTags />
         <TwoFactorAuth />
         <Reset />
       </div>

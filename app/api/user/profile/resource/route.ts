@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { kunParseGetQuery } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { getUserInfoSchema } from '~/validations/user'
-import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
+import { getPatchVisibilityWhere } from '~/app/api/utils/getPatchVisibilityWhere'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import type { UserResource } from '~/types/api/user'
 import { getUserPatchResource } from './service'
@@ -16,8 +16,8 @@ export async function GET(req: NextRequest) {
   if (!payload) {
     return NextResponse.json('用户登陆失效')
   }
-  const nsfwEnable = getNSFWHeader(req)
+  const visibilityWhere = await getPatchVisibilityWhere(req)
 
-  const response = await getUserPatchResource(input, nsfwEnable)
+  const response = await getUserPatchResource(input, visibilityWhere)
   return NextResponse.json(response)
 }

@@ -2,7 +2,6 @@ import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { GalgameCardSelectField } from '~/constants/api/select'
 import { rankingSchema } from '~/validations/ranking'
-import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 import type { RankingSortField, RankingCard } from '~/types/api/ranking'
 import type { Prisma } from '~/prisma/generated/prisma/client'
 
@@ -22,14 +21,14 @@ const RankingSelectField = {
 
 export const getRanking = async (
   input: z.infer<typeof rankingSchema>,
-  nsfwEnable: Record<string, string | undefined>
+  visibilityWhere: Prisma.patchWhereInput
 ) => {
   const { sortField, sortOrder, minRatingCount, page, limit } = input
   const safeLimit = Math.min(limit, 50)
   const offset = (page - 1) * safeLimit
 
   const where: Prisma.patchWhereInput = {
-    ...nsfwEnable,
+    ...visibilityWhere,
     rating_stat: {
       count: {
         gte: minRatingCount

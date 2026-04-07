@@ -36,7 +36,10 @@ export const NSFWSwitcher = () => {
         selectedKeys={new Set([settings.kunNsfwEnable])}
         selectionMode="single"
         onSelectionChange={(key) => {
-          setData({ kunNsfwEnable: key.anchorKey ?? 'sfw' })
+          setData({
+            ...settings,
+            kunNsfwEnable: key.anchorKey ?? 'sfw'
+          })
           location.reload()
         }}
       >

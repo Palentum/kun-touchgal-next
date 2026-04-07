@@ -1,21 +1,12 @@
-import { z } from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
 import { kunParseGetQuery } from '../utils/parseQuery'
-import { prisma } from '~/prisma/index'
 import { galgameSchema } from '~/validations/galgame'
 import {
   ALL_SUPPORTED_LANGUAGE,
   ALL_SUPPORTED_PLATFORM,
   ALL_SUPPORTED_TYPE
 } from '~/constants/resource'
-import { GalgameCardSelectField } from '~/constants/api/select'
-import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
-import {
-  buildGalgameDateFilter,
-  buildGalgameOrderBy,
-  buildGalgameWhere
-} from '../utils/galgameQuery'
-import { parseGalgameFilterArray } from '~/utils/galgameFilter'
+import { getPatchVisibilityWhere } from '~/app/api/utils/getPatchVisibilityWhere'
 import { getGalgame } from './service'
 export const GET = async (req: NextRequest) => {
   const input = kunParseGetQuery(req, galgameSchema)
@@ -30,8 +21,8 @@ export const GET = async (req: NextRequest) => {
     return NextResponse.json('请选择我们支持的 Galgame 排序类型')
   }
 
-  const nsfwEnable = getNSFWHeader(req)
+  const visibilityWhere = await getPatchVisibilityWhere(req)
 
-  const response = await getGalgame(input, nsfwEnable)
+  const response = await getGalgame(input, visibilityWhere)
   return NextResponse.json(response)
 }

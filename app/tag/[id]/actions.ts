@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
 import { getTagById } from '~/app/api/tag/get'
 import { getPatchByTag } from '~/app/api/tag/galgame/service'
-import { getNSFWHeader } from '~/utils/actions/getNSFWHeader'
+import { getPatchVisibilityWhere } from '~/utils/actions/getPatchVisibilityWhere'
 import { getPatchByTagSchema, getTagByIdSchema } from '~/validations/tag'
 
 export const kunGetTagByIdActions = async (
@@ -27,8 +27,8 @@ export const kunTagGalgameActions = async (
     return input
   }
 
-  const nsfwEnable = await getNSFWHeader()
+  const visibilityWhere = await getPatchVisibilityWhere()
 
-  const response = await getPatchByTag(input, nsfwEnable)
+  const response = await getPatchByTag(input, visibilityWhere)
   return response
 }

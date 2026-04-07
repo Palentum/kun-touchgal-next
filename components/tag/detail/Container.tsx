@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { useDebounce } from 'use-debounce'
-import { kunFetchGet } from '~/utils/kunFetch'
+import { kunFetchDelete, kunFetchGet, kunFetchPost } from '~/utils/kunFetch'
 import { Chip } from '@heroui/chip'
 import { Button } from '@heroui/button'
 import { useDisclosure } from '@heroui/modal'
-import { Pencil } from 'lucide-react'
+import { CircleOff, Pencil } from 'lucide-react'
 import { TagDetail } from '~/types/api/tag'
 import { KunLoading } from '~/components/kun/Loading'
 import { KunHeader } from '~/components/kun/Header'
@@ -32,6 +32,11 @@ import {
   parsePositiveIntParam
 } from '~/utils/galgameFilter'
 import { errorReporter, kunErrorHandler } from '~/utils/kunErrorHandler'
+import toast from 'react-hot-toast'
+
+interface UpdateBlockedTagResponse {
+  blockedTagIds: number[]
+}
 
 interface Props {
   initialTag: TagDetail
@@ -45,7 +50,7 @@ export const TagDetailContainer = ({
   total
 }: Props) => {
   const isMounted = useMounted()
-  const user = useUserStore((state) => state.user)
+  const { user, setUser } = useUserStore((state) => state)
   const searchParams = useSearchParams()
   const [page, setPage] = useState(
     parsePositiveIntParam(searchParams.get('page'), 1)
@@ -83,7 +88,9 @@ export const TagDetailContainer = ({
   const [patches, setPatches] = useState<GalgameCard[]>(initialPatches)
   const [totalCount, setTotalCount] = useState(total)
   const [loading, setLoading] = useState(false)
+  const [updatingBlockedTag, setUpdatingBlockedTag] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const isBlocked = user.blockedTagIds.includes(tag.id)
   const withPageReset = <T,>(setter: (value: T) => void) => {
     return (value: T) => {
       setPage(1)
@@ -150,6 +157,43 @@ export const TagDetailContainer = ({
     sortField === 'rating' ? debouncedMinRatingCount : null
   ])
 
+  const handleToggleBlockedTag = async () => {
+    if (!user.uid || updatingBlockedTag) {
+      return
+    }
+
+    setUpdatingBlockedTag(true)
+    try {
+      const response = isBlocked
+        ? await kunFetchDelete<KunResponse<UpdateBlockedTagResponse>>(
+            '/user/setting/blocked-tag',
+            { tagId: tag.id }
+          )
+        : await kunFetchPost<KunResponse<UpdateBlockedTagResponse>>(
+            '/user/setting/blocked-tag',
+            { tagId: tag.id }
+          )
+
+      if (typeof response === 'string') {
+        toast.error(response)
+        return
+      }
+
+      setUser({ ...user, blockedTagIds: response.blockedTagIds })
+
+      if (isBlocked) {
+        toast.success(`已取消屏蔽标签「${tag.name}」`)
+        await fetchPatches()
+      } else {
+        setPatches([])
+        setTotalCount(0)
+        toast.success(`已屏蔽标签「${tag.name}」`)
+      }
+    } finally {
+      setUpdatingBlockedTag(false)
+    }
+  }
+
   return (
     <div className="w-full my-4 space-y-6">
       <KunHeader
@@ -174,6 +218,16 @@ export const TagDetailContainer = ({
             />
 
             <div className="flex items-center gap-2">
+              <Button
+                variant="flat"
+                color={isBlocked ? 'default' : 'danger'}
+                isLoading={updatingBlockedTag}
+                onPress={handleToggleBlockedTag}
+                startContent={<CircleOff />}
+              >
+                {isBlocked ? '取消屏蔽' : '屏蔽该标签'}
+              </Button>
+
               <DeleteTagModal tag={tag} />
 
               {user.role > 2 && (
@@ -254,7 +308,15 @@ export const TagDetailContainer = ({
             </div>
           )}
 
-          {!totalCount && <KunNull message="这个标签暂无 Galgame 使用" />}
+          {!totalCount && (
+            <KunNull
+              message={
+                isBlocked
+                  ? '您已屏蔽该标签, 关联游戏不会在公开列表中显示'
+                  : '这个标签暂无 Galgame 使用'
+              }
+            />
+          )}
         </div>
       )}
     </div>

@@ -8,7 +8,7 @@ import {
   getCompanyByIdSchema,
   getPatchByCompanySchema
 } from '~/validations/company'
-import { getNSFWHeader } from '~/utils/actions/getNSFWHeader'
+import { getPatchVisibilityWhere } from '~/utils/actions/getPatchVisibilityWhere'
 
 export const kunGetCompanyByIdActions = async (
   params: z.infer<typeof getCompanyByIdSchema>
@@ -30,8 +30,8 @@ export const kunCompanyGalgameActions = async (
     return input
   }
 
-  const nsfwEnable = await getNSFWHeader()
+  const visibilityWhere = await getPatchVisibilityWhere()
 
-  const response = await getPatchByCompany(input, nsfwEnable)
+  const response = await getPatchByCompany(input, visibilityWhere)
   return response
 }

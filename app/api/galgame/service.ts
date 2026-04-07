@@ -1,23 +1,18 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { galgameSchema } from '~/validations/galgame'
-import {
-  ALL_SUPPORTED_LANGUAGE,
-  ALL_SUPPORTED_PLATFORM,
-  ALL_SUPPORTED_TYPE
-} from '~/constants/resource'
 import { GalgameCardSelectField } from '~/constants/api/select'
-import { getNSFWHeader } from '~/app/api/utils/getNSFWHeader'
 import {
   buildGalgameDateFilter,
   buildGalgameOrderBy,
   buildGalgameWhere
 } from '../utils/galgameQuery'
 import { parseGalgameFilterArray } from '~/utils/galgameFilter'
+import type { Prisma } from '~/prisma/generated/prisma/client'
 
 export const getGalgame = async (
   input: z.infer<typeof galgameSchema>,
-  nsfwEnable: Record<string, string | undefined>
+  visibilityWhere: Prisma.patchWhereInput
 ) => {
   const {
     selectedType = 'all',
@@ -39,7 +34,7 @@ export const getGalgame = async (
     selectedLanguage,
     selectedPlatform,
     minRatingCount,
-    nsfwEnable
+    visibilityWhere
   })
   const orderBy = buildGalgameOrderBy(sortField, sortOrder)
 

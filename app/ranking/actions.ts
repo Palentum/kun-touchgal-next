@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { safeParseSchema } from '~/utils/actions/safeParseSchema'
 import { rankingSchema } from '~/validations/ranking'
 import { getRanking } from '~/app/api/ranking/service'
-import { getNSFWHeader } from '~/utils/actions/getNSFWHeader'
+import { getPatchVisibilityWhere } from '~/utils/actions/getPatchVisibilityWhere'
 
 export const kunGetRankingActions = async (
   params: z.infer<typeof rankingSchema>
@@ -14,7 +14,7 @@ export const kunGetRankingActions = async (
     return input
   }
 
-  const nsfwEnable = await getNSFWHeader()
-  const response = await getRanking(input, nsfwEnable)
+  const visibilityWhere = await getPatchVisibilityWhere()
+  const response = await getRanking(input, visibilityWhere)
   return response
 }
