@@ -59,7 +59,8 @@ export const patchCommentUpdateSchema = z.object({
 export const getPatchCommentSchema = z.object({
   patchId: z.coerce.number().min(1).max(9999999),
   page: z.coerce.number().min(1).max(9999999),
-  limit: z.coerce.number().min(1).max(50)
+  limit: z.coerce.number().min(1).max(50),
+  commentId: z.coerce.number().min(1).max(9999999).optional()
 })
 
 export const patchResourceCreateSchema = z.object({

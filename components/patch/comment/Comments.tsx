@@ -38,6 +38,7 @@ export const Comments = ({ id }: Props) => {
   const [highlightedCommentId, setHighlightedCommentId] = useState<
     number | null
   >(null)
+  const [targetCommentResolved, setTargetCommentResolved] = useState(false)
   const user = useUserStore((state) => state.user)
   const targetCommentId = useMemo(() => {
     const rawCommentId = searchParams.get('commentId')
@@ -51,26 +52,43 @@ export const Comments = ({ id }: Props) => {
       : null
   }, [searchParams])
 
-  const fetchComments = async (pageNum: number) => {
+  const fetchComments = async (
+    pageNum: number,
+    locateCommentId?: number | null
+  ) => {
     setLoading(true)
     const res = await kunFetchGet<PatchCommentResponse>('/patch/comment', {
       patchId: Number(id),
       page: pageNum,
-      limit: COMMENTS_PER_PAGE
+      limit: COMMENTS_PER_PAGE,
+      ...(locateCommentId ? { commentId: locateCommentId } : {})
     })
     if (res && typeof res !== 'string') {
       setComments(res.comments)
       setTotal(res.total)
+      if (res.currentPage !== pageNum) {
+        setPage(res.currentPage)
+      }
+    }
+    if (locateCommentId) {
+      setTargetCommentResolved(true)
     }
     setLoading(false)
   }
 
   useEffect(() => {
+    setTargetCommentResolved(false)
+  }, [targetCommentId, id])
+
+  useEffect(() => {
     if (!user.uid) {
       return
     }
-    fetchComments(page)
-  }, [page, user.uid])
+    fetchComments(
+      page,
+      targetCommentId && !targetCommentResolved ? targetCommentId : null
+    )
+  }, [page, user.uid, targetCommentId, targetCommentResolved])
 
   useEffect(() => {
     if (loading || !targetCommentId) {

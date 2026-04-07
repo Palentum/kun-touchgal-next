@@ -8,7 +8,75 @@ export const getPatchComment = async (
   input: z.infer<typeof getPatchCommentSchema>,
   uid: number
 ) => {
-  const { patchId, page, limit } = input
+  const { patchId, page, limit, commentId } = input
+  type CommentLocator = {
+    id: number
+    patch_id: number
+    parent_id: number | null
+    created: Date
+  }
+
+  const findRootComment = async (targetCommentId: number) => {
+    let currentComment: CommentLocator | null =
+      await prisma.patch_comment.findUnique({
+        where: { id: targetCommentId },
+        select: {
+          id: true,
+          patch_id: true,
+          parent_id: true,
+          created: true
+        }
+      })
+
+    if (!currentComment || currentComment.patch_id !== patchId) {
+      return null
+    }
+
+    while (currentComment && currentComment.parent_id !== null) {
+      const parentComment: CommentLocator | null =
+        await prisma.patch_comment.findUnique({
+          where: { id: currentComment.parent_id },
+          select: {
+            id: true,
+            patch_id: true,
+            parent_id: true,
+            created: true
+          }
+        })
+
+      if (!parentComment || parentComment.patch_id !== patchId) {
+        return null
+      }
+
+      currentComment = parentComment
+    }
+
+    return currentComment
+  }
+
+  let currentPage = page
+  if (commentId) {
+    const rootComment = await findRootComment(commentId)
+    if (rootComment) {
+      const commentsBeforeTargetRoot = await prisma.patch_comment.count({
+        where: {
+          patch_id: patchId,
+          parent_id: null,
+          OR: [
+            { created: { gt: rootComment.created } },
+            {
+              AND: [
+                { created: rootComment.created },
+                { id: { gt: rootComment.id } }
+              ]
+            }
+          ]
+        }
+      })
+
+      currentPage = Math.floor(commentsBeforeTargetRoot / limit) + 1
+    }
+  }
 
   const total = await prisma.patch_comment.count({
     where: { patch_id: patchId, parent_id: null }
@@ -16,8 +84,8 @@ export const getPatchComment = async (
 
   const rootComments = await prisma.patch_comment.findMany({
     where: { patch_id: patchId, parent_id: null },
-    orderBy: { created: 'desc' },
-    skip: (page - 1) * limit,
+    orderBy: [{ created: 'desc' }, { id: 'desc' }],
+    skip: (currentPage - 1) * limit,
     take: limit,
     include: {
       user: true,
@@ -150,5 +218,5 @@ export const getPatchComment = async (
     })
   )
 
-  return { comments, total }
+  return { comments, total, currentPage }
 }

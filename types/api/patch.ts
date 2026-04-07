@@ -127,4 +127,5 @@ export interface PatchComment {
 export interface PatchCommentResponse {
   comments: PatchComment[]
   total: number
+  currentPage: number
 }
