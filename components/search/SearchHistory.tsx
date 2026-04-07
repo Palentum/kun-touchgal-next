@@ -71,13 +71,16 @@ export const SearchHistory = ({
                       size="sm"
                       variant="flat"
                       color={
-                        s.type === 'tag'
-                          ? 'secondary'
-                          : s.type === 'company'
-                            ? 'warning'
-                            : 'default'
+                        s.mode === 'exclude'
+                          ? 'danger'
+                          : s.type === 'tag'
+                            ? 'secondary'
+                            : s.type === 'company'
+                              ? 'warning'
+                              : 'default'
                       }
                     >
+                      {s.mode === 'exclude' ? '排除 ' : ''}
                       {s.type === 'tag'
                         ? `#${s.name}`
                         : s.type === 'company'

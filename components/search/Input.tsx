@@ -110,10 +110,19 @@ export const SearchInput = ({
     if (!query.trim()) {
       return
     }
-    const queryArraySplitByBlank = query.trim().split(' ')
+    const queryArraySplitByBlank = query
+      .trim()
+      .split(/\s+/)
+      .map((item) => item.trim())
+      .filter(Boolean)
+    if (!queryArraySplitByBlank.length) {
+      return
+    }
+
     const suggestions: SearchSuggestionType[] = queryArraySplitByBlank.map(
       (q) => ({
         type: 'keyword',
+        mode: 'include',
         name: q
       })
     )
@@ -180,14 +189,17 @@ export const SearchInput = ({
             key={index}
             variant="flat"
             color={
-              suggestion.type === 'keyword'
-                ? 'primary'
-                : suggestion.type === 'company'
-                  ? 'warning'
-                  : 'secondary'
+              suggestion.mode === 'exclude'
+                ? 'danger'
+                : suggestion.type === 'keyword'
+                  ? 'primary'
+                  : suggestion.type === 'company'
+                    ? 'warning'
+                    : 'secondary'
             }
             onClose={() => handleRemoveChip(suggestion)}
           >
+            {suggestion.mode === 'exclude' ? '排除 ' : ''}
             {suggestion.type === 'tag'
               ? `#${suggestion.name}`
               : suggestion.type === 'company'

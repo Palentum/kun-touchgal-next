@@ -35,16 +35,136 @@ const searchGalgame = async (
   const insensitive = Prisma.QueryMode.insensitive
 
   const query = JSON.parse(queryString) as SearchSuggestionType[]
+  const normalizeMode = (mode: SearchSuggestionType['mode'] | undefined) =>
+    mode === 'exclude' ? 'exclude' : 'include'
 
-  const queryArray = query
-    .filter((item) => item.type === 'keyword')
+  const buildKeywordCondition = (keyword: string): Prisma.patchWhereInput => ({
+    OR: [
+      { name: { contains: keyword, mode: insensitive } },
+      { vndb_id: keyword },
+      { vndb_relation_id: keyword },
+      { dlsite_code: keyword },
+      ...(searchOption.searchInIntroduction
+        ? [{ introduction: { contains: keyword, mode: insensitive } }]
+        : []),
+      ...(searchOption.searchInAlias
+        ? [
+            {
+              alias: {
+                some: {
+                  name: { contains: keyword, mode: insensitive }
+                }
+              }
+            }
+          ]
+        : []),
+      ...(searchOption.searchInTag
+        ? [
+            {
+              tag: {
+                some: {
+                  tag: { name: { contains: keyword, mode: insensitive } }
+                }
+              }
+            }
+          ]
+        : [])
+    ]
+  })
+
+  const buildKeywordExcludeCondition = (
+    keyword: string
+  ): Prisma.patchWhereInput => ({
+    AND: [
+      {
+        NOT: {
+          name: {
+            contains: keyword,
+            mode: insensitive
+          }
+        }
+      },
+      {
+        OR: [{ vndb_id: null }, { vndb_id: { not: keyword } }]
+      },
+      {
+        OR: [{ vndb_relation_id: null }, { vndb_relation_id: { not: keyword } }]
+      },
+      {
+        OR: [{ dlsite_code: null }, { dlsite_code: { not: keyword } }]
+      },
+      ...(searchOption.searchInIntroduction
+        ? [
+            {
+              NOT: {
+                introduction: {
+                  contains: keyword,
+                  mode: insensitive
+                }
+              }
+            }
+          ]
+        : []),
+      ...(searchOption.searchInAlias
+        ? [
+            {
+              alias: {
+                none: {
+                  name: {
+                    contains: keyword,
+                    mode: insensitive
+                  }
+                }
+              }
+            }
+          ]
+        : []),
+      ...(searchOption.searchInTag
+        ? [
+            {
+              tag: {
+                none: {
+                  tag: {
+                    name: {
+                      contains: keyword,
+                      mode: insensitive
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        : [])
+    ]
+  })
+
+  const includedKeywords = query
+    .filter(
+      (item) =>
+        item.type === 'keyword' && normalizeMode(item.mode) === 'include'
+    )
+    .map((item) => item.name.trim())
+    .filter(Boolean)
+  const includedTags = query.filter(
+    (item) => item.type === 'tag' && normalizeMode(item.mode) === 'include'
+  )
+  const includedCompanies = query.filter(
+    (item) => item.type === 'company' && normalizeMode(item.mode) === 'include'
+  )
+  const excludedKeywords = query
+    .filter(
+      (item) =>
+        item.type === 'keyword' && normalizeMode(item.mode) === 'exclude'
+    )
     .map((item) => item.name)
-  const tagArray = query
-    .filter((item) => item.type === 'tag')
-    .map((item) => item.name)
-  const companyArray = query
-    .filter((item) => item.type === 'company')
-    .map((item) => item.name)
+    .map((item) => item.trim())
+    .filter(Boolean)
+  const excludedTags = query.filter(
+    (item) => item.type === 'tag' && normalizeMode(item.mode) === 'exclude'
+  )
+  const excludedCompanies = query.filter(
+    (item) => item.type === 'company' && normalizeMode(item.mode) === 'exclude'
+  )
 
   const dateFilter = buildGalgameDateFilter(selectedYears, selectedMonths)
   const where = buildGalgameWhere({
@@ -57,60 +177,71 @@ const searchGalgame = async (
   const orderBy = buildGalgameOrderBy(sortField, sortOrder)
 
   const queryCondition = [
-    ...queryArray.map((q) => ({
-      OR: [
-        { name: { contains: q, mode: insensitive } },
-        { vndb_id: q },
-        { vndb_relation_id: q },
-        { dlsite_code: q },
-        ...(searchOption.searchInIntroduction
-          ? [{ introduction: { contains: q, mode: insensitive } }]
-          : []),
-        ...(searchOption.searchInAlias
-          ? [
-              {
-                alias: {
-                  some: {
-                    name: { contains: q, mode: insensitive }
-                  }
-                }
-              }
-            ]
-          : []),
-        ...(searchOption.searchInTag
-          ? [
-              {
-                tag: {
-                  some: {
-                    tag: { name: { contains: q, mode: insensitive } }
-                  }
-                }
-              }
-            ]
-          : [])
-      ]
-    })),
+    ...includedKeywords.map((q) => buildKeywordCondition(q)),
 
     visibilityWhere,
 
-    ...tagArray.map((q) => ({
+    ...includedTags.map((tag) => ({
       tag: {
         some: {
-          tag: {
-            OR: [{ name: q }, { alias: { has: q } }]
+          ...(typeof tag.id === 'number'
+            ? { tag_id: tag.id }
+            : {
+                tag: {
+                  OR: [{ name: tag.name }, { alias: { has: tag.name } }]
+                }
+              })
+        }
+      }
+    })),
+    ...includedCompanies.map((company) => ({
+      company: {
+        some: {
+          ...(typeof company.id === 'number'
+            ? { company_id: company.id }
+            : {
+                company: {
+                  OR: [
+                    { name: company.name },
+                    { alias: { has: company.name } },
+                    { parent_brand: { has: company.name } }
+                  ]
+                }
+              })
+        }
+      }
+    })),
+    ...excludedKeywords.map((q) => buildKeywordExcludeCondition(q)),
+    ...excludedTags.map((tag) => ({
+      NOT: {
+        tag: {
+          some: {
+            ...(typeof tag.id === 'number'
+              ? { tag_id: tag.id }
+              : {
+                  tag: {
+                    OR: [{ name: tag.name }, { alias: { has: tag.name } }]
+                  }
+                })
           }
         }
       }
     })),
-    ...companyArray.map((q) => ({
-      company: {
-        some: {
-          company: {
-            OR: [
-              { name: q },
-              { alias: { has: q } },
-              { parent_brand: { has: q } }
-            ]
+    ...excludedCompanies.map((company) => ({
+      NOT: {
+        company: {
+          some: {
+            ...(typeof company.id === 'number'
+              ? { company_id: company.id }
+              : {
+                  company: {
+                    OR: [
+                      { name: company.name },
+                      { alias: { has: company.name } },
+                      { parent_brand: { has: company.name } }
+                    ]
+                  }
+                })
           }
         }
       }

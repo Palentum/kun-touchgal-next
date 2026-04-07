@@ -16,6 +16,7 @@ const searchTag = async (input: z.infer<typeof searchTagSchema>) => {
         ])
       },
       select: {
+        id: true,
         name: true,
         count: true
       },
@@ -31,6 +32,7 @@ const searchTag = async (input: z.infer<typeof searchTagSchema>) => {
         ])
       },
       select: {
+        id: true,
         name: true,
         count: true
       },
@@ -41,19 +43,23 @@ const searchTag = async (input: z.infer<typeof searchTagSchema>) => {
 
   const suggestions = [
     ...tags.map((tag) => ({
+      id: tag.id,
       type: 'tag' as const,
+      mode: 'include' as const,
       name: tag.name,
       count: tag.count
     })),
     ...companies.map((company) => ({
+      id: company.id,
       type: 'company' as const,
+      mode: 'include' as const,
       name: company.name,
       count: company.count
     }))
   ]
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
     .slice(0, 100)
-    .map(({ type, name }) => ({ type, name }))
+    .map(({ id, type, mode, name }) => ({ id, type, mode, name }))
 
   return suggestions
 }

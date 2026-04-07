@@ -60,7 +60,7 @@ export const SearchPage = () => {
     }
 
     const entryKey = suggestions
-      .map((s) => `${s.type}:${s.name}`)
+      .map((s) => `${s.mode}:${s.type}:${s.name}`)
       .sort()
       .join('|')
 
@@ -68,7 +68,7 @@ export const SearchPage = () => {
       suggestions,
       ...searchData.searchHistory.filter((item) => {
         const itemKey = item
-          .map((s) => `${s.type}:${s.name}`)
+          .map((s) => `${s.mode}:${s.type}:${s.name}`)
           .sort()
           .join('|')
         return itemKey !== entryKey
@@ -190,7 +190,9 @@ export const SearchPage = () => {
         endContent={
           <div className="text-default-500">
             <p>使用游戏标题的一部分作为关键词搜索更容易找到游戏。</p>
-            <p>您可以使用多个关键词、标签和会社的组合进行搜索。</p>
+            <p>
+              您可以使用多个关键词、标签和会社的组合进行搜索，也可以排除其中任意项。
+            </p>
           </div>
         }
       />
