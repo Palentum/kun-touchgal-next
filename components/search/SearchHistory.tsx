@@ -70,9 +70,19 @@ export const SearchHistory = ({
                       key={i}
                       size="sm"
                       variant="flat"
-                      color={s.type === 'tag' ? 'secondary' : 'default'}
+                      color={
+                        s.type === 'tag'
+                          ? 'secondary'
+                          : s.type === 'company'
+                            ? 'warning'
+                            : 'default'
+                      }
                     >
-                      {s.type === 'tag' ? `#${s.name}` : s.name}
+                      {s.type === 'tag'
+                        ? `#${s.name}`
+                        : s.type === 'company'
+                          ? `会社:${s.name}`
+                          : s.name}
                     </Chip>
                   ))}
                 </div>

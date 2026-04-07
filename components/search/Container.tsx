@@ -190,7 +190,7 @@ export const SearchPage = () => {
         endContent={
           <div className="text-default-500">
             <p>使用游戏标题的一部分作为关键词搜索更容易找到游戏。</p>
-            <p>您可以使用多个关键词和标签的组合进行搜索。</p>
+            <p>您可以使用多个关键词、标签和会社的组合进行搜索。</p>
           </div>
         }
       />

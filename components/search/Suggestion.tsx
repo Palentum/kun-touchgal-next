@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from 'react'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import { Chip } from '@heroui/react'
-import { Key, Tag } from 'lucide-react'
+import { House, Key, Tag } from 'lucide-react'
 import { KunLoading } from '~/components/kun/Loading'
 import type { Dispatch, RefObject, SetStateAction } from 'react'
 import type { SearchSuggestionType } from '~/types/api/search'
@@ -55,8 +55,12 @@ export const SearchSuggestion = ({
   const handleClickSuggestion = (suggestions: SearchSuggestionType[]) => {
     setQuery('')
     setSelectedSuggestions((prev) => {
-      const namesToRemove = new Set(suggestions.map((s) => s.name))
-      const filtered = prev.filter((item) => !namesToRemove.has(item.name))
+      const keysToRemove = new Set(
+        suggestions.map((s) => `${s.type}:${s.name}`)
+      )
+      const filtered = prev.filter(
+        (item) => !keysToRemove.has(`${item.type}:${item.name}`)
+      )
       return [...filtered, ...suggestions]
     })
     inputRef.current?.focus()
@@ -75,7 +79,7 @@ export const SearchSuggestion = ({
   return (
     <div className="absolute z-50 w-full p-3 space-y-2 overflow-auto border shadow-lg max-h-96 rounded-2xl bg-content1 border-default-200">
       <p className="text-default-500">
-        点击关键词按您的输入搜索, 点击标签使用多标签搜索
+        点击关键词按您的输入搜索，也可以直接选择标签或会社进行组合搜索
       </p>
 
       {/* <div
@@ -136,6 +140,15 @@ export const SearchSuggestion = ({
                     startContent={<Tag className="w-4 h-4" />}
                   >
                     标签
+                  </Chip>
+                )}
+                {suggestion.type === 'company' && (
+                  <Chip
+                    color="warning"
+                    variant="flat"
+                    startContent={<House className="w-4 h-4" />}
+                  >
+                    会社
                   </Chip>
                 )}
               </span>

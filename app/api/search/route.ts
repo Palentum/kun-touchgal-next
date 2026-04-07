@@ -42,6 +42,9 @@ const searchGalgame = async (
   const tagArray = query
     .filter((item) => item.type === 'tag')
     .map((item) => item.name)
+  const companyArray = query
+    .filter((item) => item.type === 'company')
+    .map((item) => item.name)
 
   const dateFilter = buildGalgameDateFilter(selectedYears, selectedMonths)
   const where = buildGalgameWhere({
@@ -95,6 +98,19 @@ const searchGalgame = async (
         some: {
           tag: {
             OR: [{ name: q }, { alias: { has: q } }]
+          }
+        }
+      }
+    })),
+    ...companyArray.map((q) => ({
+      company: {
+        some: {
+          company: {
+            OR: [
+              { name: q },
+              { alias: { has: q } },
+              { parent_brand: { has: q } }
+            ]
           }
         }
       }

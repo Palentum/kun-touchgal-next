@@ -92,10 +92,16 @@ export const SearchInput = ({
     }, 100)
   }
 
-  const handleRemoveChip = (nameToRemove: string) => {
+  const handleRemoveChip = (suggestionToRemove: SearchSuggestionType) => {
     clearBlurTimeout()
     setSelectedSuggestions((prevSuggestions) =>
-      prevSuggestions.filter((suggestion) => suggestion.name !== nameToRemove)
+      prevSuggestions.filter(
+        (suggestion) =>
+          !(
+            suggestion.type === suggestionToRemove.type &&
+            suggestion.name === suggestionToRemove.name
+          )
+      )
     )
     inputRef.current?.focus()
   }
@@ -112,8 +118,12 @@ export const SearchInput = ({
       })
     )
     setSelectedSuggestions((prev) => {
-      const namesToRemove = new Set(suggestions.map((s) => s.name))
-      const filtered = prev.filter((item) => !namesToRemove.has(item.name))
+      const keysToRemove = new Set(
+        suggestions.map((s) => `${s.type}:${s.name}`)
+      )
+      const filtered = prev.filter(
+        (item) => !keysToRemove.has(`${item.type}:${item.name}`)
+      )
       return [...filtered, ...suggestions]
     })
     setQuery('')
@@ -169,10 +179,20 @@ export const SearchInput = ({
           <Chip
             key={index}
             variant="flat"
-            color={suggestion.type === 'keyword' ? 'primary' : 'secondary'}
-            onClose={() => handleRemoveChip(suggestion.name)}
+            color={
+              suggestion.type === 'keyword'
+                ? 'primary'
+                : suggestion.type === 'company'
+                  ? 'warning'
+                  : 'secondary'
+            }
+            onClose={() => handleRemoveChip(suggestion)}
           >
-            {suggestion.name}
+            {suggestion.type === 'tag'
+              ? `#${suggestion.name}`
+              : suggestion.type === 'company'
+                ? `会社:${suggestion.name}`
+                : suggestion.name}
           </Chip>
         ))}
 
