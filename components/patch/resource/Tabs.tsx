@@ -139,7 +139,9 @@ export const ResourceTabs = ({
       return
     }
 
-    const targetElement = document.getElementById(`resource-${targetResourceId}`)
+    const targetElement = document.getElementById(
+      `resource-${targetResourceId}`
+    )
     if (!targetElement) {
       setHighlightedResourceId(null)
       return

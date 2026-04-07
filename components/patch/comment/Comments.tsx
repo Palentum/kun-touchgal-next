@@ -35,9 +35,9 @@ export const Comments = ({ id }: Props) => {
   } | null>(null)
   const [loading, setLoading] = useState(false)
   const [showEditor, setShowEditor] = useState(false)
-  const [highlightedCommentId, setHighlightedCommentId] = useState<number | null>(
-    null
-  )
+  const [highlightedCommentId, setHighlightedCommentId] = useState<
+    number | null
+  >(null)
   const user = useUserStore((state) => state.user)
   const targetCommentId = useMemo(() => {
     const rawCommentId = searchParams.get('commentId')

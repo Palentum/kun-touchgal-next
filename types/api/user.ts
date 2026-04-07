@@ -38,7 +38,6 @@ export interface UserResource {
   patchId: number
   patchName: string
   patchBanner: string
-  size: string
   type: string[]
   language: string[]
   platform: string[]

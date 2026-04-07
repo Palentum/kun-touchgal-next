@@ -32,16 +32,48 @@ export const RenderCell = (resource: AdminResource, columnKey: string) => {
         />
       )
     case 'storage':
+      if (!resource.links.length) {
+        return (
+          <Chip color="default" variant="flat">
+            无链接
+          </Chip>
+        )
+      }
       return (
-        <Chip color="primary" variant="flat">
-          {SUPPORTED_RESOURCE_LINK_MAP[resource.storage]}
-        </Chip>
+        <div className="flex flex-wrap gap-1">
+          {resource.links.slice(0, 2).map((link) => (
+            <Chip key={link.id} color="primary" variant="flat">
+              {SUPPORTED_RESOURCE_LINK_MAP[link.storage]}
+            </Chip>
+          ))}
+          {resource.links.length > 2 && (
+            <Chip color="default" variant="flat">
+              +{resource.links.length - 2}
+            </Chip>
+          )}
+        </div>
       )
     case 'size':
+      if (!resource.links.length) {
+        return (
+          <Chip size="sm" variant="flat">
+            无链接
+          </Chip>
+        )
+      }
       return (
-        <Chip size="sm" variant="flat">
-          {resource.size}
-        </Chip>
+        <div className="flex flex-wrap gap-1">
+          {resource.links.slice(0, 2).map((link) => (
+            <Chip key={link.id} size="sm" variant="flat">
+              {link.size}
+            </Chip>
+          ))}
+          {resource.links.length > 2 && (
+            <Chip size="sm" variant="flat">
+              +{resource.links.length - 2}
+            </Chip>
+          )}
+        </div>
       )
     case 'created':
       return (

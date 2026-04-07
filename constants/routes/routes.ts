@@ -153,10 +153,7 @@ export const createBreadcrumbItem = (
     }
     const companyName =
       pageTitle.match(/所属会社为 (.+?) 的 Galgame/)?.[1] ?? pageTitle
-    return [
-      allCompanyRoute,
-      { ...defaultItem, label: companyName }
-    ]
+    return [allCompanyRoute, { ...defaultItem, label: companyName }]
   }
   if (isMessageNoticePath(pathname)) {
     const noticeRoute: KunBreadcrumbItem = {

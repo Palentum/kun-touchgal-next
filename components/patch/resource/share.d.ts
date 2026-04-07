@@ -1,4 +1,9 @@
-import type { Control, FieldErrors } from 'react-hook-form'
+import type {
+  Control,
+  FieldErrors,
+  UseFormSetValue,
+  UseFormWatch
+} from 'react-hook-form'
 import type { PatchResourceLink } from '~/types/api/patch'
 
 interface Fields {
@@ -6,15 +11,18 @@ interface Fields {
   name: string
   section: string
   patchId: number
-  code: string
-  storage: string
-  hash: string
-  content: string
-  size: string
-  password: string
   note: string
   language: string[]
   platform: string[]
+  links: Array<{
+    id?: number
+    storage: PatchResourceLink['storage']
+    hash: PatchResourceLink['hash']
+    content: PatchResourceLink['content']
+    size: PatchResourceLink['size']
+    code: PatchResourceLink['code']
+    password: PatchResourceLink['password']
+  }>
 }
 
 export interface FileStatus {
@@ -27,3 +35,5 @@ export interface FileStatus {
 
 export type ErrorType = FieldErrors<Fields>
 export type ControlType = Control<Fields, any>
+export type SetValueType = UseFormSetValue<Fields>
+export type WatchType = UseFormWatch<Fields>

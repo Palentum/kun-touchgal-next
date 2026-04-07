@@ -6,10 +6,7 @@ import {
 import { prisma } from '~/prisma/index'
 import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { blockedTagSchema } from '~/validations/user'
-import {
-  appendBlockedTagId,
-  removeBlockedTagId
-} from '~/utils/blockedTag'
+import { appendBlockedTagId, removeBlockedTagId } from '~/utils/blockedTag'
 
 const getBlockedTags = async (uid: number) => {
   const user = await prisma.user.findUnique({
@@ -35,9 +32,7 @@ const getBlockedTags = async (uid: number) => {
 
   const tagMap = new Map(tags.map((tag) => [tag.id, tag]))
 
-  return user.blocked_tag_ids
-    .map((id) => tagMap.get(id))
-    .filter((tag) => !!tag)
+  return user.blocked_tag_ids.map((id) => tagMap.get(id)).filter((tag) => !!tag)
 }
 
 const addBlockedTag = async (uid: number, tagId: number) => {

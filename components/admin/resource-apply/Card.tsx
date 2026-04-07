@@ -1,6 +1,5 @@
 import { Card, CardBody } from '@heroui/react'
 import { Chip } from '@heroui/react'
-import { Download, Heart } from 'lucide-react'
 import Link from 'next/link'
 import { formatTimeDifference } from '~/utils/time'
 import { KunPatchAttribute } from '~/components/kun/PatchAttribute'
@@ -60,37 +59,53 @@ export const AdminResourceApplyCard = ({ resource, actions }: Props) => {
             platforms={resource.platform}
             size="sm"
           />
-          <Chip size="sm" color="warning" variant="flat">
-            {resource.size}
-          </Chip>
-          <Chip size="sm" variant="flat">
-            {SUPPORTED_RESOURCE_LINK_MAP[resource.storage]}
+          <Chip size="sm" color="primary" variant="flat">
+            {resource.links.length} 个链接
           </Chip>
         </div>
 
-        <div className="grid gap-2 text-xs sm:text-sm text-default-600">
-          <div>
-            <span className="font-medium">下载链接：</span>
-            <span className="break-all">{resource.content}</span>
-          </div>
-          {resource.hash && (
-            <div>
-              <span className="font-medium">哈希：</span>
-              <span className="break-all">{resource.hash}</span>
+        <div className="grid gap-3 text-xs sm:text-sm text-default-600">
+          {resource.links.map((link, index) => (
+            <div
+              key={link.id}
+              className="rounded-large border border-default-200 p-3 space-y-1"
+            >
+              <div className="flex flex-wrap gap-2">
+                <Chip size="sm" variant="flat">
+                  链接 #{index + 1}
+                </Chip>
+                <Chip size="sm" color="warning" variant="flat">
+                  {link.size}
+                </Chip>
+                <Chip size="sm" variant="flat">
+                  {SUPPORTED_RESOURCE_LINK_MAP[link.storage]}
+                </Chip>
+              </div>
+
+              <div>
+                <span className="font-medium">下载链接：</span>
+                <span className="break-all">{link.content}</span>
+              </div>
+              {link.hash && (
+                <div>
+                  <span className="font-medium">哈希：</span>
+                  <span className="break-all">{link.hash}</span>
+                </div>
+              )}
+              {link.code && (
+                <div>
+                  <span className="font-medium">提取码：</span>
+                  <span className="break-all">{link.code}</span>
+                </div>
+              )}
+              {link.password && (
+                <div>
+                  <span className="font-medium">解压密码：</span>
+                  <span className="break-all">{link.password}</span>
+                </div>
+              )}
             </div>
-          )}
-          {resource.code && (
-            <div>
-              <span className="font-medium">提取码：</span>
-              <span className="break-all">{resource.code}</span>
-            </div>
-          )}
-          {resource.password && (
-            <div>
-              <span className="font-medium">解压密码：</span>
-              <span className="break-all">{resource.password}</span>
-            </div>
-          )}
+          ))}
         </div>
 
         <div className="flex justify-end">{actions}</div>

@@ -38,7 +38,9 @@ export const PatchTag = ({ patchId, initialTags }: Props) => {
           </Tooltip>
         ))}
 
-        {!visibleTags.length && <Chip>{'这个 Galgame 暂时没有可显示的标签'}</Chip>}
+        {!visibleTags.length && (
+          <Chip>{'这个 Galgame 暂时没有可显示的标签'}</Chip>
+        )}
       </div>
 
       {user.role > 2 && (

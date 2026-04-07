@@ -70,20 +70,55 @@ export const patchResourceCreateSchema = z.object({
       message: '资源链接类型仅能为 Galgame 或补丁'
     }),
   name: z.string().max(300, { message: '资源名称最多 300 个字符' }),
-  storage: z.string().refine((type) => SUPPORTED_RESOURCE_LINK.includes(type), {
-    message: '非法的资源链接类型'
-  }),
-  hash: z.string().max(107),
-  content: z
-    .string()
-    .min(1)
-    .max(1007, { message: '您的资源链接内容最多 1007 个字符' }),
-  size: z
-    .string()
-    .regex(ResourceSizeRegex, { message: '请选择资源的大小, MB 或 GB' }),
-  code: z.string().trim().max(1007, { message: '资源提取码长度最多 1007 位' }),
-  password: z.string().max(1007, { message: '资源解压码长度最多 1007 位' }),
   note: z.string().max(10007, { message: '资源备注最多 10007 字' }),
+  links: z
+    .array(
+      z
+        .object({
+          id: z.coerce.number().min(1).max(9999999).optional(),
+          storage: z
+            .string()
+            .refine((type) => SUPPORTED_RESOURCE_LINK.includes(type), {
+              message: '非法的资源链接类型'
+            }),
+          hash: z.string().max(107),
+          content: z
+            .string()
+            .max(1007, { message: '您的资源链接内容最多 1007 个字符' }),
+          size: z.string().regex(ResourceSizeRegex, {
+            message: '请选择资源的大小, MB 或 GB'
+          }),
+          code: z
+            .string()
+            .trim()
+            .max(1007, { message: '资源提取码长度最多 1007 位' }),
+          password: z
+            .string()
+            .max(1007, { message: '资源解压码长度最多 1007 位' })
+        })
+        .superRefine((link, ctx) => {
+          if (link.storage === 's3') {
+            if (!link.hash.trim()) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: '请先上传资源文件',
+                path: ['hash']
+              })
+            }
+            return
+          }
+
+          if (!link.content.trim()) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: '请输入资源链接',
+              path: ['content']
+            })
+          }
+        })
+    )
+    .min(1, { message: '请至少添加一个资源链接' })
+    .max(10, { message: '单个资源最多添加 10 条链接' }),
   type: z
     .array(z.string())
     .min(1, { message: '请选择至少一个资源类型' })
@@ -138,7 +173,8 @@ export const getPatchHistorySchema = z.object({
 
 export const updatePatchResourceStatsSchema = z.object({
   patchId: z.coerce.number({ message: 'ID 必须为数字' }).min(1).max(9999999),
-  resourceId: z.coerce.number({ message: 'ID 必须为数字' }).min(1).max(9999999)
+  resourceId: z.coerce.number({ message: 'ID 必须为数字' }).min(1).max(9999999),
+  linkId: z.coerce.number({ message: 'ID 必须为数字' }).min(1).max(9999999)
 })
 
 export const createPatchFeedbackSchema = z.object({

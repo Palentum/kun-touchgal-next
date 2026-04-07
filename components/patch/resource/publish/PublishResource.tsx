@@ -1,7 +1,7 @@
 'use client'
 
 import { z } from 'zod'
-import { useRef, useState } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@heroui/button'
@@ -18,14 +18,12 @@ import { kunFetchPost } from '~/utils/kunFetch'
 import { patchResourceCreateSchema } from '~/validations/patch'
 import { ResourceLinksInput } from './ResourceLinksInput'
 import { ResourceDetailsForm } from './ResourceDetailsForm'
-import { ResourceTypeSelect } from './ResourceTypeSelect'
 import { ResourceSectionSelect } from './ResourceSectionSelect'
 import { Upload, Gamepad2, Puzzle } from 'lucide-react'
 import {
   RESOURCE_SECTION_MAP,
   SUPPORTED_RESOURCE_SECTION
 } from '~/constants/resource'
-import { FileUploadContainer } from '../upload/FileUploadContainer'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import { useUserStore } from '~/store/userStore'
 import type { PatchResource } from '~/types/api/patch'
@@ -50,6 +48,20 @@ export const PublishResource = ({
   onClose,
   onSuccess
 }: CreateResourceProps) => {
+  const createDefaultLink = (section: string) => ({
+    storage:
+      section === 'galgame'
+        ? user.role > 2
+          ? 'touchgal'
+          : 'user'
+        : userRoleStorageMap[user.role],
+    hash: '',
+    content: '',
+    size: '',
+    code: '',
+    password: ''
+  })
+
   const [creating, setCreating] = useState(false)
   const creatingRef = useRef(false)
   const [uploadingResource, setUploadingResource] = useState(false)
@@ -69,18 +81,13 @@ export const PublishResource = ({
     resolver: zodResolver(patchResourceCreateSchema),
     defaultValues: {
       patchId,
-      storage: userRoleStorageMap[user.role],
       name: '',
       section: user.role > 2 ? 'galgame' : 'patch',
-      hash: '',
-      content: '',
-      code: '',
       type: [],
       language: [],
       platform: [],
-      size: '',
-      password: '',
-      note: ''
+      note: '',
+      links: [createDefaultLink(user.role > 2 ? 'galgame' : 'patch')]
     }
   })
 
@@ -112,21 +119,9 @@ export const PublishResource = ({
     }
   }
 
-  const handleUploadSuccess = (
-    storage: string,
-    hash: string,
-    content: string,
-    size: string
-  ) => {
-    setValue('storage', storage)
-    setValue('hash', hash)
-    setValue('content', content)
-    setValue('size', size)
-  }
-
   const progress = Math.min((user.dailyUploadLimit / 5120) * 100, 100)
 
-  const sectionIcons: Record<string, React.ReactNode> = {
+  const sectionIcons: Record<string, ReactNode> = {
     galgame: <Gamepad2 className="size-8" />,
     patch: <Puzzle className="size-8" />
   }
@@ -171,10 +166,7 @@ export const PublishResource = ({
                   className="flex h-24 w-40 flex-col gap-2"
                   onPress={() => {
                     setValue('section', s)
-                    setValue(
-                      'storage',
-                      s === 'galgame' ? 'user' : userRoleStorageMap[user.role]
-                    )
+                    setValue('links', [createDefaultLink(s)])
                     setSectionConfirmed(true)
                   }}
                 >
@@ -192,36 +184,19 @@ export const PublishResource = ({
                 section={watch().section}
                 setSection={(content) => {
                   setValue('section', content)
-                  setValue('storage', userRoleStorageMap[user.role])
+                  setValue('links', [createDefaultLink(content)])
                 }}
               />
             )}
 
-            <ResourceTypeSelect
-              section={watch().section}
+            <ResourceLinksInput
               control={control}
               errors={errors}
+              setValue={setValue}
+              watch={watch}
+              section={watch().section}
+              setUploadingResource={setUploadingResource}
             />
-
-            {watch().storage === 's3' && (
-              <FileUploadContainer
-                onSuccess={handleUploadSuccess}
-                handleRemoveFile={() => reset()}
-                setUploadingResource={setUploadingResource}
-              />
-            )}
-
-            {(watch().storage !== 's3' || watch().content) && (
-              <ResourceLinksInput
-                errors={errors}
-                storage={watch().storage}
-                content={watch().content}
-                size={watch().size}
-                setContent={(content) => setValue('content', content)}
-                setSize={(size) => setValue('size', size)}
-                setCode={(code) => setValue('code', code)}
-              />
-            )}
 
             <ResourceDetailsForm control={control} errors={errors} />
           </form>

@@ -138,7 +138,17 @@ export const ResourceDownload = ({ resource }: Props) => {
         </div>
       </div>
 
-      {showLinks[resource.id] && <ResourceDownloadCard resource={resource} />}
+      {showLinks[resource.id] && (
+        <div className="space-y-3">
+          {resource.links.map((link) => (
+            <ResourceDownloadCard
+              key={link.id}
+              resource={resource}
+              link={link}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

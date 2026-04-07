@@ -15,13 +15,16 @@ export const uploadPatchResource = async (patchId: number, hash: string) => {
   return { downloadLink }
 }
 
-export const deletePatchResource = async (
+export const deletePatchResourceLink = async (
   content: string,
-  id: number,
+  patchId: number,
   hash: string
 ) => {
   const fileName = content.split('/').pop()
-  const s3Key = `patch/${id}/${hash}/${fileName}`
+  if (!fileName) {
+    return
+  }
+  const s3Key = `patch/${patchId}/resource/${hash}/${fileName}`
   await deleteFileFromS3(s3Key)
 }
 

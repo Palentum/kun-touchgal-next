@@ -1,14 +1,15 @@
+import type { PatchResourceLink } from './patch'
+
 export interface PatchResource {
   id: number
   name: string
   section: string
   uniqueId: string
-  storage: string
-  size: string
   type: string[]
   language: string[]
   platform: string[]
   note: string
+  links: PatchResourceLink[]
   likeCount: number
   download: number
   patchId: number

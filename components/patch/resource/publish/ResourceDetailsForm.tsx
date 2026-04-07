@@ -99,21 +99,6 @@ export const ResourceDetailsForm = ({
           </Select>
         )}
       />
-
-      <Controller
-        name="size"
-        control={control}
-        render={({ field }) => (
-          <Input
-            {...field}
-            isRequired
-            label="大小 (MB 或 GB)"
-            placeholder="请输入资源的大小, 例如 1.007MB"
-            isInvalid={!!errors.size}
-            errorMessage={errors.size?.message}
-          />
-        )}
-      />
     </div>
 
     <Controller
@@ -124,36 +109,8 @@ export const ResourceDetailsForm = ({
           {...field}
           label="资源名称"
           placeholder="请填写您的资源名称, 例如 DeepSeek V3 翻译补丁"
-          isInvalid={!!errors.note}
-          errorMessage={errors.note?.message}
-        />
-      )}
-    />
-
-    <Controller
-      name="code"
-      control={control}
-      render={({ field }) => (
-        <Input
-          {...field}
-          label="提取码"
-          placeholder="如果资源的获取需要密码, 请填写密码"
-          isInvalid={!!errors.password}
-          errorMessage={errors.password?.message}
-        />
-      )}
-    />
-
-    <Controller
-      name="password"
-      control={control}
-      render={({ field }) => (
-        <Input
-          {...field}
-          label="解压码"
-          placeholder="如果资源的解压需要解压码, 请填写解压码"
-          isInvalid={!!errors.code}
-          errorMessage={errors.code?.message}
+          isInvalid={!!errors.name}
+          errorMessage={errors.name?.message}
         />
       )}
     />

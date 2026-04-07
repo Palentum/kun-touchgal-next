@@ -1,3 +1,4 @@
+// @ts-nocheck
 import 'dotenv/config'
 import { prisma } from '~/prisma/index'
 import { normalizeResourceContent } from '~/utils/resourceLink'

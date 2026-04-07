@@ -3,9 +3,7 @@ import { prisma } from '~/prisma/index'
 import { getPatchVisibilityWhere } from '~/app/api/utils/getPatchVisibilityWhere'
 import type { Prisma } from '~/prisma/generated/prisma/client'
 
-const getRandomUniqueId = async (
-  visibilityWhere: Prisma.patchWhereInput
-) => {
+const getRandomUniqueId = async (visibilityWhere: Prisma.patchWhereInput) => {
   const totalArticles = await prisma.patch.findMany({
     where: visibilityWhere,
     select: { unique_id: true }

@@ -49,10 +49,9 @@ export const BlockedTags = () => {
 
     setUpdatingId(tag.id)
     try {
-      const response = await kunFetchDelete<KunResponse<UpdateBlockedTagResponse>>(
-        '/user/setting/blocked-tag',
-        { tagId: tag.id }
-      )
+      const response = await kunFetchDelete<
+        KunResponse<UpdateBlockedTagResponse>
+      >('/user/setting/blocked-tag', { tagId: tag.id })
       if (typeof response === 'string') {
         toast.error(response)
         return

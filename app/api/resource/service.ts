@@ -37,6 +37,9 @@ export const getPatchResource = async (
             }
           }
         },
+        links: {
+          orderBy: { sort_order: 'asc' }
+        },
         _count: {
           select: {
             like_by: true
@@ -54,12 +57,21 @@ export const getPatchResource = async (
     name: resource.name,
     section: resource.section,
     uniqueId: resource.patch.unique_id,
-    storage: resource.storage,
-    size: resource.size,
     type: resource.type,
     language: resource.language,
     note: resource.note.slice(0, 233),
     platform: resource.platform,
+    links: resource.links.map((link) => ({
+      id: link.id,
+      storage: link.storage,
+      size: link.size,
+      code: link.code,
+      password: link.password,
+      hash: link.hash,
+      content: link.content,
+      sortOrder: link.sort_order,
+      download: link.download
+    })),
     likeCount: resource._count.like_by,
     download: resource.download,
     patchId: resource.patch_id,

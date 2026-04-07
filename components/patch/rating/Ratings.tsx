@@ -160,7 +160,8 @@ export const Ratings = ({ id }: Props) => {
 
   const displayedRatings = hideNoContent
     ? ratings.filter(
-        (r) => (r.shortSummary && r.shortSummary.trim()) || r.id === targetRatingId
+        (r) =>
+          (r.shortSummary && r.shortSummary.trim()) || r.id === targetRatingId
       )
     : ratings
 

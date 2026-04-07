@@ -18,9 +18,23 @@ export const getPatchResourceApply = async (
   const where = search
     ? {
         ...whereBase,
-        content: {
-          contains: search,
-          mode: 'insensitive' as const
+        links: {
+          some: {
+            OR: [
+              {
+                content: {
+                  contains: search,
+                  mode: 'insensitive' as const
+                }
+              },
+              {
+                hash: {
+                  contains: search,
+                  mode: 'insensitive' as const
+                }
+              }
+            ]
+          }
         }
       }
     : whereBase
@@ -45,6 +59,9 @@ export const getPatchResourceApply = async (
             avatar: true,
             role: true
           }
+        },
+        links: {
+          orderBy: { sort_order: 'asc' }
         }
       }
     }),
@@ -57,16 +74,21 @@ export const getPatchResourceApply = async (
     section: resource.section,
     uniqueId: resource.patch.unique_id,
     patchName: resource.patch.name,
-    storage: resource.storage,
-    size: resource.size,
     type: resource.type,
     language: resource.language,
     note: resource.note,
-    hash: resource.hash,
-    content: resource.content,
-    code: resource.code,
-    password: resource.password,
     platform: resource.platform,
+    links: resource.links.map((link) => ({
+      id: link.id,
+      storage: link.storage,
+      size: link.size,
+      code: link.code,
+      password: link.password,
+      hash: link.hash,
+      content: link.content,
+      sortOrder: link.sort_order,
+      download: link.download
+    })),
     likeCount: 0,
     isLike: false,
     status: resource.status,

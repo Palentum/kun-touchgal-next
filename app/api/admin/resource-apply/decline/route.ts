@@ -5,8 +5,10 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { createMessage } from '~/app/api/utils/message'
 import { kunParsePutBody } from '~/app/api/utils/parseQuery'
 import { declinePatchResourceSchema } from '~/validations/admin'
-import { deleteFileFromS3 } from '~/lib/s3'
-import { recalcPatchType } from '~/app/api/patch/resource/_helper'
+import {
+  deletePatchResourceLink,
+  recalcPatchType
+} from '~/app/api/patch/resource/_helper'
 
 const declinePatchResource = async (
   input: z.infer<typeof declinePatchResourceSchema>,
@@ -18,7 +20,8 @@ const declinePatchResource = async (
     where: { id: resourceId },
     include: {
       user: true,
-      patch: true
+      patch: true,
+      links: true
     }
   })
   if (!resource) {
@@ -30,13 +33,9 @@ const declinePatchResource = async (
     return '管理员不存在'
   }
 
-  if (resource.storage === 's3') {
-    const fileName = resource.content.split('/').pop()
-    const s3Key = `patch/${resource.patch_id}/${resource.hash}/${fileName}`
-    await deleteFileFromS3(s3Key)
-  }
+  const s3Links = resource.links.filter((link) => link.storage === 's3')
 
-  return prisma.$transaction(async (prisma) => {
+  const response = await prisma.$transaction(async (prisma) => {
     await prisma.patch_resource.delete({
       where: { id: resourceId }
     })
@@ -59,6 +58,12 @@ const declinePatchResource = async (
 
     return {}
   })
+
+  for (const link of s3Links) {
+    await deletePatchResourceLink(link.content, resource.patch_id, link.hash)
+  }
+
+  return response
 }
 
 export const PUT = async (req: NextRequest) => {

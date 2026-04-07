@@ -17,6 +17,11 @@ const downloadStats = async (
       where: { id: input.resourceId },
       data: { download: { increment: 1 } }
     })
+
+    await prisma.patch_resource_link.updateMany({
+      where: { id: input.linkId, resource_id: input.resourceId },
+      data: { download: { increment: 1 } }
+    })
     return {}
   })
 }

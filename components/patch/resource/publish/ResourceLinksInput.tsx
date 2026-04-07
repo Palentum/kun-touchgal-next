@@ -1,150 +1,323 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, type Dispatch, type SetStateAction } from 'react'
+import { Controller, useFieldArray } from 'react-hook-form'
 import { Input } from '@heroui/input'
 import { Button } from '@heroui/button'
+import { Card, CardBody } from '@heroui/card'
 import { Chip } from '@heroui/chip'
-import { Plus, X } from 'lucide-react'
-import { ErrorType } from '../share'
-import { SUPPORTED_RESOURCE_LINK_MAP } from '~/constants/resource'
+import { Select, SelectItem } from '@heroui/select'
+import { Divider } from '@heroui/divider'
+import { Plus, Trash2 } from 'lucide-react'
+import toast from 'react-hot-toast'
+import { SUPPORTED_RESOURCE_LINK_MAP, storageTypes } from '~/constants/resource'
 import { fetchLinkData, fetchListData } from './fetchAlistSize'
 import { parseResourceLink } from '~/utils/resourceLink'
-import toast from 'react-hot-toast'
+import { FileUploadContainer } from '../upload/FileUploadContainer'
+import { useUserStore } from '~/store/userStore'
+import type { ControlType, ErrorType, SetValueType, WatchType } from '../share'
 
 interface ResourceLinksInputProps {
+  control: ControlType
   errors: ErrorType
-  storage: string
-  content: string
-  size: string
-  setContent: (value: string) => void
-  setSize: (value: string) => void
-  setCode?: (value: string) => void
+  setValue: SetValueType
+  watch: WatchType
+  section: string
+  setUploadingResource: Dispatch<SetStateAction<boolean>>
 }
 
-export const ResourceLinksInput = ({
-  errors,
-  storage,
-  content,
-  size,
-  setContent,
-  setSize,
-  setCode
-}: ResourceLinksInputProps) => {
-  const links = content.trim() ? content.trim().split(',') : ['']
-
-  const checkLinkSize = async (link: string) => {
-    toast('正在尝试从 TouchGal Alist 获取文件大小')
-    const data = await fetchLinkData(link)
-    if (data && data.code === 0) {
-      let sizeInGB
-      if (data.data.source.size > 0) {
-        sizeInGB = (data.data.source.size / 1024 ** 3).toFixed(3)
-      } else {
-        const listSize = await fetchListData(data.data.key)
-        sizeInGB = listSize ? (listSize / 1024 ** 3).toFixed(3) : ''
-      }
-      toast.success('获取文件大小成功')
-      setSize(`${sizeInGB} GB`)
-    }
+const getDefaultLinkStorage = (section: string, role: number) => {
+  if (section === 'galgame') {
+    return role > 2 ? 'touchgal' : 'user'
   }
+  if (role > 3) {
+    return 'touchgal'
+  }
+  if (role > 1) {
+    return 's3'
+  }
+  return 'user'
+}
+
+const getDisabledStorageKeys = (section: string, role: number) => {
+  if (role > 3 && section === 'patch') {
+    return []
+  }
+  if (role > 3 && section === 'galgame') {
+    return ['s3', 'user']
+  }
+  if (role > 1 && section === 'patch') {
+    return ['touchgal']
+  }
+  return ['s3', 'touchgal']
+}
+
+const createEmptyLink = (section: string, role: number) => ({
+  storage: getDefaultLinkStorage(section, role),
+  hash: '',
+  content: '',
+  size: '',
+  code: '',
+  password: ''
+})
+
+export const ResourceLinksInput = ({
+  control,
+  errors,
+  setValue,
+  watch,
+  section,
+  setUploadingResource
+}: ResourceLinksInputProps) => {
+  const userRole = useUserStore((state) => state.user.role)
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'links'
+  })
+  const links = watch('links') || []
 
   useEffect(() => {
-    if (!links.length || size) {
-      return
+    if (!fields.length) {
+      append(createEmptyLink(section, userRole))
     }
-    if (links.some((link) => link.includes('pan.touchgal.net/s/'))) {
-      checkLinkSize(links[0])
-    }
-  }, [links, setSize])
+  }, [append, fields.length, section, userRole])
 
-  const handleLinkChange = (index: number, rawValue: string) => {
-    const newLinks = [...links]
-    newLinks[index] = rawValue
-    setContent(newLinks.filter(Boolean).toString())
-  }
-
-  const handleLinkPaste = (
-    index: number,
-    e: React.ClipboardEvent<HTMLInputElement>
-  ) => {
-    if (storage === 's3' || !setCode) return
-    const pasted = e.clipboardData.getData('text')
-    if (!pasted.trim()) return
-    const { url, code } = parseResourceLink(pasted)
-    if (url !== pasted.trim() || code) {
-      e.preventDefault()
-      const newLinks = [...links]
-      newLinks[index] = url
-      setContent(newLinks.filter(Boolean).toString())
-      if (code) {
-        setCode(code)
-        toast.success('已自动识别并填入提取码')
+  useEffect(() => {
+    links.forEach(async (link, index) => {
+      if (
+        !link ||
+        link.storage === 's3' ||
+        !link.content ||
+        !!link.size ||
+        !link.content.includes('pan.touchgal.net/s/')
+      ) {
+        return
       }
-    }
-  }
+
+      toast('正在尝试从 TouchGal Alist 获取文件大小')
+      const data = await fetchLinkData(link.content)
+      if (data && data.code === 0) {
+        let sizeInGB
+        if (data.data.source.size > 0) {
+          sizeInGB = (data.data.source.size / 1024 ** 3).toFixed(3)
+        } else {
+          const listSize = await fetchListData(data.data.key)
+          sizeInGB = listSize ? (listSize / 1024 ** 3).toFixed(3) : ''
+        }
+        if (sizeInGB) {
+          setValue(`links.${index}.size`, `${sizeInGB} GB`, {
+            shouldValidate: true
+          })
+          toast.success('获取文件大小成功')
+        }
+      }
+    })
+  }, [links, setValue])
 
   return (
-    <div className="space-y-2">
-      <h3 className="text-lg font-medium">资源链接</h3>
-      <p className="text-sm text-default-500">
-        {storage === 's3'
-          ? '已为您自动创建资源链接 √'
-          : '上传资源会自动添加资源链接, 您也可以自行添加资源链接。为保证单一性, 建议您一次添加一条资源链接'}
-      </p>
-
-      {links.map((link, index) => (
-        <div key={index} className="flex items-center gap-2">
-          <Chip color="primary" variant="flat">
-            {
-              SUPPORTED_RESOURCE_LINK_MAP[
-                storage as keyof typeof SUPPORTED_RESOURCE_LINK_MAP
-              ]
-            }
-          </Chip>
-
-          <div className="flex-col w-full">
-            <Input
-              isRequired
-              placeholder={
-                storage === 's3' ? '资源链接不可编辑' : '请输入资源链接'
-              }
-              value={link}
-              isReadOnly={storage === 's3'}
-              isDisabled={storage === 's3'}
-              isInvalid={!!errors.content}
-              errorMessage={errors.content?.message}
-              onChange={(e) => handleLinkChange(index, e.target.value)}
-              onPaste={(e) => handleLinkPaste(index, e)}
-            />
-          </div>
-
-          {storage !== 's3' && (
-            <div className="flex justify-end">
-              {index === links.length - 1 ? (
-                <Button
-                  isIconOnly
-                  variant="flat"
-                  onPress={() => setContent([...links, ''].toString())}
-                >
-                  <Plus className="size-4" />
-                </Button>
-              ) : (
-                <Button
-                  isIconOnly
-                  variant="flat"
-                  color="danger"
-                  onPress={() => {
-                    const newLinks = links.filter((_, i) => i !== index)
-                    setContent(newLinks.toString())
-                  }}
-                >
-                  <X className="size-4" />
-                </Button>
-              )}
-            </div>
-          )}
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h3 className="text-lg font-medium">资源链接</h3>
+          <p className="text-sm text-default-500">
+            每条资源链接都拥有独立的存储类型、大小、提取码和解压码
+          </p>
         </div>
-      ))}
+
+        <Button
+          variant="flat"
+          startContent={<Plus className="size-4" />}
+          onPress={() => append(createEmptyLink(section, userRole))}
+        >
+          添加链接
+        </Button>
+      </div>
+
+      {fields.map((field, index) => {
+        const currentLink = links[index]
+        const currentStorage =
+          currentLink?.storage || getDefaultLinkStorage(section, userRole)
+
+        return (
+          <Card key={field.id} className="border border-default-200">
+            <CardBody className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Chip color="primary" variant="flat">
+                  链接 #{index + 1}
+                </Chip>
+
+                <Button
+                  isIconOnly
+                  variant="light"
+                  color="danger"
+                  isDisabled={fields.length === 1}
+                  onPress={() => remove(index)}
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
+
+              <Controller
+                name={`links.${index}.storage`}
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    label="存储类型"
+                    selectedKeys={field.value ? [field.value] : []}
+                    onSelectionChange={(key) => {
+                      const value = Array.from(key).join('')
+                      field.onChange(value)
+                      if (value !== 's3') {
+                        setValue(`links.${index}.hash`, '', {
+                          shouldValidate: true
+                        })
+                      } else {
+                        setValue(`links.${index}.content`, '', {
+                          shouldValidate: true
+                        })
+                      }
+                    }}
+                    disabledKeys={getDisabledStorageKeys(section, userRole)}
+                    isInvalid={!!errors.links?.[index]?.storage}
+                    errorMessage={errors.links?.[index]?.storage?.message}
+                  >
+                    {storageTypes.map((type) => (
+                      <SelectItem key={type.value} textValue={type.label}>
+                        <div className="flex flex-col">
+                          <span className="text">{type.label}</span>
+                          <span className="text-small text-default-500">
+                            {type.description}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </Select>
+                )}
+              />
+
+              {currentStorage === 's3' && (
+                <FileUploadContainer
+                  onSuccess={(storage, hash, content, size) => {
+                    setValue(`links.${index}.storage`, storage, {
+                      shouldValidate: true
+                    })
+                    setValue(`links.${index}.hash`, hash, {
+                      shouldValidate: true
+                    })
+                    setValue(`links.${index}.content`, content, {
+                      shouldValidate: true
+                    })
+                    setValue(`links.${index}.size`, size, {
+                      shouldValidate: true
+                    })
+                  }}
+                  handleRemoveFile={() => {
+                    setValue(`links.${index}.hash`, '', {
+                      shouldValidate: true
+                    })
+                    setValue(`links.${index}.content`, '', {
+                      shouldValidate: true
+                    })
+                    setValue(`links.${index}.size`, '', {
+                      shouldValidate: true
+                    })
+                  }}
+                  setUploadingResource={setUploadingResource}
+                />
+              )}
+
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <Controller
+                  name={`links.${index}.content`}
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      isRequired={currentStorage !== 's3'}
+                      label="资源链接"
+                      placeholder={
+                        currentStorage === 's3'
+                          ? '上传文件后自动生成链接'
+                          : `请输入${SUPPORTED_RESOURCE_LINK_MAP[currentStorage]}`
+                      }
+                      isReadOnly={currentStorage === 's3'}
+                      isInvalid={!!errors.links?.[index]?.content}
+                      errorMessage={errors.links?.[index]?.content?.message}
+                      onPaste={(e) => {
+                        if (currentStorage === 's3') {
+                          return
+                        }
+                        const pasted = e.clipboardData.getData('text')
+                        if (!pasted.trim()) {
+                          return
+                        }
+                        const { url, code } = parseResourceLink(pasted)
+                        if (url !== pasted.trim() || code) {
+                          e.preventDefault()
+                          field.onChange(url)
+                          if (code) {
+                            setValue(`links.${index}.code`, code, {
+                              shouldValidate: true
+                            })
+                            toast.success('已自动识别并填入提取码')
+                          }
+                        }
+                      }}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name={`links.${index}.size`}
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      isRequired
+                      label="大小 (MB 或 GB)"
+                      placeholder="请输入资源大小，例如 1.024 GB"
+                      isInvalid={!!errors.links?.[index]?.size}
+                      errorMessage={errors.links?.[index]?.size?.message}
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <Controller
+                  name={`links.${index}.code`}
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      label="提取码"
+                      placeholder="如果资源需要提取码，请填写"
+                      isInvalid={!!errors.links?.[index]?.code}
+                      errorMessage={errors.links?.[index]?.code?.message}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name={`links.${index}.password`}
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      label="解压码"
+                      placeholder="如果资源需要解压码，请填写"
+                      isInvalid={!!errors.links?.[index]?.password}
+                      errorMessage={errors.links?.[index]?.password?.message}
+                    />
+                  )}
+                />
+              </div>
+
+              {index !== fields.length - 1 && <Divider />}
+            </CardBody>
+          </Card>
+        )
+      })}
     </div>
   )
 }

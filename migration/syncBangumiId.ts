@@ -18,9 +18,7 @@ interface BangumiSearchResponse {
   total: number
 }
 
-async function searchBangumi(
-  keyword: string
-): Promise<BangumiSubject[]> {
+async function searchBangumi(keyword: string): Promise<BangumiSubject[]> {
   const response = await fetch(
     `${BANGUMI_API_BASE}/v0/search/subjects?limit=10`,
     {

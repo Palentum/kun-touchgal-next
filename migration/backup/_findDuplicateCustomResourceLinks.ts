@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { prisma } from '../../prisma/index'
 import { parseResourceLink } from '../../utils/resourceLink'
 

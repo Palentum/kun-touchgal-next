@@ -12,6 +12,8 @@ interface Props {
 }
 
 export const ResourceCard = ({ resource }: Props) => {
+  const primaryLink = resource.links[0]
+
   return (
     <Card
       isPressable
@@ -63,9 +65,18 @@ export const ResourceCard = ({ resource }: Props) => {
               {resource.download}
             </div>
           </div>
-          <Chip size="sm" variant="flat">
-            {resource.size}
-          </Chip>
+          <div className="flex gap-2">
+            {primaryLink && (
+              <Chip size="sm" variant="flat">
+                {primaryLink.size}
+              </Chip>
+            )}
+            {resource.links.length > 1 && (
+              <Chip size="sm" variant="flat" color="primary">
+                {resource.links.length} 个链接
+              </Chip>
+            )}
+          </div>
         </div>
       </CardBody>
     </Card>

@@ -46,7 +46,9 @@ const optionalStringArray = z
   .transform((val) => {
     try {
       const parsed = JSON.parse(val)
-      return Array.isArray(parsed) ? parsed.filter((s: unknown) => typeof s === 'string') : []
+      return Array.isArray(parsed)
+        ? parsed.filter((s: unknown) => typeof s === 'string')
+        : []
     } catch {
       return []
     }

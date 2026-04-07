@@ -1,7 +1,6 @@
 import { z } from 'zod'
-import { deleteFileFromS3 } from '~/lib/s3'
 import { prisma } from '~/prisma/index'
-import { recalcPatchType } from './_helper'
+import { deletePatchResourceLink, recalcPatchType } from './_helper'
 
 const resourceIdSchema = z.object({
   resourceId: z.coerce
@@ -16,7 +15,10 @@ export const deleteResource = async (
   userRole: number
 ) => {
   const patchResource = await prisma.patch_resource.findUnique({
-    where: { id: input.resourceId }
+    where: { id: input.resourceId },
+    include: {
+      links: true
+    }
   })
   if (!patchResource) {
     return '未找到对应的资源'
@@ -27,13 +29,9 @@ export const deleteResource = async (
     return '您没有权限删除该资源'
   }
 
-  if (patchResource.storage === 's3') {
-    const fileName = patchResource.content.split('/').pop()
-    const s3Key = `patch/${patchResource.patch_id}/${patchResource.hash}/${fileName}`
-    await deleteFileFromS3(s3Key)
-  }
+  const s3Links = patchResource.links.filter((link) => link.storage === 's3')
 
-  return await prisma.$transaction(async (prisma) => {
+  const response = await prisma.$transaction(async (prisma) => {
     await prisma.user.update({
       where: { id: resourceUserUid },
       data: { moemoepoint: { increment: -3 } }
@@ -45,4 +43,14 @@ export const deleteResource = async (
     await recalcPatchType(patchResource.patch_id, prisma)
     return {}
   })
+
+  for (const link of s3Links) {
+    await deletePatchResourceLink(
+      link.content,
+      patchResource.patch_id,
+      link.hash
+    )
+  }
+
+  return response
 }

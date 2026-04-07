@@ -49,7 +49,10 @@ export const POST = async (req: NextRequest) => {
   if (!payload) {
     return NextResponse.json('用户未登录')
   }
-  if (payload.role < 3 && input.storage === 'touchgal') {
+  if (
+    payload.role < 3 &&
+    input.links.some((link) => link.storage === 'touchgal')
+  ) {
     return NextResponse.json('仅管理员可使用 TouchGal 资源盘')
   }
 

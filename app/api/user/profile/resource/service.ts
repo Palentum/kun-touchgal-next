@@ -33,7 +33,6 @@ export const getUserPatchResource = async (
     patchId: res.patch.id,
     patchName: res.patch.name,
     patchBanner: res.patch.banner,
-    size: res.size,
     type: res.type,
     language: res.language,
     platform: res.platform,

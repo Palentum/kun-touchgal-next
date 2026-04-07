@@ -1,40 +1,16 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { patchResourceCreateSchema } from '~/validations/patch'
-import { uploadFileToS3 } from '~/lib/s3'
-import { getKv } from '~/lib/redis'
 import { createMessage } from '~/app/api/utils/message'
-import { recalcPatchType } from './_helper'
+import { recalcPatchType, uploadPatchResource } from './_helper'
 import type { PatchResource } from '~/types/api/patch'
-
-const uploadPatchResource = async (patchId: number, hash: string) => {
-  const filePath = await getKv(hash)
-  if (!filePath) {
-    return '未找到已上传的文件，请重新上传后再试'
-  }
-  const fileName = filePath.split('/').pop()
-
-  const s3Key = `patch/${patchId}/resource/${hash}/${fileName}`
-  await uploadFileToS3(s3Key, filePath)
-
-  const downloadLink = `${process.env.NEXT_PUBLIC_KUN_VISUAL_NOVEL_S3_STORAGE_URL!}/${s3Key}`
-  return { downloadLink }
-}
 
 export const createPatchResource = async (
   input: z.infer<typeof patchResourceCreateSchema>,
   uid: number,
   userRole: number
 ) => {
-  const {
-    patchId,
-    type,
-    language,
-    platform,
-    content,
-    storage,
-    ...resourceData
-  } = input
+  const { patchId, type, language, platform, links, ...resourceData } = input
 
   const currentPatch = await prisma.patch.findUnique({
     where: { id: patchId },
@@ -49,15 +25,36 @@ export const createPatchResource = async (
   })
   const needApproval = resourceCount === 0 && userRole < 3
 
-  let res: string
-  if (storage === 's3') {
-    const result = await uploadPatchResource(patchId, resourceData.hash)
-    if (typeof result === 'string') {
-      return result
+  const preparedLinks: Array<{
+    storage: string
+    size: string
+    code: string
+    password: string
+    hash: string
+    content: string
+    sort_order: number
+    download: number
+  }> = []
+  for (const [index, link] of links.entries()) {
+    let content = link.content
+    if (link.storage === 's3') {
+      const result = await uploadPatchResource(patchId, link.hash)
+      if (typeof result === 'string') {
+        return result
+      }
+      content = result.downloadLink
     }
-    res = result.downloadLink
-  } else {
-    res = content
+
+    preparedLinks.push({
+      storage: link.storage,
+      size: link.size,
+      code: link.code,
+      password: link.password,
+      hash: link.hash,
+      content,
+      sort_order: index,
+      download: 0
+    })
   }
 
   const resource = await prisma.$transaction(async (prisma) => {
@@ -68,10 +65,11 @@ export const createPatchResource = async (
         type,
         language,
         platform,
-        content: res,
-        storage,
         status: needApproval ? 2 : 0,
-        ...resourceData
+        ...resourceData,
+        links: {
+          create: preparedLinks
+        }
       },
       include: {
         user: {
@@ -80,6 +78,9 @@ export const createPatchResource = async (
               select: { patch_resource: true }
             }
           }
+        },
+        links: {
+          orderBy: { sort_order: 'asc' }
         }
       }
     })
@@ -102,16 +103,21 @@ export const createPatchResource = async (
       name: newResource.name,
       section: newResource.section,
       uniqueId: currentPatch?.unique_id ?? '',
-      storage: newResource.storage,
-      size: newResource.size,
       type: newResource.type,
       language: newResource.language,
       note: newResource.note,
-      hash: newResource.hash,
-      content: newResource.content,
-      code: newResource.code,
-      password: newResource.password,
       platform: newResource.platform,
+      links: newResource.links.map((link) => ({
+        id: link.id,
+        storage: link.storage,
+        size: link.size,
+        code: link.code,
+        password: link.password,
+        hash: link.hash,
+        content: link.content,
+        sortOrder: link.sort_order,
+        download: link.download
+      })),
       likeCount: 0,
       isLike: false,
       status: newResource.status,
