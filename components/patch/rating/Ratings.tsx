@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Modal } from '@heroui/modal'
 import { Button } from '@heroui/button'
 import { Switch } from '@heroui/switch'
@@ -25,6 +26,7 @@ interface Props {
 const RATINGS_PER_PAGE = 24
 
 export const Ratings = ({ id }: Props) => {
+  const searchParams = useSearchParams()
   const [ratings, setRatings] = useState<KunPatchRating[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -32,10 +34,24 @@ export const Ratings = ({ id }: Props) => {
   const [hasMore, setHasMore] = useState(true)
   const [initialized, setInitialized] = useState(false)
   const [hideNoContent, setHideNoContent] = useState(true)
+  const [highlightedRatingId, setHighlightedRatingId] = useState<number | null>(
+    null
+  )
   const { isOpen, onOpen, onClose } = useDisclosure()
   const user = useUserStore((state) => state.user)
   const observerRef = useRef<IntersectionObserver | null>(null)
   const loadMoreRef = useRef<HTMLDivElement>(null)
+  const targetRatingId = useMemo(() => {
+    const rawRatingId = searchParams.get('ratingId')
+    if (!rawRatingId) {
+      return null
+    }
+
+    const parsedRatingId = Number(rawRatingId)
+    return Number.isSafeInteger(parsedRatingId) && parsedRatingId > 0
+      ? parsedRatingId
+      : null
+  }, [searchParams])
 
   const fetchRatings = useCallback(
     async (pageNum: number, reset = false) => {
@@ -93,6 +109,29 @@ export const Ratings = ({ id }: Props) => {
     }
   }, [page])
 
+  useEffect(() => {
+    if (loading || !targetRatingId) {
+      return
+    }
+
+    const targetElement = document.getElementById(`rating-${targetRatingId}`)
+    if (!targetElement) {
+      setHighlightedRatingId(null)
+      return
+    }
+
+    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    setHighlightedRatingId(targetRatingId)
+
+    const timer = window.setTimeout(() => {
+      setHighlightedRatingId((current) =>
+        current === targetRatingId ? null : current
+      )
+    }, 3000)
+
+    return () => window.clearTimeout(timer)
+  }, [ratings, loading, targetRatingId])
+
   const handleCreated = (rating?: KunPatchRating) => {
     if (rating) {
       setRatings((prev) => [rating, ...prev])
@@ -120,7 +159,9 @@ export const Ratings = ({ id }: Props) => {
   }
 
   const displayedRatings = hideNoContent
-    ? ratings.filter((r) => r.shortSummary && r.shortSummary.trim())
+    ? ratings.filter(
+        (r) => (r.shortSummary && r.shortSummary.trim()) || r.id === targetRatingId
+      )
     : ratings
 
   return (
@@ -149,7 +190,15 @@ export const Ratings = ({ id }: Props) => {
         columnClassName="pl-4 bg-clip-padding"
       >
         {displayedRatings.map((rating) => (
-          <div key={rating.id} className="mb-4">
+          <div
+            key={rating.id}
+            id={`rating-${rating.id}`}
+            className={
+              highlightedRatingId === rating.id
+                ? 'mb-4 rounded-large ring-2 ring-primary ring-offset-2 ring-offset-background'
+                : 'mb-4'
+            }
+          >
             <RatingCard
               rating={rating}
               patchId={id}

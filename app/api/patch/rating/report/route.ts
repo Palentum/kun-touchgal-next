@@ -66,6 +66,7 @@ const createReport = async (
   const content = `${user?.name ?? `用户 #${uid}`} 举报了「${patch.name}」下的评价\n\n评价内容：${preview}${metadata}\n\n举报原因：${input.content}`
 
   const params = new URLSearchParams({
+    tab: 'rating',
     target: 'rating',
     ratingId: String(rating.id),
     reportedUid: String(rating.user_id)

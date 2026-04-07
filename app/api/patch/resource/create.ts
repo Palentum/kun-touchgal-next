@@ -135,7 +135,9 @@ export const createPatchResource = async (
       type: 'system',
       content: `您的首个资源「${currentPatch?.name ?? ''}」已提交审核，通过后将自动公开显示。`,
       recipient_id: uid,
-      link: currentPatch?.unique_id ? `/${currentPatch.unique_id}` : '/'
+      link: currentPatch?.unique_id
+        ? `/${currentPatch.unique_id}?tab=resources&resourceSection=${resource.section}&resourceId=${resource.id}`
+        : '/'
     })
   }
 

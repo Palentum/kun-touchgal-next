@@ -46,7 +46,7 @@ const declinePatchResource = async (
       type: 'system',
       content: `您上传的资源「${resource.name || resource.patch.name}」未通过审核，原因：${reason}`,
       recipient_id: resource.user_id,
-      link: '/'
+      link: `/${resource.patch.unique_id}?tab=resources&resourceSection=${resource.section}`
     })
 
     await prisma.admin_log.create({
