@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useRewritePatchStore } from '~/store/rewriteStore'
 import { PatchHeaderTabs } from './Tabs'
 import { PatchHeaderInfo } from './Info'
@@ -20,8 +21,19 @@ export const PatchHeaderContainer = ({
   uid
 }: PatchHeaderProps) => {
   const { setData } = useRewritePatchStore()
+  const searchParams = useSearchParams()
   const [selected, setSelected] = useState('introduction')
   const tabsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const targetTab = searchParams.get('tab')
+    const targetCommentId = searchParams.get('commentId')
+
+    if (targetTab === 'comments' || targetCommentId) {
+      setSelected('comments')
+      tabsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [searchParams])
 
   useEffect(() => {
     setData({

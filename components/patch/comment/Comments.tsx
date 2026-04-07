@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Card, CardBody } from '@heroui/card'
 import { Button } from '@heroui/button'
 import { Pagination } from '@heroui/pagination'
@@ -24,6 +25,7 @@ interface Props {
 const COMMENTS_PER_PAGE = 30
 
 export const Comments = ({ id }: Props) => {
+  const searchParams = useSearchParams()
   const [comments, setComments] = useState<PatchComment[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -33,7 +35,21 @@ export const Comments = ({ id }: Props) => {
   } | null>(null)
   const [loading, setLoading] = useState(false)
   const [showEditor, setShowEditor] = useState(false)
+  const [highlightedCommentId, setHighlightedCommentId] = useState<number | null>(
+    null
+  )
   const user = useUserStore((state) => state.user)
+  const targetCommentId = useMemo(() => {
+    const rawCommentId = searchParams.get('commentId')
+    if (!rawCommentId) {
+      return null
+    }
+
+    const parsedCommentId = Number(rawCommentId)
+    return Number.isSafeInteger(parsedCommentId) && parsedCommentId > 0
+      ? parsedCommentId
+      : null
+  }, [searchParams])
 
   const fetchComments = async (pageNum: number) => {
     setLoading(true)
@@ -55,6 +71,29 @@ export const Comments = ({ id }: Props) => {
     }
     fetchComments(page)
   }, [page, user.uid])
+
+  useEffect(() => {
+    if (loading || !targetCommentId) {
+      return
+    }
+
+    const targetElement = document.getElementById(`comment-${targetCommentId}`)
+    if (!targetElement) {
+      setHighlightedCommentId(null)
+      return
+    }
+
+    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    setHighlightedCommentId(targetCommentId)
+
+    const timer = window.setTimeout(() => {
+      setHighlightedCommentId((current) =>
+        current === targetCommentId ? null : current
+      )
+    }, 3000)
+
+    return () => window.clearTimeout(timer)
+  }, [comments, loading, targetCommentId])
 
   const handleNewComment = async (newComment: PatchComment) => {
     if (newComment.parentId === null) {
@@ -116,7 +155,15 @@ export const Comments = ({ id }: Props) => {
 
       {!loading &&
         comments.map((comment) => (
-          <Card key={comment.id} id={`comment-${comment.id}`}>
+          <Card
+            key={comment.id}
+            id={`comment-${comment.id}`}
+            className={
+              highlightedCommentId === comment.id
+                ? 'ring-2 ring-primary ring-offset-2 ring-offset-background'
+                : undefined
+            }
+          >
             <CardBody className="space-y-3">
               <div className="space-y-2">
                 <div className="flex items-start justify-between">
@@ -171,7 +218,11 @@ export const Comments = ({ id }: Props) => {
                       <div
                         key={reply.id}
                         id={`comment-${reply.id}`}
-                        className="space-y-2"
+                        className={
+                          highlightedCommentId === reply.id
+                            ? 'space-y-2 rounded-large ring-2 ring-primary ring-offset-2 ring-offset-background'
+                            : 'space-y-2'
+                        }
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex items-center gap-2">
