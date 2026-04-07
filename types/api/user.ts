@@ -33,6 +33,7 @@ export interface UserFollow {
 
 export interface UserResource {
   id: number
+  section: string
   patchUniqueId: string
   patchId: number
   patchName: string

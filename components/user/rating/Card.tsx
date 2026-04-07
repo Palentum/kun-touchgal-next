@@ -143,7 +143,11 @@ export const UserRatingCard = ({ rating }: Props) => {
 
         <div className="text-sm text-default-500">
           位置{' '}
-          <Link size="sm" underline="always" href={`/${rating.patchUniqueId}`}>
+          <Link
+            size="sm"
+            underline="always"
+            href={`/${rating.patchUniqueId}?tab=rating&ratingId=${rating.id}`}
+          >
             {rating.patchName}
           </Link>
         </div>
