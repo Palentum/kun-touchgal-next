@@ -82,37 +82,36 @@ export const ResourceLinksInput = ({
     }
   }, [append, fields.length, section, userRole])
 
-  useEffect(() => {
-    links.forEach(async (link, index) => {
-      if (
-        !link ||
-        link.storage === 's3' ||
-        !link.content ||
-        !!link.size ||
-        !link.content.includes('pan.touchgal.net/s/')
-      ) {
-        return
-      }
+  const handleFetchTouchGalSize = async (content: string, index: number) => {
+    const currentLink = links[index]
+    if (
+      !currentLink ||
+      currentLink.storage !== 'touchgal' ||
+      !content ||
+      !!currentLink.size ||
+      !content.includes('pan.touchgal.net/')
+    ) {
+      return
+    }
 
-      toast('正在尝试从 TouchGal Alist 获取文件大小')
-      const data = await fetchLinkData(link.content)
-      if (data && data.code === 0) {
-        let sizeInGB
-        if (data.data.source.size > 0) {
-          sizeInGB = (data.data.source.size / 1024 ** 3).toFixed(3)
-        } else {
-          const listSize = await fetchListData(data.data.key)
-          sizeInGB = listSize ? (listSize / 1024 ** 3).toFixed(3) : ''
-        }
-        if (sizeInGB) {
-          setValue(`links.${index}.size`, `${sizeInGB} GB`, {
-            shouldValidate: true
-          })
-          toast.success('获取文件大小成功')
-        }
+    toast('正在尝试从 TouchGal Alist 获取文件大小')
+    const data = await fetchLinkData(content)
+    if (data && data.code === 0) {
+      let sizeInGB
+      if (data.data.source.size > 0) {
+        sizeInGB = (data.data.source.size / 1024 ** 3).toFixed(3)
+      } else {
+        const listSize = await fetchListData(data.data.key)
+        sizeInGB = listSize ? (listSize / 1024 ** 3).toFixed(3) : ''
       }
-    })
-  }, [links, setValue])
+      if (sizeInGB) {
+        setValue(`links.${index}.size`, `${sizeInGB} GB`, {
+          shouldValidate: true
+        })
+        toast.success('获取文件大小成功')
+      }
+    }
+  }
 
   return (
     <div className="space-y-3">
@@ -243,6 +242,10 @@ export const ResourceLinksInput = ({
                       isReadOnly={currentStorage === 's3'}
                       isInvalid={!!errors.links?.[index]?.content}
                       errorMessage={errors.links?.[index]?.content?.message}
+                      onBlur={() => {
+                        field.onBlur()
+                        handleFetchTouchGalSize(field.value, index)
+                      }}
                       onPaste={(e) => {
                         if (currentStorage === 's3') {
                           return
