@@ -8,9 +8,10 @@ import type { Prisma } from '~/prisma/generated/prisma/client'
 export const getPatchVisibilityWhere =
   async (): Promise<Prisma.patchWhereInput> => {
     const blockedTagIds = await getBlockedTagIds()
+    const nsfwWhere = await getNSFWHeader()
 
     return {
-      ...getNSFWHeader(),
+      ...nsfwWhere,
       ...buildBlockedTagWhere(blockedTagIds)
     }
   }
