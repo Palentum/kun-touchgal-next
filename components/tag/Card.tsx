@@ -8,6 +8,8 @@ interface Props {
 }
 
 export const TagCard = ({ tag }: Props) => {
+  const aliases = tag.alias ?? []
+
   return (
     <Card
       isPressable
@@ -24,9 +26,9 @@ export const TagCard = ({ tag }: Props) => {
             {tag.count} 个 Galgame
           </Chip>
         </div>
-        {tag.alias.length > 0 && (
+        {aliases.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
-            {tag.alias.map((alias, index) => (
+            {aliases.map((alias, index) => (
               <Chip key={index} size="sm" variant="flat" color="secondary">
                 {alias}
               </Chip>
