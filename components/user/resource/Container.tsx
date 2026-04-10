@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { KunPagination } from '~/components/kun/Pagination'
-import { useMounted } from '~/hooks/useMounted'
 import { KunLoading } from '~/components/kun/Loading'
 import { KunNull } from '~/components/kun/Null'
 import { UserResourceCard } from './Card'
@@ -16,7 +15,6 @@ interface Props {
 }
 
 export const UserResource = ({ resources, total, uid }: Props) => {
-  const isMounted = useMounted()
   const [patches, setPatches] = useState<UserResourceType[]>(resources)
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
@@ -38,11 +36,12 @@ export const UserResource = ({ resources, total, uid }: Props) => {
   }
 
   useEffect(() => {
-    if (!isMounted) {
+    if (page === 1) {
+      setPatches(resources)
       return
     }
     fetchPatches()
-  }, [page])
+  }, [page, resources, uid])
 
   return (
     <div className="space-y-4">

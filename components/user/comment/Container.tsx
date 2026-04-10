@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { KunPagination } from '~/components/kun/Pagination'
-import { useMounted } from '~/hooks/useMounted'
 import { KunNull } from '~/components/kun/Null'
 import { KunLoading } from '~/components/kun/Loading'
 import { UserCommentCard } from './Card'
@@ -16,7 +15,6 @@ interface Props {
 }
 
 export const UserComment = ({ initComments, total, uid }: Props) => {
-  const isMounted = useMounted()
   const [comments, setComments] = useState<UserCommentType[]>(initComments)
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
@@ -37,11 +35,12 @@ export const UserComment = ({ initComments, total, uid }: Props) => {
   }
 
   useEffect(() => {
-    if (!isMounted) {
+    if (page === 1) {
+      setComments(initComments)
       return
     }
     fetchData()
-  }, [page])
+  }, [initComments, page, uid])
 
   return (
     <div className="space-y-4">
