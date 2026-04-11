@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button, Input } from '@heroui/react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { KeyboardEvent } from 'react'
@@ -22,13 +22,17 @@ export const KunPagination = ({
 }: Props) => {
   const [isEditing, setIsEditing] = useState(false)
   const [inputValue, setInputValue] = useState(String(page))
+  const previousLoadingRef = useRef(isLoading)
 
   useEffect(() => {
     setInputValue(String(page))
   }, [page])
 
   useEffect(() => {
-    if (!isLoading && !disableScrollToTop) {
+    const finishedLoading = previousLoadingRef.current && !isLoading
+    previousLoadingRef.current = isLoading
+
+    if (finishedLoading && !disableScrollToTop) {
       // Compatible FireFox Browser, because the render mechanism are difference
       setTimeout(() => {
         window.scrollTo({
