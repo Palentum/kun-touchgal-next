@@ -40,11 +40,8 @@ const getDefaultLinkStorage = (section: string, role: number) => {
 }
 
 const getDisabledStorageKeys = (section: string, role: number) => {
-  if (role > 3 && section === 'patch') {
+  if (role > 3) {
     return []
-  }
-  if (role > 3 && section === 'galgame') {
-    return ['s3', 'user']
   }
   if (role > 1 && section === 'patch') {
     return ['touchgal']
