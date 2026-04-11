@@ -186,9 +186,7 @@ export const BlockedTags = () => {
             className="rounded-medium border border-default-200 bg-content1 shadow-medium dark:border-default-100"
           >
             {searching ? (
-              <p className="px-3 py-2 text-xs text-default-400">
-                正在搜索...
-              </p>
+              <p className="px-3 py-2 text-xs text-default-400">正在搜索...</p>
             ) : filteredResults.length ? (
               <Listbox
                 aria-label="标签搜索结果"
@@ -196,9 +194,7 @@ export const BlockedTags = () => {
                   list: 'max-h-60 overflow-y-auto scrollbar-hide'
                 }}
                 onAction={(key) => {
-                  const tag = filteredResults.find(
-                    (t) => String(t.id) === key
-                  )
+                  const tag = filteredResults.find((t) => String(t.id) === key)
                   if (tag) handleBlockTag(tag)
                 }}
               >
