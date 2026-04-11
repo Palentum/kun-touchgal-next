@@ -37,18 +37,30 @@ const assertExists = async (targetPath: string) => {
   await stat(targetPath)
 }
 
+const waitForAllCopies = async (copyTasks: Promise<void>[]) => {
+  const results = await Promise.allSettled(copyTasks)
+  const rejectedResult = results.find((result) => result.status === 'rejected')
+
+  if (rejectedResult?.status === 'rejected') {
+    throw rejectedResult.reason
+  }
+}
+
 const copyFiles = async () => {
   try {
     execSync('pnpm build:sitemap', { stdio: 'inherit' })
 
-    await copyDirectory('public', '.next/standalone/public')
-    await copyDirectory('.next/static', '.next/standalone/.next/static')
-    await copyDirectory('server/image', '.next/standalone/server/image')
-    await copyDirectory('posts', '.next/standalone/posts')
-    await copyRuntimeFile(
-      'config/redirect.json',
-      '.next/standalone/config/redirect.json'
-    )
+    await waitForAllCopies([
+      copyDirectory('public', '.next/standalone/public'),
+      copyDirectory('.next/static', '.next/standalone/.next/static'),
+      copyDirectory('server/image', '.next/standalone/server/image'),
+      copyDirectory('posts', '.next/standalone/posts'),
+      copyRuntimeFile(
+        'config/redirect.json',
+        '.next/standalone/config/redirect.json'
+      )
+    ])
+
     await assertExists('.next/standalone/public/favicon.webp')
     await assertExists('.next/standalone/public/sooner/こじかひわ.webp')
     await assertExists('.next/standalone/server/image/auth/white')
