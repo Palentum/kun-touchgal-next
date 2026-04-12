@@ -37,7 +37,7 @@ import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import { NSFWSwitcher } from './NSFWSwitcher'
 import type { UserState } from '~/store/userStore'
 
-const NESTED_DROPDOWN_EXIT_MS = 160
+const NESTED_DROPDOWN_EXIT_MS = 50
 const OPEN_OVERLAY_MENU_SELECTOR =
   '[data-slot="base"][data-open="true"][data-placement] [role="menu"], [data-slot="base"][data-open="true"][data-placement] [role="listbox"]'
 
