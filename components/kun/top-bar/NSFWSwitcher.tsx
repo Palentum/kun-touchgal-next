@@ -23,7 +23,7 @@ export const NSFWSwitcher = () => {
   const themeIcon = themeIconMap[settings.kunNsfwEnable] || themeIconMap['all']
 
   return (
-    <Dropdown className="min-w-0">
+    <Dropdown className="min-w-0" shouldCloseOnBlur={false}>
       <DropdownTrigger>
         <div className="flex justify-between">
           <span>网站内容显示</span>

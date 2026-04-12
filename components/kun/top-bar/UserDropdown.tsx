@@ -27,7 +27,7 @@ import {
   UserRound
 } from 'lucide-react'
 import { useUserStore } from '~/store/userStore'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from '@bprogress/next'
 import { kunFetchGet, kunFetchPost } from '~/utils/kunFetch'
 import toast from 'react-hot-toast'
@@ -42,7 +42,52 @@ export const UserDropdown = () => {
   const { user, setUser, logout } = useUserStore((state) => state)
   const isMounted = useMounted()
   const [loading, setLoading] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const triggerRef = useRef<HTMLElement>(null!)
+  const menuRef = useRef<HTMLUListElement>(null)
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
+
+  useEffect(() => {
+    if (!isDropdownOpen) {
+      return
+    }
+
+    const closeOnOutsidePointerDown = (event: PointerEvent) => {
+      const target = event.target
+
+      if (!(target instanceof Node)) {
+        return
+      }
+
+      if (
+        triggerRef.current?.contains(target) ||
+        menuRef.current?.contains(target)
+      ) {
+        return
+      }
+
+      if (
+        target instanceof Element &&
+        target.closest(
+          '[data-slot="base"][data-open="true"][data-placement] [role="menu"], [data-slot="base"][data-open="true"][data-placement] [role="listbox"]'
+        )
+      ) {
+        return
+      }
+
+      setIsDropdownOpen(false)
+    }
+
+    document.addEventListener('pointerdown', closeOnOutsidePointerDown, true)
+
+    return () => {
+      document.removeEventListener(
+        'pointerdown',
+        closeOnOutsidePointerDown,
+        true
+      )
+    }
+  }, [isDropdownOpen])
 
   useEffect(() => {
     if (!isMounted) {
@@ -97,7 +142,13 @@ export const UserDropdown = () => {
 
   return (
     <>
-      <Dropdown placement="bottom-end" shouldBlockScroll={false}>
+      <Dropdown
+        isOpen={isDropdownOpen}
+        onOpenChange={setIsDropdownOpen}
+        placement="bottom-end"
+        shouldBlockScroll={false}
+        triggerRef={triggerRef}
+      >
         <DropdownTrigger>
           <Avatar
             isBordered
@@ -111,6 +162,7 @@ export const UserDropdown = () => {
           />
         </DropdownTrigger>
         <DropdownMenu
+          ref={menuRef}
           aria-label="Profile Actions"
           disabledKeys={user.dailyCheckIn ? ['check'] : []}
         >
