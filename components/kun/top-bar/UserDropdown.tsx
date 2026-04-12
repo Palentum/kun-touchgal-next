@@ -27,7 +27,7 @@ import {
   UserRound
 } from 'lucide-react'
 import { useUserStore } from '~/store/userStore'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from '@bprogress/next'
 import { kunFetchGet, kunFetchPost } from '~/utils/kunFetch'
 import toast from 'react-hot-toast'
@@ -37,15 +37,136 @@ import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import { NSFWSwitcher } from './NSFWSwitcher'
 import type { UserState } from '~/store/userStore'
 
+const NESTED_DROPDOWN_EXIT_MS = 160
+const OPEN_OVERLAY_MENU_SELECTOR =
+  '[data-slot="base"][data-open="true"][data-placement] [role="menu"], [data-slot="base"][data-open="true"][data-placement] [role="listbox"]'
+
+interface OutsidePointerContext {
+  shouldCloseParent: boolean
+  pointerType: string
+}
+
 export const UserDropdown = () => {
   const router = useRouter()
   const { user, setUser, logout } = useUserStore((state) => state)
   const isMounted = useMounted()
   const [loading, setLoading] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isNsfwDropdownOpen, setIsNsfwDropdownOpen] = useState(false)
   const triggerRef = useRef<HTMLElement>(null!)
   const menuRef = useRef<HTMLUListElement>(null)
+  const deferredParentCloseRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
+  const lastPointerContextRef = useRef<OutsidePointerContext | null>(null)
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
+
+  const clearDeferredParentClose = useCallback(() => {
+    if (!deferredParentCloseRef.current) {
+      return
+    }
+
+    clearTimeout(deferredParentCloseRef.current)
+    deferredParentCloseRef.current = null
+  }, [])
+
+  const handleDropdownOpenChange = useCallback(
+    (open: boolean) => {
+      if (open) {
+        clearDeferredParentClose()
+        lastPointerContextRef.current = null
+      } else if (deferredParentCloseRef.current) {
+        return
+      } else {
+        setIsNsfwDropdownOpen(false)
+      }
+
+      setIsDropdownOpen(open)
+    },
+    [clearDeferredParentClose]
+  )
+
+  const getOutsidePointerContext = useCallback(
+    (
+      target: EventTarget | null,
+      pointerType: string
+    ): OutsidePointerContext => {
+      if (!(target instanceof Node)) {
+        return {
+          shouldCloseParent: false,
+          pointerType
+        }
+      }
+
+      if (
+        triggerRef.current?.contains(target) ||
+        menuRef.current?.contains(target)
+      ) {
+        return {
+          shouldCloseParent: false,
+          pointerType
+        }
+      }
+
+      if (
+        target instanceof Element &&
+        target.closest(OPEN_OVERLAY_MENU_SELECTOR)
+      ) {
+        return {
+          shouldCloseParent: false,
+          pointerType
+        }
+      }
+
+      return {
+        shouldCloseParent: true,
+        pointerType
+      }
+    },
+    []
+  )
+
+  const closeDropdownAfterNestedClose = useCallback(
+    (shouldDelay: boolean) => {
+      if (shouldDelay) {
+        if (deferredParentCloseRef.current) {
+          return
+        }
+
+        deferredParentCloseRef.current = setTimeout(() => {
+          setIsDropdownOpen(false)
+          deferredParentCloseRef.current = null
+        }, NESTED_DROPDOWN_EXIT_MS)
+        return
+      }
+
+      clearDeferredParentClose()
+      setIsDropdownOpen(false)
+    },
+    [clearDeferredParentClose]
+  )
+
+  const handleNsfwDropdownOpenChange = useCallback(
+    (open: boolean) => {
+      setIsNsfwDropdownOpen(open)
+
+      if (open) {
+        clearDeferredParentClose()
+        lastPointerContextRef.current = null
+        return
+      }
+
+      const pointerContext = lastPointerContextRef.current
+      lastPointerContextRef.current = null
+
+      if (!pointerContext?.shouldCloseParent) {
+        return
+      }
+
+      closeDropdownAfterNestedClose(pointerContext.pointerType === 'touch')
+    },
+    [clearDeferredParentClose, closeDropdownAfterNestedClose]
+  )
 
   useEffect(() => {
     if (!isDropdownOpen) {
@@ -53,32 +174,45 @@ export const UserDropdown = () => {
     }
 
     const closeOnOutsidePointerDown = (event: PointerEvent) => {
-      const target = event.target
+      const pointerContext = getOutsidePointerContext(
+        event.target,
+        event.pointerType
+      )
+      lastPointerContextRef.current = pointerContext
 
-      if (!(target instanceof Node)) {
+      if (!pointerContext.shouldCloseParent) {
         return
       }
 
+      if (isNsfwDropdownOpen) {
+        setIsNsfwDropdownOpen(false)
+        closeDropdownAfterNestedClose(pointerContext.pointerType === 'touch')
+        return
+      }
+
+      handleDropdownOpenChange(false)
+    }
+
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      const pointerContext =
+        lastPointerContextRef.current ??
+        getOutsidePointerContext(event.target, '')
+
       if (
-        triggerRef.current?.contains(target) ||
-        menuRef.current?.contains(target)
+        !pointerContext.shouldCloseParent ||
+        pointerContext.pointerType === 'touch'
       ) {
         return
       }
 
-      if (
-        target instanceof Element &&
-        target.closest(
-          '[data-slot="base"][data-open="true"][data-placement] [role="menu"], [data-slot="base"][data-open="true"][data-placement] [role="listbox"]'
-        )
-      ) {
-        return
-      }
-
+      lastPointerContextRef.current = null
+      clearDeferredParentClose()
+      setIsNsfwDropdownOpen(false)
       setIsDropdownOpen(false)
     }
 
     document.addEventListener('pointerdown', closeOnOutsidePointerDown, true)
+    document.addEventListener('click', closeOnOutsideClick, true)
 
     return () => {
       document.removeEventListener(
@@ -86,8 +220,22 @@ export const UserDropdown = () => {
         closeOnOutsidePointerDown,
         true
       )
+      document.removeEventListener('click', closeOnOutsideClick, true)
     }
-  }, [isDropdownOpen])
+  }, [
+    clearDeferredParentClose,
+    closeDropdownAfterNestedClose,
+    getOutsidePointerContext,
+    handleDropdownOpenChange,
+    isDropdownOpen,
+    isNsfwDropdownOpen
+  ])
+
+  useEffect(() => {
+    return () => {
+      clearDeferredParentClose()
+    }
+  }, [clearDeferredParentClose])
 
   useEffect(() => {
     if (!isMounted) {
@@ -144,8 +292,9 @@ export const UserDropdown = () => {
     <>
       <Dropdown
         isOpen={isDropdownOpen}
-        onOpenChange={setIsDropdownOpen}
+        onOpenChange={handleDropdownOpenChange}
         placement="bottom-end"
+        isDismissable={false}
         shouldBlockScroll={false}
         triggerRef={triggerRef}
       >
@@ -211,7 +360,10 @@ export const UserDropdown = () => {
             key="nsfw_toggle"
             startContent={<ArrowLeftRight className="size-4" />}
           >
-            <NSFWSwitcher />
+            <NSFWSwitcher
+              isOpen={isNsfwDropdownOpen}
+              onOpenChange={handleNsfwDropdownOpenChange}
+            />
           </DropdownItem>
           <DropdownItem
             key="logout"
