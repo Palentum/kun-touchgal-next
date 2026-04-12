@@ -3,6 +3,12 @@
 @import './prose.css';
 @import './editor.css';
 
+@media (pointer: coarse) {
+  html {
+    cursor: pointer;
+  }
+}
+
 [data-overlay-container='true'] {
   height: 100%;
   width: 100%;
