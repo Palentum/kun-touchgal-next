@@ -37,16 +37,22 @@ const DEVELOPER_KEYS = new Set([
   '製作'
 ])
 
+const splitByJapaneseSeparator = (name: string): string[] =>
+  name
+    .split('、')
+    .map((s) => s.trim())
+    .filter(Boolean)
+
 const extractDevelopers = (infobox?: BangumiInfoboxItem[]): string[] => {
   if (!infobox) return []
   const names: string[] = []
   for (const item of infobox) {
     if (!DEVELOPER_KEYS.has(item.key)) continue
     if (typeof item.value === 'string') {
-      names.push(item.value.trim())
+      names.push(...splitByJapaneseSeparator(item.value))
     } else if (Array.isArray(item.value)) {
       for (const entry of item.value) {
-        if (entry.v?.trim()) names.push(entry.v.trim())
+        if (entry.v?.trim()) names.push(...splitByJapaneseSeparator(entry.v))
       }
     }
   }
