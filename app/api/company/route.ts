@@ -7,6 +7,7 @@ import {
   updateCompanySchema
 } from '~/validations/company'
 import {
+  kunParseDeleteQuery,
   kunParseGetQuery,
   kunParsePostBody,
   kunParsePutBody
@@ -144,4 +145,27 @@ export const POST = async (req: NextRequest) => {
 
   const response = await createCompany(input, payload.uid)
   return NextResponse.json(response)
+}
+
+export const DELETE = async (req: NextRequest) => {
+  const input = kunParseDeleteQuery(req, getCompanyByIdSchema)
+  if (typeof input === 'string') {
+    return NextResponse.json(input)
+  }
+
+  const payload = await verifyHeaderCookie(req)
+  if (!payload) {
+    return NextResponse.json('用户未登录')
+  }
+  if (payload.role < 3) {
+    return NextResponse.json('本页面仅管理员可访问')
+  }
+
+  try {
+    await prisma.patch_company.delete({ where: { id: input.companyId } })
+  } catch {
+    return NextResponse.json('未找到对应的会社')
+  }
+
+  return NextResponse.json({})
 }

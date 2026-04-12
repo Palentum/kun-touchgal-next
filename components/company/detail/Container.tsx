@@ -16,6 +16,7 @@ import { GalgameCard } from '~/components/galgame/Card'
 import { KunNull } from '~/components/kun/Null'
 import { KunPagination } from '~/components/kun/Pagination'
 import { CompanyFormModal } from '../form/CompanyFormModal'
+import { DeleteCompanyModal } from './DeleteCompanyModal'
 import { formatTimeDifference } from '~/utils/time'
 import { kunFetchGet } from '~/utils/kunFetch'
 import { SUPPORTED_LANGUAGE_MAP } from '~/constants/resource'
@@ -178,14 +179,17 @@ export const CompanyDetailContainer: FC<Props> = ({
             />
 
             {user.role > 2 && (
-              <Button
-                variant="flat"
-                color="primary"
-                onPress={onOpen}
-                startContent={<Pencil />}
-              >
-                编辑会社信息
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="flat"
+                  color="primary"
+                  onPress={onOpen}
+                  startContent={<Pencil />}
+                >
+                  编辑会社信息
+                </Button>
+                <DeleteCompanyModal company={company} />
+              </div>
             )}
             <CompanyFormModal
               type="edit"
