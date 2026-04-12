@@ -93,10 +93,6 @@ export const PatchCompanySelector: FC<Props> = ({
         total: number
       }>('/company/all', { page: 1, limit: 100 })
       setCompanies(response.companies)
-      const commonIds = initialCompanies
-        .map((company) => company.id)
-        .filter((id) => response.companies.some((company) => company.id === id))
-      dispatch({ type: 'SET_EXISTING_COMPANIES', payload: commonIds })
     })
   }
 
@@ -113,10 +109,6 @@ export const PatchCompanySelector: FC<Props> = ({
         query: query.split(' ').filter(Boolean)
       })
       setCompanies(response)
-      const commonIds = initialCompanies
-        .map((company) => company.id)
-        .filter((id) => response.some((company) => company.id === id))
-      dispatch({ type: 'SET_EXISTING_COMPANIES', payload: commonIds })
     })
   }
 
@@ -224,34 +216,54 @@ export const PatchCompanySelector: FC<Props> = ({
                   <KunLoading hint="正在获取会社数据..." />
                 ) : (
                   <div className="space-y-2">
-                    {companies.map((company) => (
-                      <div
-                        key={company.id}
-                        className="flex items-start gap-2 p-2 rounded-lg hover:bg-default-100"
-                      >
-                        <Checkbox
-                          isSelected={
-                            state.selectedCompanies.includes(company.id) ||
-                            (!state.removedCompanies.includes(company.id) &&
-                              state.existingCompanies.includes(company.id))
-                          }
-                          onValueChange={(checked) =>
-                            toggleCompanySelection(company.id, checked)
-                          }
+                    {(() => {
+                      const displayedCompanies = query
+                        ? companies
+                        : [
+                            ...initialCompanies.filter(
+                              (c) =>
+                                !state.removedCompanies.includes(c.id)
+                            ),
+                            ...companies.filter((c) =>
+                              state.selectedCompanies.includes(c.id)
+                            )
+                          ]
+                      if (!query && displayedCompanies.length === 0) {
+                        return (
+                          <p className="text-sm text-default-400 text-center py-4">
+                            暂无已选会社，请输入关键字搜索添加
+                          </p>
+                        )
+                      }
+                      return displayedCompanies.map((company) => (
+                        <div
+                          key={company.id}
+                          className="flex items-start gap-2 p-2 rounded-lg hover:bg-default-100"
                         >
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">
-                                {company.name}
-                              </span>
-                              <Chip size="sm" variant="flat">
-                                {company.count} 个 Galgame
-                              </Chip>
+                          <Checkbox
+                            isSelected={
+                              state.selectedCompanies.includes(company.id) ||
+                              (!state.removedCompanies.includes(company.id) &&
+                                state.existingCompanies.includes(company.id))
+                            }
+                            onValueChange={(checked) =>
+                              toggleCompanySelection(company.id, checked)
+                            }
+                          >
+                            <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">
+                                  {company.name}
+                                </span>
+                                <Chip size="sm" variant="flat">
+                                  {company.count} 个 Galgame
+                                </Chip>
+                              </div>
                             </div>
-                          </div>
-                        </Checkbox>
-                      </div>
-                    ))}
+                          </Checkbox>
+                        </div>
+                      ))
+                    })()}
                   </div>
                 )}
               </ScrollShadow>
