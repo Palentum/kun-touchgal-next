@@ -8,7 +8,7 @@ export const UserStats = ({ user }: { user: UserInfo }) => {
     { label: '评价', value: user._count.patch_rating, icon: FileText },
     { label: '收藏', value: user._count.patch_favorite, icon: Star },
     {
-      label: '发布补丁',
+      label: '发布资源',
       value: user._count.patch_resource,
       icon: Puzzle
     }

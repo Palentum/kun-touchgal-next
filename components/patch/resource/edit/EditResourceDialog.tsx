@@ -106,7 +106,7 @@ export const EditResourceDialog = ({
           {editing
             ? '更新中...'
             : uploadingResource
-              ? '正在上传补丁资源中...'
+              ? '正在上传资源中...'
               : '保存'}
         </Button>
       </ModalFooter>

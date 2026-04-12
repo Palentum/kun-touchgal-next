@@ -120,12 +120,12 @@ export const storageTypes = [
   {
     value: 's3',
     label: '对象存储 (<100MB, 创作者可用)',
-    description: '此选项适合 <100MB 的补丁, 稳定, 永远不会失效过期'
+    description: '此选项适合 <100MB 的资源, 稳定, 永远不会失效过期'
   },
   {
     value: 'user',
     label: '自定义链接 (>100MB)',
-    description: '此选项适合 >100MB 的补丁, 这需要您自行提供下载链接'
+    description: '此选项适合 >100MB 的资源, 这需要您自行提供下载链接'
   }
 ]
 

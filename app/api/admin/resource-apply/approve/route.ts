@@ -50,7 +50,7 @@ const approvePatchResource = async (
       data: {
         type: 'approve',
         user_id: adminUid,
-        content: `管理员 ${admin.name} 审核通过了一条补丁资源\n\nGalgame 名称:${resource.patch.name}\n资源 ID:${resource.id}\n资源标题:${resource.name}\n上传用户:${resource.user.name}`
+        content: `管理员 ${admin.name} 审核通过了一条资源\n\nGalgame 名称:${resource.patch.name}\n资源 ID:${resource.id}\n资源标题:${resource.name}\n上传用户:${resource.user.name}`
       }
     })
 

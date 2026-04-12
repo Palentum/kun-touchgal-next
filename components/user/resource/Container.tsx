@@ -55,7 +55,7 @@ export const UserResource = ({ resources, total, uid }: Props) => {
         </>
       )}
 
-      {!total && <KunNull message="这个孩子还没有发布过补丁资源哦" />}
+      {!total && <KunNull message="这个孩子还没有发布过资源哦" />}
 
       {total > 20 && (
         <div className="flex justify-center">

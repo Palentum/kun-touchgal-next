@@ -22,7 +22,7 @@ export const AdminResourceApplyCard = ({ resource, actions }: Props) => {
             user={resource.user}
             userProps={{
               name: resource.user.name,
-              description: `${formatTimeDifference(resource.created)} 上传了首个补丁资源`,
+              description: `${formatTimeDifference(resource.created)} 上传了首个资源`,
               avatarProps: {
                 showFallback: true,
                 src: resource.user.avatar,

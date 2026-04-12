@@ -268,7 +268,7 @@ export const Resource = ({ initialResources, initialTotal }: Props) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">补丁资源管理</h1>
+        <h1 className="text-2xl font-bold">下载资源管理</h1>
         <div className="flex items-center gap-2">
           {selectedCount > 0 && (
             <Button

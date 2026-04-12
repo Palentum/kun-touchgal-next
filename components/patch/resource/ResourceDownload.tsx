@@ -62,7 +62,7 @@ export const ResourceDownload = ({ resource }: Props) => {
               {resource.name ? resource.name : '资源备注'}
             </h3>
             <p className="text-sm text-default-5000">
-              该补丁资源创建于 {formatTimeDifference(resource.created)}
+              该资源创建于 {formatTimeDifference(resource.created)}
             </p>
           </div>
 

@@ -52,7 +52,7 @@ const declinePatchResource = async (
       data: {
         type: 'decline',
         user_id: adminUid,
-        content: `管理员 ${admin.name} 拒绝了一条补丁资源\n\n拒绝原因:${reason}\nGalgame 名称:${resource.patch.name}\n资源 ID:${resource.id}\n资源标题:${resource.name}\n上传用户:${resource.user.name}`
+        content: `管理员 ${admin.name} 拒绝了一条资源\n\n拒绝原因:${reason}\nGalgame 名称:${resource.patch.name}\n资源 ID:${resource.id}\n资源标题:${resource.name}\n上传用户:${resource.user.name}`
       }
     })
 

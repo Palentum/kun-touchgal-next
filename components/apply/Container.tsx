@@ -56,7 +56,7 @@ export const ApplyContainer = ({ count }: Props) => {
         </CardHeader>
         <CardBody className="gap-6">
           <div className="flex items-center justify-between">
-            <p className="text-default-500">发布补丁进度: {count}/3</p>
+            <p className="text-default-500">发布资源进度: {count}/3</p>
             <Chip
               color={canApply ? 'success' : 'warning'}
               variant="flat"
@@ -81,7 +81,7 @@ export const ApplyContainer = ({ count }: Props) => {
             }}
             value={progress}
             showValueLabel={true}
-            aria-label="发布补丁进度"
+            aria-label="发布资源进度"
           />
 
           <Divider />
@@ -89,7 +89,7 @@ export const ApplyContainer = ({ count }: Props) => {
           <div className="space-y-4">
             <div>
               <h3 className="mb-2 text-lg font-semibold">申请条件</h3>
-              <p className="text-default-500">在本站合法发布三个补丁</p>
+              <p className="text-default-500">在本站合法发布三个资源</p>
               <p className="text-default-500">
                 详细信息请查看文档{' '}
                 <Link href="/doc/notice/creator">
@@ -103,7 +103,7 @@ export const ApplyContainer = ({ count }: Props) => {
               <p className="text-default-500">
                 {canApply
                   ? '恭喜！您已经达到申请条件，可以立即申请成为创作者'
-                  : `您还需要发布 ${3 - count} 个补丁才能申请成为创作者`}
+                  : `您还需要发布 ${3 - count} 个资源才能申请成为创作者`}
               </p>
             </div>
           </div>

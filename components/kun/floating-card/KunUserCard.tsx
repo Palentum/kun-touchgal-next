@@ -56,7 +56,7 @@ export const KunUserCard = ({ uid }: UserCardProps) => {
             <KunUserStatCard value={user._count.patch} label="Galgame 数" />
             <KunUserStatCard
               value={user._count.patch_resource}
-              label="补丁数"
+              label="资源数"
             />
           </div>
         </>

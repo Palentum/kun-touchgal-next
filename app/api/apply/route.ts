@@ -19,7 +19,7 @@ const applyForCreator = async (uid: number) => {
   }
 
   if (user._count.patch_resource < 3) {
-    return '您暂时不可以申请成为创作者, 您可以继续发布补丁'
+    return '您暂时不可以申请成为创作者, 您可以继续发布资源'
   }
 
   if (user.role > 1) {

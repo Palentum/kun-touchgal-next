@@ -76,7 +76,7 @@ export const ActionButton = ({ creator }: Props) => {
           <ModalHeader>同意申请人</ModalHeader>
           <ModalBody>
             您确定要同意该申请吗, 这将会将该用户设置为创作者,
-            并且开放该用户的上传补丁权限
+            并且开放该用户的上传资源权限
           </ModalBody>
           <ModalFooter>
             <Button variant="light" onPress={onCloseApprove}>

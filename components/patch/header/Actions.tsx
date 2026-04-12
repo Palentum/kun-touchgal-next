@@ -134,7 +134,7 @@ export const PatchHeaderActions = ({
       </div>
 
       <p className="text-xs text-default-500">
-        收藏后, 有新补丁资源发布时, 您将收到通知
+        收藏后, 有新资源发布时, 您将收到通知
       </p>
 
       <Modal isOpen={isOpen} onClose={onClose} placement="center">

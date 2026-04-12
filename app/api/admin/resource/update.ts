@@ -30,7 +30,7 @@ export const updatePatchResource = async (
       data: {
         type: 'update',
         user_id: uid,
-        content: `管理员 ${admin.name} 更新了一个补丁资源信息\n\n原补丁资源信息:\n${JSON.stringify(resource)}\n\n新补丁资源信息:\n${JSON.stringify(updatedResource)}`
+        content: `管理员 ${admin.name} 更新了一个资源信息\n\n原资源信息:\n${JSON.stringify(resource)}\n\n新资源信息:\n${JSON.stringify(updatedResource)}`
       }
     })
 
