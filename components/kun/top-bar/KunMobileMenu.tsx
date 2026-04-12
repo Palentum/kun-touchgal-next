@@ -12,7 +12,7 @@ export const KunMobileMenu = () => {
       <NavbarMenuItem>
         <Link className="flex items-center" href="/">
           <Image
-            src="/favicon.webp"
+            src="/logo.webp"
             alt={kunMoyuMoe.titleShort}
             width={50}
             height={50}

@@ -8,7 +8,7 @@ export const KunTopBarBrand = () => {
     <NavbarBrand className="hidden sm:flex">
       <Link className="flex items-center" href="/">
         <Image
-          src="/favicon.webp"
+          src="/logo.webp"
           alt={kunMoyuMoe.titleShort}
           width={32}
           height={32}
