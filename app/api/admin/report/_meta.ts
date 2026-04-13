@@ -137,12 +137,14 @@ export const resolveReportMeta = async (content: string, link: string) => {
       ? baseMeta.reportedRatingId
       : baseMeta.reportedCommentId
 
-  if (baseMeta.targetType && (targetId || baseMeta.reportedUserId)) {
-    const reportedUserId =
-      baseMeta.reportedUserId ||
-      (targetId
-        ? await findReportedUserIdByTarget(baseMeta.targetType, targetId)
-        : undefined)
+  if (baseMeta.targetType && targetId) {
+    const reportedUserId = await findReportedUserIdByTarget(
+      baseMeta.targetType,
+      targetId
+    )
+    if (!reportedUserId) {
+      return getEmptyReportMeta()
+    }
 
     return {
       targetType: baseMeta.targetType,
@@ -234,6 +236,7 @@ export const findRelatedReportIds = async (
       type: 'report',
       status: 0,
       sender_id: { not: null },
+      recipient_id: null,
       id: { not: excludeMessageId },
       ...getReportTargetWhere(targetType)
     },

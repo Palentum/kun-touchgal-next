@@ -12,6 +12,7 @@ export const getReport = async (
   const where = {
     type: 'report',
     sender_id: { not: null },
+    recipient_id: null,
     ...(tab === 'pending' ? { status: 0 } : { status: { in: [2, 3] } }),
     ...getReportTargetWhere(targetType)
   }

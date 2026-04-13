@@ -7,6 +7,10 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { sliceUntilDelimiterFromEnd } from '~/app/api/utils/sliceUntilDelimiterFromEnd'
 import { findRelatedReportIds, resolveReportMeta } from '../_meta'
 import { recomputePatchRatingStat } from '~/app/api/patch/rating/stat'
+import type { AdminReportTargetType } from '~/types/api/admin'
+
+const isReportTargetType = (value?: string): value is AdminReportTargetType =>
+  value === 'comment' || value === 'rating'
 
 const handleReport = async (input: z.infer<typeof adminHandleReportSchema>) => {
   const message = await prisma.user_message.findUnique({
@@ -15,22 +19,34 @@ const handleReport = async (input: z.infer<typeof adminHandleReportSchema>) => {
   if (!message) {
     return '该举报不存在'
   }
+  if (
+    message.type !== 'report' ||
+    !message.sender_id ||
+    message.recipient_id !== null
+  ) {
+    return '该举报无效'
+  }
   if (message.status !== 0) {
     return '该举报已被处理'
   }
 
-  const resolvedMeta = input.targetId
-    ? null
-    : await resolveReportMeta(message.content, message.link)
-  const targetId = input.targetId
-    ? input.targetId
-    : input.targetType === 'rating'
-      ? resolvedMeta?.reportedRatingId
-      : resolvedMeta?.reportedCommentId
+  const resolvedMeta = await resolveReportMeta(message.content, message.link)
+  const targetType: AdminReportTargetType = isReportTargetType(
+    resolvedMeta.targetType
+  )
+    ? resolvedMeta.targetType
+    : input.targetType
+  const targetId =
+    targetType === 'rating'
+      ? resolvedMeta.reportedRatingId
+      : resolvedMeta.reportedCommentId
+  if (input.action === 'delete' && !targetId) {
+    return '未找到被举报内容'
+  }
 
   const relatedReportIds =
     input.action === 'delete' && targetId
-      ? await findRelatedReportIds(input.targetType, targetId, input.messageId)
+      ? await findRelatedReportIds(targetType, targetId, input.messageId)
       : []
 
   const SLICED_CONTENT = sliceUntilDelimiterFromEnd(message.content).slice(
@@ -46,7 +62,7 @@ const handleReport = async (input: z.infer<typeof adminHandleReportSchema>) => {
   const reportContent = `${reportResult}\n\n举报原因：${SLICED_CONTENT}\n${reportReplyLabel}：${handleResult}`
 
   const ratingPatchId =
-    input.action === 'delete' && input.targetType === 'rating' && targetId
+    input.action === 'delete' && targetType === 'rating' && targetId
       ? (
           await prisma.patch_rating.findUnique({
             where: { id: targetId },
@@ -60,7 +76,7 @@ const handleReport = async (input: z.infer<typeof adminHandleReportSchema>) => {
       ...new Set([input.messageId, ...relatedReportIds])
     ]
     if (input.action === 'delete' && targetId) {
-      if (input.targetType === 'comment') {
+      if (targetType === 'comment') {
         await prisma.patch_comment.deleteMany({
           where: { id: targetId }
         })

@@ -31,8 +31,9 @@ const createReport = async (
     where: {
       type: 'report',
       sender_id: uid,
+      recipient_id: null,
       status: 0,
-      link: { contains: `ratingId=${input.ratingId}` }
+      link: { contains: `ratingId=${input.ratingId}&` }
     },
     select: { id: true }
   })

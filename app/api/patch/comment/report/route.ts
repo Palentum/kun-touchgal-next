@@ -11,36 +11,70 @@ const createReport = async (
   uid: number
 ) => {
   const comment = await prisma.patch_comment.findUnique({
-    where: { id: input.commentId }
+    where: { id: input.commentId },
+    select: {
+      id: true,
+      content: true,
+      user_id: true,
+      patch_id: true
+    }
   })
-  const patch = await prisma.patch.findUnique({
-    where: { id: input.patchId }
+  if (!comment) {
+    return '评论不存在'
+  }
+  if (comment.patch_id !== input.patchId) {
+    return '评论不属于当前游戏'
+  }
+  if (comment.user_id === uid) {
+    return '不能举报自己的评论'
+  }
+
+  const existingReport = await prisma.user_message.findFirst({
+    where: {
+      type: 'report',
+      sender_id: uid,
+      recipient_id: null,
+      status: 0,
+      link: { contains: `commentId=${input.commentId}&` }
+    },
+    select: { id: true }
   })
-  const user = await prisma.user.findUnique({
-    where: { id: uid }
-  })
+  if (existingReport) {
+    return '您已经举报过该评论，请等待管理员处理'
+  }
+
+  const [patch, user] = await Promise.all([
+    prisma.patch.findUnique({
+      where: { id: input.patchId },
+      select: {
+        name: true,
+        unique_id: true
+      }
+    }),
+    prisma.user.findUnique({
+      where: { id: uid },
+      select: {
+        name: true
+      }
+    })
+  ])
+  if (!patch) {
+    return '游戏不存在'
+  }
 
   const metadataLines: string[] = []
-  if (comment?.id) {
-    metadataLines.push(`举报评论ID: ${comment.id}`)
-  }
-  if (comment?.user_id) {
-    metadataLines.push(`被举报用户ID: ${comment.user_id}`)
-  }
+  metadataLines.push(`举报评论ID: ${comment.id}`)
+  metadataLines.push(`被举报用户ID: ${comment.user_id}`)
   const metadata = metadataLines.length ? `\n${metadataLines.join('\n')}` : ''
-  const STATIC_CONTENT = `${user?.name} 举报了「${patch?.name}」下的评论\n\n评论内容：${comment?.content.slice(0, 200)}${metadata}\n\n举报原因：${input.content}`
+  const STATIC_CONTENT = `${user?.name ?? `用户 #${uid}`} 举报了「${patch.name}」下的评论\n\n评论内容：${comment.content.slice(0, 200)}${metadata}\n\n举报原因：${input.content}`
   const reportLink = (() => {
-    if (!patch?.unique_id) {
+    if (!patch.unique_id) {
       return ''
     }
     const params = new URLSearchParams()
     params.set('target', 'comment')
-    if (comment?.id) {
-      params.set('commentId', String(comment.id))
-    }
-    if (comment?.user_id) {
-      params.set('reportedUid', String(comment.user_id))
-    }
+    params.set('commentId', String(comment.id))
+    params.set('reportedUid', String(comment.user_id))
     const query = params.toString()
     return query ? `/${patch.unique_id}?${query}` : `/${patch.unique_id}`
   })()
