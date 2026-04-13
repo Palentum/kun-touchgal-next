@@ -193,7 +193,13 @@
       "@hono/node-server": ">=1.19.13",
       "jws": "3.2.3",
       "dompurify": ">=3.3.3",
-      "tar": ">=7.5.8"
+      "tar": ">=7.5.8",
+      "eslint>minimatch": "3.1.5",
+      "eslint-plugin-import>minimatch": "3.1.5",
+      "eslint-plugin-jsx-a11y>minimatch": "3.1.5",
+      "eslint-plugin-react>minimatch": "3.1.5",
+      "@typescript-eslint/typescript-estree>minimatch": "9.0.9",
+      "minimatch>brace-expansion": "1.1.14"
     },
     "onlyBuiltDependencies": [
       "@heroui/shared-utils",
