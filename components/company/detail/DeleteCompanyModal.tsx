@@ -62,9 +62,7 @@ export const DeleteCompanyModal: FC<Props> = ({ company }) => {
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">删除会社</ModalHeader>
           <ModalBody>
-            <p>
-              您确定要删除这个会社吗？该操作不可撤销
-            </p>
+            <p>您确定要删除这个会社吗？该操作不可撤销</p>
             <p className="pl-4 border-l-4 border-primary-500">{company.name}</p>
           </ModalBody>
           <ModalFooter>

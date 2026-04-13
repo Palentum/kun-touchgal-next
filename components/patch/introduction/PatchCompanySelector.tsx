@@ -221,8 +221,7 @@ export const PatchCompanySelector: FC<Props> = ({
                         ? companies
                         : [
                             ...initialCompanies.filter(
-                              (c) =>
-                                !state.removedCompanies.includes(c.id)
+                              (c) => !state.removedCompanies.includes(c.id)
                             ),
                             ...companies.filter((c) =>
                               state.selectedCompanies.includes(c.id)
