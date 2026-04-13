@@ -188,6 +188,10 @@
     "typescript": "^5.8.3"
   },
   "pnpm": {
+    "overrides": {
+      "hono": ">=4.11.4",
+      "@hono/node-server": ">=1.19.13"
+    },
     "onlyBuiltDependencies": [
       "@heroui/shared-utils",
       "@parcel/watcher",
