@@ -7,6 +7,7 @@ import { createRoot } from 'react-dom/client'
 import DOMPurify from 'isomorphic-dompurify'
 import { useMounted } from '~/hooks/useMounted'
 import { KunExternalLink } from '~/components/kun/external-link/ExternalLink'
+import { sanitizeUserHref } from '~/utils/safeUrl'
 import type { PatchComment } from '~/types/api/patch'
 
 interface Props {
@@ -52,14 +53,17 @@ export const CommentContent = ({ comment }: Props) => {
     externalLinkElements.forEach((element) => {
       const text = element.getAttribute('data-text')
       const href = element.getAttribute('data-href')
-      if (!text || !href) {
+      const safeHref = href ? sanitizeUserHref(href) : null
+      if (!text || !safeHref) {
         return
       }
       const root = document.createElement('div')
       root.className = element.className
       element.replaceWith(root)
       const videoRoot = createRoot(root)
-      videoRoot.render(<KunExternalLink link={href}>{text}</KunExternalLink>)
+      videoRoot.render(
+        <KunExternalLink link={safeHref}>{text}</KunExternalLink>
+      )
     })
   }, [sanitizedContent, isMounted])
 

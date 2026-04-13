@@ -11,6 +11,11 @@ import dynamic from 'next/dynamic'
 import { useMounted } from '~/hooks/useMounted'
 import { KunLink } from '~/components/kun/milkdown/plugins/components/link/KunLink'
 import { KunExternalLink } from '~/components/kun/external-link/ExternalLink'
+import {
+  SAFE_MEDIA_PROTOCOLS,
+  sanitizeUserHref,
+  sanitizeUserUrl
+} from '~/utils/safeUrl'
 import type { PatchIntroduction } from '~/types/api/patch'
 
 import './_adjust.scss'
@@ -45,14 +50,17 @@ export const IntroductionTab = ({ intro, patchId, uid }: Props) => {
     externalLinkElements.forEach((element) => {
       const text = element.getAttribute('data-text')
       const href = element.getAttribute('data-href')
-      if (!text || !href) {
+      const safeHref = href ? sanitizeUserHref(href) : null
+      if (!text || !safeHref) {
         return
       }
       const root = document.createElement('div')
       root.className = element.className
       element.replaceWith(root)
       const videoRoot = createRoot(root)
-      videoRoot.render(<KunExternalLink link={href}>{text}</KunExternalLink>)
+      videoRoot.render(
+        <KunExternalLink link={safeHref}>{text}</KunExternalLink>
+      )
     })
 
     const videoElements = contentRef.current.querySelectorAll(
@@ -60,28 +68,30 @@ export const IntroductionTab = ({ intro, patchId, uid }: Props) => {
     )
     videoElements.forEach((element) => {
       const src = element.getAttribute('data-src')
-      if (!src) {
+      const safeSrc = src ? sanitizeUserUrl(src, SAFE_MEDIA_PROTOCOLS) : null
+      if (!safeSrc) {
         return
       }
       const root = document.createElement('div')
       root.className = element.className
       element.replaceWith(root)
       const videoRoot = createRoot(root)
-      videoRoot.render(<KunPlyr src={src} />)
+      videoRoot.render(<KunPlyr src={safeSrc} />)
     })
 
     const linkElements = contentRef.current.querySelectorAll('[data-kun-link]')
     linkElements.forEach((element) => {
       const href = element.getAttribute('data-href')
       const text = element.getAttribute('data-text')
-      if (!href || !text) return
+      const safeHref = href ? sanitizeUserHref(href) : null
+      if (!safeHref || !text) return
 
       const root = document.createElement('div')
       root.className = element.className
       element.replaceWith(root)
 
       const linkRoot = ReactDOM.createRoot(root)
-      linkRoot.render(<KunLink href={href} text={text} />)
+      linkRoot.render(<KunLink href={safeHref} text={text} />)
     })
   }, [isMounted])
 

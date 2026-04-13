@@ -11,6 +11,7 @@ import { remarkKunVideo } from './remarkKunVideo'
 import { remarkKunLink } from './remarkKunLink'
 import { remarkKunExternalLinks } from './remarkKunExternalLinks'
 import { remarkKunWrapImage } from './remarkKunWrapImage'
+import { markdownExtendSanitizeSchema } from './sanitizeSchema'
 
 export const markdownToHtmlExtend = async (markdown: string) => {
   const htmlVFile = await unified()
@@ -20,29 +21,7 @@ export const markdownToHtmlExtend = async (markdown: string) => {
     .use(remarkKunLink)
     .use(remarkRehype)
     .use(remarkKunExternalLinks)
-    .use(rehypeSanitize, {
-      attributes: {
-        div: [
-          'data-video-player',
-          'data-src',
-          'data-kun-link',
-          'data-href',
-          'data-text',
-          'data-kun-img-container',
-          'className'
-        ],
-        img: ['src', 'alt', 'title', 'class', 'loading'],
-        a: [
-          'data-kun-external-link',
-          'data-href',
-          'data-text',
-          'href',
-          'target',
-          'rel',
-          'className'
-        ]
-      }
-    })
+    .use(rehypeSanitize, markdownExtendSanitizeSchema)
     .use(remarkFrontmatter)
     .use(remarkGfm)
     .use(rehypePrism, { ignoreMissing: true })

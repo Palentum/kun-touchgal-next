@@ -3,6 +3,7 @@
 import { Card, CardBody, Chip } from '@heroui/react'
 import { isValidURL } from '~/utils/validate'
 import { KunExternalLink } from '~/components/kun/external-link/ExternalLink'
+import { sanitizeUserHref } from '~/utils/safeUrl'
 
 interface KunLinkProps {
   href: string
@@ -10,7 +11,12 @@ interface KunLinkProps {
 }
 
 export const KunLink = ({ href, text }: KunLinkProps) => {
-  const domain = isValidURL(href) ? new URL(href).hostname : href
+  const safeHref = sanitizeUserHref(href)
+  const domain = safeHref
+    ? isValidURL(safeHref)
+      ? new URL(safeHref).hostname
+      : safeHref
+    : '无效链接'
 
   return (
     <Card className="w-full">
@@ -22,7 +28,11 @@ export const KunLink = ({ href, text }: KunLinkProps) => {
           <span className="text-default-500">{domain}</span>
         </div>
         <p style={{ margin: '0' }}>{text}</p>
-        <KunExternalLink link={href}>{href}</KunExternalLink>
+        {safeHref ? (
+          <KunExternalLink link={safeHref}>{safeHref}</KunExternalLink>
+        ) : (
+          <span className="text-danger">链接协议不受支持</span>
+        )}
       </CardBody>
     </Card>
   )

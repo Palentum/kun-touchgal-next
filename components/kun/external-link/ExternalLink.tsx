@@ -2,6 +2,12 @@
 
 import { Link } from '@heroui/link'
 import { useUserStore } from '~/store/userStore'
+import {
+  getHttpUrlHostname,
+  isHostnameExcluded,
+  isRedirectableUrl,
+  sanitizeUserHref
+} from '~/utils/safeUrl'
 import type { ReactNode } from 'react'
 import type { LinkProps } from '@heroui/react'
 
@@ -16,33 +22,51 @@ export const KunExternalLink = ({
   link,
   children,
   isRequireRedirect,
+  isDisabled,
   showAnchorIcon = true,
   ...props
 }: Props) => {
-  const encodeLink = encodeURIComponent(link)
   const userConfig = useUserStore((state) => state.user)
+  const safeLink = sanitizeUserHref(link)
 
   const urlHref = () => {
-    const isExcludedDomain = userConfig.excludedDomains?.some((domain) =>
-      link.includes(domain)
-    )
+    if (!safeLink) {
+      return undefined
+    }
+
+    const hostname = getHttpUrlHostname(safeLink)
+    const isExcludedDomain = hostname
+      ? isHostnameExcluded(hostname, userConfig.excludedDomains)
+      : false
+
     if (isExcludedDomain) {
-      return link
+      return safeLink
     }
 
     if (typeof isRequireRedirect !== 'undefined') {
-      return isRequireRedirect ? `/redirect?url=${encodeLink}` : link
+      return isRequireRedirect && isRedirectableUrl(safeLink)
+        ? `/redirect?url=${encodeURIComponent(safeLink)}`
+        : safeLink
     }
 
-    return userConfig.enableRedirect ? `/redirect?url=${encodeLink}` : link
+    return userConfig.enableRedirect && isRedirectableUrl(safeLink)
+      ? `/redirect?url=${encodeURIComponent(safeLink)}`
+      : safeLink
   }
 
   return (
     <Link
-      isExternal={!isRequireRedirect && !userConfig.enableRedirect}
+      {...props}
+      isDisabled={!safeLink || isDisabled}
+      isExternal={
+        safeLink
+          ? !isRequireRedirect &&
+            !userConfig.enableRedirect &&
+            isRedirectableUrl(safeLink)
+          : false
+      }
       showAnchorIcon={showAnchorIcon}
       href={urlHref()}
-      {...props}
     >
       {children}
     </Link>

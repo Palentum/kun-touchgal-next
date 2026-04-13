@@ -7,26 +7,14 @@ import remarkRehype from 'remark-rehype'
 import rehypePrism from 'rehype-prism-plus'
 import { unified } from 'unified'
 import { remarkKunExternalLinks } from './remarkKunExternalLinks'
+import { markdownSanitizeSchema } from './sanitizeSchema'
 
 export const markdownToHtml = async (markdown: string) => {
   const htmlVFile = await unified()
     .use(remarkParse)
     .use(remarkRehype)
     .use(remarkKunExternalLinks)
-    .use(rehypeSanitize, {
-      attributes: {
-        a: [
-          'data-kun-external-link',
-          'data-href',
-          'data-text',
-          'href',
-          'target',
-          'rel',
-          'className'
-        ],
-        img: ['src', 'alt', 'title', 'class', 'loading']
-      }
-    })
+    .use(rehypeSanitize, markdownSanitizeSchema)
     .use(remarkFrontmatter)
     .use(remarkGfm)
     .use(rehypePrism, { ignoreMissing: true })
