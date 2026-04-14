@@ -7,6 +7,10 @@ import Download from 'yet-another-react-lightbox/plugins/download'
 import 'yet-another-react-lightbox/styles.css'
 import { useMounted } from '~/hooks/useMounted'
 
+const shouldSkipLightbox = (img: HTMLImageElement) => {
+  return Boolean(img.closest('[data-no-lightbox], .yarl__portal'))
+}
+
 export const KunAutoImageViewer = () => {
   const [openImage, setOpenImage] = useState<string | null>(null)
   const [images, setImages] = useState<
@@ -31,7 +35,7 @@ export const KunAutoImageViewer = () => {
     }
 
     const checkImageDimensions = (img: HTMLImageElement) => {
-      if (img.dataset.noLightbox !== undefined) {
+      if (shouldSkipLightbox(img)) {
         return
       }
 
