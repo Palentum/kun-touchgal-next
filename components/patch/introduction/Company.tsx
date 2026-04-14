@@ -75,7 +75,7 @@ export const PatchCompany: FC<Props> = ({
         )}
       </div>
 
-      <div className="space-x-2">
+      <div className="flex flex-wrap gap-2">
         {selectedCompanies.map((company) => (
           <Tooltip
             key={company.id}
