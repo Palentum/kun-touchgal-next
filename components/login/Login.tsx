@@ -49,7 +49,7 @@ export const LoginForm = () => {
           setUser(state)
           reset()
           toast.success('登录成功!')
-          router.push(`/user/${state.uid}/comment`)
+          router.push(`/user/${state.uid}/comment`, { scroll: false })
         }
       })
     })

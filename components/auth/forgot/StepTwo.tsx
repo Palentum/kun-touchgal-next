@@ -10,8 +10,7 @@ import { stepTwoSchema } from '~/validations/forgot'
 import { kunFetchPost } from '~/utils/kunFetch'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
 import toast from 'react-hot-toast'
-import { redirect } from 'next/navigation'
-import { watch } from 'fs'
+import { useRouter } from '@bprogress/next'
 
 type StepTwoFormData = z.infer<typeof stepTwoSchema>
 
@@ -21,6 +20,7 @@ interface Props {
 }
 
 export const StepTwo = ({ name, setStep }: Props) => {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
 
   const {
@@ -52,7 +52,7 @@ export const StepTwo = ({ name, setStep }: Props) => {
     kunErrorHandler(res, () => {
       reset()
       toast.success('重置密码成功! 正在跳转到登录页')
-      redirect('/login')
+      router.push('/login')
     })
     setLoading(false)
   }

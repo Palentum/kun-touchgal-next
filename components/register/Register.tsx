@@ -10,7 +10,6 @@ import { kunFetchPost } from '~/utils/kunFetch'
 import { registerSchema } from '~/validations/auth'
 import { useUserStore } from '~/store/userStore'
 import { kunErrorHandler } from '~/utils/kunErrorHandler'
-import { redirect } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { EmailVerification } from '~/components/kun/verification-code/Code'
 import { useRouter } from '@bprogress/next'
@@ -53,7 +52,7 @@ export const RegisterForm = () => {
       setUser(value)
       reset()
       toast.success('注册成功!')
-      redirect(`/user/${value.uid}/comment`)
+      router.push(`/user/${value.uid}/comment`, { scroll: false })
     })
   }
 
