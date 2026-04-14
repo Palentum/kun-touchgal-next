@@ -196,6 +196,8 @@
       "jws": "3.2.3",
       "dompurify": ">=3.3.3",
       "tar": ">=7.5.8",
+      "lodash": "4.18.1",
+      "lodash-es": "4.18.1",
       "eslint>minimatch": "3.1.5",
       "eslint-plugin-import>minimatch": "3.1.5",
       "eslint-plugin-jsx-a11y>minimatch": "3.1.5",
