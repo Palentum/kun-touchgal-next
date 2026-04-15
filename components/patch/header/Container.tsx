@@ -7,23 +7,28 @@ import { PatchHeaderTabs } from './Tabs'
 import { PatchHeaderInfo } from './Info'
 import { KunAutoImageViewer } from '~/components/kun/image-viewer/AutoImageViewer'
 import { KunNull } from '~/components/kun/Null'
+import { kunMoyuMoe } from '~/config/moyu-moe'
 import type { Patch, PatchIntroduction } from '~/types/api/patch'
 
 interface PatchHeaderProps {
   patch: Patch
   intro: PatchIntroduction
   uid?: number
+  nsfwAllowed: boolean
 }
 
 export const PatchHeaderContainer = ({
   patch,
   intro,
-  uid
+  uid,
+  nsfwAllowed
 }: PatchHeaderProps) => {
   const { setData } = useRewritePatchStore()
   const searchParams = useSearchParams()
   const [selected, setSelected] = useState('introduction')
   const tabsRef = useRef<HTMLDivElement>(null)
+
+  const isNsfwBlocked = patch.contentLimit === 'nsfw' && !nsfwAllowed
 
   useEffect(() => {
     const targetTab = searchParams.get('tab')
@@ -82,10 +87,35 @@ export const PatchHeaderContainer = ({
     })
   }, [])
 
+  useEffect(() => {
+    if (patch.contentLimit !== 'nsfw' || isNsfwBlocked) {
+      return
+    }
+    const platform = patch.platform
+    const patchType =
+      platform.includes('windows') && platform.includes('android')
+        ? 'PC + 安卓'
+        : platform.includes('windows')
+          ? 'PC 游戏'
+          : platform.includes('android')
+            ? '安卓游戏'
+            : ''
+    const gameTitle = patch.alias.length
+      ? `${patch.name} | ${patch.alias[0]} | ${patchType}`
+      : `${patch.name} | ${patchType}`
+    document.title = `${gameTitle} - ${kunMoyuMoe.titleShort}`
+  }, [])
+
   return (
     <div className="relative w-full mx-auto max-w-7xl">
-      {patch.contentLimit === 'nsfw' && !uid ? (
-        <KunNull message="请登录后查看 NSFW 游戏" />
+      {isNsfwBlocked ? (
+        <KunNull
+          message={
+            !uid
+              ? '请登录后查看'
+              : '请在右上角菜单开启 NSFW 内容显示后查看'
+          }
+        />
       ) : (
         <>
           <KunAutoImageViewer />

@@ -121,6 +121,9 @@ export const createBreadcrumbItem = (
       label: 'Galgame',
       href: '/galgame'
     }
+    if (!pageTitle.trim()) {
+      return [allGalgameRoute]
+    }
     return [
       allGalgameRoute,
       createPatchBreadcrumb(params, defaultItem, pageTitle)

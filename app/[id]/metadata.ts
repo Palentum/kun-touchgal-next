@@ -29,7 +29,7 @@ export const generateKunMetadataTemplate = (
     : `${patch.name} | ${patchType}`
 
   if (patch.contentLimit === 'nsfw') {
-    return generateNullMetadata(pageTitle)
+    return generateNullMetadata('')
   }
 
   return {
