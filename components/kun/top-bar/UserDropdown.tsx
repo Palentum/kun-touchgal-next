@@ -27,6 +27,7 @@ import {
   UserRound
 } from 'lucide-react'
 import { useUserStore } from '~/store/userStore'
+import { useSettingStore } from '~/store/settingStore'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from '@bprogress/next'
 import { kunFetchGet, kunFetchPost } from '~/utils/kunFetch'
@@ -49,6 +50,7 @@ interface OutsidePointerContext {
 export const UserDropdown = () => {
   const router = useRouter()
   const { user, setUser, logout } = useUserStore((state) => state)
+  const resetSettings = useSettingStore((state) => state.resetData)
   const isMounted = useMounted()
   const [loading, setLoading] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -257,6 +259,7 @@ export const UserDropdown = () => {
     await kunFetchPost<KunResponse<{}>>('/user/status/logout')
     setLoading(false)
     logout()
+    resetSettings()
     router.push('/login')
     toast.success('您已经成功登出!')
   }
