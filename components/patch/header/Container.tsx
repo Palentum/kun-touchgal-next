@@ -111,9 +111,7 @@ export const PatchHeaderContainer = ({
       {isNsfwBlocked ? (
         <KunNull
           message={
-            !uid
-              ? '请登录后查看'
-              : '请在右上角菜单开启 NSFW 内容显示后查看'
+            !uid ? '请登录后查看' : '请在右上角菜单开启 NSFW 内容显示后查看'
           }
         />
       ) : (
