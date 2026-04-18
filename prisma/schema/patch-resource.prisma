@@ -20,6 +20,9 @@ model patch_resource {
 
   created DateTime @default(now())
   updated DateTime @updatedAt
+
+  @@index([patch_id])
+  @@index([section, status, created(sort: Desc)])
 }
 
 model patch_resource_link {
