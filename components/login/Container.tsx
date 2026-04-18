@@ -19,7 +19,6 @@ export const LoginContainer = ({ title, children }: Props) => {
               alt={kunMoyuMoe.titleShort}
               width={36}
               height={36}
-              className="rounded-full"
             />
             <span>{kunMoyuMoe.titleShort}</span>
           </div>
