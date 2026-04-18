@@ -38,6 +38,12 @@ model patch {
   updated DateTime @updatedAt
 
   @@unique([vndb_id, vndb_relation_id])
+  @@index([created])
+  @@index([view])
+  @@index([download])
+  @@index([resource_update_time])
+  @@index([content_limit])
+  @@index([released(ops: raw("text_pattern_ops"))])
 }
 
 model patch_alias {
