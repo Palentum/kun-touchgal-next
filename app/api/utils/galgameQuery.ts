@@ -83,7 +83,7 @@ export const buildGalgameOrderBy = (
   sortOrder: SortOrder
 ): Prisma.patchOrderByWithRelationInput => {
   if (sortField === 'favorite') {
-    return { favorite_folder: { _count: sortOrder } }
+    return { favorite_count: sortOrder }
   }
 
   if (sortField === 'rating') {

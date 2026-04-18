@@ -1,6 +1,9 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
-import { GalgameCardSelectField } from '~/constants/api/select'
+import {
+  GalgameCardSelectField,
+  toGalgameCardCount
+} from '~/constants/api/select'
 import { rankingSchema } from '~/validations/ranking'
 import type { RankingSortField, RankingCard } from '~/types/api/ranking'
 import type { Prisma } from '~/prisma/generated/prisma/client'
@@ -67,7 +70,7 @@ export const getRanking = async (
       platform: gal.platform,
       tags: gal.tag.map((t) => t.tag.name).slice(0, 3),
       created: gal.created,
-      _count: gal._count,
+      _count: toGalgameCardCount(gal),
       averageRating: ratingCount > 0 ? Math.round(ratingAvg * 10) / 10 : 0,
       ratingCount,
       positiveRecommendCount: positive
@@ -96,11 +99,11 @@ const buildOrderBy = (
         { rating_stat: { rec_strong_yes: sortOrder } }
       ]
     case 'favorite':
-      return { favorite_folder: { _count: sortOrder } }
+      return { favorite_count: sortOrder }
     case 'resource':
-      return { resource: { _count: sortOrder } }
+      return { resource_count: sortOrder }
     case 'comment':
-      return { comment: { _count: sortOrder } }
+      return { comment_count: sortOrder }
     case 'download':
       return { download: sortOrder }
     case 'view':

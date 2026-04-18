@@ -3,7 +3,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { kunParsePostBody } from '~/app/api/utils/parseQuery'
 import { prisma } from '~/prisma/index'
 import { searchSchema } from '~/validations/search'
-import { GalgameCardSelectField } from '~/constants/api/select'
+import {
+  GalgameCardSelectField,
+  toGalgameCardCount
+} from '~/constants/api/select'
 import { getPatchVisibilityWhere } from '~/app/api/utils/getPatchVisibilityWhere'
 import { Prisma } from '~/prisma/generated/prisma/client'
 import type { SearchSuggestionType } from '~/types/api/search'
@@ -261,14 +264,22 @@ const searchGalgame = async (
     })
   ])
 
-  const galgames: GalgameCard[] = data.map((gal) => ({
-    ...gal,
-    tags: gal.tag.map((t) => t.tag.name).slice(0, 3),
-    uniqueId: gal.unique_id,
-    averageRating: gal.rating_stat?.avg_overall
-      ? Math.round(gal.rating_stat.avg_overall * 10) / 10
-      : 0
-  }))
+  const galgames: GalgameCard[] = data.map((gal) => {
+    const { favorite_count, resource_count, comment_count, ...rest } = gal
+    return {
+      ...rest,
+      tags: gal.tag.map((t) => t.tag.name).slice(0, 3),
+      uniqueId: gal.unique_id,
+      _count: toGalgameCardCount({
+        favorite_count,
+        resource_count,
+        comment_count
+      }),
+      averageRating: gal.rating_stat?.avg_overall
+        ? Math.round(gal.rating_stat.avg_overall * 10) / 10
+        : 0
+    }
+  })
 
   return { galgames, total }
 }

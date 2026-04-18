@@ -1,6 +1,9 @@
 import { prisma } from '~/prisma/index'
 import { HomeResource } from '~/types/api/home'
-import { GalgameCardSelectField } from '~/constants/api/select'
+import {
+  GalgameCardSelectField,
+  toGalgameCardCount
+} from '~/constants/api/select'
 import type { Prisma } from '~/prisma/generated/prisma/client'
 
 export const getHomeData = async (visibilityWhere: Prisma.patchWhereInput) => {
@@ -41,14 +44,22 @@ export const getHomeData = async (visibilityWhere: Prisma.patchWhereInput) => {
     })
   ])
 
-  const galgames: GalgameCard[] = data.map((gal) => ({
-    ...gal,
-    tags: gal.tag.map((t) => t.tag.name).slice(0, 3),
-    uniqueId: gal.unique_id,
-    averageRating: gal.rating_stat?.avg_overall
-      ? Math.round(gal.rating_stat.avg_overall * 10) / 10
-      : 0
-  }))
+  const galgames: GalgameCard[] = data.map((gal) => {
+    const { favorite_count, resource_count, comment_count, ...rest } = gal
+    return {
+      ...rest,
+      tags: gal.tag.map((t) => t.tag.name).slice(0, 3),
+      uniqueId: gal.unique_id,
+      _count: toGalgameCardCount({
+        favorite_count,
+        resource_count,
+        comment_count
+      }),
+      averageRating: gal.rating_stat?.avg_overall
+        ? Math.round(gal.rating_stat.avg_overall * 10) / 10
+        : 0
+    }
+  })
 
   const resources: HomeResource[] = resourcesData.map((resource) => ({
     id: resource.id,

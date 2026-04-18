@@ -1,7 +1,10 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
 import { galgameSchema } from '~/validations/galgame'
-import { GalgameCardSelectField } from '~/constants/api/select'
+import {
+  GalgameCardSelectField,
+  toGalgameCardCount
+} from '~/constants/api/select'
 import {
   buildGalgameDateFilter,
   buildGalgameOrderBy,
@@ -69,7 +72,7 @@ export const getGalgame = async (
     platform: gal.platform,
     tags: gal.tag.map((t) => t.tag.name).slice(0, 3),
     created: gal.created,
-    _count: gal._count,
+    _count: toGalgameCardCount(gal),
     averageRating: gal.rating_stat?.avg_overall
       ? Math.round(gal.rating_stat.avg_overall * 10) / 10
       : 0
