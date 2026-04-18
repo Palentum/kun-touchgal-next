@@ -248,7 +248,8 @@ export const ResourceTabs = ({
                     <Link href="/">
                       <User
                         avatarProps={{
-                          src: '/favicon.webp',
+                          src: '/logo.webp',
+                          radius: 'none',
                           classNames: {
                             base: 'bg-transparent'
                           }
