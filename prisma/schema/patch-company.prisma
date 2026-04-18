@@ -29,4 +29,5 @@ model patch_company_relation {
   updated DateTime @updatedAt
 
   @@unique([patch_id, company_id])
+  @@index([company_id])
 }

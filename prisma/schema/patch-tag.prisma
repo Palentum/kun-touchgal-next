@@ -31,4 +31,5 @@ model patch_tag_relation {
   updated DateTime @updatedAt
 
   @@unique([patch_id, tag_id])
+  @@index([tag_id])
 }
