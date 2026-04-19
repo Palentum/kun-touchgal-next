@@ -10,6 +10,9 @@ import type { NextConfig } from 'next'
 // const __filename = fileURLToPath(import.meta.url)
 // const __dirname = path.dirname(__filename)
 
+const skipDeployBuildChecks =
+  process.env.KUN_DEPLOY_BUILD_SKIP_CHECKS === 'true'
+
 const nextConfig: NextConfig = {
   devIndicators: false,
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
@@ -17,14 +20,18 @@ const nextConfig: NextConfig = {
   publicRuntimeConfig: {
     NODE_ENV: env.data!.NODE_ENV
   },
-  eslint: { ignoreDuringBuilds: true },
+  eslint: {
+    ignoreDuringBuilds: skipDeployBuildChecks
+  },
   typescript: {
-    ignoreBuildErrors: true
+    ignoreBuildErrors: skipDeployBuildChecks
   },
   sassOptions: {
     silenceDeprecations: ['legacy-js-api']
   },
   images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60 * 60 * 24 * 7,
     remotePatterns: [
       {
         protocol: 'https',
@@ -43,6 +50,7 @@ const nextConfig: NextConfig = {
 
   output: 'standalone',
   experimental: {
+    optimizePackageImports: ['@heroui/react', 'lucide-react', 'date-fns']
     // turbotrace: {
     //   logLevel: 'error',
     //   logDetail: false,

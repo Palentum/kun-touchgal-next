@@ -15,6 +15,13 @@ if (!fs.existsSync(envPath)) {
   process.exit(1)
 }
 
+const runCommand = (
+  command: string,
+  env: NodeJS.ProcessEnv = process.env
+) => {
+  execSync(command, { stdio: 'inherit', env })
+}
+
 config({ path: envPath })
 
 try {
@@ -30,10 +37,14 @@ try {
     )
   }
 
-  execSync(
-    'git pull && pnpm prisma:push && pnpm build && pnpm stop && pnpm start',
-    { stdio: 'inherit' }
-  )
+  runCommand('git pull')
+  runCommand('pnpm prisma:push')
+  runCommand('pnpm build', {
+    ...process.env,
+    KUN_DEPLOY_BUILD_SKIP_CHECKS: 'true'
+  })
+  runCommand('pnpm stop')
+  runCommand('pnpm start')
 } catch (e) {
   console.error('Invalid environment variables')
   process.exit(1)
