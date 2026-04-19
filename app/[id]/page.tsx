@@ -2,8 +2,7 @@ import { PatchHeaderContainer } from '~/components/patch/header/Container'
 import { ErrorComponent } from '~/components/error/ErrorComponent'
 import { generateKunMetadataTemplate } from './metadata'
 import {
-  kunGetPatchActions,
-  kunGetPatchIntroductionActions,
+  kunGetPatchPageDataActions,
   kunUpdatePatchViewsActions
 } from './actions'
 import { verifyHeaderCookie } from '~/utils/actions/verifyHeaderCookie'
@@ -21,15 +20,12 @@ export const generateMetadata = async ({
   params
 }: Props): Promise<Metadata> => {
   const { id } = await params
-  const patch = await kunGetPatchActions({
-    uniqueId: id
-  })
-  const intro = await kunGetPatchIntroductionActions({ uniqueId: id })
-  if (typeof patch === 'string' || typeof intro === 'string') {
+  const pageData = await kunGetPatchPageDataActions({ uniqueId: id })
+  if (typeof pageData === 'string') {
     return {}
   }
 
-  return generateKunMetadataTemplate(patch, intro)
+  return generateKunMetadataTemplate(pageData.patch, pageData.intro)
 }
 
 export default async function Kun({ params }: Props) {
@@ -38,19 +34,15 @@ export default async function Kun({ params }: Props) {
     return <ErrorComponent error={'提取页面参数错误'} />
   }
 
-  const [patch, intro, payload, nsfwHeader] = await Promise.all([
-    kunGetPatchActions({ uniqueId: id }),
-    kunGetPatchIntroductionActions({ uniqueId: id }),
+  const [pageData, payload, nsfwHeader] = await Promise.all([
+    kunGetPatchPageDataActions({ uniqueId: id }),
     verifyHeaderCookie(),
     getNSFWHeader()
   ])
   const nsfwAllowed =
     (nsfwHeader as { content_limit?: string }).content_limit !== 'sfw'
-  if (typeof patch === 'string') {
-    return <ErrorComponent error={patch} />
-  }
-  if (typeof intro === 'string') {
-    return <ErrorComponent error={intro} />
+  if (typeof pageData === 'string') {
+    return <ErrorComponent error={pageData} />
   }
 
   after(() => kunUpdatePatchViewsActions({ uniqueId: id }))
@@ -58,8 +50,8 @@ export default async function Kun({ params }: Props) {
   return (
     <div className="container py-6 mx-auto space-y-6">
       <PatchHeaderContainer
-        patch={patch}
-        intro={intro}
+        patch={pageData.patch}
+        intro={pageData.intro}
         uid={payload?.uid}
         nsfwAllowed={nsfwAllowed}
       />
