@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { prisma } from '~/prisma/index'
-import { bumpPatchFavoriteCacheVersion } from '~/app/api/patch/cache'
+import { invalidatePatchFavoriteCaches } from '~/app/api/patch/cache'
 
 const folderIdSchema = z.object({
   folderId: z.coerce.number().min(1).max(9999999)
@@ -11,7 +11,18 @@ export const deleteFolder = async (
   uid: number
 ) => {
   const folder = await prisma.user_patch_favorite_folder.findUnique({
-    where: { id: input.folderId }
+    where: { id: input.folderId },
+    include: {
+      patch: {
+        select: {
+          patch: {
+            select: {
+              unique_id: true
+            }
+          }
+        }
+      }
+    }
   })
   if (!folder) {
     return '未找到该收藏夹'
@@ -25,9 +36,12 @@ export const deleteFolder = async (
   })
 
   try {
-    await bumpPatchFavoriteCacheVersion(uid)
+    await invalidatePatchFavoriteCaches(
+      folder.patch.map((relation) => relation.patch.unique_id),
+      uid
+    )
   } catch {
-    // 缓存版本更新失败不影响删除结果
+    // 缓存失效失败不影响删除结果
   }
 
   return {}

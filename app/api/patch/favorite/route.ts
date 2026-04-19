@@ -6,7 +6,7 @@ import { verifyHeaderCookie } from '~/middleware/_verifyHeaderCookie'
 import { togglePatchFavoriteSchema } from '~/validations/patch'
 import { createDedupMessage } from '~/app/api/utils/message'
 import {
-  bumpPatchFavoriteCacheVersion,
+  invalidatePatchFavoriteCache,
   invalidatePatchContentCache
 } from '../cache'
 
@@ -74,7 +74,7 @@ const togglePatchFavorite = async (
 
   try {
     await Promise.all([
-      bumpPatchFavoriteCacheVersion(uid),
+      invalidatePatchFavoriteCache(patch.unique_id, uid),
       invalidatePatchContentCache(patch.unique_id)
     ])
   } catch {

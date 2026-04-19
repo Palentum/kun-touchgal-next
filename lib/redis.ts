@@ -2,6 +2,7 @@ import Redis from 'ioredis'
 import { randomUUID } from 'crypto'
 
 const KUN_PATCH_REDIS_PREFIX = 'kun:touchgal'
+const REDIS_MULTI_KEY_BATCH_SIZE = 500
 
 export const redis = new Redis({
   port: parseInt(process.env.REDIS_PORT!),
@@ -26,6 +27,17 @@ export const getKv = async (key: string) => {
 export const delKv = async (key: string) => {
   const keyString = `${KUN_PATCH_REDIS_PREFIX}:${key}`
   await redis.del(keyString)
+}
+
+export const delKvs = async (keys: string[]) => {
+  if (keys.length === 0) {
+    return
+  }
+
+  const keyStrings = keys.map((key) => `${KUN_PATCH_REDIS_PREFIX}:${key}`)
+  for (let i = 0; i < keyStrings.length; i += REDIS_MULTI_KEY_BATCH_SIZE) {
+    await redis.del(...keyStrings.slice(i, i + REDIS_MULTI_KEY_BATCH_SIZE))
+  }
 }
 
 export const acquireKvLock = async (key: string, ttlSeconds = 10) => {
