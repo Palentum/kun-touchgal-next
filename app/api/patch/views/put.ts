@@ -1,8 +1,5 @@
-import { prisma } from '~/prisma/index'
+import { incrementPatchViewBuffer } from './buffer'
 
 export const updatePatchViews = async (uniqueId: string) => {
-  await prisma.patch.updateMany({
-    where: { unique_id: uniqueId },
-    data: { view: { increment: 1 } }
-  })
+  await incrementPatchViewBuffer(uniqueId)
 }
