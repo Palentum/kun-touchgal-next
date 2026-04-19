@@ -1,8 +1,9 @@
 'use server'
 
+import { cache } from 'react'
 import { cookies } from 'next/headers'
 
-export const getNSFWHeader = async () => {
+export const getNSFWHeader = cache(async () => {
   const cookieStore = await cookies()
 
   const authToken = cookieStore.get('kun-galgame-patch-moe-token')?.value
@@ -23,4 +24,4 @@ export const getNSFWHeader = async () => {
   } else {
     return { content_limit: token }
   }
-}
+})

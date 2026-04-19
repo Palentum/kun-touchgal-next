@@ -1,11 +1,12 @@
 'use server'
 
+import { cache } from 'react'
 import { cookies } from 'next/headers'
 import { parseBlockedTagIds } from '~/utils/blockedTag'
 import { verifyKunToken } from '~/app/api/utils/jwt'
 import { prisma } from '~/prisma'
 
-export const getBlockedTagIds = async () => {
+export const getBlockedTagIds = cache(async () => {
   const cookieStore = await cookies()
   const token = cookieStore.get('kun-galgame-patch-moe-token')?.value
   if (!token) {
@@ -30,4 +31,4 @@ export const getBlockedTagIds = async () => {
   })
 
   return user?.blocked_tag_ids ?? []
-}
+})
