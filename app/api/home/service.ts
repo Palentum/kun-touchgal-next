@@ -1,4 +1,7 @@
+import { createHash } from 'crypto'
 import { prisma } from '~/prisma/index'
+import { getKv, setKv } from '~/lib/redis'
+import { HOME_CACHE_DURATION } from '~/config/cache'
 import { HomeResource } from '~/types/api/home'
 import {
   GalgameCardSelectField,
@@ -6,7 +9,31 @@ import {
 } from '~/constants/api/select'
 import type { Prisma } from '~/prisma/generated/prisma/client'
 
-export const getHomeData = async (visibilityWhere: Prisma.patchWhereInput) => {
+const HOME_CACHE_KEY_PREFIX = 'home'
+
+const getHomeCacheKey = (visibilityWhere: Prisma.patchWhereInput) => {
+  const hash = createHash('sha1')
+    .update(JSON.stringify(visibilityWhere))
+    .digest('hex')
+    .slice(0, 16)
+  return `${HOME_CACHE_KEY_PREFIX}:${hash}`
+}
+
+interface HomeResponse {
+  galgames: GalgameCard[]
+  resources: HomeResource[]
+}
+
+export const getHomeData = async (
+  visibilityWhere: Prisma.patchWhereInput
+): Promise<HomeResponse> => {
+  const cacheKey = getHomeCacheKey(visibilityWhere)
+
+  const cached = await getKv(cacheKey)
+  if (cached) {
+    return JSON.parse(cached) as HomeResponse
+  }
+
   const [data, resourcesData] = await Promise.all([
     prisma.patch.findMany({
       orderBy: { created: 'desc' },
@@ -95,5 +122,9 @@ export const getHomeData = async (visibilityWhere: Prisma.patchWhereInput) => {
     }
   }))
 
-  return { galgames, resources }
+  const response: HomeResponse = { galgames, resources }
+
+  await setKv(cacheKey, JSON.stringify(response), HOME_CACHE_DURATION)
+
+  return response
 }

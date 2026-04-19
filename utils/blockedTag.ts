@@ -43,7 +43,7 @@ export const buildBlockedTagWhere = (
       tag: {
         some: {
           tag_id: {
-            in: blockedTagIds
+            in: [...blockedTagIds].sort((a, b) => a - b)
           }
         }
       }
