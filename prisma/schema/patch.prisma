@@ -43,14 +43,10 @@ model patch {
 
   @@unique([vndb_id, vndb_relation_id])
   @@index([created])
-  @@index([view])
-  @@index([download])
   @@index([resource_update_time])
   @@index([content_limit])
   @@index([released(ops: raw("text_pattern_ops"))])
   @@index([favorite_count])
-  @@index([resource_count])
-  @@index([comment_count])
 }
 
 model patch_alias {
