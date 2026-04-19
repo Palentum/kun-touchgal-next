@@ -11,23 +11,28 @@ import { remarkKunVideo } from './remarkKunVideo'
 import { remarkKunLink } from './remarkKunLink'
 import { remarkKunExternalLinks } from './remarkKunExternalLinks'
 import { remarkKunWrapImage } from './remarkKunWrapImage'
+import { renderMarkdownHtmlWithCache } from './markdownHtmlCache'
 import { markdownExtendSanitizeSchema } from './sanitizeSchema'
 
-export const markdownToHtmlExtend = async (markdown: string) => {
-  const htmlVFile = await unified()
-    .use(remarkParse)
-    .use(remarkDirective)
-    .use(remarkKunVideo)
-    .use(remarkKunLink)
-    .use(remarkRehype)
-    .use(remarkKunExternalLinks)
-    .use(rehypeSanitize, markdownExtendSanitizeSchema)
-    .use(remarkFrontmatter)
-    .use(remarkGfm)
-    .use(rehypePrism, { ignoreMissing: true })
-    .use(remarkKunWrapImage)
-    .use(rehypeStringify)
-    .process(markdown)
+const markdownExtendProcessor = unified()
+  .use(remarkParse)
+  .use(remarkDirective)
+  .use(remarkKunVideo)
+  .use(remarkKunLink)
+  .use(remarkRehype)
+  .use(remarkKunExternalLinks)
+  .use(rehypeSanitize, markdownExtendSanitizeSchema)
+  .use(remarkFrontmatter)
+  .use(remarkGfm)
+  .use(rehypePrism, { ignoreMissing: true })
+  .use(remarkKunWrapImage)
+  .use(rehypeStringify)
+  .freeze()
 
-  return String(htmlVFile)
+export const markdownToHtmlExtend = async (markdown: string) => {
+  return renderMarkdownHtmlWithCache('extend', markdown, async () => {
+    const htmlVFile = await markdownExtendProcessor.process(markdown)
+
+    return String(htmlVFile)
+  })
 }
