@@ -1,12 +1,21 @@
 'use client'
 
 import { useCallback, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { Tab, Tabs } from '@heroui/tabs'
 import { Code, Edit } from 'lucide-react'
-import { Codemirror } from './codemirror/Codemirror'
 import { useCreatePatchStore } from '~/store/editStore'
 import { useRewritePatchStore } from '~/store/rewriteStore'
 import { KunEditor } from './Editor'
+import { KunLoading } from '~/components/kun/Loading'
+
+const Codemirror = dynamic(
+  () => import('./codemirror/Codemirror').then((mod) => mod.Codemirror),
+  {
+    ssr: false,
+    loading: () => <KunLoading className="min-h-48" hint="正在加载编辑器" />
+  }
+)
 
 interface Props {
   storeName: 'patchCreate' | 'patchRewrite'

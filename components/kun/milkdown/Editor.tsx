@@ -1,6 +1,7 @@
-import { EditorProvider } from './EditorProvider'
-import { MilkdownProvider } from '@milkdown/react'
-import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/react'
+'use client'
+
+import dynamic from 'next/dynamic'
+import { KunLoading } from '~/components/kun/Loading'
 
 interface KunEditorProps {
   valueMarkdown: string
@@ -8,12 +9,14 @@ interface KunEditorProps {
   placeholder?: string
 }
 
+const KunEditorImpl = dynamic(
+  () => import('./EditorImpl').then((mod) => mod.KunEditorImpl),
+  {
+    ssr: false,
+    loading: () => <KunLoading className="min-h-48" hint="正在加载编辑器" />
+  }
+)
+
 export const KunEditor = (props: KunEditorProps) => {
-  return (
-    <MilkdownProvider>
-      <ProsemirrorAdapterProvider>
-        <EditorProvider {...props} />
-      </ProsemirrorAdapterProvider>
-    </MilkdownProvider>
-  )
+  return <KunEditorImpl {...props} />
 }
