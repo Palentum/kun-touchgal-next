@@ -1,4 +1,4 @@
-import { redis } from '~/lib/redis'
+import { redis, runRedisCommand } from '~/lib/redis'
 
 const PATCH_VIEWS_BUFFER_KEY = 'kun:touchgal:views:buffer'
 const PATCH_VIEWS_PENDING_KEY = `${PATCH_VIEWS_BUFFER_KEY}:pending`
@@ -9,33 +9,39 @@ interface PatchViewBufferCheckout {
 }
 
 export const incrementPatchViewBuffer = async (uniqueId: string) => {
-  await redis.hincrby(PATCH_VIEWS_BUFFER_KEY, uniqueId, 1)
+  await runRedisCommand(() =>
+    redis.hincrby(PATCH_VIEWS_BUFFER_KEY, uniqueId, 1)
+  )
 }
 
 export const checkoutPatchViewBuffer =
   async (): Promise<PatchViewBufferCheckout | null> => {
-    const hasPending = await redis.eval(
-      `
-        if redis.call("EXISTS", KEYS[2]) == 0 then
-          if redis.call("EXISTS", KEYS[1]) == 0 then
-            return 0
+    const hasPending = await runRedisCommand(() =>
+      redis.eval(
+        `
+          if redis.call("EXISTS", KEYS[2]) == 0 then
+            if redis.call("EXISTS", KEYS[1]) == 0 then
+              return 0
+            end
+            redis.call("RENAME", KEYS[1], KEYS[2])
           end
-          redis.call("RENAME", KEYS[1], KEYS[2])
-        end
-        return 1
-      `,
-      2,
-      PATCH_VIEWS_BUFFER_KEY,
-      PATCH_VIEWS_PENDING_KEY
+          return 1
+        `,
+        2,
+        PATCH_VIEWS_BUFFER_KEY,
+        PATCH_VIEWS_PENDING_KEY
+      )
     )
 
     if (hasPending !== 1) {
       return null
     }
 
-    const entries = await redis.hgetall(PATCH_VIEWS_PENDING_KEY)
+    const entries = await runRedisCommand(() =>
+      redis.hgetall(PATCH_VIEWS_PENDING_KEY)
+    )
     if (Object.keys(entries).length === 0) {
-      await redis.del(PATCH_VIEWS_PENDING_KEY)
+      await runRedisCommand(() => redis.del(PATCH_VIEWS_PENDING_KEY))
       return null
     }
 
@@ -50,5 +56,5 @@ export const acknowledgePatchViewBuffer = async (key: string) => {
     throw new Error('Invalid patch view buffer pending key')
   }
 
-  await redis.del(key)
+  await runRedisCommand(() => redis.del(key))
 }
