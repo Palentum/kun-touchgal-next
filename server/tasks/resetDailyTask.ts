@@ -1,7 +1,11 @@
 import { prisma } from '~/prisma'
 import cron from 'node-cron'
+import { withTaskLock } from './withTaskLock'
 
-export const resetDailyTask = cron.createTask('0 0 * * *', async () => {
+const RESET_DAILY_LOCK_KEY = 'cron:reset-daily:lock'
+const RESET_DAILY_LOCK_TTL_SECONDS = 60 * 60
+
+const resetDailyStats = async () => {
   await prisma.user.updateMany({
     data: {
       daily_image_count: 0,
@@ -9,4 +13,16 @@ export const resetDailyTask = cron.createTask('0 0 * * *', async () => {
       daily_upload_size: 0
     }
   })
+}
+
+export const resetDailyTask = cron.createTask('0 0 * * *', async () => {
+  await withTaskLock(
+    {
+      key: RESET_DAILY_LOCK_KEY,
+      ttlSeconds: RESET_DAILY_LOCK_TTL_SECONDS,
+      taskName: 'resetDailyTask',
+      releaseOnComplete: false
+    },
+    resetDailyStats
+  )
 })

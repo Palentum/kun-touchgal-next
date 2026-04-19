@@ -1,6 +1,10 @@
 import { prisma } from '~/prisma'
 import cron from 'node-cron'
 import { KUN_PATCH_WEBSITE_SYNC_PATCH_TYPE_ENDPOINT } from '~/config/external-api'
+import { withTaskLock } from './withTaskLock'
+
+const SYNC_PATCH_TYPE_LOCK_KEY = 'cron:sync-kun-patch-type:lock'
+const SYNC_PATCH_TYPE_LOCK_TTL_SECONDS = 60 * 60
 
 interface MoyuResponse<T> {
   success: boolean
@@ -8,7 +12,7 @@ interface MoyuResponse<T> {
   data: T | null
 }
 
-export const syncKunPatchTypeTask = cron.createTask('0 0 * * *', async () => {
+const syncKunPatchType = async () => {
   console.log('Starting daily patch type sync task...')
 
   try {
@@ -55,4 +59,16 @@ export const syncKunPatchTypeTask = cron.createTask('0 0 * * *', async () => {
   } catch (error) {
     console.error('An error occurred during the daily patch sync task:', error)
   }
+}
+
+export const syncKunPatchTypeTask = cron.createTask('0 0 * * *', async () => {
+  await withTaskLock(
+    {
+      key: SYNC_PATCH_TYPE_LOCK_KEY,
+      ttlSeconds: SYNC_PATCH_TYPE_LOCK_TTL_SECONDS,
+      taskName: 'syncKunPatchTypeTask',
+      releaseOnComplete: false
+    },
+    syncKunPatchType
+  )
 })

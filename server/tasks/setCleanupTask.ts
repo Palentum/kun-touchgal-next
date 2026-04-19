@@ -2,6 +2,17 @@ import cron from 'node-cron'
 import fs from 'fs/promises'
 import { existsSync, mkdirSync } from 'fs'
 import path from 'path'
+import { withTaskLock } from './withTaskLock'
+
+const CLEANUP_LOCK_KEY = 'cron:cleanup-uploads:lock'
+const CLEANUP_LOCK_TTL_SECONDS = 55 * 60
+const IGNORED_DELETE_ERRORS = new Set(['ENOENT', 'ENOTEMPTY'])
+
+const isNodeError = (error: unknown): error is NodeJS.ErrnoException =>
+  error instanceof Error && 'code' in error
+
+const shouldIgnoreFsError = (error: unknown, codes: Set<string>) =>
+  isNodeError(error) && typeof error.code === 'string' && codes.has(error.code)
 
 const isOlderThanOneDay = async (filePath: string): Promise<boolean> => {
   const stats = await fs.stat(filePath)
@@ -19,19 +30,41 @@ const deleteOldFilesAndFolders = async (dir: string) => {
     if (entry.isDirectory()) {
       await deleteOldFilesAndFolders(fullPath)
 
-      const subEntries = await fs.readdir(fullPath)
-      if (subEntries.length === 0) {
-        await fs.rmdir(fullPath)
+      try {
+        const subEntries = await fs.readdir(fullPath)
+        if (subEntries.length === 0) {
+          await fs.rmdir(fullPath)
+        }
+      } catch (error) {
+        if (!shouldIgnoreFsError(error, IGNORED_DELETE_ERRORS)) {
+          throw error
+        }
       }
     } else if (entry.isFile()) {
-      if (await isOlderThanOneDay(fullPath)) {
-        await fs.unlink(fullPath)
+      let shouldDelete = false
+
+      try {
+        shouldDelete = await isOlderThanOneDay(fullPath)
+      } catch (error) {
+        if (!shouldIgnoreFsError(error, IGNORED_DELETE_ERRORS)) {
+          throw error
+        }
+      }
+
+      if (shouldDelete) {
+        try {
+          await fs.unlink(fullPath)
+        } catch (error) {
+          if (!shouldIgnoreFsError(error, IGNORED_DELETE_ERRORS)) {
+            throw error
+          }
+        }
       }
     }
   }
 }
 
-export const setCleanupTask = cron.createTask('0 * * * *', async () => {
+const cleanupUploads = async () => {
   const uploadsDir = path.posix.resolve('uploads')
 
   if (!existsSync(uploadsDir)) {
@@ -44,4 +77,16 @@ export const setCleanupTask = cron.createTask('0 * * * *', async () => {
   } catch (error) {
     console.error('Error during cleanup task:', error)
   }
+}
+
+export const setCleanupTask = cron.createTask('0 * * * *', async () => {
+  await withTaskLock(
+    {
+      key: CLEANUP_LOCK_KEY,
+      ttlSeconds: CLEANUP_LOCK_TTL_SECONDS,
+      taskName: 'setCleanupTask',
+      releaseOnComplete: false
+    },
+    cleanupUploads
+  )
 })
