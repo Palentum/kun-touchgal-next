@@ -1,11 +1,57 @@
-import { flushPatchViewsTask } from './tasks/flushPatchViewsTask'
-import { resetDailyTask } from './tasks/resetDailyTask'
-import { setCleanupTask } from './tasks/setCleanupTask'
-import { syncKunPatchTypeTask } from './tasks/syncKunPatchTypeTask'
+import type { ScheduledTask } from 'node-cron'
 
-export const setKUNGalgameTask = () => {
-  resetDailyTask
-  setCleanupTask
-  syncKunPatchTypeTask
-  flushPatchViewsTask
+const globalTaskState = globalThis as typeof globalThis & {
+  __kunGalgameTasksStarted?: boolean
+  __kunGalgameTasksStarting?: Promise<void>
+}
+
+const getKUNGalgameTasks = async (): Promise<ScheduledTask[]> => {
+  const [
+    { resetDailyTask },
+    { setCleanupTask },
+    { syncKunPatchTypeTask },
+    { flushPatchViewsTask }
+  ] = await Promise.all([
+    import('./tasks/resetDailyTask'),
+    import('./tasks/setCleanupTask'),
+    import('./tasks/syncKunPatchTypeTask'),
+    import('./tasks/flushPatchViewsTask')
+  ])
+
+  return [
+    resetDailyTask,
+    setCleanupTask,
+    syncKunPatchTypeTask,
+    flushPatchViewsTask
+  ]
+}
+
+export const setKUNGalgameTask = async () => {
+  if (globalTaskState.__kunGalgameTasksStarted) {
+    return
+  }
+
+  if (globalTaskState.__kunGalgameTasksStarting) {
+    await globalTaskState.__kunGalgameTasksStarting
+    return
+  }
+
+  const startingTask = (async () => {
+    const tasks = await getKUNGalgameTasks()
+    await Promise.all(tasks.map((task) => task.start()))
+    globalTaskState.__kunGalgameTasksStarted = true
+  })()
+
+  globalTaskState.__kunGalgameTasksStarting = startingTask
+
+  try {
+    await startingTask
+  } catch (error) {
+    globalTaskState.__kunGalgameTasksStarted = false
+    throw error
+  } finally {
+    if (globalTaskState.__kunGalgameTasksStarting === startingTask) {
+      globalTaskState.__kunGalgameTasksStarting = undefined
+    }
+  }
 }

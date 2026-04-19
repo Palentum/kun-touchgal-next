@@ -1,9 +1,5 @@
 'use server'
 
-import { setKUNGalgameTask } from '~/server/cron'
-
-setKUNGalgameTask()
-
 import { getPatchVisibilityWhere } from '~/utils/actions/getPatchVisibilityWhere'
 import { getHomeData } from '~/app/api/home/service'
 

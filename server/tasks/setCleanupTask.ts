@@ -31,7 +31,7 @@ const deleteOldFilesAndFolders = async (dir: string) => {
   }
 }
 
-export const setCleanupTask = cron.schedule('0 * * * *', async () => {
+export const setCleanupTask = cron.createTask('0 * * * *', async () => {
   const uploadsDir = path.posix.resolve('uploads')
 
   if (!existsSync(uploadsDir)) {

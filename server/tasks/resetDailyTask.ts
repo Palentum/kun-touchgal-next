@@ -1,7 +1,7 @@
 import { prisma } from '~/prisma'
 import cron from 'node-cron'
 
-export const resetDailyTask = cron.schedule('0 0 * * *', async () => {
+export const resetDailyTask = cron.createTask('0 0 * * *', async () => {
   await prisma.user.updateMany({
     data: {
       daily_image_count: 0,

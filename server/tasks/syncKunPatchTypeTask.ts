@@ -8,7 +8,7 @@ interface MoyuResponse<T> {
   data: T | null
 }
 
-export const syncKunPatchTypeTask = cron.schedule('0 0 * * *', async () => {
+export const syncKunPatchTypeTask = cron.createTask('0 0 * * *', async () => {
   console.log('Starting daily patch type sync task...')
 
   try {

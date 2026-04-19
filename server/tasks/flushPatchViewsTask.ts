@@ -11,7 +11,7 @@ const FLUSH_BATCH_SIZE = 1000
 const FLUSH_LOCK_KEY = 'patch:views:flush:lock'
 const FLUSH_LOCK_TTL_SECONDS = 600
 
-export const flushPatchViewsTask = cron.schedule('*/2 * * * *', async () => {
+export const flushPatchViewsTask = cron.createTask('*/2 * * * *', async () => {
   let lockToken: string | null = null
 
   try {
