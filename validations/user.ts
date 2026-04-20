@@ -101,8 +101,13 @@ export const saveUser2FASecretSchema = z.object({
 export const enableUser2FASchema = z.object({
   token: z
     .string()
+    .trim()
     .min(6, { message: '2FA 验证码必须为 6 位数字' })
     .max(6, { message: '2FA 验证码必须为 6 位数字' })
+})
+
+export const disableUser2FASchema = enableUser2FASchema.extend({
+  isBackupCode: z.boolean().optional().default(false)
 })
 
 export const blockedTagSchema = z.object({

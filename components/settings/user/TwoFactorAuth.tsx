@@ -60,6 +60,13 @@ export const TwoFactorAuth = () => {
     onOpen: onBackupOpen,
     onClose: onBackupClose
   } = useDisclosure()
+  const {
+    isOpen: isDisableOpen,
+    onOpen: onDisableOpen,
+    onClose: onDisableClose
+  } = useDisclosure()
+  const [disableToken, setDisableToken] = useState('')
+  const [isUsingBackupCode, setIsUsingBackupCode] = useState(false)
 
   useEffect(() => {
     const check2FAStatus = async () => {
@@ -157,14 +164,31 @@ export const TwoFactorAuth = () => {
     })
   }
 
+  const closeDisableModal = () => {
+    setDisableToken('')
+    setIsUsingBackupCode(false)
+    onDisableClose()
+  }
+
   const disable2FA = async () => {
+    const token = disableToken.trim()
+    if (!token) {
+      toast.error('请输入验证码')
+      return
+    }
+
     startTransition(async () => {
       const res = await kunFetchPost<KunResponse<{}>>(
-        '/user/setting/2fa/disable'
+        '/user/setting/2fa/disable',
+        {
+          token,
+          isBackupCode: isUsingBackupCode
+        }
       )
 
       kunErrorHandler(res, () => {
         setAuthStatus(initialStatus)
+        closeDisableModal()
         toast.success('两步验证已禁用')
       })
     })
@@ -196,7 +220,7 @@ export const TwoFactorAuth = () => {
                 if (value) {
                   generateSecret()
                 } else {
-                  disable2FA()
+                  onDisableOpen()
                 }
               }}
             />
@@ -285,6 +309,75 @@ export const TwoFactorAuth = () => {
               isDisabled={isPending || !authStatus.token}
             >
               验证并启用
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isDisableOpen} onClose={closeDisableModal} size="md">
+        <ModalContent>
+          <ModalHeader>关闭两步验证</ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
+              <p className="text-sm text-default-500">
+                请输入身份验证器应用中的 6 位验证码，或使用一个备用验证码。
+              </p>
+              <Input
+                value={disableToken}
+                onValueChange={setDisableToken}
+                placeholder={
+                  isUsingBackupCode ? '输入备用验证码' : '输入 6 位验证码'
+                }
+                maxLength={6}
+                className="text-lg text-center"
+              />
+              <button
+                type="button"
+                className="relative inline-flex items-center text-medium text-primary no-underline transition-opacity outline-hidden tap-highlight-transparent hover:opacity-hover active:opacity-disabled disabled:cursor-not-allowed disabled:opacity-disabled focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-focus focus-visible:outline-offset-2"
+                onClick={() => {
+                  setIsUsingBackupCode((value) => !value)
+                  setDisableToken('')
+                }}
+                disabled={isPending}
+              >
+                {isUsingBackupCode ? '使用身份验证器验证码' : '使用备用验证码'}
+                <svg
+                  aria-hidden="true"
+                  fill="none"
+                  focusable="false"
+                  height="1em"
+                  shapeRendering="geometricPrecision"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  viewBox="0 0 24 24"
+                  width="1em"
+                  className="self-center flex mx-1 text-current"
+                >
+                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                  <path d="M15 3h6v6" />
+                  <path d="M10 14L21 3" />
+                </svg>
+              </button>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="danger"
+              variant="light"
+              onPress={closeDisableModal}
+              isDisabled={isPending}
+            >
+              取消
+            </Button>
+            <Button
+              color="danger"
+              onPress={disable2FA}
+              isLoading={isPending}
+              isDisabled={isPending || !disableToken.trim()}
+            >
+              验证并关闭
             </Button>
           </ModalFooter>
         </ModalContent>
