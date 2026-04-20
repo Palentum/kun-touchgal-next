@@ -29,7 +29,13 @@ export const resetEmailSchema = z.object({
   email: z.string().email({ message: '请输入合法的邮箱格式' }),
   code: z
     .string()
-    .regex(kunValidMailConfirmCodeRegex, { message: '邮箱验证码格式无效' })
+    .regex(kunValidMailConfirmCodeRegex, { message: '邮箱验证码格式无效' }),
+  currentPassword: z.string().trim().max(1007).optional(),
+  totp: z
+    .string()
+    .trim()
+    .regex(/^$|^\d{6}$/, { message: '2FA 验证码必须为 6 位数字' })
+    .optional()
 })
 
 export const sendResetEmailVerificationCodeSchema = z.object({
