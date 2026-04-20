@@ -176,8 +176,8 @@ export const getPatchFavoriteStatus = async (
   }
 
   const cachedFavoriteStatus = await getCachedPatchFavoriteStatus(uniqueId, uid)
-  if (cachedFavoriteStatus !== null) {
-    return cachedFavoriteStatus
+  if (cachedFavoriteStatus.isFavorite !== null) {
+    return cachedFavoriteStatus.isFavorite
   }
 
   const relation = await prisma.user_patch_favorite_folder_relation.findFirst({
@@ -193,7 +193,12 @@ export const getPatchFavoriteStatus = async (
   })
 
   const isFavorite = Boolean(relation)
-  await setCachedPatchFavoriteStatus(uniqueId, uid, isFavorite)
+  await setCachedPatchFavoriteStatus(
+    uniqueId,
+    uid,
+    isFavorite,
+    cachedFavoriteStatus.version
+  )
 
   return isFavorite
 }

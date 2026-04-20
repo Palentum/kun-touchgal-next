@@ -65,6 +65,15 @@ export const getKv = async (key: string) => {
   return value
 }
 
+export const getKvs = async (keys: string[]) => {
+  if (keys.length === 0) {
+    return []
+  }
+
+  const keyStrings = keys.map((key) => `${KUN_PATCH_REDIS_PREFIX}:${key}`)
+  return runRedisCommand(() => redis.mget(...keyStrings))
+}
+
 export const delKv = async (key: string) => {
   const keyString = `${KUN_PATCH_REDIS_PREFIX}:${key}`
   await runRedisCommand(() => redis.del(keyString))
