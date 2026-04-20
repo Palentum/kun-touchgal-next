@@ -1,11 +1,21 @@
 import { createHash } from 'crypto'
-import { MARKDOWN_HTML_CACHE_DURATION } from '~/config/cache'
+import {
+  MARKDOWN_HTML_CACHE_DURATION,
+  MARKDOWN_HTML_CACHE_MAX_HTML_BYTES,
+  MARKDOWN_HTML_CACHE_MAX_MARKDOWN_BYTES
+} from '~/config/cache'
 
 type MarkdownHtmlCacheVariant = 'standard' | 'extend'
 type MarkdownHtmlRenderer = () => Promise<string>
+type MarkdownHtmlCacheOptions = {
+  enabled?: boolean
+  ttlSeconds?: number
+  maxMarkdownBytes?: number
+  maxHtmlBytes?: number
+}
 
 const MARKDOWN_HTML_CACHE_KEY = 'markdown:html'
-const MARKDOWN_HTML_CACHE_VERSION = 'v1'
+const MARKDOWN_HTML_CACHE_VERSION = 'v2'
 const MARKDOWN_HTML_CACHE_TIMEOUT_MS = 200
 const MARKDOWN_HTML_CACHE_RETRY_DELAY_MS = 30 * 1000
 
@@ -21,6 +31,9 @@ const disableMarkdownHtmlCache = () => {
   markdownHtmlCacheDisabledUntil =
     Date.now() + MARKDOWN_HTML_CACHE_RETRY_DELAY_MS
 }
+
+const isWithinByteLimit = (value: string, maxBytes: number) =>
+  Buffer.byteLength(value, 'utf8') <= maxBytes
 
 const getMarkdownHtmlCacheKey = (
   variant: MarkdownHtmlCacheVariant,
@@ -67,7 +80,25 @@ const readMarkdownHtmlCache = async (cacheKey: string) => {
   )
 }
 
-const writeMarkdownHtmlCache = async (cacheKey: string, html: string) => {
+const deleteMarkdownHtmlCache = async (cacheKey: string) => {
+  if (!isMarkdownHtmlCacheAvailable()) {
+    return
+  }
+
+  await withCacheTimeout(
+    (async () => {
+      const { delKv } = await import('~/lib/redis')
+      await delKv(cacheKey)
+    })(),
+    undefined
+  )
+}
+
+const writeMarkdownHtmlCache = async (
+  cacheKey: string,
+  html: string,
+  ttlSeconds: number
+) => {
   if (!isMarkdownHtmlCacheAvailable()) {
     return
   }
@@ -75,7 +106,7 @@ const writeMarkdownHtmlCache = async (cacheKey: string, html: string) => {
   await withCacheTimeout(
     (async () => {
       const { setKv } = await import('~/lib/redis')
-      await setKv(cacheKey, html, MARKDOWN_HTML_CACHE_DURATION)
+      await setKv(cacheKey, html, ttlSeconds)
     })(),
     undefined
   )
@@ -84,17 +115,39 @@ const writeMarkdownHtmlCache = async (cacheKey: string, html: string) => {
 export const renderMarkdownHtmlWithCache = async (
   variant: MarkdownHtmlCacheVariant,
   markdown: string,
-  render: MarkdownHtmlRenderer
+  render: MarkdownHtmlRenderer,
+  options: MarkdownHtmlCacheOptions = {}
 ) => {
+  const {
+    enabled = true,
+    ttlSeconds = MARKDOWN_HTML_CACHE_DURATION,
+    maxMarkdownBytes = MARKDOWN_HTML_CACHE_MAX_MARKDOWN_BYTES,
+    maxHtmlBytes = MARKDOWN_HTML_CACHE_MAX_HTML_BYTES
+  } = options
+
+  if (
+    !enabled ||
+    ttlSeconds <= 0 ||
+    !isWithinByteLimit(markdown, maxMarkdownBytes)
+  ) {
+    return render()
+  }
+
   const cacheKey = getMarkdownHtmlCacheKey(variant, markdown)
   const cachedHtml = await readMarkdownHtmlCache(cacheKey)
 
   if (cachedHtml !== null) {
-    return cachedHtml
+    if (isWithinByteLimit(cachedHtml, maxHtmlBytes)) {
+      return cachedHtml
+    }
+
+    await deleteMarkdownHtmlCache(cacheKey)
   }
 
   const html = await render()
-  await writeMarkdownHtmlCache(cacheKey, html)
+  if (isWithinByteLimit(html, maxHtmlBytes)) {
+    await writeMarkdownHtmlCache(cacheKey, html, ttlSeconds)
+  }
 
   return html
 }
