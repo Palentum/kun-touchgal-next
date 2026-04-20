@@ -1,6 +1,6 @@
 import { createHash } from 'crypto'
 import { prisma } from '~/prisma/index'
-import { getKv, setKv } from '~/lib/redis'
+import { delKv, getKv, setKv } from '~/lib/redis'
 import { HOME_CACHE_DURATION } from '~/config/cache'
 import { HomeResource } from '~/types/api/home'
 import {
@@ -24,14 +24,65 @@ interface HomeResponse {
   resources: HomeResource[]
 }
 
+interface HomeCacheResult {
+  response: HomeResponse | null
+  canWrite: boolean
+}
+
+const logHomeCacheError = (message: string, error: unknown) => {
+  // eslint-disable-next-line no-console
+  console.error(message, error)
+}
+
+const deleteHomeCache = async (cacheKey: string) => {
+  try {
+    await delKv(cacheKey)
+  } catch (error) {
+    logHomeCacheError('Failed to delete invalid home cache:', error)
+  }
+}
+
+const getCachedHomeData = async (
+  cacheKey: string
+): Promise<HomeCacheResult> => {
+  let cached: string | null
+
+  try {
+    cached = await getKv(cacheKey)
+  } catch (error) {
+    logHomeCacheError('Failed to read home cache:', error)
+    return { response: null, canWrite: false }
+  }
+
+  if (!cached) {
+    return { response: null, canWrite: true }
+  }
+
+  try {
+    return { response: JSON.parse(cached) as HomeResponse, canWrite: true }
+  } catch (error) {
+    logHomeCacheError('Failed to parse home cache:', error)
+    await deleteHomeCache(cacheKey)
+    return { response: null, canWrite: true }
+  }
+}
+
+const setHomeCache = async (cacheKey: string, response: HomeResponse) => {
+  try {
+    await setKv(cacheKey, JSON.stringify(response), HOME_CACHE_DURATION)
+  } catch (error) {
+    logHomeCacheError('Failed to write home cache:', error)
+  }
+}
+
 export const getHomeData = async (
   visibilityWhere: Prisma.patchWhereInput
 ): Promise<HomeResponse> => {
   const cacheKey = getHomeCacheKey(visibilityWhere)
 
-  const cached = await getKv(cacheKey)
-  if (cached) {
-    return JSON.parse(cached) as HomeResponse
+  const cached = await getCachedHomeData(cacheKey)
+  if (cached.response) {
+    return cached.response
   }
 
   const [data, resourcesData] = await Promise.all([
@@ -124,7 +175,9 @@ export const getHomeData = async (
 
   const response: HomeResponse = { galgames, resources }
 
-  await setKv(cacheKey, JSON.stringify(response), HOME_CACHE_DURATION)
+  if (cached.canWrite) {
+    await setHomeCache(cacheKey, response)
+  }
 
   return response
 }
